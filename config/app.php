@@ -212,7 +212,6 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         'Log' => Illuminate\Support\Facades\Log::class,
-        'SSO' => App\Providers\TpedussoServiceProvider::class,
     ])->toArray(),
 
 ];

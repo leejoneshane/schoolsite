@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
-use App\Providers\TpedussoServiceProvider;
 
 class User extends Authenticatable
 {
@@ -20,32 +19,11 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'uuid',
-        'idno',
         'user_type',
-        'account',
-        'sn',
-        'gn',
         'name',
-        'dept_id',
-        'dept_name',
-        'role_id',
-        'role_name',
-        'birthdate',
-        'gender',
         'email',
-        'mobile',
-        'telephone',
-        'address',
-        'www',
-        'class',
-        'seat',
-        'character',
-        'status',
-        'fetch_date',
         'password',
         'is_admin',
-        'is_parent',
-        'is_deleted',
     ];
 
     /**
@@ -57,7 +35,10 @@ class User extends Authenticatable
         'password',
         'remember_token',
         'is_admin',
-        'is_parent',
+    ];
+
+    protected $appends = [
+		'profile',
     ];
 
     /**
@@ -67,8 +48,6 @@ class User extends Authenticatable
      */
     protected $casts = [
         'is_admin' => 'boolean',
-		'is_parent' => 'boolean',
-        'is_deleted' => 'boolean',
         'email_verified_at' => 'datetime',
     ];
 
@@ -82,9 +61,12 @@ class User extends Authenticatable
     	return $this->hasMany('App\Models\SocialiteAccount', 'uuid', 'uuid');
 	}
 
-    public function sync()
+    public function getProfileAttribute()
     {
-        $sso = new SSO();
-        // todo
+        if ($this->user_type == 'Teacher') {
+            return Teacher::find($this->uuid);
+        } else {
+            return Student::find($this->uuid);
+        }
     }
 }
