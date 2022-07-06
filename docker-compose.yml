@@ -26,7 +26,7 @@ services:
       MEILISEARCH_HOST: http://melisearch:7700
       MEILISEARCH_KEY: masterKey
     volumes:
-      - www:/var/www/html
+      - ./:/var/www/html
     networks:
       - backend
     depends_on:
@@ -48,7 +48,7 @@ services:
       MEILI_MASTER_KEY: masterKey
       MEILI_ENV: production
     volumes:
-      - www:/meili_data
+      - ./:/meili_data
     networks:
       - backend
     healthcheck:
@@ -85,6 +85,3 @@ services:
 networks:
   backend:
     driver: bridge
-volumes:
-  www:
-    external: true
