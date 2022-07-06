@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', '校園E化服務網'),
 
     /*
     |--------------------------------------------------------------------------
@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('TZ', 'UTC'),
 
     /*
     |--------------------------------------------------------------------------
@@ -82,7 +82,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'tw',
 
     /*
     |--------------------------------------------------------------------------
@@ -108,7 +108,7 @@ return [
     |
     */
 
-    'faker_locale' => 'en_US',
+    'faker_locale' => 'zh_TW',
 
     /*
     |--------------------------------------------------------------------------
@@ -139,8 +139,8 @@ return [
     */
 
     'maintenance' => [
-        'driver' => 'file',
-        // 'store'  => 'redis',
+        'driver' => 'cache',
+        'store'  => 'redis',
     ],
 
     /*
@@ -191,10 +191,11 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
+        App\Providers\TpedussoServiceProvider::class,
 
     ],
 
@@ -210,7 +211,8 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        // 'ExampleClass' => App\Example\ExampleClass::class,
+        'Log' => Illuminate\Support\Facades\Log::class,
+        'SSO' => App\Providers\TpedussoServiceProvider::class,
     ])->toArray(),
 
 ];
