@@ -29,11 +29,12 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('mobile')->nullable();
             $table->string('telephone')->nullable();
-            $table->string('address', 255)->nullable();
-            $table->string('www', 255)->nullable();
-            $table->string('character', 255)->nullable();
-            $table->timestamp('fetch_date')->nullable();
+            $table->text('address')->nullable();
+            $table->text('www')->nullable();
+            $table->text('character')->nullable();
+            $table->timestamp('fetch_date')->useCurrent();
             $table->boolean('is_deleted')->default(0);
+            $table->primary('uuid');
         });
     }
 
