@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('students', function (Blueprint $table) {
-            $table->uuid('uuid')->unique();
+            $table->uuid('uuid')->primary();
             $table->char('idno',10)->unique();
             $table->string('account')->unique();
             $table->string('sn');
@@ -30,9 +30,8 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->text('www')->nullable();
             $table->text('character')->nullable();
-            $table->timestamp('fetch_date')->useCurrent();
+            $table->timestamp('fetch_date')->useCurrentOnUpdate();
             $table->boolean('is_deleted')->default(0);
-            $table->primary('uuid');
         });
     }
 

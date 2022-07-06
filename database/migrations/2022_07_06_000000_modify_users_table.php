@@ -14,9 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->uuid('uuid')->unique()->after('id')->change();
-            $table->string('user_type')->after('uuid')->change();
-            $table->boolean('is_admin')->change();
+            $table->after('id', function (Blueprint $table) {
+                $table->uuid('uuid')->unique();
+                $table->string('user_type');
+            });
+            $table->boolean('is_admin');
         });
     }
 
