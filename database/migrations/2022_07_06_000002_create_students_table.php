@@ -30,7 +30,7 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->text('www')->nullable();
             $table->text('character')->nullable();
-            $table->timestamp('fetch_date')->useCurrentOnUpdate();
+            $table->timestamp();
             $table->boolean('is_deleted')->default(0);
         });
     }

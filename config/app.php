@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Facade;
 
 return [
 
+    'expired_days' => 30,
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

@@ -11,6 +11,8 @@ class Student extends Model
 
 	protected $table = 'students';
 	protected $primaryKey = 'uuid';
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -49,7 +51,7 @@ class Student extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class, 'uuid', 'uuid')->withDefault();
+        return $this->belongsTo('App\Models\User', 'uuid', 'uuid')->withDefault();
     }
 
     public function sync()
@@ -60,7 +62,7 @@ class Student extends Model
 
     public function expired()
 	{
-    	return Carbon::today() > new Carbon($this->fetch_date);
+    	return Carbon::today() > new Carbon($this->updated_at)->addDays(config('app.expired_days'));
 	}
 
 }
