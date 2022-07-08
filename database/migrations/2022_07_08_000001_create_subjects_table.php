@@ -13,9 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('subjects', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->string('unit_id')->index();
             $table->string('name');
             $table->timestamp();
         });
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('subjects');
     }
 };

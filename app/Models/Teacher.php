@@ -56,6 +56,26 @@ class Teacher extends Model
         return $this->belongsTo('App\Models\User', 'uuid', 'uuid')->withDefault();
     }
 
+    public function units()
+	{
+    	return $this->belongsToMany('App\Models\Unit', 'jobs', 'uuid', 'unit_id');
+	}
+
+    public function roles()
+	{
+    	return $this->belongsToMany('App\Models\Role', 'jobs', 'uuid', 'role_id');
+	}
+
+    public function subjects()
+	{
+    	return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subj_id');
+	}
+    
+    public function classrooms()
+	{
+    	return $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id');
+	}
+
     public function sync()
     {
         $sso = new SSO();

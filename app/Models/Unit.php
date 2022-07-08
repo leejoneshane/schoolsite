@@ -25,7 +25,12 @@ class Unit extends Model
 
     public function roles()
     {
-        return $this->hasMany('App\Models\Role', 'dept_id', 'id');
+        return $this->hasMany('App\Models\Role', 'unit_id', 'id');
+    }
+
+    public function teachers()
+    {
+        return $this->belongsToMany('App\Models\Teacher', 'jobs', 'unit_id', 'uuid');
     }
 
     public function sync()

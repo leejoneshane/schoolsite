@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Providers\TpedussoServiceProvider as SSO;
 
-class Role extends Model
+class Subject extends Model
 {
 
-	protected $table = 'roles';
+	protected $table = 'subjects';
 	protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -20,18 +20,17 @@ class Role extends Model
      */
     protected $fillable = [
         'id',
-        'unit_id',
         'name',
     ];
 
-    public function unit()
-    {
-        return $this->belongsTo('App\Models\Unit', 'id', 'unit_id');
-    }
-
     public function teachers()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'jobs', 'role_id', 'uuid');
+        return $this->belongsToMany('App\Models\Teacher', 'assigment', 'subj_id', 'uuid');
+    }
+
+    public function classrooms()
+    {
+        return $this->belongsToMany('App\Models\Classroom', 'assigment', 'subj_id', 'class_id');
     }
 
     public function sync()

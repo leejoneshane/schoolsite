@@ -5,13 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Providers\TpedussoServiceProvider as SSO;
 
-class Role extends Model
+class Classroom extends Model
 {
 
-	protected $table = 'roles';
+	protected $table = 'classrooms';
 	protected $primaryKey = 'id';
     public $incrementing = false;
-    protected $keyType = 'string';
+    protected $keyType = 'integer';
 
     /**
      * The attributes that are mass assignable.
@@ -20,18 +20,23 @@ class Role extends Model
      */
     protected $fillable = [
         'id',
-        'unit_id',
+        'tutor_id',
         'name',
     ];
 
-    public function unit()
+    public function tutor()
     {
-        return $this->belongsTo('App\Models\Unit', 'id', 'unit_id');
+        return $this->hasOne('App\Models\Teacher', 'uuid', 'tutor_id');
     }
 
     public function teachers()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'jobs', 'role_id', 'uuid');
+        return $this->belongsToMany('App\Models\Teacher', 'assigment', 'class_id', 'uuid');
+    }
+
+    public function subjects()
+    {
+        return $this->belongsToMany('App\Models\Subject', 'assigment', 'class_id', 'subj_id');
     }
 
     public function sync()
