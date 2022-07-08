@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Providers\TpedussoServiceProvider as SSO;
+use App\Providers\TpeduServiceProvider as SSO;
 
 class Subject extends Model
 {
@@ -25,12 +25,12 @@ class Subject extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'assigment', 'subj_id', 'uuid');
+        return $this->belongsToMany('App\Models\Teacher', 'assigment', 'subject_id', 'uuid');
     }
 
     public function classrooms()
     {
-        return $this->belongsToMany('App\Models\Classroom', 'assigment', 'subj_id', 'class_id');
+        return $this->belongsToMany('App\Models\Classroom', 'assigment', 'subject_id', 'class_id');
     }
 
     public function sync()

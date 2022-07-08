@@ -13,10 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('assignment', function (Blueprint $table) {
-            $table->uuid('uuid')->primary();
-            $table->string('subject_id')->index();
-            $table->string('class_id')->index();
+        Schema::create('grades', function (Blueprint $table) {
+            $table->string('id')->primary();
+            $table->string('name');
             $table->timestamp();
         });
     }
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('assignment');
+        Schema::dropIfExists('grades');
     }
 };

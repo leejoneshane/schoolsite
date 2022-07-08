@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Providers\TpedussoServiceProvider as SSO;
+use App\Providers\TpeduServiceProvider as SSO;
 
 class Classroom extends Model
 {
@@ -11,7 +11,7 @@ class Classroom extends Model
 	protected $table = 'classrooms';
 	protected $primaryKey = 'id';
     public $incrementing = false;
-    protected $keyType = 'integer';
+    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -20,13 +20,24 @@ class Classroom extends Model
      */
     protected $fillable = [
         'id',
-        'tutor_id',
+        'grade_id',
+        'tutor',
         'name',
     ];
 
+    public function grade()
+    {
+        return $this->belongsTo('App\Models\Grade', 'id', 'grade');
+    }
+
     public function tutor()
     {
-        return $this->hasOne('App\Models\Teacher', 'uuid', 'tutor_id');
+        return $this->hasOne('App\Models\Teacher', 'uuid', 'tutor');
+    }
+
+    public function students()
+    {
+        return $this->hasMany('App\Models\Student', 'class_id', 'id');
     }
 
     public function teachers()
@@ -36,7 +47,7 @@ class Classroom extends Model
 
     public function subjects()
     {
-        return $this->belongsToMany('App\Models\Subject', 'assigment', 'class_id', 'subj_id');
+        return $this->belongsToMany('App\Models\Subject', 'assigment', 'class_id', 'subject_id');
     }
 
     public function sync()

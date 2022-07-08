@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use App\Providers\TpedussoServiceProvider as SSO;
+use App\Providers\TpeduServiceProvider as SSO;
 
 class Student extends Model
 {
@@ -26,7 +26,7 @@ class Student extends Model
         'sn',
         'gn',
         'realname',
-        'class',
+        'class_id',
         'seat',
         'birthdate',
         'gender',
@@ -36,7 +36,6 @@ class Student extends Model
         'address',
         'www',
         'character',
-        'fetch_date',
         'is_deleted',
     ];
 
@@ -51,7 +50,12 @@ class Student extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\Models\User', 'uuid', 'uuid')->withDefault();
+        return $this->hasOne('App\Models\User', 'uuid', 'uuid')->withDefault();
+    }
+
+    public function classroom()
+    {
+        return $this->belongsTo('App\Models\Classroom', 'id', 'class_id');
     }
 
     public function sync()

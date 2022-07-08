@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Providers\TpedussoServiceProvider as SSO;
+use App\Providers\TpeduServiceProvider as SSO;
 
 class Role extends Model
 {

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
-use App\Providers\TpedussoServiceProvider as SSO;
+use App\Providers\TpeduServiceProvider as SSO;
 
 class Teacher extends Model
 {
@@ -26,8 +26,8 @@ class Teacher extends Model
         'sn',
         'gn',
         'realname',
-        'dept_id',
-        'dept_name',
+        'unit_id',
+        'unit_name',
         'role_id',
         'role_name',
         'birthdate',
@@ -38,7 +38,6 @@ class Teacher extends Model
         'address',
         'www',
         'character',
-        'fetch_date',
         'is_deleted',
     ];
 
@@ -68,7 +67,7 @@ class Teacher extends Model
 
     public function subjects()
 	{
-    	return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subj_id');
+    	return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id');
 	}
     
     public function classrooms()

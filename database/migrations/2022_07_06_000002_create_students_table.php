@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('sn');
             $table->string('gn');
             $table->string('realname');
-            $table->string('class');
+            $table->string('class_id');
             $table->string('seat');
             $table->timestamp('birthdate')->nullable();
             $table->integer('gender');

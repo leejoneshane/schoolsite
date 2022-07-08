@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Providers\TpeduServiceProvider as SSO;
 
-class Unit extends Model
+class Grade extends Model
 {
 
-	protected $table = 'units';
+	protected $table = 'grades';
 	protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
@@ -23,14 +23,9 @@ class Unit extends Model
         'name',
     ];
 
-    public function roles()
+    public function classrooms()
     {
-        return $this->hasMany('App\Models\Role', 'unit_id', 'id');
-    }
-
-    public function teachers()
-    {
-        return $this->belongsToMany('App\Models\Teacher', 'jobs', 'unit_id', 'uuid');
+        return $this->hasMany('App\Models\Classroom', 'grade_id', 'id');
     }
 
     public function sync()

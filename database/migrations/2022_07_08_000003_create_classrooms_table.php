@@ -15,8 +15,9 @@ return new class extends Migration
     {
         Schema::create('classrooms', function (Blueprint $table) {
             $table->string('id')->primary();
-            $table->uuid('tutor_id')->index();
+            $table->string('grade_id')->index();
             $table->string('name');
+            $table->uuid('tutor')->index();
             $table->timestamp();
         });
     }

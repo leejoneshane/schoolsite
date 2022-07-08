@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('sn');
             $table->string('gn');
             $table->string('realname');
-            $table->string('dept_id');
-            $table->string('dept_name');
+            $table->string('unit_id');
+            $table->string('unit_name');
             $table->string('role_id');
             $table->string('role_name');
             $table->timestamp('birthdate')->nullable();
