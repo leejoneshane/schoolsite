@@ -38,6 +38,7 @@ return [
         'callback' => env('TPEDU_CALLBACK'),
         'token' => env('TPEDU_TOKEN'),
         'school' => env('SCHOOL'),
+        'base_unit' => '科任,級任',
         'endpoint' => [
             'token' => 'oauth/token',
             'login': 'oauth/authorize',

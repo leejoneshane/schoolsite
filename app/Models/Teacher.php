@@ -30,6 +30,7 @@ class Teacher extends Model
         'unit_name',
         'role_id',
         'role_name',
+        'tutor_class',
         'birthdate',
         'gender',
         'email',
@@ -78,7 +79,8 @@ class Teacher extends Model
     public function sync()
     {
         $sso = new SSO();
-        // todo
+        $sso->fetch_user(self::$uuid);
+        self::fresh();
     }
 
     public function expired()
