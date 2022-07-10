@@ -51,6 +51,12 @@ class Teacher extends Model
         'is_deleted' => 'boolean',
     ];
 
+    public function __get($name) //testing
+    {
+        if ($this->expired()) $this->sync();
+        return parent::__get();
+    }
+
     public function user()
     {
         return $this->belongsTo('App\Models\User', 'uuid', 'uuid')->withDefault();
@@ -85,6 +91,6 @@ class Teacher extends Model
 
     public function expired()
 	{
-    	return Carbon::today() > new Carbon($this->updated_at)->addDays(config('app.expired_days'));
+    	return Carbon::today() > new Carbon(self::updated_at)->addDays(config('app.expired_days'));
 	}
 }

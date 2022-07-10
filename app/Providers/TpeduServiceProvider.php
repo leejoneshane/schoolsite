@@ -195,6 +195,26 @@ class TpeduServiceProvider extends ServiceProvider
 		}
 	}
 
+	function sync_teachers()
+	{
+    	$uuids = api('all_teachers');
+    	if ($uuids && is_array($uuids)) {
+        	foreach ($uuids as $uuid) {
+            	fetch_user($uuid);
+        	}
+    	}
+	}
+
+	function sync_students($cls)
+	{
+    	$uuids = api('students_of_class', ['cls' => $cls]);
+    	if ($uuids && is_array($uuids)) {
+        	foreach ($uuids as $uuid) {
+            	fetch_user($uuid);
+        	}
+    	}
+	}
+
 	public function fetch_user($uuid)
 	{
 		$user = api('one_user', ['uuid' => $uuid]);
@@ -236,7 +256,7 @@ class TpeduServiceProvider extends ServiceProvider
 							$dept_name = get_unit_name($a[1]);
 							$ckf = 0;
 							foreach ($keywords as $k) {
-								if (!(strpos($dept_name, $k) === false)) {
+								if (!(mb_strpos($dept_name, $k) === false)) {
 									$ckf = 1;
 								}
 							}
@@ -259,7 +279,7 @@ class TpeduServiceProvider extends ServiceProvider
 							$role_name = get_role_name($a[2]);
 							$ckf = 0;
 							foreach ($keywords as $k) {
-								if (!(strpos($role_name, $k) === false)) {
+								if (!(mb_strpos($role_name, $k) === false)) {
 									$ckf = 1;
 								}
 							}
@@ -365,5 +385,73 @@ class TpeduServiceProvider extends ServiceProvider
 		return false;
 	}
 
+	function sync_units()
+	{
+		DB::table('units')->delete();
+		$ous = api('all_units');
+		if ($ous) {
+			foreach ($ous as $o) {
+				$fields = [
+					'id' => $o->ou,
+					'name' => $o->description,
+				];
+				DB::table('units')->updateOrInsert($fields);;
+			}
+		}
+	}
+	function sync_roles()
+	{
+		DB::table('roles')->delete();
+		$ous = api('all_units');
+		if ($ous) {
+			foreach ($ous as $o) {
+				$roles = api('roles_of_unit', ['ou' => $o->ou]);
+				if ($roles) {
+					foreach ($roles as $r) {
+						$fields = [
+							'id' => $r->cn,
+							'unit_id' => $o->ou,
+							'name' => $r->description,
+						];
+						DB::table(('roles')->updateOrInsert($fields);
+					}
+				}
+			}
+		}
+	}
+	function sync_subjects()
+	{
+		DB::table(('subjects')->delete();
+		$subjects = api('all_subjects');
+		if ($subjects) {
+			var $n = 1;
+			foreach ($subjects as $s) {
+				$fields = [
+					'id' => 'subj' . ($n<10) ? "0$n" : "$n",
+					'name' => $s->description,
+				];
+				$n += 1;
+				DB::table('subjects')->updateOrInsert($fields);
+			}
+		}
+	}
+	function sync_classes()
+	{
+		DB::table('classes')->delete();
+		$classes = api('all_classes');
+		if ($classes) {
+			foreach ($classes as $c) {
+				$fields = [
+					'id' => $c->ou,
+					'grade_id' => $c->grade,
+					'name' => $c->description,
+				];
+				if (isset($c->tutor[0])) {
+					$fields['tutor'] = $c->tutor[0];
+				}
+				DB::table('classes')->updateOrInsert($fields);
+			}
+		}
+	}
 
 }
