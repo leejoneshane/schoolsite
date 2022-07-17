@@ -197,7 +197,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
-        App\Providers\TpedussoServiceProvider::class,
+        App\Providers\TpeduServiceProvider::class,
 
     ],
 
