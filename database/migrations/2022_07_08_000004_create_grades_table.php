@@ -17,7 +17,6 @@ return new class extends Migration
         Schema::create('grades', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('name');
-            $table->timestamp();
         });
         DB::table('grades')->insert([
             ['id' => '1', 'name' => '一年級'],

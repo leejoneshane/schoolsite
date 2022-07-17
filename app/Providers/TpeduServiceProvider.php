@@ -21,12 +21,12 @@ class TpeduServiceProvider extends ServiceProvider
     public function __construct()
     {
         if (is_null(self::$oauth)) {
-            self::$oauth = new Http\Client([
+            self::$oauth = new Http([
                 'verify' => false,
                 'base_uri' => config('services.tpedu.server'),
             ]);
 		}
-        self::$seme = $this->seme();
+        self::$seme = $this->current_seme();
     }
 
 	public function current_seme()
@@ -53,11 +53,6 @@ class TpeduServiceProvider extends ServiceProvider
         	return false;
     	}
 	}
-
-	public public function error()
-    {
-        return self::$error;
-    }
 
 	public function get_tokens($auth_code)
 	{
@@ -183,7 +178,7 @@ class TpeduServiceProvider extends ServiceProvider
 			$dataapi = str_replace($search, $values, $dataapi);
 		}
 		$response = self::$oauth->get($dataapi, [
-			'headers' => ['Authorization' => 'Bearer ' . config('services.tpedu.token'),
+			'headers' => ['Authorization' => 'Bearer ' . config('services.tpedu.token')],
 			'http_errors' => false,
 		]);
 		$json = json_decode($response->getBody());
@@ -395,7 +390,7 @@ class TpeduServiceProvider extends ServiceProvider
 					'id' => $o->ou,
 					'name' => $o->description,
 				];
-				DB::table('units')->updateOrInsert($fields);;
+				DB::table('units')->updateOrInsert($fields);
 			}
 		}
 	}
@@ -413,7 +408,7 @@ class TpeduServiceProvider extends ServiceProvider
 							'unit_id' => $o->ou,
 							'name' => $r->description,
 						];
-						DB::table(('roles')->updateOrInsert($fields);
+						DB::table('roles')->updateOrInsert($fields);
 					}
 				}
 			}
@@ -421,10 +416,10 @@ class TpeduServiceProvider extends ServiceProvider
 	}
 	function sync_subjects()
 	{
-		DB::table(('subjects')->delete();
+		DB::table('subjects')->delete();
 		$subjects = api('all_subjects');
 		if ($subjects) {
-			var $n = 1;
+			$n = 1;
 			foreach ($subjects as $s) {
 				$fields = [
 					'id' => 'subj' . ($n<10) ? "0$n" : "$n",

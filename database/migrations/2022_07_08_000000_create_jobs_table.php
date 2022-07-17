@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('uuid')->primary();
             $table->string('unit_id')->index();
             $table->string('role_id')->index();
-            $table->timestamp();
+            $table->timestamps();
         });
     }
 

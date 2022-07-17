@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('id')->primary();
             $table->string('unit_id')->index();
             $table->string('name');
-            $table->timestamp();
+            $table->timestamps();
         });
     }
 

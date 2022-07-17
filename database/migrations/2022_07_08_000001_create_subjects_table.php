@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('name');
-            $table->timestamp();
+            $table->timestamps();
         });
     }
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->uuid('uuid')->primary();
             $table->string('subject_id')->index();
             $table->string('class_id')->index();
-            $table->timestamp();
+            $table->timestamps();
         });
     }
 

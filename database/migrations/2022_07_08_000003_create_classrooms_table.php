@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('grade_id')->index();
             $table->string('name');
             $table->uuid('tutor')->index();
-            $table->timestamp();
+            $table->timestamps();
         });
     }
 
