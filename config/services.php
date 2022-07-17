@@ -66,4 +66,14 @@ return [
         ],
     ],
 
+    'ad' => [
+        'server' => env('AD_HOST'),
+        'port' => env('AD_PORT', 636),
+        'admin' => env('AD_ADMIN', 'administrator'),
+        'password' => env('AD_PASS'),
+        'base_dn' => env('AD_BASE_DN'),
+        'users_dn' => env('AD_USERS_DN'),
+        'ca_file' => env('AD_CA_FILE'),
+    ],
+
 ];
