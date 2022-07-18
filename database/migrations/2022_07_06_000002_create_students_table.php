@@ -31,7 +31,7 @@ return new class extends Migration
             $table->text('www')->nullable();
             $table->text('character')->nullable();
             $table->timestamps();
-            $table->boolean('is_deleted')->default(0);
+            $table->softDeletes();
         });
     }
 

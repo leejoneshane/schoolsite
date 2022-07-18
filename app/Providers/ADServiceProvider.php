@@ -29,9 +29,9 @@ class ADServiceProvider extends ServiceProvider
 			ldap_set_option(null, LDAP_OPT_X_TLS_CACERTFILE, $ca_path);
 		}
 		self::$connect = @ldap_connect("ldaps://$ad_host:$ad_port");
-		ldap_set_option($ad_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-		ldap_set_option($ad_conn, LDAP_OPT_REFERRALS, 0);
-		if ($ad_conn) {
+		ldap_set_option(self::$connect, LDAP_OPT_PROTOCOL_VERSION, 3);
+		ldap_set_option(self::$connect, LDAP_OPT_REFERRALS, 0);
+		if (self::$connect) {
 			$ad_user = config('services.ad.admin');
 			$ad_pass = config('services.ad.password');
 			self::$bind = @ldap_bind(self::$connect, $ad_user, $ad_pass);

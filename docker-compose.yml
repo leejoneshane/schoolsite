@@ -44,6 +44,7 @@ services:
       GOOGLE_DOMAIN: gsuite.domain
       GOOGLE_AUTH_CONFIG: /var/www/html/storage/google.json
       GOOGLE_ADMIN: admin@gsuite.domain
+      GOOGLE_CALENDAR_OWNER: calendar@gsuite.domain
       GOOGLE_TEACHER_ORGUNIT: /
       GOOGLE_STUDENT_ORGUNIT: /students
     volumes:

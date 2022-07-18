@@ -80,6 +80,7 @@ return [
         'domain' => env('GOOGLE_DOMAIN'),
         'auth_config' => env('GOOGLE_AUTH_CONFIG'),
         'admin' => env('GOOGLE_ADMIN'),
+        'calendar' => env('GOOGLE_CALENDAR_OWNER'),
         'student_orgunit' => env('GOOGLE_STUDENT_ORGUNIT'),
         'teacher_orgunit' => env('GOOGLE_TEACHER_ORGUNIT'),
     ],

@@ -5,6 +5,7 @@
 /storage/*.json
 /data.ms
 /vendor
+!/vendor/rlanvin/php-rrule/src/i18n/tw.php
 /.idea
 /.vscode
 .env

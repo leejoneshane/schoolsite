@@ -7,6 +7,7 @@
     "require": {
         "php": "^8.0.2",
         "doctrine/dbal": "^3.3",
+        "google/apiclient": "^2.12",
         "guzzlehttp/guzzle": "^7.2",
         "http-interop/http-factory-guzzle": "^1.2",
         "laravel/framework": "^9.19",
@@ -16,7 +17,8 @@
         "laravel/socialite": "^5.5",
         "laravel/telescope": "^4.9",
         "laravel/tinker": "^2.7",
-        "meilisearch/meilisearch-php": "^0.24.0"
+        "meilisearch/meilisearch-php": "^0.24.0",
+        "rlanvin/php-rrule": "^2.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

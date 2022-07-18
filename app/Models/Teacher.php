@@ -4,11 +4,14 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Providers\TpeduServiceProvider as SSO;
 
 class Teacher extends Model
 {
 
+    use SoftDeletes;
+    
 	protected $table = 'teachers';
 	protected $primaryKey = 'uuid';
     public $incrementing = false;
