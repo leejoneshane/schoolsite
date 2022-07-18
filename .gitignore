@@ -5,7 +5,6 @@
 /storage/*.json
 /data.ms
 /vendor
-!/vendor/rlanvin/php-rrule/src/i18n/tw.php
 /.idea
 /.vscode
 .env
@@ -18,3 +17,5 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 supervisord.pid
+composer.lock
+!tw.php
