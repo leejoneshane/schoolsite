@@ -53,6 +53,11 @@ class Student extends Model
         return $this->hasOne('App\Models\User', 'uuid', 'uuid')->withDefault();
     }
 
+    public function gmails()
+	{
+    	return $this->hasMany('App\Models\Gsuite', 'uuid', 'uuid');
+	}
+    
     public function classroom()
     {
         return $this->belongsTo('App\Models\Classroom', 'id', 'class_id');
@@ -66,7 +71,8 @@ class Student extends Model
 
     public function expired()
 	{
-    	return Carbon::today() > new Carbon($this->updated_at)->addDays(config('app.expired_days'));
+        $expire = new Carbon(self::$updated_at);
+    	return Carbon::today() > $expire->addDays(config('app.expired_days'));
 	}
 
 }

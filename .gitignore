@@ -2,6 +2,7 @@
 /public/vendor
 /storage/*.cer
 /storage/*.key
+/storage/*.json
 /data.ms
 /vendor
 /.idea

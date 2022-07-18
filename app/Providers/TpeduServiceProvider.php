@@ -72,7 +72,7 @@ class TpeduServiceProvider extends ServiceProvider
 			self::$access_token = $data->access_token;
 			self::$refresh_token = $data->refresh_token;
 		} else {
-			Log::error('oauth2 token response =>'.$response->getBody());	
+			Log::notice('oauth2 token response =>'.$response->getBody());	
 			return false;
 		}
 	}
@@ -96,7 +96,7 @@ class TpeduServiceProvider extends ServiceProvider
             	self::$access_token = $data->access_token;
             	self::$refresh_token = $data->refresh_token;
         	} else {
-            	Log::error('oauth2 token response =>'.$response->getBody());
+            	Log::notice('oauth2 token response =>'.$response->getBody());
             	return false;
         	}
     	}
@@ -119,7 +119,7 @@ class TpeduServiceProvider extends ServiceProvider
 	public function who()
 	{
 		if (self::$access_token) {
-			$response = self::$oauth->get($config->get('services.tpedu.endpoint.user'), [
+			$response = self::$oauth->get(config('services.tpedu.endpoint.user'), [
 				'headers' => [ 'Authorization' => 'Bearer '.self::$access_token ],
 			]);
 			$user = json_decode($response->getBody());
@@ -136,7 +136,7 @@ class TpeduServiceProvider extends ServiceProvider
 	public function profile()
 	{
 		if (self::$access_token) {
-			$response = self::$oauth->get($config->get('services.tpedu.endpoint.profile'), [
+			$response = self::$oauth->get(config('services.tpedu.endpoint.profile'), [
 				'headers' => [ 'Authorization' => 'Bearer ' . self::$access_token ],
 			]);
 			$user = json_decode($response->getBody());
@@ -166,7 +166,7 @@ class TpeduServiceProvider extends ServiceProvider
 				}
 				$dataapi = substr($dataapi, 0, -1);
 			}
-			$dataapi = str_replace('{school}', $config->get('services.tpedu.school'), $dataapi);
+			$dataapi = str_replace('{school}', config('services.tpedu.school'), $dataapi);
 		} else {
 			$replacement['school'] = config('services.tpedu.school');
 			$search = [];
@@ -242,7 +242,7 @@ class TpeduServiceProvider extends ServiceProvider
 				DB::table('jobs')->where('uuid', $uuid)->dalete();
 				DB::table('assignment')->where('uuid', $uuid)->delete();	
 				if (isset($user->ou) && isset($user->title)) {
-					$sdept = $config->get('sub_dept');
+					$sdept = config('sub_dept');
 					$keywords = explode(',', $sdept);
 					if (is_array($user->ou)) {
 						foreach ($user->ou as $ou_pair) {

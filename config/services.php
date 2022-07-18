@@ -76,4 +76,12 @@ return [
         'ca_file' => env('AD_CA_FILE'),
     ],
 
+    'google' => [
+        'domain' => env('GOOGLE_DOMAIN'),
+        'auth_config' => env('GOOGLE_AUTH_CONFIG'),
+        'admin' => env('GOOGLE_ADMIN'),
+        'student_orgunit' => env('GOOGLE_STUDENT_ORGUNIT'),
+        'teacher_orgunit' => env('GOOGLE_TEACHER_ORGUNIT'),
+    ],
+
 ];

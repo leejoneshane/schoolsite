@@ -51,11 +51,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function gmails()
-	{
-    	return $this->hasMany('App\Models\Gsuite', 'uuid', 'uuid');
-	}
-
 	public function socialite_accounts()
 	{
     	return $this->hasMany('App\Models\SocialiteAccount', 'uuid', 'uuid');

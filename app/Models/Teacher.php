@@ -59,38 +59,44 @@ class Teacher extends Model
 
     public function user()
     {
-        return $this->belongsTo('App\Models\User', 'uuid', 'uuid')->withDefault();
+        return $this->hasOne('App\Models\User', 'uuid', 'uuid')->withDefault();
     }
 
+    public function gmails()
+	{
+    	return $this->hasMany('App\Models\Gsuite', 'uuid', 'uuid');
+	}
+    
     public function units()
 	{
-    	return $this->belongsToMany('App\Models\Unit', 'jobs', 'uuid', 'unit_id');
+    	return $this->hasMany('App\Models\Unit', 'jobs', 'uuid', 'unit_id');
 	}
 
     public function roles()
 	{
-    	return $this->belongsToMany('App\Models\Role', 'jobs', 'uuid', 'role_id');
+    	return $this->hasMany('App\Models\Role', 'jobs', 'uuid', 'role_id');
 	}
 
     public function subjects()
 	{
-    	return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id');
+    	return $this->hasMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id');
 	}
     
     public function classrooms()
 	{
-    	return $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id');
+    	return $this->hasMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id');
 	}
 
     public function sync()
     {
         $sso = new SSO();
         $sso->fetch_user(self::$uuid);
-        self::fresh();
+        $this->fresh();
     }
 
     public function expired()
 	{
-    	return Carbon::today() > new Carbon(self::updated_at)->addDays(config('app.expired_days'));
+        $expire = new Carbon(self::$updated_at);
+    	return Carbon::today() > $expire->addDays(config('app.expired_days'));
 	}
 }

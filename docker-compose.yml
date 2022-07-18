@@ -41,6 +41,11 @@ services:
       AD_BASE_DN: DC=meps,DC=tp,DC=edu,DC=tw
       AD_USERS_DN: CN=users,DC=meps,DC=tp,DC=edu,DC=tw
       AD_CA_FILE: /var/www/html/storage/ad.cer
+      GOOGLE_DOMAIN: gsuite.domain
+      GOOGLE_AUTH_CONFIG: /var/www/html/storage/google.json
+      GOOGLE_ADMIN: admin@gsuite.domain
+      GOOGLE_TEACHER_ORGUNIT: /
+      GOOGLE_STUDENT_ORGUNIT: /students
     volumes:
       - ./:/var/www/html
     networks:
