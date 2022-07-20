@@ -72,12 +72,12 @@ class Teacher extends Model
     
     public function units()
 	{
-    	return $this->hasMany('App\Models\Unit', 'jobs', 'uuid', 'unit_id');
+    	return $this->hasMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id');
 	}
 
     public function roles()
 	{
-    	return $this->hasMany('App\Models\Role', 'jobs', 'uuid', 'role_id');
+    	return $this->hasMany('App\Models\Role', 'job_title', 'uuid', 'role_id');
 	}
 
     public function subjects()

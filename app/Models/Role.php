@@ -31,7 +31,7 @@ class Role extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'jobs', 'role_id', 'uuid');
+        return $this->belongsToMany('App\Models\Teacher', 'job_title', 'role_id', 'uuid');
     }
 
     public function sync()

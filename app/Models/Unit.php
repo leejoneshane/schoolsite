@@ -30,7 +30,7 @@ class Unit extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'jobs', 'unit_id', 'uuid');
+        return $this->belongsToMany('App\Models\Teacher', 'job_title', 'unit_id', 'uuid');
     }
 
     public function sync()

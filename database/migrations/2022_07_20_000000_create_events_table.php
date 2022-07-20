@@ -13,10 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('jobs', function (Blueprint $table) {
-            $table->uuid('uuid')->primary();
-            $table->string('unit_id')->index();
-            $table->string('role_id')->index();
+        Schema::create('events', function (Blueprint $table) {
+            $table->increments('id');
+			$table->string('unit_id');
+			$table->timestamp('start')->useCurrent();
+			$table->timestamp('end')->useCurrent();
+            $table->text('summary');
+            $table->string('location');
+            $table->string('calendar_id');
+            $table->string('event_id');
             $table->timestamps();
         });
     }
@@ -28,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('jobs');
+        Schema::dropIfExists('events');
     }
 };

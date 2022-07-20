@@ -239,7 +239,7 @@ class TpeduServiceProvider extends ServiceProvider
 				$m_role_id = $m_dept_id;
 				$m_role_name = $m_dept_name;
 			} else {
-				DB::table('jobs')->where('uuid', $uuid)->dalete();
+				DB::table('job_title')->where('uuid', $uuid)->dalete();
 				DB::table('assignment')->where('uuid', $uuid)->delete();	
 				if (isset($user->ou) && isset($user->title)) {
 					$sdept = config('sub_dept');
@@ -282,11 +282,11 @@ class TpeduServiceProvider extends ServiceProvider
 								$m_role_id = $a[2];
 								$m_role_name = $role_name;
 							}
-							$database->insert('tpedu_jobs')->fields([
+							DB::table('job_title')->insert([
 								'uuid' => $uuid,
 								'dept_id' => $a[1],
 								'role_id' => $a[2],
-							])->execute();
+							]);
 						}
 					} else {
 						$a = explode(',', $user->title);
@@ -294,11 +294,11 @@ class TpeduServiceProvider extends ServiceProvider
 						$m_role_id = $a[1];
 						$d = $user->titleName->$o[0];
 						$m_role_name = $d->name;
-						$database->insert('tpedu_jobs')->fields([
+						DB::table(job_title)->insert([
 							'uuid' => $uuid,
 							'dept_id' => $a[1],
 							'role_id' => $a[2],
-						])->execute();
+						]);
 					}
 				}
 				if (!empty($user->tpTutorClass)) {
