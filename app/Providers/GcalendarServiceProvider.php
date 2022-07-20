@@ -3,7 +3,10 @@
 namespace App\Providers;
 
 use Log;
+use Carbon\Carbon;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\DB;
+use App\Models\IcsEvent;
 
 class GcalendarServiceProvider extends ServiceProvider
 {
@@ -39,8 +42,15 @@ class GcalendarServiceProvider extends ServiceProvider
 	public function list_calendars()
 	{
 		try {
-			$cals = self::$calendar->calendarList->listCalendarList();
-			return $cals->getItems();
+			$cals = self::$calendar->calendarList->listCalendarList()->getItems();
+			DB::table('ics_calendars')->delete();
+			foreach ($cals as $cal) {
+				DB::table('ics_calendars')->Insert([
+					'id' => $cal->getId(),
+					'summary' => $cal->getSummary(),
+				]);
+			}
+			return $cals;
 		} catch (\Google_Service_Exception $e) {
 			Log::notice('google listCalendars:' . $e->getMessage());
 			return false;
@@ -132,7 +142,7 @@ class GcalendarServiceProvider extends ServiceProvider
 		try {
 			return self::$calendar->events->get($calendarId, $eventId);
 		} catch (\Google_Service_Exception $e) {
-			Log::notice("gs_getEvent($calendarId, $eventId):" . $e->getMessage());
+			Log::notice("google getEvent($calendarId, $eventId):" . $e->getMessage());
 			return false;
 		}
 	}
@@ -189,16 +199,14 @@ class GcalendarServiceProvider extends ServiceProvider
 		}
 	}
 	
-	public function sync_event($node)
+	public function sync_event(IcsEvent $node)
 	{
 		$calendar_id = $node->calendar_id;
 		$event_id = $node->event_id;
-		if (!empty($calendar_id) && !empty($event_id)) {
+		if (!is_null($event_id)) {
 			$event = $this->get_event($calendar_id, $event_id);
 			if (!$event) {
 				$event = new \Google_Service_Calendar_Event();
-				$calendar_id = '';
-				$event_id = '';
 			} else {
 				if ($event->getStatus() == 'cancelled') {
 					$event->setStatus('confirmed');
@@ -207,78 +215,40 @@ class GcalendarServiceProvider extends ServiceProvider
 		} else {
 			$event = new \Google_Service_Calendar_Event();
 		}
-		$event->setSummary($node->title);
-		if (!empty($node->memo)) {
-			$event->setDescription($node->memo);
+		$event->setSummary($node->summary);
+		if (!empty($node->description)) {
+			$event->setDescription($node->description);
 		}
-		if (!empty($node->place)) {
-			$event->setLocation($node->place);
+		if (!empty($node->location)) {
+			$event->setLocation($node->location);
 		}
-		$teachers = $node->attendees;
-		if (is_array($teachers) && count($teachers) > 0) {
-			$attendees = [];
-			foreach ($teachers as $uuid) {
-				if ($user = Teacher::find($uuid)) {
-					$attendee = new \Google_Service_Calendar_EventAttendee();
-					$attendee->setId($uuid);
-					$attendee->setEmail($user->email);
-					$attendee->setDisplayName($user->realname);
-					$attendees[] = $attendee;
-				}
-			}
-			if (count($attendees) > 0) {
-				$event->setAttendees($attendees);
-			}
-		}
-
-		$date_field = $config->get('field_date');
-		$date_array = $node->get($date_field)->getValue()[0];
-		$timezone = date_default_timezone_get();
-		$timezone_service = \Drupal::service('gevent.timezone_conversion_service');
-		$start_date = $timezone_service->utcToLocal($date_array['value'], $timezone, DATE_ATOM);
-		$end_date = $timezone_service->utcToLocal($date_array['end_value'], $timezone, DATE_ATOM);
+		$organizer = new \Google_Service_Calendar_EventOrganizer();
+		$organizer->setEmail(config('services.google.calendar'));
+		$organizer->setDisplayName($node->unit()->name);
+		$event->setOrganizer($organizer);
+		$start_date = Carbon::createFromTimestamp($node->start, env('TZ'));
+		$end_date = Carbon::createFromTimestamp($node->end, env('TZ'));
 		$event_start = new \Google_Service_Calendar_EventDateTime();
 		$event_end = new \Google_Service_Calendar_EventDateTime();
-		$event_start->setTimeZone($date_array['timezone']);
-		$event_end->setTimeZone($date_array['timezone']);
-		$all_day = (substr($start_date, 11, 8) == '00:00:00' && substr($end_date, 11, 8) == '23:59:59') ? true : false;
-		if ($all_day) {
-			$event_start->setDate(substr($start_date, 0, 10));
-			$event_end->setDate(substr($end_date, 0, 10));
+		$event_start->setTimeZone(env('TZ'));
+		$event_end->setTimeZone(env('TZ'));
+		if ($node->all_day) {
+			$event_start->setDate($start_date->toDateString());
+			$event_end->setDate($end_date->toDateString());
 		} else {
-			$event_start->setDateTime($start_date);
-			$event_end->setDateTime($end_date);
+			$event_start->setDateTime($start_date->toDateTimeString());
+			$event_end->setDateTime($end_date->toDateTimeString());
 		}
 		$event->setStart($event_start);
 		$event->setEnd($event_end);
-		if (!empty($date_array['rrule'])) {
-			$event->setRecurrence($date_array['rrule']);
-		}
-		if (!empty($calendar_id) && !empty($event_id)) {
-			$event = gs_updateEvent($calendar_id, $event_id, $event);
-			if ($config->get('calendar_taxonomy')) {
-				$taxonomy_field = $config->get('field_taxonomy');
-				$term = $node->get($taxonomy_field)->target_id;
-				$calendar_term = $config->get('calendar_term_'.$term) ?: 'none';
-				if (!empty($calendar_term) && $calendar_term != 'none') {
-					$event = gs_moveEvent($calendar_id, $event_id, $calendar_term);
-					$calendar_id = $calendar_term;
-				}
-			}
+		if (!empty($event_id)) {
+			$event = $this->update_event($calendar_id, $event_id, $event);
 		} else {
-			$calendar_id = $config->get('calendar_id');
-			if ($config->get('calendar_taxonomy')) {
-				$taxonomy_field = $config->get('field_taxonomy');
-				$term = $node->get($taxonomy_field)->target_id;
-				$calendar_term = $config->get('calendar_term_'.$term) ?: 'none';
-				if (!empty($calendar_term) && $calendar_term != 'none') {
-					$calendar_id = $calendar_term;
-				}
-			}
-			$event = gs_createEvent($calendar_id, $event);
+			$event = $this->create_event($calendar_id, $event);
 		}
 		if ($event instanceof \Google_Service_Calendar_Event) {
-			$event->calendar_id = $calendar_id;
+			$node->event_id = $event->getId();
+			$node->save();
 		}
 	
 		return $event;

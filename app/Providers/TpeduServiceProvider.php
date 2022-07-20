@@ -307,11 +307,11 @@ class TpeduServiceProvider extends ServiceProvider
 				if (isset($user->tpTeachClass)) {
 					foreach ($user->tpTeachClass as $assign_pair) {
 						$a = explode(',', $assign_pair);
-						$database->insert('tpedu_assignment')->fields([
+						DB::table('assignment')->insert([
 							'uuid' => $uuid,
 							'class_id' => $a[1],
 							'subject_id' => $a[2],
-						])->execute();
+						]);
 					}
 				}	
 			}

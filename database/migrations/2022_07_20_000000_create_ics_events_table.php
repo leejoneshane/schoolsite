@@ -13,15 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('events', function (Blueprint $table) {
+        Schema::create('ics_events', function (Blueprint $table) {
             $table->increments('id');
 			$table->string('unit_id');
+            $table->boolean('all_day');
 			$table->timestamp('start')->useCurrent();
 			$table->timestamp('end')->useCurrent();
             $table->text('summary');
-            $table->string('location');
-            $table->string('calendar_id');
-            $table->string('event_id');
+            $table->text('description')->nullable();
+            $table->string('location')->nullable();
+            $table->string('calendar_id')->index();
+            $table->string('event_id')->nullable();
             $table->timestamps();
         });
     }
@@ -33,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('events');
+        Schema::dropIfExists('ics_events');
     }
 };
