@@ -1,5 +1,4 @@
 /node_modules
-/public/vendor
 /storage/*.cer
 /storage/*.key
 /storage/*.json
