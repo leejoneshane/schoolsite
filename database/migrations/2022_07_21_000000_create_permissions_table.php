@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->timestamps();
         });
-        DB::table('permission')->insert([
+        DB::table('permissions')->insert([
             ['group' => 'perm', 'permission' => 'admin', 'description' => '管理所有權限', ],
             ['group' => 'perm', 'permission' => 'assign', 'description' => '授權或取消使用者的權限', ],
         ]);
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('permission');
+        Schema::dropIfExists('permissions');
     }
 };
