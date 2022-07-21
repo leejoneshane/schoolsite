@@ -48,7 +48,7 @@ services:
       GOOGLE_TEACHER_ORGUNIT: /
       GOOGLE_STUDENT_ORGUNIT: /students
     volumes:
-      - ./:/var/www/html
+      - ./html/:/var/www/html
     networks:
       - backend
     depends_on:
