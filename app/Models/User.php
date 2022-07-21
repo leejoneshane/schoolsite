@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
+use App\Models\Permission;
 
 class User extends Authenticatable
 {
@@ -59,9 +60,30 @@ class User extends Authenticatable
     public function getProfileAttribute()
     {
         if ($this->user_type == 'Teacher') {
-            return Teacher::find($this->uuid);
-        } else {
-            return Student::find($this->uuid);
+            return Teacher::find($this->uuid)->getAttributes();
         }
+        if ($this->user_type == 'Student') {
+            return Student::find($this->uuid)->getAttributes();
+        }
+        return [];
     }
+
+    public function givePermission($permission)
+    {
+        $perm = Permission::findByName($permission);
+        $perm->assignByUUID(self::$uuid);
+    }
+
+    public function takePermission($permission)
+    {
+        $perm = Permission::findByName($permission);
+        $perm->removeByUUID(self::$uuid);
+    }
+
+    public function hasPermission($permission)
+    {
+        $perm = Permission::findByName($permission);
+        return $perm->checkByUUID(self::$uuid);
+    }
+
 }
