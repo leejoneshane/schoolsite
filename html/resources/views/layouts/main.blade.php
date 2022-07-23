@@ -3,11 +3,15 @@
 <head>
     @include('layouts.partials.head')
 </head>
-<body>
+<body class="h-screen">
     @include('layouts.partials.header')
-    <main class="w-full`">
+    @include('layouts.partials.nav')
+    <div class="grid grid-cols-12 grid-flow-col gap-3">
+        @include('layouts.partials.aside')
+        <main class="mb-auto">
         @yield('content')
-    </main>
+        </main>
+    </div>
     @include('layouts.partials.footer')
 </body>
 </html>
