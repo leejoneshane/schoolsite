@@ -17,7 +17,6 @@ return [
                 'paths' => [
                     'resources/css/tailwind.css',
                     'resources/scripts/main.ts',
-                    'resources/js/app.js',
                 ],
                 'ignore' => '/\\.(d\\.ts|json)$/',
             ],
@@ -58,7 +57,7 @@ return [
     */
     'commands' => [
         'artisan' => [
-            'vite:tsconfig',
+            'vite:aliases',
             // 'typescript:generate'
         ],
         'shell' => [
