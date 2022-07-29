@@ -32,7 +32,7 @@ class IcsEvent extends Model
     public function toICS()
     {
         $event = Event::create(self::$summary)
-            ->organizer(config('services.google.calendar'), $this->unit()->name)
+            ->organizer(config('services.gsuite.calendar'), $this->unit()->name)
             ->createdAt(Carbon::createFromTimestamp(self::$created_at, env('TZ')))
             ->startsAt(Carbon::createFromTimestamp(self::$start, env('TZ')))
             ->endsAt(Carbon::createFromTimestamp(self::$end, env('TZ')));

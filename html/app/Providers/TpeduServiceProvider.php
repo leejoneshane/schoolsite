@@ -72,7 +72,8 @@ class TpeduServiceProvider extends ServiceProvider
 			self::$access_token = $data->access_token;
 			self::$refresh_token = $data->refresh_token;
 		} else {
-			Log::notice('oauth2 token response =>'.$response->getBody());	
+			self::$error = $response->getBody();
+			Log::notice('oauth2 token response =>'.self::$error);
 			return false;
 		}
 	}
@@ -96,7 +97,8 @@ class TpeduServiceProvider extends ServiceProvider
             	self::$access_token = $data->access_token;
             	self::$refresh_token = $data->refresh_token;
         	} else {
-            	Log::notice('oauth2 token response =>'.$response->getBody());
+				self::$error = $response->getBody();
+				Log::notice('oauth2 token response =>'.self::$error);
             	return false;
         	}
     	}
@@ -111,9 +113,15 @@ class TpeduServiceProvider extends ServiceProvider
 				'client_id' . '=' . config('services.tpedu.app') . '&' .
 				'redirect_uri' . '=' . config('services.tpedu.callback') . '&' .
 				'response_type=code' . '&' .
-				'scope=user'
+				'scope=user' . '&' .
+				'sub=laravel'
 			);
 		}
+	}
+
+	public function error()
+	{
+		return self::$error;
 	}
 
 	public function who()
@@ -126,7 +134,8 @@ class TpeduServiceProvider extends ServiceProvider
 			if ($response->getStatusCode() == 200) {
 				return User::where('uuid', $user->uuid)->first();
 			} else {
-				Log::error('oauth2 user response =>'.$response->getBody());
+				self::$error = $response->getBody();
+				Log::notice('oauth2 user response =>'.self::$error);
 				return false;
 			}
 		}
@@ -147,7 +156,8 @@ class TpeduServiceProvider extends ServiceProvider
 					return Teacher::find($user->uuid);					
 				}
 			} else {
-				Log::error('oauth2 profile response =>'.$response->getBody());
+				self::$error = $response->getBody();
+				Log::notice('oauth2 profile response =>'.self::$error);
 				return false;
 			}
 		}
@@ -185,7 +195,8 @@ class TpeduServiceProvider extends ServiceProvider
 		if ($response->getStatusCode() == 200) {
 			return $json;
 		} else {
-			Log::error('oauth2 api('.$dataapi.') response:'.$dataapi.'=>'.$response->getBody());
+			self::$error = $response->getBody();
+			Log::notice('oauth2 api('.$dataapi.') response =>'.self::$error);
 			return false;
 		}
 	}
@@ -378,6 +389,17 @@ class TpeduServiceProvider extends ServiceProvider
 			return true;
 		}
 		return false;
+	}
+
+	function user_type($uuid) {
+		$user = api('one_user', ['uuid' => $uuid]);
+		if ($user) {
+			if ($user->employeeType == '學生') {
+				return 'Student';
+			} else {
+				return 'Teacher';
+			}
+		}
 	}
 
 	function sync_units()

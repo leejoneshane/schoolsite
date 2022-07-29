@@ -22,8 +22,8 @@ class GcalendarServiceProvider extends ServiceProvider
 
 	public function init()
 	{
-		$path = config('services.google.auth_config');
-		$user_to_impersonate = config('services.google.calendar');
+		$path = config('services.gsuite.auth_config');
+		$user_to_impersonate = config('services.gsuite.calendar');
 		$scopes = [
             \Google_Service_Calendar::CALENDAR,
             \Google_Service_Calendar::CALENDAR_EVENTS,		];
@@ -223,7 +223,7 @@ class GcalendarServiceProvider extends ServiceProvider
 			$event->setLocation($node->location);
 		}
 		$organizer = new \Google_Service_Calendar_EventOrganizer();
-		$organizer->setEmail(config('services.google.calendar'));
+		$organizer->setEmail(config('services.gsuite.calendar'));
 		$organizer->setDisplayName($node->unit()->name);
 		$event->setOrganizer($organizer);
 		$start_date = Carbon::createFromTimestamp($node->start, env('TZ'));

@@ -1,4 +1,5 @@
 const colors = require('tailwindcss/colors')
+const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
 	content: [
@@ -24,6 +25,11 @@ module.exports = {
 			// => @media print { ... }
 		},
 		extend: {
+			fontFamily: {
+				'sans': ['Noto Sans TC', ...defaultTheme.fontFamily.sans],
+				'serif': ['Noto Serif TC', ...defaultTheme.fontFamily.serif],
+				'mono': ['cwTeXFangSong', ...defaultTheme.fontFamily.mono],
+			},
 		},
 	},
 	plugins: [

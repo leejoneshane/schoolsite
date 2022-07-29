@@ -31,6 +31,30 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'facebook' => [
+        'client_id'     => env('FACEBOOK_CLIENT_ID'),
+        'client_secret' => env('FACEBOOK_CLIENT_SECRET'),
+        'redirect'      => env('APP_URL') . '/login/facebook/callback',
+    ],
+
+    'google' => [
+        'client_id'     => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect'      => env('APP_URL') . '/login/google/callback',
+    ],
+
+    'yahoo' => [
+        'client_id'     => env('YAHOO_CLIENT_ID'),
+        'client_secret' => env('YAHOO_CLIENT_SECRET'),
+        'redirect'      => env('APP_URL') . '/login/yahoo/callback',
+    ],
+
+    'line' => [
+        'client_id'     => env('LINE_CLIENT_ID'),
+        'client_secret' => env('LINE_CLIENT_SECRET'),
+        'redirect'      => env('APP_URL') . '/login/line/callback',
+    ],
+
     'tpedu' => [
         'server' => 'https://ldap.tp.edu.tw',
         'app' => env('TPEDU_APP'),
@@ -76,7 +100,7 @@ return [
         'ca_file' => env('AD_CA_FILE'),
     ],
 
-    'google' => [
+    'gsuite' => [
         'domain' => env('GOOGLE_DOMAIN'),
         'auth_config' => env('GOOGLE_AUTH_CONFIG'),
         'admin' => env('GOOGLE_ADMIN'),

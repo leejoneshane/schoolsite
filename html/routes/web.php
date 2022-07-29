@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
 Auth::routes([ 'register' => false ]);
 
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('login/tpedu', 'TpeduController@redirect');
+Route::get('login/tpedu/callback', 'TpeduController@handleCallback');
+Route::get('login/{provider}', 'SocialiteController@redirect');
+Route::get('login/{provider}/callback', 'SocialiteController@handleCallback');

@@ -23,8 +23,8 @@ class GsuiteServiceProvider extends ServiceProvider
 
 	public function init()
 	{
-		$path = config('services.google.auth_config');
-		$user_to_impersonate = config('services.google.admin');
+		$path = config('services.gsuite.auth_config');
+		$user_to_impersonate = config('services.gsuite.admin');
 		$scopes = [
 			\Google_Service_Directory::ADMIN_DIRECTORY_ORGUNIT,
 			\Google_Service_Directory::ADMIN_DIRECTORY_USER,
@@ -104,7 +104,7 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function find_users($filter)
 	{
 		try {
-			$result = self::$directory->users->listUsers(['domain' => config('services.google.domain'), 'query' => $filter]);
+			$result = self::$directory->users->listUsers(['domain' => config('services.gsuite.domain'), 'query' => $filter]);
 			return $result->getUsers();
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google findUsers($filter):" . $e->getMessage());
@@ -115,7 +115,7 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function get_user($userKey)
 	{
 		if (!strpos($userKey, '@')) {
-			$userKey .= '@' . config('services.google.domain');
+			$userKey .= '@' . config('services.gsuite.domain');
 		}
 		try {
 			return self::$directory->users->get($userKey);
@@ -138,7 +138,7 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function update_user($userKey, \Google_Service_Directory_User $userObj)
 	{
 		if (!strpos($userKey, '@')) {
-			$userKey .= '@' . config('services.google.domain');
+			$userKey .= '@' . config('services.gsuite.domain');
 		}
 		try {
 			return self::$directory->users->update($userKey, $userObj);
@@ -151,7 +151,7 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function delete_user($userKey)
 	{
 		if (!strpos($userKey, '@')) {
-			$userKey .= '@' . config('services.google.domain');
+			$userKey .= '@' . config('services.gsuite.domain');
 		}
 		try {
 			return self::$directory->users->delete($userKey);
@@ -165,7 +165,7 @@ class GsuiteServiceProvider extends ServiceProvider
 	{
 		if ( !($t instanceof Student) || !($t instanceof Teacher) ) return false;
 		if (!strpos($userKey, '@')) {
-			$userKey .= '@' . config('services.google.domain');
+			$userKey .= '@' . config('services.gsuite.domain');
 		}
 		$config = \Drupal::config('gsync.settings');
 		if ($user = get_user($userKey)) {
@@ -242,8 +242,8 @@ class GsuiteServiceProvider extends ServiceProvider
 			$neworg->setTitle($t->classroom()->name . $t->seat . '號');
 			$neworg->setPrimary(true);
 			$orgs[] = $neworg;
-			if (config('services.google.student_orgunit')) {
-				$user->setOrgUnitPath(config('services.google.student_orgunit'));
+			if (config('services.gsuite.student_orgunit')) {
+				$user->setOrgUnitPath(config('services.gsuite.student_orgunit'));
 			}
 		} elseif ($t instanceof Teacher) {
 			$jobs = $t->roles();
@@ -258,8 +258,8 @@ class GsuiteServiceProvider extends ServiceProvider
 				$orgs[] = $neworg;
 			}
 			$user->setIsAdmin(true);
-			if (config('services.google.teacher_orgunit')) {
-				$user->setOrgUnitPath(config('services.google.teacher_orgunit'));
+			if (config('services.gsuite.teacher_orgunit')) {
+				$user->setOrgUnitPath(config('services.gsuite.teacher_orgunit'));
 			}
 		}
 		if (!empty($orgs)) {
@@ -319,7 +319,7 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function create_alias($userKey, $alias)
 	{
 		if (!strpos($userKey, '@')) {
-			$userKey .= '@' . config('services.google.domain');
+			$userKey .= '@' . config('services.gsuite.domain');
 		}
 		$email_alias = new \Google_Service_Directory_Alias();
 		$email_alias->setAlias($alias);
@@ -334,7 +334,7 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function list_aliases($userKey)
 	{
 		if (!strpos($userKey, '@')) {
-			$userKey .= '@' . config('services.google.domain');
+			$userKey .= '@' . config('services.gsuite.domain');
 		}
 		try {
 			return self::$directory->users_aliases->listUsersAliases($userKey);
@@ -347,7 +347,7 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function remove_alias($userKey, $alias)
 	{
 		if (!strpos($userKey, '@')) {
-			$userKey .= '@' . config('services.google.domain');
+			$userKey .= '@' . config('services.gsuite.domain');
 		}
 		try {
 			return self::$directory->users_aliases->delete($userKey, $alias);
@@ -360,7 +360,7 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function all_groups()
 	{
 		try {
-			return self::$directory->groups->listGroups(['domain' => config('services.google.domain')])->getGroups();
+			return self::$directory->groups->listGroups(['domain' => config('services.gsuite.domain')])->getGroups();
 		} catch (\Google_Service_Exception $e) {
 			Log::notice('google listGroups for All:' . $e->getMessage());
 			return false;
@@ -370,10 +370,10 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function list_groups($userKey)
 	{
 		if (!strpos($userKey, '@')) {
-			$userKey .= '@' . config('services.google.domain');
+			$userKey .= '@' . config('services.gsuite.domain');
 		}
 		try {
-			return self::$directory->groups->listGroups(['domain' => config('services.google.domain'), 'userKey' => $userKey])->getGroups();
+			return self::$directory->groups->listGroups(['domain' => config('services.gsuite.domain'), 'userKey' => $userKey])->getGroups();
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google listGroups for user $userKey:" . $e->getMessage());
 			return false;
@@ -383,7 +383,7 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function create_group($groupId, $groupName)
 	{
 		if (!strpos($groupId, '@')) {
-			$groupId .= '@' . config('services.google.domain');
+			$groupId .= '@' . config('services.gsuite.domain');
 		}
 		$group = new Google_Service_Directory_Group();
 		$group->setEmail($groupId);
@@ -400,7 +400,7 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function list_members($groupId)
 	{
 		if (!strpos($groupId, '@')) {
-			$groupId .= '@' . config('services.google.domain');
+			$groupId .= '@' . config('services.gsuite.domain');
 		}
 		try {
 			return $directory->members->listMembers($groupId)->getMembers();
@@ -414,10 +414,10 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function add_member($groupId, $userKey)
 	{
 		if (!strpos($groupId, '@')) {
-			$groupId .= '@' . config('services.google.domain');
+			$groupId .= '@' . config('services.gsuite.domain');
 		}
 		if (!strpos($userKey, '@')) {
-			$userKey .= '@' . config('services.google.domain');
+			$userKey .= '@' . config('services.gsuite.domain');
 		}
 		$memberObj = new \Google_Service_Directory_Member();
 		$memberObj->setEmail($userKey);
@@ -435,10 +435,10 @@ class GsuiteServiceProvider extends ServiceProvider
 	public function remove_member($groupId, $userKey)
 	{
 		if (!strpos($groupId, '@')) {
-			$groupId .= '@' . config('services.google.domain');
+			$groupId .= '@' . config('services.gsuite.domain');
 		}
 		if (!strpos($userKey, '@')) {
-			$userKey .= '@' . config('services.google.domain');
+			$userKey .= '@' . config('services.gsuite.domain');
 		}
 		try {
 			return self::$directory->members->delete($groupId, $userKey);
