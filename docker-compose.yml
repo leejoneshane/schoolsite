@@ -46,6 +46,14 @@ services:
       GOOGLE_CALENDAR_OWNER: calendar@gsuite.domain
       GOOGLE_TEACHER_ORGUNIT: /
       GOOGLE_STUDENT_ORGUNIT: /students
+      FACEBOOK_CLIENT_ID: fb
+      FACEBOOK_CLIENT_SECRET: secret
+      GOOGLE_CLIENT_ID: google
+      GOOGLE_CLIENT_SECRET: secret
+      YAHOO_CLIENT_ID: google
+      YAHOO_CLIENT_SECRET: secret
+      LINE_CLIENT_ID: google
+      LINE_CLIENT_SECRET: secret
     volumes:
       - ./html/:/var/www/html
     networks:
