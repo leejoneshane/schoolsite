@@ -106,17 +106,13 @@ class TpeduServiceProvider extends ServiceProvider
 
 	public function login()
     {
-		if (empty(self::$access_token)) {
-			return redirect()->away(
-				config('services.tpedu.server') . '/' .
+			return config('services.tpedu.server') . '/' .
 				config('services.tpedu.login') . '?' .
 				'client_id' . '=' . config('services.tpedu.app') . '&' .
 				'redirect_uri' . '=' . config('services.tpedu.callback') . '&' .
 				'response_type=code' . '&' .
 				'scope=user' . '&' .
-				'sub=laravel'
-			);
-		}
+				'sub=laravel';
 	}
 
 	public function error()

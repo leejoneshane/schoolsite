@@ -17,7 +17,7 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 
 Auth::routes([ 'register' => false ]);
 
-Route::get('login/tpedu', 'TpeduController@redirect');
-Route::get('login/tpedu/callback', 'TpeduController@handleCallback');
-Route::get('login/{provider}', 'SocialiteController@redirect');
-Route::get('login/{provider}/callback', 'SocialiteController@handleCallback');
+Route::get('login/tpedu', [App\Http\Controllers\TpeduController::class, 'redirect']);
+Route::get('login/tpedu/callback', [App\Http\Controllers\TpeduController::class, 'handleCallback']);
+Route::get('login/{provider}', [App\Http\Controllers\SocialiteController::class, 'redirect']);
+Route::get('login/{provider}/callback', [App\Http\Controllers\SocialiteController::class, 'handleCallback']);

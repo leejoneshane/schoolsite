@@ -25,7 +25,9 @@ class TpeduController extends Controller
     public function redirect(Request $request)
     {
         if (Auth::check()) return redirect()->route('home');
-        return self::$sso->login();
+        return redirect()->away(
+            self::$sso->login()
+        );
     }
 
     public function handleCallback(Request $request)
