@@ -21,3 +21,4 @@ Route::get('login/tpedu', [App\Http\Controllers\TpeduController::class, 'redirec
 Route::get('login/tpedu/callback', [App\Http\Controllers\TpeduController::class, 'handleCallback']);
 Route::get('login/{provider}', [App\Http\Controllers\SocialiteController::class, 'redirect']);
 Route::get('login/{provider}/callback', [App\Http\Controllers\SocialiteController::class, 'handleCallback']);
+Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');

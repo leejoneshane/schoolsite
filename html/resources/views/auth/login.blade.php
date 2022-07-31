@@ -39,10 +39,10 @@
 
             <div class="relative my-6 items-center">
                 <div class="social-login-buttons">
-                    <a href="/login/google"><i style="color:FireBrick" class="fab fa-2x fa-google" title="使用 Google 登入"></i></a>　
-                    <a href="/login/facebook"><i style="color:blue" class="fab fa-2x fa-facebook" title="使用 Facebook 登入"></i></a>　
-                    <a href="/login/yahoo"><i style="color:RebeccaPurple" class="fab fa-2x fa-yahoo" title="使用 Yahoo 登入"></i></a>　
-                    <a href="/login/line"><i style="color:green" class="fab fa-2x fa-line items-center" title="使用 Line 登入"></i></a>　　
+                    <a href="/login/google"><i class="fab fa-2x fa-google text-red-800" title="使用 Google 登入"></i></a>　
+                    <a href="/login/facebook"><i class="fab fa-2x fa-facebook text-blue-700" title="使用 Facebook 登入"></i></a>　
+                    <a href="/login/yahoo"><i class="fab fa-2x fa-yahoo text-purple-800" title="使用 Yahoo 登入"></i></a>　
+                    <a href="/login/line"><i class="fab fa-2x fa-line text-green-700" title="使用 Line 登入"></i></a>　　
                     <a href="/login/tpedu"><img src="{{ asset('images/tpedusso_240.png') }}" class="inline h-14" title="使用臺北市教育局單一身份驗證登入"</a>
                 </div>
             </div>

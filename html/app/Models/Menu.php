@@ -21,10 +21,40 @@ class Menu extends Model
         'parent_id',
         'caption',
         'url',
+        'weight',
     ];
 
-    public function childs() {
-        return $this->hasMany('App\Models\Menu','parent_id','id') ;
+    protected $appends = [
+		'link',
+    ];
+
+    public function getLinkAttribute()
+    {
+        return (substr($item->url, 0, 6) == 'route.') ? route(substr($item->url, 6)) : $item->url;
     }
 
+    public function childs()
+    {
+        return $this->hasMany('App\Models\Menu','parent_id','id');
+    }
+
+    public function render()
+    {
+        $html = '<ul>';
+        $items = $this->childs()->orderBy('weight')->get();
+        foreach ($items as $item) {
+            $html .= '<li>';
+            if ($item->link == '#') {
+                $html .= '<span>' . $item->caption . '</span>';
+            } else {
+                $html .= '<a href="' . $item->link . '">' . $item->caption . '</a>';
+            }
+            if ($item->childs->count() > 0) {
+                $html .= $item->render();
+            }
+            $html .= '</li>';
+        }
+        $html .= '</ul>';        
+        return $html;
+    }
 }

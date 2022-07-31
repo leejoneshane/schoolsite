@@ -19,6 +19,7 @@ return new class extends Migration
 			$table->string('parent_id')->nullable();
 			$table->string('caption');
             $table->string('url', 255)->default('#');
+            $table->integer('weight')->default(0);
             $table->timestamps();
         });
         DB::table('menus')->insert([
