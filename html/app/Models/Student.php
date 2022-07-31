@@ -74,7 +74,7 @@ class Student extends Model
 
     public function expired()
 	{
-        $expire = new Carbon(self::$updated_at);
+        $expire = new Carbon($this->updated_at);
     	return Carbon::today() > $expire->addDays(config('app.expired_days'));
 	}
 

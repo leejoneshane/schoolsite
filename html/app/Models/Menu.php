@@ -30,7 +30,7 @@ class Menu extends Model
 
     public function getLinkAttribute()
     {
-        return (substr($item->url, 0, 6) == 'route.') ? route(substr($item->url, 6)) : $item->url;
+        return (substr($this->url, 0, 6) == 'route.') ? route(substr($this->url, 6)) : $this->url;
     }
 
     public function childs()

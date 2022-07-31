@@ -14,7 +14,7 @@ class AuthenticateStudent
             if ($request->ajax() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
             } else {
-                return redirect(RouteServiceProvider::HOME);
+                return redirect('login');
             }
         }
         return $next($request);

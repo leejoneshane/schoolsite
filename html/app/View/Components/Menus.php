@@ -16,7 +16,7 @@ class Menus extends Component
      */
     public function __construct($id)
     {
-        self::$id = $id;
+        $this->id = $id;
     }
 
     /**
@@ -26,10 +26,8 @@ class Menus extends Component
      */
     public function render()
     {
-        $menu = Menu::find(self::$id);
-        $items = $menu->with(['childs' => function ($query) {
-            $query->orderBy('weight');
-        }])->get();
+        $menu = Menu::find($this->id);
+        $items = $menu->childs->sortBy('weight');
         return view('components.menus', ['menu' => $menu, 'items' => $items]);
     }
 }

@@ -11,22 +11,22 @@ use Illuminate\Support\Facades\DB;
 class TpeduServiceProvider extends ServiceProvider
 {
 
-	private static $oauth = null;
-    private static $seme = null;
-    private static $error = '';
+	private $oauth = null;
+    private $seme = null;
+    private $error = '';
     public $expires_in = '';
 	public $access_token = '';
 	public $refresh_token = '';
 
     public function __construct()
     {
-        if (is_null(self::$oauth)) {
-            self::$oauth = new Http([
+        if (is_null($this->oauth)) {
+            $this->oauth = new Http([
                 'verify' => false,
                 'base_uri' => config('services.tpedu.server'),
             ]);
 		}
-        self::$seme = $this->current_seme();
+        $this->seme = $this->current_seme();
     }
 
 	public function current_seme()
@@ -56,7 +56,7 @@ class TpeduServiceProvider extends ServiceProvider
 
 	public function get_tokens($auth_code)
 	{
-		$response = self::$oauth->post(config('services.tpedu.endpoint.token'), [
+		$response = $this->oauth->post(config('services.tpedu.endpoint.token'), [
 			'headers' => [ 'Content-Type' => 'application/x-www-form-urlencoded' ],
 			'form_params' => [
 				'grant_type' => 'authorization_code',
@@ -68,37 +68,37 @@ class TpeduServiceProvider extends ServiceProvider
 		]);
 		$data = json_decode($response->getBody());
 		if ($response->getStatusCode() == 200) {
-			self::$expires_in = time() + $data->expires_in;
-			self::$access_token = $data->access_token;
-			self::$refresh_token = $data->refresh_token;
+			$this->expires_in = time() + $data->expires_in;
+			$this->access_token = $data->access_token;
+			$this->refresh_token = $data->refresh_token;
 		} else {
-			self::$error = $response->getBody();
-			Log::notice('oauth2 token response =>'.self::$error);
+			$this->error = $response->getBody();
+			Log::notice('oauth2 token response =>'.$this->error);
 			return false;
 		}
 	}
 
 	public function refresh_tokens()
 	{
-    	if (self::$refresh_token && self::$expires_in < time()) {
-        	$response = self::$oauth->post(config('services.tpedu.endpoint.token'), [
+    	if ($this->refresh_token && $this->expires_in < time()) {
+        	$response = $this->oauth->post(config('services.tpedu.endpoint.token'), [
             	'headers' => [ 'Content-Type' => 'application/x-www-form-urlencoded' ],
             	'form_params' => [
                 	'grant_type' => 'refresh_token',
                 	'client_id' => config('services.tpedu.app'),
                 	'client_secret' => config('services.tpedu.secret'),
-                	'refresh_token' => self::$refresh_token,
+                	'refresh_token' => $this->refresh_token,
                 	'scope' => 'user',
             	],
         	]);
         	$data = json_decode($response->getBody());
         	if ($response->getStatusCode() == 200) {
-            	self::$expires_in = time() + $data->expires_in;
-            	self::$access_token = $data->access_token;
-            	self::$refresh_token = $data->refresh_token;
+            	$this->expires_in = time() + $data->expires_in;
+            	$this->access_token = $data->access_token;
+            	$this->refresh_token = $data->refresh_token;
         	} else {
-				self::$error = $response->getBody();
-				Log::notice('oauth2 token response =>'.self::$error);
+				$this->error = $response->getBody();
+				Log::notice('oauth2 token response =>'.$this->error);
             	return false;
         	}
     	}
@@ -117,21 +117,21 @@ class TpeduServiceProvider extends ServiceProvider
 
 	public function error()
 	{
-		return self::$error;
+		return $this->error;
 	}
 
 	public function who()
 	{
-		if (self::$access_token) {
-			$response = self::$oauth->get(config('services.tpedu.endpoint.user'), [
-				'headers' => [ 'Authorization' => 'Bearer '.self::$access_token ],
+		if ($this->access_token) {
+			$response = $this->oauth->get(config('services.tpedu.endpoint.user'), [
+				'headers' => [ 'Authorization' => 'Bearer '.$this->access_token ],
 			]);
 			$user = json_decode($response->getBody());
 			if ($response->getStatusCode() == 200) {
 				return User::where('uuid', $user->uuid)->first();
 			} else {
-				self::$error = $response->getBody();
-				Log::notice('oauth2 user response =>'.self::$error);
+				$this->error = $response->getBody();
+				Log::notice('oauth2 user response =>'.$this->error);
 				return false;
 			}
 		}
@@ -140,9 +140,9 @@ class TpeduServiceProvider extends ServiceProvider
 
 	public function profile()
 	{
-		if (self::$access_token) {
-			$response = self::$oauth->get(config('services.tpedu.endpoint.profile'), [
-				'headers' => [ 'Authorization' => 'Bearer ' . self::$access_token ],
+		if ($this->access_token) {
+			$response = $this->oauth->get(config('services.tpedu.endpoint.profile'), [
+				'headers' => [ 'Authorization' => 'Bearer ' . $this->access_token ],
 			]);
 			$user = json_decode($response->getBody());
 			if ($response->getStatusCode() == 200) {
@@ -152,8 +152,8 @@ class TpeduServiceProvider extends ServiceProvider
 					return Teacher::find($user->uuid);					
 				}
 			} else {
-				self::$error = $response->getBody();
-				Log::notice('oauth2 profile response =>'.self::$error);
+				$this->error = $response->getBody();
+				Log::notice('oauth2 profile response =>'.$this->error);
 				return false;
 			}
 		}
@@ -162,7 +162,7 @@ class TpeduServiceProvider extends ServiceProvider
 
 	public function api($which, array $replacement = [])
 	{
-		if (empty(self::$access_token)) return;
+		if (empty($this->access_token)) return;
 		$dataapi = config('services.tpedu.endpoint.' . $which);
     	if ($which == 'find_users') {
 			if (!empty($replacement)) {
@@ -183,7 +183,7 @@ class TpeduServiceProvider extends ServiceProvider
 			}
 			$dataapi = str_replace($search, $values, $dataapi);
 		}
-		$response = self::$oauth->get($dataapi, [
+		$response = $this->oauth->get($dataapi, [
 			'headers' => ['Authorization' => 'Bearer ' . config('services.tpedu.token')],
 			'http_errors' => false,
 		]);
@@ -191,8 +191,8 @@ class TpeduServiceProvider extends ServiceProvider
 		if ($response->getStatusCode() == 200) {
 			return $json;
 		} else {
-			self::$error = $response->getBody();
-			Log::notice('oauth2 api('.$dataapi.') response =>'.self::$error);
+			$this->error = $response->getBody();
+			Log::notice('oauth2 api('.$dataapi.') response =>'.$this->error);
 			return false;
 		}
 	}

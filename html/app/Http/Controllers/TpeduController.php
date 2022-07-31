@@ -17,8 +17,8 @@ class TpeduController extends Controller
 
     public function __construct()
     {
-        if (is_null(self::$sso)) {
-            self::$sso = new TpeduServiceProvider;
+        if (is_null($this->sso)) {
+            $this->sso = new TpeduServiceProvider;
 		}
     }
 
@@ -26,7 +26,7 @@ class TpeduController extends Controller
     {
         if (Auth::check()) return redirect()->route('home');
         return redirect()->away(
-            self::$sso->login()
+            $this->sso->login()
         );
     }
 
@@ -43,8 +43,8 @@ class TpeduController extends Controller
                 Auth::login($user);
                 return redirect()->route('home');
             } else { //new user
-                if (self::$sso->fetch_user($uuid)) {
-                    $user_type = self::$sso->user_type($uuid);
+                if ($this->sso->fetch_user($uuid)) {
+                    $user_type = $this->sso->user_type($uuid);
                     if ($user_type == 'Student') {
                         $tpuser = Student::find($uuid);
                     } else {

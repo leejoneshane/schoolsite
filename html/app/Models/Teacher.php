@@ -93,13 +93,13 @@ class Teacher extends Model
     public function sync()
     {
         $sso = new SSO();
-        $sso->fetch_user(self::$uuid);
+        $sso->fetch_user($this->uuid);
         $this->fresh();
     }
 
     public function expired()
 	{
-        $expire = new Carbon(self::$updated_at);
+        $expire = new Carbon($this->updated_at);
     	return Carbon::today() > $expire->addDays(config('app.expired_days'));
 	}
 }

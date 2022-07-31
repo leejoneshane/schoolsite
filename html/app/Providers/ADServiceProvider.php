@@ -9,12 +9,12 @@ use Illuminate\Support\ServiceProvider;
 class ADServiceProvider extends ServiceProvider
 {
 
-	private static $connect = null;
-	private static $bind = null;
+	private $connect = null;
+	private $bind = null;
 
     public function __construct()
     {
-        if (is_null(self::$connect)) {
+        if (is_null($this->connect)) {
 			$this->init();
 		}
     }
@@ -28,37 +28,37 @@ class ADServiceProvider extends ServiceProvider
 		if ($ca_path) {
 			ldap_set_option(null, LDAP_OPT_X_TLS_CACERTFILE, $ca_path);
 		}
-		self::$connect = @ldap_connect("ldaps://$ad_host:$ad_port");
-		ldap_set_option(self::$connect, LDAP_OPT_PROTOCOL_VERSION, 3);
-		ldap_set_option(self::$connect, LDAP_OPT_REFERRALS, 0);
-		if (self::$connect) {
+		$this->connect = @ldap_connect("ldaps://$ad_host:$ad_port");
+		ldap_set_option($this->connect, LDAP_OPT_PROTOCOL_VERSION, 3);
+		ldap_set_option($this->connect, LDAP_OPT_REFERRALS, 0);
+		if ($this->connect) {
 			$ad_user = config('services.ad.admin');
 			$ad_pass = config('services.ad.password');
-			self::$bind = @ldap_bind(self::$connect, $ad_user, $ad_pass);
-			if (self::$bind) {
+			$this->bind = @ldap_bind($this->connect, $ad_user, $ad_pass);
+			if ($this->bind) {
 				return true;
 			} else {
-				Log::error('AD server can not login with user/passwd！'.ldap_error(self::$connect));
+				Log::error('AD server can not login with user/passwd！'.ldap_error($this->connect));
 				return false;
 			}
 		} else {
-			Log::error('AD server reject LDAPS connection.'.ldap_error(self::$connect));
+			Log::error('AD server reject LDAPS connection.'.ldap_error($this->connect));
 			return false;
 		}
 	}
 
 	public function error()
 	{
-    	return ldap_error(self::$connect);
+    	return ldap_error($this->connect);
 	}
 
 	public function find_group($desc)
 	{
 		$base_dn = config('services.ad.users_dn');
 		$filter = "(&(objectClass=group)(description=$desc))";
-		$result = @ldap_search(self::$connect, $base_dn, $filter);
+		$result = @ldap_search($this->connect, $base_dn, $filter);
 		if ($result) {
-			$infos = @ldap_get_entries(self::$connect, $result);
+			$infos = @ldap_get_entries($this->connect, $result);
 			if ($infos['count'] > 0) {
 				$data = $infos[0];
 			}
@@ -72,10 +72,10 @@ class ADServiceProvider extends ServiceProvider
 	{
 		$base_dn = config('services.ad.users_dn');
 		$filter = "(&(objectClass=group)(CN=$group))";
-		$result = @ldap_search(self::$connect, $base_dn, $filter);
+		$result = @ldap_search($this->connect, $base_dn, $filter);
 		$data = [];
 		if ($result) {
-			$infos = @ldap_get_entries(self::$connect, $result);
+			$infos = @ldap_get_entries($this->connect, $result);
 			if ($infos['count'] > 0) {
 				$data = $infos[0];
 			}
@@ -94,7 +94,7 @@ class ADServiceProvider extends ServiceProvider
 		$groupinfo['sAMAccountName'] = $group;
 		$groupinfo['displayName'] = $group_name;
 		$groupinfo['description'] = $group_name;
-		$result = @ldap_add(self::$connect, $dn, $groupinfo);
+		$result = @ldap_add($this->connect, $dn, $groupinfo);
 		if ($result) {
 			return true;
 		} else {
@@ -104,7 +104,7 @@ class ADServiceProvider extends ServiceProvider
 
 	public function delete_group($dn)
 	{
-		$result = @ldap_delete(self::$connect, $dn);
+		$result = @ldap_delete($this->connect, $dn);
 		if ($result) {
 			return true;
 		} else {
@@ -114,7 +114,7 @@ class ADServiceProvider extends ServiceProvider
 	
 	public function add_member($dn, $userDn)
 	{
-		$result = @ldap_mod_add(self::$connect, $dn, ['member' => $userDn]);
+		$result = @ldap_mod_add($this->connect, $dn, ['member' => $userDn]);
 		if ($result) {
 			return true;
 		} else {
@@ -124,7 +124,7 @@ class ADServiceProvider extends ServiceProvider
 	
 	public function remove_member($dn, $userDn)
 	{
-		$result = @ldap_mod_del(self::$connect, $dn, ['member' => $userDn]);
+		$result = @ldap_mod_del($this->connect, $dn, ['member' => $userDn]);
 		if ($result) {
 			return true;
 		} else {
@@ -136,10 +136,10 @@ class ADServiceProvider extends ServiceProvider
 	{
 		$base_dn = config('services.ad.users_dn');
 		$filter = "(sAMAccountName=$account)";
-		$result = @ldap_search(self::$connect, $base_dn, $filter);
+		$result = @ldap_search($this->connect, $base_dn, $filter);
 		$data = [];
 		if ($result) {
-			$infos = @ldap_get_entries(self::$connect, $result);
+			$infos = @ldap_get_entries($this->connect, $result);
 			if ($infos['count'] > 0) {
 				$data = $infos[0];
 			}
@@ -150,10 +150,10 @@ class ADServiceProvider extends ServiceProvider
 	public function find_user($filter)
 	{
 		$base_dn = config('services.ad.users_dn');
-		$result = @ldap_search(self::$connect, $base_dn, $filter);
+		$result = @ldap_search($this->connect, $base_dn, $filter);
 		$data = [];
 		if ($result) {
-			$infos = @ldap_get_entries(self::$connect, $result);
+			$infos = @ldap_get_entries($this->connect, $result);
 			if ($infos['count'] > 0) {
 				$data = $infos[0];
 			}
@@ -186,7 +186,7 @@ class ADServiceProvider extends ServiceProvider
 		if ($user->mobile) {
 			$userinfo['telephoneNumber'] = $user->mobile;
 		}
-		$result = @ldap_add(self::$connect, $dn, $userinfo);
+		$result = @ldap_add($this->connect, $dn, $userinfo);
 		if ($result) {
 			return true;
 		} else {
@@ -212,7 +212,7 @@ class ADServiceProvider extends ServiceProvider
 		if ($user->mobile) {
 			$userinfo['telephoneNumber'] = $user->mobile;
 		}
-		$result = @ldap_mod_replace(self::$connect, $dn, $userinfo);
+		$result = @ldap_mod_replace($this->connect, $dn, $userinfo);
 		if ($result) {
 			return true;
 		} else {
@@ -223,7 +223,7 @@ class ADServiceProvider extends ServiceProvider
 	public function lock_user($dn)
 	{
 		$userdata['userAccountControl'] = '0x10222';
-		$result = @ldap_mod_replace(self::$connect, $dn, $userdata);
+		$result = @ldap_mod_replace($this->connect, $dn, $userdata);
 		if ($result) {
 			return true;
 		} else {
@@ -234,7 +234,7 @@ class ADServiceProvider extends ServiceProvider
 	public function unlock_user($dn)
 	{
 		$userdata['userAccountControl'] = '0x10220';
-		$result = @ldap_mod_replace(self::$connect, $dn, $userdata);
+		$result = @ldap_mod_replace($this->connect, $dn, $userdata);
 		if ($result) {
 			return true;
 		} else {
@@ -244,7 +244,7 @@ class ADServiceProvider extends ServiceProvider
 	
 	public function delete_user($dn)
 	{
-		$result = @ldap_delete(self::$connect, $dn);
+		$result = @ldap_delete($this->connect, $dn);
 		if ($result) {
 			return true;
 		} else {
@@ -254,7 +254,7 @@ class ADServiceProvider extends ServiceProvider
 	
 	public function change_account($dn, $new_account)
 	{
-		$result = @ldap_mod_replace(self::$connect, $dn, ['sAMAccountName' => $new_account]);
+		$result = @ldap_mod_replace($this->connect, $dn, ['sAMAccountName' => $new_account]);
 		if ($result) {
 			return true;
 		} else {
@@ -267,7 +267,7 @@ class ADServiceProvider extends ServiceProvider
 		$userdata = [];
 		$userdata['userPassword'] = $password;
 		$userdata['unicodePwd'] = $this->encryption($password);
-		$result = @ldap_mod_replace(self::$connect, $dn, $userdata);
+		$result = @ldap_mod_replace($this->connect, $dn, $userdata);
 		if ($result) {
 			return true;
 		} else {

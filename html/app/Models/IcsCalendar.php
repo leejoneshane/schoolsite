@@ -24,7 +24,7 @@ class IcsCalendar extends Model
 
     public function toICS()
     {
-        $calendar = Calendar::create(self::$summary);
+        $calendar = Calendar::create($this->summary);
         foreach ($this->events() as $event) {
             $event = $calendar->event($event->toICS());
         }
@@ -43,7 +43,7 @@ class IcsCalendar extends Model
         $calendar = $this->toICS()->get();
         return response($calendar, 200, [
             'Content-Type' => 'text/calendar; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="'. self::summary .'行事曆.ics"',
+            'Content-Disposition' => 'attachment; filename="'. $this->summary .'行事曆.ics"',
          ]);
     }
 

@@ -31,14 +31,14 @@ class IcsEvent extends Model
 
     public function toICS()
     {
-        $event = Event::create(self::$summary)
+        $event = Event::create($this->summary)
             ->organizer(config('services.gsuite.calendar'), $this->unit()->name)
-            ->createdAt(Carbon::createFromTimestamp(self::$created_at, env('TZ')))
-            ->startsAt(Carbon::createFromTimestamp(self::$start, env('TZ')))
-            ->endsAt(Carbon::createFromTimestamp(self::$end, env('TZ')));
-        if (!empty(self::description)) $event->description(self::description);
-        if (!empty(self::location)) $event->addressName(self::location);
-        if (self::$all_day) $event->fullDay();
+            ->createdAt(Carbon::createFromTimestamp($this->created_at, env('TZ')))
+            ->startsAt(Carbon::createFromTimestamp($this->start, env('TZ')))
+            ->endsAt(Carbon::createFromTimestamp($this->end, env('TZ')));
+        if (!empty($this->description)) $event->description($this->description);
+        if (!empty($this->location)) $event->addressName($this->location);
+        if ($this->all_day) $event->fullDay();
 
         return $event;
     }

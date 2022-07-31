@@ -8,7 +8,7 @@
     @include('layouts.partials.nav')
     <div class="grid grid-cols-12 grid-flow-col gap-3">
         @include('layouts.partials.aside')
-        <main class="mb-auto">
+        <main class="col-span-11 hover:col-span-10 mb-auto">
         @yield('content')
         </main>
     </div>

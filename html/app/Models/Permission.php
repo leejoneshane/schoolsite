@@ -24,7 +24,7 @@ class Permission extends Model
 
     public function delete()
     {
-        DB::table('user_permissions')->where('perm_id', self::$id)->delete();
+        DB::table('user_permissions')->where('perm_id', $this->id)->delete();
         return parent::delete();
     }
 
@@ -41,7 +41,7 @@ class Permission extends Model
     {
         if (!($users instanceof User)) return false;
         $checked = DB::table('user_permissions')
-            ->where('perm_id', self::$id)
+            ->where('perm_id', $this->id)
             ->where('uuid', $user->uuid)
             ->first();
         if ($checked) return true;
@@ -52,7 +52,7 @@ class Permission extends Model
     {
         if (empty($uuid)) return false;
         $checked = DB::table('user_permissions')
-            ->where('perm_id', self::$id)
+            ->where('perm_id', $this->id)
             ->where('uuid', $uuid)
             ->first();
         if ($checked) return true;
@@ -64,14 +64,14 @@ class Permission extends Model
         if ($users instanceof User) {
             $user = array([
                 'uuid' => $users->uuid,
-                'perm_id' => self::$id,
+                'perm_id' => $this->id,
             ]);
             $user_permissions[] = $user;
         } elseif ($users instanceof Collection) {
             foreach ($users as $user) {
                 $user = array([
                     'uuid' => $user->uuid,
-                    'perm_id' => self::$id,    
+                    'perm_id' => $this->id,    
                 ]);
                 $user_permissions[] = $user;    
             }
@@ -88,14 +88,14 @@ class Permission extends Model
         if (!is_array($uuids)) {
             $user = array([
                 'uuid' => $uuids,
-                'perm_id' => self::$id,
+                'perm_id' => $this->id,
             ]);
             $user_permissions[] = $user;
         } else {
             foreach ($uuids as $uuid) {
                 $user = array([
                     'uuid' => $uuid,
-                    'perm_id' => self::$id,    
+                    'perm_id' => $this->id,    
                 ]);
                 $user_permissions[] = $user;    
             }
@@ -117,7 +117,7 @@ class Permission extends Model
                 $uuids[] = $user->uuid;
             }
         }
-        DB::table('user_permissions')->where('perm_id', self::$id)->whereIn('uuid', $uuids)->delete();
+        DB::table('user_permissions')->where('perm_id', $this->id)->whereIn('uuid', $uuids)->delete();
         return $this;
     }
 
@@ -126,7 +126,7 @@ class Permission extends Model
         if (!is_array($uuids)) {
             $uuids = array($uuids);
         }
-        DB::table('user_permissions')->where('perm_id', self::$id)->whereIn('uuid', $uuids)->delete();
+        DB::table('user_permissions')->where('perm_id', $this->id)->whereIn('uuid', $uuids)->delete();
         return $this;
     }
 

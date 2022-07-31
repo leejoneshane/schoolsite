@@ -11,11 +11,11 @@ use App\Models\IcsEvent;
 class GcalendarServiceProvider extends ServiceProvider
 {
 
-	private static $calendar = null;
+	private $calendar = null;
 
     public function __construct()
     {
-        if (is_null(self::$calendar)) {
+        if (is_null($this->calendar)) {
 			$this->init();
 		}
     }
@@ -34,7 +34,7 @@ class GcalendarServiceProvider extends ServiceProvider
 		$client->setScopes($scopes);
 		$client->setSubject($user_to_impersonate);
 		try {
-			self::$calendar = new \Google_Service_Directory($client);
+			$this->calendar = new \Google_Service_Directory($client);
 		} catch (\Google_Service_Exception $e) {
 			Log::error('google calendar:' . $e->getMessage());
 		}
@@ -42,7 +42,7 @@ class GcalendarServiceProvider extends ServiceProvider
 	public function list_calendars()
 	{
 		try {
-			$cals = self::$calendar->calendarList->listCalendarList()->getItems();
+			$cals = $this->calendar->calendarList->listCalendarList()->getItems();
 			DB::table('ics_calendars')->delete();
 			foreach ($cals as $cal) {
 				DB::table('ics_calendars')->Insert([
@@ -60,7 +60,7 @@ class GcalendarServiceProvider extends ServiceProvider
 	public function get_calendar($calendarId)
 	{
 		try {
-			return self::$calendar->calendars->get($calendarId);
+			return $this->calendar->calendars->get($calendarId);
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google getCalendar($calendarId):" . $e->getMessage());
 			return false;
@@ -70,7 +70,7 @@ class GcalendarServiceProvider extends ServiceProvider
 	public function delete_calendar($calendarId)
 	{
 		try {
-			self::$calendar->calendars->delete($calendarId);
+			$this->calendar->calendars->delete($calendarId);
 			return true;
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google deleteCalendar($calendarId):" . $e->getMessage());
@@ -84,7 +84,7 @@ class GcalendarServiceProvider extends ServiceProvider
 		$cObj->setSummary($description);
 		$cObj->setTimeZone('Asia/Taipei');
 		try {
-			$created = self::$calendar->calendars->insert($cObj);
+			$created = $this->calendar->calendars->insert($cObj);
 			return $created->getId();
 		} catch (\Google_Service_Exception $e) {
 			Log::notice('google createCalendar('.var_export($cObj, true).'):' . $e->getMessage());
@@ -97,7 +97,7 @@ class GcalendarServiceProvider extends ServiceProvider
 		$cObj = $this->get_calendar($calendarId);
 		$cObj->setSummary($description);
 		try {
-			self::$calendar->calendars->update($calendarId, $cObj);
+			$this->calendar->calendars->update($calendarId, $cObj);
 			return true;
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google updateCalendar($calendarId,".var_export($cObj, true).'):' . $e->getMessage());
@@ -108,7 +108,7 @@ class GcalendarServiceProvider extends ServiceProvider
 	public function prune_events($calendarId)
 	{
 		try {
-			self::$calendar->calendars->clear($calendarId);
+			$this->calendar->calendars->clear($calendarId);
 			return true;
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google pruneEvents($calendarId):" . $e->getMessage());
@@ -129,7 +129,7 @@ class GcalendarServiceProvider extends ServiceProvider
 			$opt_param['orderBy'] = 'startTime';
 		}
 		try {
-			$events = self::$calendar->events->listEvents($calendarId, $opt_param);
+			$events = $this->calendar->events->listEvents($calendarId, $opt_param);
 			return $events->getItems();
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google listEvents($calendarId):" . $e->getMessage());
@@ -140,7 +140,7 @@ class GcalendarServiceProvider extends ServiceProvider
 	public function get_event($calendarId, $eventId)
 	{
 		try {
-			return self::$calendar->events->get($calendarId, $eventId);
+			return $this->calendar->events->get($calendarId, $eventId);
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google getEvent($calendarId, $eventId):" . $e->getMessage());
 			return false;
@@ -150,7 +150,7 @@ class GcalendarServiceProvider extends ServiceProvider
 	public function move_event($calendarId, $eventId, $target)
 	{
 		try {
-			return self::$calendar->events->move($calendarId, $eventId, $target);
+			return $this->calendar->events->move($calendarId, $eventId, $target);
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google moveEvent($calendarId, $eventId, $target):" . $e->getMessage());
 			return false;
@@ -160,7 +160,7 @@ class GcalendarServiceProvider extends ServiceProvider
 	public function delete_event($calendarId, $eventId)
 	{
 		try {
-			self::$calendar->events->delete($calendarId, $eventId);
+			$this->calendar->events->delete($calendarId, $eventId);
 			return true;
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google deleteEvent($calendarId, $eventId):" . $e->getMessage());
@@ -171,7 +171,7 @@ class GcalendarServiceProvider extends ServiceProvider
 	public function create_event($calendarId, \Google_Service_Calendar_Event $event)
 	{
 		try {
-			return self::$calendar->events->insert($calendarId, $event);
+			return $this->calendar->events->insert($calendarId, $event);
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google createEvent($calendarId,".var_export($event, true).'):' . $e->getMessage());
 			return false;
@@ -181,7 +181,7 @@ class GcalendarServiceProvider extends ServiceProvider
 	public function import_event($calendarId, \Google_Service_Calendar_Event $event)
 	{
 		try {
-			return self::$calendar->events->import($calendarId, $event);
+			return $this->calendar->events->import($calendarId, $event);
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google importEvent($calendarId,".var_export($event, true).'):' . $e->getMessage());
 			return false;
@@ -191,7 +191,7 @@ class GcalendarServiceProvider extends ServiceProvider
 	public function update_event($calendarId, $eventId, \Google_Service_Calendar_Event $event)
 	{
 		try {
-			$updatedEvent = self::$calendar->events->update($calendarId, $eventId, $event);
+			$updatedEvent = $this->calendar->events->update($calendarId, $eventId, $event);
 			return $updatedEvent->getUpdated();
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google updateEvent($calendarId,$eventId,".var_export($event, true).'):' . $e->getMessage());
