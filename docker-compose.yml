@@ -1,7 +1,7 @@
 version: '3'
 services:
   laravel:
-    image: leejoneshane/laravel
+    image: leejoneshane/schoolsite
     extra_hosts:
       - host.docker.internal:host-gateway
     ports:
