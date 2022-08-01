@@ -5,9 +5,7 @@
 </head>
 <body>
     @include('layouts.partials.header')
-    <main class="w-full`">
-        @yield('content')
-    </main>
+    @include('layouts.partials.content')
     @include('layouts.partials.footer')
 </body>
 </html>

@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
-Route::get('admin', 'App\Http\Controllers\HomeController@admin')->middleware('admin')->name('admin');
 
 // Login Routes...
 Route::get('login', 'App\Http\Controllers\Auth\LoginController@showLoginForm')->middleware('firsttime')->name('login');
@@ -45,3 +44,10 @@ Route::post('password/confirm', 'App\Http\Controllers\Auth\ConfirmPasswordContro
 Route::get('email/verify', 'App\Http\Controllers\Auth\VerificationController@show')->name('verification.notice');
 Route::get('email/verify/{id}/{hash}', 'App\Http\Controllers\Auth\VerificationController@verify')->name('verification.verify');
 Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@resend')->name('verification.resend');
+
+// Administrator Interface Routes...
+Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
+    Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
+    Route::get('sync', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('sync');
+});
+

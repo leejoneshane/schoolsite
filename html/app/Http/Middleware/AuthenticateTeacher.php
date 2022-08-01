@@ -14,7 +14,8 @@ class AuthenticateTeacher
             if ($request->ajax() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
             } else {
-                return redirect('login');
+                session('error', '只有教師才能連結此頁面！');
+                return redirect('home');
             }
         }
         return $next($request);
