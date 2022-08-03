@@ -223,12 +223,12 @@ class TpeduServiceProvider extends ServiceProvider
 		$temp = Student::find($uuid);
 		if ($temp) {
 			$expire = new Carbon($temp->updated_at);
-			if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return true;
+			if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return false;
 		} else {
 			$temp = Teacher::find($uuid);
 			if ($temp) {
 				$expire = new Carbon($temp->updated_at);
-				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return true;
+				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return false;
 			}
 		}
 		$o = config('services.tpedu.school');
@@ -415,79 +415,69 @@ class TpeduServiceProvider extends ServiceProvider
 
 	function sync_units()
 	{
-		$fetch = Unit::first()->updated_at;
-		$expire = new Carbon($fetch);
-    	if (Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'))) {
-			$ous = $this->api('all_units');
-			if ($ous) {
-				foreach ($ous as $o) {
-					$unit = Unit::firstOrNew(['id' => $o->ou]);
-					$unit->name = $o->description;
-					$unit->save();
-				}
-			}	
+		$fetch = Unit::first();
+		if ($fetch) {
+			$expire = new Carbon($fetch->updated_at);
+    		if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return false;
+		}
+		$ous = $this->api('all_units');
+		if ($ous) {
+			foreach ($ous as $o) {
+				$unit = Unit::firstOrNew(['id' => $o->ou]);
+				$unit->name = $o->description;
+				$unit->save();
+			}
 		}
 	}
 
 	function sync_roles()
 	{
-		$fetch = Unit::first()->updated_at;
-		$expire = new Carbon($fetch);
-    	if (Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'))) {
-			DB::table('roles')->delete();
-//		$ous = $this->api('all_units');
-//		if ($ous) {
-//			foreach ($ous as $o) {
-//				$roles = $this->api('roles_of_unit', ['unit' => $o->ou]);
-//				if ($roles) {
-//					foreach ($roles as $r) {
-//						$role = Role::create([
-//							'role_no' => $r->cn,
-//							'unit_id' => $o->ou,
-//							'name' => $r->description,
-//						]);
-//					}
-//				}	
-//			}
-//		}
+		$fetch = Role::first();
+		if ($fetch) {
+			$expire = new Carbon($fetch->updated_at);
+    		if (Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'))) {
+				DB::table('roles')->delete();
+			}
 		}
 	}
 
 	function sync_subjects()
 	{
-		$fetch = Subject::first()->updated_at;
-		$expire = new Carbon($fetch);
-    	if (Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'))) {
-			$subjects = $this->api('all_subjects');
-			if ($subjects) {
-				foreach ($subjects as $s) {
-					$subj = Subject::firstOrNew(['name' => $s->description]);
-					$subj->save();
-				}
+		$fetch = Subject::first();
+		if ($fetch) {
+			$expire = new Carbon($fetch->updated_at);
+    		if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return false;
+		}
+		$subjects = $this->api('all_subjects');
+		if ($subjects) {
+			foreach ($subjects as $s) {
+				$subj = Subject::firstOrNew(['name' => $s->description]);
+				$subj->save();
 			}
 		}
 	}
 
 	function sync_classes()
 	{
-		$fetch = Classroom::first()->updated_at;
-		$expire = new Carbon($fetch);
-    	if (Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'))) {
-			$classes = $this->api('all_classes');
-			if ($classes) {
-				foreach ($classes as $c) {
-					$cls = Classroom::firstOrNew(['id' => $c->ou]);
-					$cls->grade_id = $c->grade;
-					$cls->name = $c->description;
-					$tutors = [];
-					foreach ($c->tutor as $t) {
-						if ($t) $tutors[] = $t;
-					}
-					if (!empty($tutors)) {
-						$cls->tutor = $tutors;
-					}
-					$cls->save();
+		$fetch = Classroom::first();
+		if ($fetch) {
+			$expire = new Carbon($fetch->updated_at);
+    		if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return false;
+		}
+		$classes = $this->api('all_classes');
+		if ($classes) {
+			foreach ($classes as $c) {
+				$cls = Classroom::firstOrNew(['id' => $c->ou]);
+				$cls->grade_id = $c->grade;
+				$cls->name = $c->description;
+				$tutors = [];
+				foreach ($c->tutor as $t) {
+					if ($t) $tutors[] = $t;
 				}
+				if (!empty($tutors)) {
+					$cls->tutor = $tutors;
+				}
+				$cls->save();
 			}
 		}
 	}

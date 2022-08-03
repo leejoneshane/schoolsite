@@ -28,7 +28,7 @@ class SyncFromTpedu implements ShouldQueue, ShouldBeUnique
      */
     public function __construct()
     {
-
+        $this->onQueue('app');
     }
 
     /**
