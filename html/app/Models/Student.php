@@ -39,23 +39,7 @@ class Student extends Model
         'address',
         'www',
         'character',
-        'is_deleted',
     ];
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'is_deleted' => 'boolean',
-    ];
-
-    public function __get($name) //testing
-    {
-        if ($this->expired()) $this->sync();
-        return parent::__get();
-    }
     
     public function user()
     {

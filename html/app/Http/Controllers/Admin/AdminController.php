@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Menu;
 use App\Jobs\SyncFromTpedu;
 use App\Providers\TpeduServiceProvider as SSO;
+use App\Models\Teacher;
 
 class AdminController extends Controller
 {
@@ -89,8 +90,9 @@ class AdminController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
+        session()->flash('message', Teacher::first()->updated_at);
         return view('admin');
     }
 

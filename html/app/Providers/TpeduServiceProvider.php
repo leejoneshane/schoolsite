@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Log;
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Http;
@@ -222,13 +223,12 @@ class TpeduServiceProvider extends ServiceProvider
 	{
 		$temp = Student::find($uuid);
 		if ($temp) {
-			$expire = new Carbon($temp->updated_at);
-			if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return false;
+			if (!$temp->expired) return false;
 		} else {
 			$temp = Teacher::find($uuid);
 			if ($temp) {
 				$expire = new Carbon($temp->updated_at);
-				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return false;
+				if (!$temp->expired) return false;
 			}
 		}
 		$o = config('services.tpedu.school');
