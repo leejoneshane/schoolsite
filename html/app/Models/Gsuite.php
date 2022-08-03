@@ -7,20 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Gsuite extends Model
 {
     protected $table = 'gsuite';
-    protected $primaryKey = 'uuid';
-    public $incrementing = false;
-    protected $keyType = 'string';
   
     protected $fillable = [
-        'uuid', 'userKey', 'primary',
+        'owner_id', 'owner_type', 'userKey', 'primary',
     ];
     
     protected $casts = [
         'primary' => 'boolean',
     ];
-  
-    public function user()
+
+    public function owner()
     {
-        return $this->belongsTo('App\Models\User', 'uuid', 'uuid');
+        return $this->morphTo();
     }
+
 }

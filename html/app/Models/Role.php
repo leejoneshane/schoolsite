@@ -9,9 +9,6 @@ class Role extends Model
 {
 
 	protected $table = 'roles';
-	protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -20,24 +17,19 @@ class Role extends Model
      */
     protected $fillable = [
         'id',
+        'role_no',
         'unit_id',
         'name',
     ];
 
     public function unit()
     {
-        return $this->belongsTo('App\Models\Unit', 'id', 'unit_id');
+        return $this->belongsTo('App\Models\Unit');
     }
 
     public function teachers()
     {
         return $this->belongsToMany('App\Models\Teacher', 'job_title', 'role_id', 'uuid');
-    }
-
-    public function sync()
-    {
-        $sso = new SSO();
-        // todo
     }
 
 }

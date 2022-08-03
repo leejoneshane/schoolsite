@@ -15,7 +15,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('user_permissions', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
 			$table->uuid('uuid')->index();
 			$table->integer('perm_id');
             $table->timestamps();

@@ -51,6 +51,12 @@ class Student extends Model
         'is_deleted' => 'boolean',
     ];
 
+    public function __get($name) //testing
+    {
+        if ($this->expired()) $this->sync();
+        return parent::__get();
+    }
+    
     public function user()
     {
         return $this->hasOne('App\Models\User', 'uuid', 'uuid')->withDefault();
@@ -58,24 +64,25 @@ class Student extends Model
 
     public function gmails()
 	{
-    	return $this->hasMany('App\Models\Gsuite', 'uuid', 'uuid');
+        return $this->morphMany('App\Models\Gsuite', 'owner');
 	}
     
     public function classroom()
     {
-        return $this->belongsTo('App\Models\Classroom', 'id', 'class_id');
+        return $this->belongsTo('App\Models\Classroom', 'class_id');
     }
 
     public function sync()
     {
         $sso = new SSO();
-        // todo
+        $sso->fetch_user($this->uuid);
+        $this->fresh();
     }
 
     public function expired()
 	{
         $expire = new Carbon($this->updated_at);
-    	return Carbon::today() > $expire->addDays(config('app.expired_days'));
+    	return Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'));
 	}
 
 }

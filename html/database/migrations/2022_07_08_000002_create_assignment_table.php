@@ -14,10 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('assignment', function (Blueprint $table) {
-            $table->uuid('uuid')->primary();
+            $table->id();
+            $table->uuid('uuid')->index();
             $table->string('subject_id')->index();
             $table->string('class_id')->index();
-            $table->timestamps();
+            $table->unique(['uuid', 'subject_id', 'class_id']);
         });
     }
 

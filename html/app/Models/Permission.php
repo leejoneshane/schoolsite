@@ -28,11 +28,15 @@ class Permission extends Model
         return parent::delete();
     }
 
+    public function users()
+	{
+    	return $this->belongsToMany('App\Models\User', 'user_permissions', 'perm_id', 'uuid');
+	}
+
     public function findByName($permissions)
     {
         list($group, $permission) = explode('.', $permissions);
-        return DB::table('permissions')
-            ->where('group', $group)
+        return Permission::where('group', $group)
             ->where('permission', $permission)
             ->first();
     }

@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Gate;
 use Laravel\Telescope\IncomingEntry;
 use Laravel\Telescope\Telescope;
 use Laravel\Telescope\TelescopeApplicationServiceProvider;
+use Laravel\Telescope\EntryType;
 
 class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
 {
@@ -21,9 +22,9 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
         $this->hideSensitiveRequestDetails();
 
         Telescope::filter(function (IncomingEntry $entry) {
-            if ($this->app->environment('local')) {
+//            if ($this->app->environment('local')) {
                 return true;
-            }
+//            }
 
             return $entry->isReportableException() ||
                    $entry->isFailedRequest() ||
@@ -63,9 +64,7 @@ class TelescopeServiceProvider extends TelescopeApplicationServiceProvider
     protected function gate()
     {
         Gate::define('viewTelescope', function ($user) {
-            return in_array($user->email, [
-                //
-            ]);
+            return $user->is_admin;
         });
     }
 }

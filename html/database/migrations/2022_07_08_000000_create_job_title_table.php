@@ -14,10 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('job_title', function (Blueprint $table) {
-            $table->uuid('uuid')->primary();
+            $table->id();
+            $table->uuid('uuid')->index();
             $table->string('unit_id')->index();
             $table->string('role_id')->index();
-            $table->timestamps();
+            $table->unique(['uuid', 'unit_id', 'role_id']);
         });
     }
 

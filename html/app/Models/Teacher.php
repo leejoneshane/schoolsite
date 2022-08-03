@@ -67,22 +67,27 @@ class Teacher extends Model
 
     public function gmails()
 	{
-    	return $this->hasMany('App\Models\Gsuite', 'uuid', 'uuid');
+    	return $this->morphMany('App\Models\Gsuite', 'owner');
 	}
-    
+
+    public function tutor_class()
+	{
+    	return $this->belongsTo('App\Models\Classroom', 'tutor_class');
+	}
+
     public function units()
 	{
-    	return $this->hasMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id');
+    	return $this->belongsToMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id')->withPivot('role_id');
 	}
 
     public function roles()
 	{
-    	return $this->hasMany('App\Models\Role', 'job_title', 'uuid', 'role_id');
+    	return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id')->withPivot('unit_id');
 	}
 
     public function subjects()
 	{
-    	return $this->hasMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id');
+    	return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id');
 	}
     
     public function classrooms()
@@ -100,6 +105,6 @@ class Teacher extends Model
     public function expired()
 	{
         $expire = new Carbon($this->updated_at);
-    	return Carbon::today() > $expire->addDays(config('app.expired_days'));
+    	return Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'));
 	}
 }

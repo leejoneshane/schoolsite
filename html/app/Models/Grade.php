@@ -25,13 +25,7 @@ class Grade extends Model
 
     public function classrooms()
     {
-        return $this->hasMany('App\Models\Classroom', 'grade_id', 'id');
-    }
-
-    public function sync()
-    {
-        $sso = new SSO();
-        // todo
+        return $this->hasMany('App\Models\Classroom');
     }
 
 }

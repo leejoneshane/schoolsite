@@ -6,6 +6,7 @@ use Log;
 use Carbon\Carbon;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
+use App\Models\IcsCalendar;
 use App\Models\IcsEvent;
 
 class GcalendarServiceProvider extends ServiceProvider
@@ -45,10 +46,9 @@ class GcalendarServiceProvider extends ServiceProvider
 			$cals = $this->calendar->calendarList->listCalendarList()->getItems();
 			DB::table('ics_calendars')->delete();
 			foreach ($cals as $cal) {
-				DB::table('ics_calendars')->Insert([
-					'id' => $cal->getId(),
-					'summary' => $cal->getSummary(),
-				]);
+				$ics = IcsCalendar::firstOrNew(['id' => $cal->getId()]);
+				$ics->summary = $cal->getSummary();
+				$ics->save();
 			}
 			return $cals;
 		} catch (\Google_Service_Exception $e) {
@@ -199,10 +199,10 @@ class GcalendarServiceProvider extends ServiceProvider
 		}
 	}
 	
-	public function sync_event(IcsEvent $node)
+	public function sync_event(IcsEvent $ics)
 	{
-		$calendar_id = $node->calendar_id;
-		$event_id = $node->event_id;
+		$calendar_id = $ics->calendar_id;
+		$event_id = $ics->event_id;
 		if (!is_null($event_id)) {
 			$event = $this->get_event($calendar_id, $event_id);
 			if (!$event) {

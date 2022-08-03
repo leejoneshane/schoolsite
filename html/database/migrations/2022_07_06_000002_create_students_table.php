@@ -17,12 +17,13 @@ return new class extends Migration
             $table->uuid('uuid')->primary();
             $table->char('idno',10)->unique();
             $table->string('account')->unique();
+            $table->string('id')->unique();
             $table->string('sn');
             $table->string('gn');
             $table->string('realname');
             $table->string('class_id');
             $table->string('seat');
-            $table->timestamp('birthdate')->nullable();
+            $table->date('birthdate')->nullable();
             $table->integer('gender');
             $table->string('email')->nullable();
             $table->string('mobile')->nullable();

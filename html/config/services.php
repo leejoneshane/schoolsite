@@ -56,6 +56,7 @@ return [
     ],
 
     'tpedu' => [
+        'expired_days' => 30,
         'server' => 'https://ldap.tp.edu.tw',
         'app' => env('TPEDU_APP'),
         'secret' => env('TPEDU_SECRET'),

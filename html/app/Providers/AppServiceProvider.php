@@ -2,9 +2,13 @@
 
 namespace App\Providers;
 
+use Queue;
+use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 use App\View\Components\Menus;
+use App\Jobs\SyncFromTpedu;
+use App\Models\User;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -35,6 +39,15 @@ class AppServiceProvider extends ServiceProvider
         });
         Blade::if('student', function () {
             return auth()->user() && auth()->user()->user_type == 'Student';
+        });
+
+        Queue::after(function (JobProcessed $event) {
+            if ($event->job->getName() == 'SyncFromTpedu') {
+                $admins = User::where('is_admin', true)->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new SyncCompletedNotification($event->job));
+                }
+            }
         });
     }
 }

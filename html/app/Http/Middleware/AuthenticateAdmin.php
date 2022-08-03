@@ -14,8 +14,8 @@ class AuthenticateAdmin
             if ($request->ajax() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
             } else {
-                session('error', '只有管理員才能使用管理介面！');
-                return redirect('home');
+                session()->flash('error', '只有管理員才能使用管理介面！');
+                return redirect()->route('home');
             }
         }
         return $next($request);

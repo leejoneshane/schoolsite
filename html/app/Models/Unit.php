@@ -25,18 +25,12 @@ class Unit extends Model
 
     public function roles()
     {
-        return $this->hasMany('App\Models\Role', 'unit_id', 'id');
+        return $this->hasMany('App\Models\Role');
     }
 
     public function teachers()
     {
         return $this->belongsToMany('App\Models\Teacher', 'job_title', 'unit_id', 'uuid');
-    }
-
-    public function sync()
-    {
-        $sso = new SSO();
-        // todo
     }
 
 }

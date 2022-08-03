@@ -33,10 +33,4 @@ class Subject extends Model
         return $this->belongsToMany('App\Models\Classroom', 'assigment', 'subject_id', 'class_id');
     }
 
-    public function sync()
-    {
-        $sso = new SSO();
-        // todo
-    }
-
 }

@@ -3,9 +3,6 @@
 use Illuminate\Support\Facades\Facade;
 
 return [
-
-    'expired_days' => 30,
-
     /*
     |--------------------------------------------------------------------------
     | Application Name
@@ -199,7 +196,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
         App\Providers\TpeduServiceProvider::class,
-        App\Providers\ADServiceProvider::class,
+//        App\Providers\ADServiceProvider::class,
         App\Providers\GsuiteServiceProvider::class,
         App\Providers\GcalendarServiceProvider::class,
     ],
@@ -216,7 +213,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        'Log' => Illuminate\Support\Facades\Log::class,
+        //
     ])->toArray(),
 
 ];

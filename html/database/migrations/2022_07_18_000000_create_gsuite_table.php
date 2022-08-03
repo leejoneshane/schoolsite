@@ -14,7 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('gsuite', function (Blueprint $table) {
-            $table->uuid('uuid')->index();
+            $table->id();
+            $table->uuid('owner_id')->index();
+            $table->string('owner_type');
             $table->string('userKey')->unique();
             $table->boolean('primary')->default(0);
             $table->timestamps();

@@ -15,11 +15,12 @@ return new class extends Migration
     public function up()
     {
         Schema::create('permissions', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
 			$table->string('group')->index();
 			$table->string('permission');
             $table->text('description')->nullable();
             $table->timestamps();
+            $table->unique(['group', 'permission']);
         });
         DB::table('permissions')->insert([
             ['group' => 'perm', 'permission' => 'admin', 'description' => '管理所有權限', ],

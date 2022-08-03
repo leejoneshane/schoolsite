@@ -18,6 +18,8 @@ services:
       MAIL_FROM_NAME: 國語實小E化服務網
       CACHE_DRIVER: redis
       SESSION_DRIVER: redis
+      QUEUE_CONNECTION: database
+      QUEUE_FAILED_DRIVER: database-uuids
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: null

@@ -7,11 +7,16 @@ use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use App\Models\Unit;
+use App\Models\Role;
+use App\Models\Classroom;
+use App\Models\Subject;
+use App\Models\Teacher;
+use App\Models\Student;
 
 class TpeduServiceProvider extends ServiceProvider
 {
 
-	private $oauth = null;
     private $seme = null;
     private $error = '';
     public $expires_in = '';
@@ -20,12 +25,6 @@ class TpeduServiceProvider extends ServiceProvider
 
     public function __construct()
     {
-        if (is_null($this->oauth)) {
-            $this->oauth = new Http([
-                'verify' => false,
-                'base_uri' => config('services.tpedu.server'),
-            ]);
-		}
         $this->seme = $this->current_seme();
     }
 
@@ -56,15 +55,15 @@ class TpeduServiceProvider extends ServiceProvider
 
 	public function get_tokens($auth_code)
 	{
-		$response = $this->oauth->post(config('services.tpedu.endpoint.token'), [
-			'headers' => [ 'Content-Type' => 'application/x-www-form-urlencoded' ],
-			'form_params' => [
-				'grant_type' => 'authorization_code',
-				'client_id' => config('services.tpedu.app'),
-				'client_secret' => config('services.tpedu.secret'),
-				'redirect_uri' => config('services.tpedu.callback'),
-				'code' => $auth_code,
-			],
+		$response = Http::baseUrl(config('services.tpedu.server')
+		)->withHeaders([
+			'Content-Type' => 'application/x-www-form-urlencoded'
+		])->post(config('services.tpedu.endpoint.token'), [
+			'grant_type' => 'authorization_code',
+			'client_id' => config('services.tpedu.app'),
+			'client_secret' => config('services.tpedu.secret'),
+			'redirect_uri' => config('services.tpedu.callback'),
+			'code' => $auth_code,
 		]);
 		$data = json_decode($response->getBody());
 		if ($response->getStatusCode() == 200) {
@@ -73,7 +72,7 @@ class TpeduServiceProvider extends ServiceProvider
 			$this->refresh_token = $data->refresh_token;
 		} else {
 			$this->error = $response->getBody();
-			Log::notice('oauth2 token response =>'.$this->error);
+			Log::error('oauth2 token response =>'.$this->error);
 			return false;
 		}
 	}
@@ -81,15 +80,15 @@ class TpeduServiceProvider extends ServiceProvider
 	public function refresh_tokens()
 	{
     	if ($this->refresh_token && $this->expires_in < time()) {
-        	$response = $this->oauth->post(config('services.tpedu.endpoint.token'), [
-            	'headers' => [ 'Content-Type' => 'application/x-www-form-urlencoded' ],
-            	'form_params' => [
-                	'grant_type' => 'refresh_token',
-                	'client_id' => config('services.tpedu.app'),
-                	'client_secret' => config('services.tpedu.secret'),
-                	'refresh_token' => $this->refresh_token,
-                	'scope' => 'user',
-            	],
+        	$response = Http::baseUrl(config('services.tpedu.server')
+			)->withHeaders([
+				'Content-Type' => 'application/x-www-form-urlencoded'
+			])->post(config('services.tpedu.endpoint.token'), [
+				'grant_type' => 'refresh_token',
+				'client_id' => config('services.tpedu.app'),
+				'client_secret' => config('services.tpedu.secret'),
+				'refresh_token' => $this->refresh_token,
+				'scope' => 'user',
         	]);
         	$data = json_decode($response->getBody());
         	if ($response->getStatusCode() == 200) {
@@ -98,7 +97,7 @@ class TpeduServiceProvider extends ServiceProvider
             	$this->refresh_token = $data->refresh_token;
         	} else {
 				$this->error = $response->getBody();
-				Log::notice('oauth2 token response =>'.$this->error);
+				Log::error('oauth2 token response =>'.$this->error);
             	return false;
         	}
     	}
@@ -123,15 +122,16 @@ class TpeduServiceProvider extends ServiceProvider
 	public function who()
 	{
 		if ($this->access_token) {
-			$response = $this->oauth->get(config('services.tpedu.endpoint.user'), [
-				'headers' => [ 'Authorization' => 'Bearer '.$this->access_token ],
-			]);
+			$response = Http::baseUrl(config('services.tpedu.server')
+			)->withHeaders([
+				'Authorization' => 'Bearer '.$this->access_token,
+			])->get(config('services.tpedu.endpoint.user'));
 			$user = json_decode($response->getBody());
 			if ($response->getStatusCode() == 200) {
 				return User::where('uuid', $user->uuid)->first();
 			} else {
 				$this->error = $response->getBody();
-				Log::notice('oauth2 user response =>'.$this->error);
+				Log::error('oauth2 user response =>'.$this->error);
 				return false;
 			}
 		}
@@ -141,9 +141,10 @@ class TpeduServiceProvider extends ServiceProvider
 	public function profile()
 	{
 		if ($this->access_token) {
-			$response = $this->oauth->get(config('services.tpedu.endpoint.profile'), [
-				'headers' => [ 'Authorization' => 'Bearer ' . $this->access_token ],
-			]);
+			$response = Http::baseUrl(config('services.tpedu.server')
+			)->withHeaders([
+				'Authorization' => 'Bearer ' . $this->access_token,
+			])->get(config('services.tpedu.endpoint.profile'));
 			$user = json_decode($response->getBody());
 			if ($response->getStatusCode() == 200) {
 				if ($user->employee_type == '學生') {
@@ -153,7 +154,7 @@ class TpeduServiceProvider extends ServiceProvider
 				}
 			} else {
 				$this->error = $response->getBody();
-				Log::notice('oauth2 profile response =>'.$this->error);
+				Log::error('oauth2 profile response =>'.$this->error);
 				return false;
 			}
 		}
@@ -162,7 +163,6 @@ class TpeduServiceProvider extends ServiceProvider
 
 	public function api($which, array $replacement = [])
 	{
-		if (empty($this->access_token)) return;
 		$dataapi = config('services.tpedu.endpoint.' . $which);
     	if ($which == 'find_users') {
 			if (!empty($replacement)) {
@@ -183,43 +183,56 @@ class TpeduServiceProvider extends ServiceProvider
 			}
 			$dataapi = str_replace($search, $values, $dataapi);
 		}
-		$response = $this->oauth->get($dataapi, [
-			'headers' => ['Authorization' => 'Bearer ' . config('services.tpedu.token')],
-			'http_errors' => false,
-		]);
-		$json = json_decode($response->getBody());
+		$response = Http::baseUrl(config('services.tpedu.server')
+		)->withHeaders([
+			'Accept' => 'application/json',
+			'Authorization' => 'Bearer ' . config('services.tpedu.token'),
+		])->get($dataapi);
 		if ($response->getStatusCode() == 200) {
+			$json = json_decode($response->getBody());
 			return $json;
 		} else {
 			$this->error = $response->getBody();
-			Log::notice('oauth2 api('.$dataapi.') response =>'.$this->error);
+			Log::error('oauth2 '.$dataapi.' response =>'.$this->error);
 			return false;
 		}
 	}
 
 	function sync_teachers()
 	{
-    	$uuids = api('all_teachers');
+    	$uuids = $this->api('all_teachers');
     	if ($uuids && is_array($uuids)) {
         	foreach ($uuids as $uuid) {
-            	fetch_user($uuid);
+            	$this->fetch_user($uuid);
         	}
     	}
 	}
 
 	function sync_students($cls)
 	{
-    	$uuids = api('students_of_class', ['cls' => $cls]);
+    	$uuids = $this->api('students_of_class', ['class' => $cls]);
     	if ($uuids && is_array($uuids)) {
         	foreach ($uuids as $uuid) {
-            	fetch_user($uuid);
+            	$this->fetch_user($uuid);
         	}
     	}
 	}
 
 	public function fetch_user($uuid)
 	{
-		$user = api('one_user', ['uuid' => $uuid]);
+		$temp = Student::find($uuid);
+		if ($temp) {
+			$expire = new Carbon($temp->updated_at);
+			if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return true;
+		} else {
+			$temp = Teacher::find($uuid);
+			if ($temp) {
+				$expire = new Carbon($temp->updated_at);
+				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return true;
+			}
+		}
+		$o = config('services.tpedu.school');
+		$user = $this->api('one_user', ['uuid' => $uuid]);
 		if ($user) {
 			if (is_array($user->uid)) {
 				foreach ($user->uid as $u) {
@@ -230,165 +243,167 @@ class TpeduServiceProvider extends ServiceProvider
 			} else {
 				$account = $user->uid;
 			}
-			$m_dept_id = '';
-			$m_dept_name = '';
-			$m_role_id = '';
-			$m_role_name = '';
+			$birth = date('Y-m-d', strtotime($user->birthDate));
 			$stu = ($user->employeeType == '學生') ? true : false; 
 			if ($stu) {
-				$myclass = $user->tpClass;
-				$myseat = $user->tpSeat;
-				$m_dept_id = $myclass;
-				$m_dept_name = $myclass;
-				if (isset($user->tpClassTitle)) {
-					$m_dept_name = $user->tpClassTitle;
-				}
-				$m_role_id = $m_dept_id;
-				$m_role_name = $m_dept_name;
+				$emp = Student::firstOrNew(['uuid' => $uuid]);
+				$emp->class_id = $user->tpClass;
+				$emp->seat = $user->tpSeat;
 			} else {
-				DB::table('job_title')->where('uuid', $uuid)->dalete();
+				$emp = Teacher::firstOrNew(['uuid' => $uuid]);
+				$m_dept_id = '';
+				$m_dept_name = '';
+				$m_role_id = '';
+				$m_role_name = '';
+				DB::table('job_title')->where('uuid', $uuid)->delete();
 				DB::table('assignment')->where('uuid', $uuid)->delete();	
 				if (isset($user->ou) && isset($user->title)) {
-					$sdept = config('sub_dept');
-					$keywords = explode(',', $sdept);
+					$keywords = explode(',', config('services.tpedu.base_unit'));
 					if (is_array($user->ou)) {
 						foreach ($user->ou as $ou_pair) {
 							$a = explode(',', $ou_pair);
-							$o = $a[0];
-							$dept_name = get_unit_name($a[1]);
-							$ckf = 0;
-							foreach ($keywords as $k) {
-								if (!(mb_strpos($dept_name, $k) === false)) {
-									$ckf = 1;
+							if ($a[0] == $o) {
+								$dept_name = Unit::find($a[1])->name;
+								$ckf = false;
+								foreach ($keywords as $k) {
+									if (!(mb_strpos($dept_name, $k) === false)) {
+										$ckf = true;
+									}
 								}
-							}
-							if (!$ckf || ($m_dept_id == '' && $ckf)) {
-								$m_dept_id = $a[1];
-								$m_dept_name = $dept_name;
+								if (!$ckf || empty($m_dept_id)) {
+									$m_dept_id = $a[1];
+									$m_dept_name = $dept_name;
+								}
 							}
 						}
 					} else {
 						$a = explode(',', $user->ou);
-						$o = $a[0];
-						$m_dept_id = $a[1];
-						$d = $user->department->{$o}[0];
-						$m_dept_name = $d->name;
+						if ($a[0] == $o) {
+							$m_dept_id = $a[1];
+							$dept_name = Unit::find($a[1])->name;
+							$m_dept_name = $dept_name;	
+						}
 					}
-					if (is_array($user->title)) {
-						foreach ($user->title as $ro_pair) {
-							$a = explode(',', $ro_pair);
-							$o = $a[0];
-							$role_name = get_role_name($a[2]);
-							$ckf = 0;
-							foreach ($keywords as $k) {
-								if (!(mb_strpos($role_name, $k) === false)) {
-									$ckf = 1;
+					$emp->unit_id = $m_dept_id;
+					$emp->unit_name = $m_dept_name;
+					if (is_array($user->titleName->{$o})) {
+						foreach ($user->titleName->{$o} as $ro) {
+							$a = explode(',', $ro->key);
+							if ($a[0] == $o) {
+								$u = $a[1];
+								$r = $a[2];
+								$role_name = $ro->name; 
+								$ckf = false;
+								foreach ($keywords as $k) {
+									if (!(mb_strpos($role_name, $k) === false)) {
+										$ckf = true;
+									}
 								}
+								$role = Role::where('role_no', $r)->where('unit_id', $u)->first();
+								if (!$role) {
+									$role = Role::create([
+										'role_no' => $r,
+										'unit_id' => $u,
+										'name' => $role_name,
+									]);	
+								}
+								if (!$ckf || empty($m_role_id)) {
+									$m_role_id = $role->id;
+									$m_role_name = $role_name;
+								}
+								DB::table('job_title')->insert([
+									'uuid' => $uuid,
+									'unit_id' => $u,
+									'role_id' => $role->id,
+								]);	
 							}
-							if (!$ckf || ($m_dept_id == '' && $ckf)) {
-								$m_role_id = $a[2];
-								$m_role_name = $role_name;
-							}
-							DB::table('job_title')->insert([
-								'uuid' => $uuid,
-								'dept_id' => $a[1],
-								'role_id' => $a[2],
-							]);
 						}
 					} else {
-						$a = explode(',', $user->title);
-						$o = $a[0];
-						$m_role_id = $a[1];
-						$d = $user->titleName->$o[0];
-						$m_role_name = $d->name;
-						DB::table(job_title)->insert([
-							'uuid' => $uuid,
-							'dept_id' => $a[1],
-							'role_id' => $a[2],
-						]);
+						$ro = $user->titleName->{$o};
+						$a = explode(',', $ro->key);
+						if ($a[0] == $o) {
+							$u = $a[1];
+							$r = $a[2];
+							$role_name = $ro->name; 
+							$role = Role::where('role_no', $r)->where('unit_id', $u)->first();
+							if (!$role) {
+								$role = Role::create([
+									'role_no' => $r,
+									'unit_id' => $u,
+									'name' => $role_name,
+								]);	
+							}
+						$m_role_id = $role->id;
+							$m_role_name = $role_name;
+							DB::table('job_title')->insert([
+								'uuid' => $uuid,
+								'unit_id' => $u,
+								'role_id' => $role->id,
+							]);	
+						}
 					}
+					$emp->role_id = $m_role_id;
+					$emp->role_name = $m_role_name;
 				}
 				if (!empty($user->tpTutorClass)) {
-					$tclass = $user->tpTutorClass;
+					$emp->tutor_class = $user->tpTutorClass;
 				}
 				if (isset($user->tpTeachClass)) {
 					foreach ($user->tpTeachClass as $assign_pair) {
 						$a = explode(',', $assign_pair);
+						$s = Subject::where('name', substr($a[2], 4))->first();
 						DB::table('assignment')->insert([
 							'uuid' => $uuid,
 							'class_id' => $a[1],
-							'subject_id' => $a[2],
+							'subject_id' => $s->id,
 						]);
 					}
-				}	
+				}
 			}
-			$fields = [
-				'uuid' => $uuid,
-				'idno' => $user->cn,
-				'id' => $user->employeeNumber,
-				'student' => $stu,
-				'account' => $account,
-				'sn' => $user->sn,
-				'gn' => $user->givenName,
-				'realname' => $user->displayName,
-				'dept_id' => $m_dept_id,
-				'dept_name' => $m_dept_name,
-				'role_id' => $m_role_id,
-				'role_name' => $m_role_name,
-				'birthdate' => date('Y-m-d H:i:s', strtotime($user->birthDate)),
-				'gender' => $user->gender,
-				'status' => $user->inetUserStatus,
-				'fetch_date' => date('Y-m-d H:i:s'),
-			];
+			$emp->idno = $user->cn;
+			$emp->id = $user->employeeNumber;
+			$emp->account = $account;
+			$emp->sn = $user->sn;
+			$emp->gn = $user->givenName;
+			$emp->realname = $user->displayName;
+			$emp->birthdate = $birth;
+			$emp->gender = $user->gender;
 			if (!empty($user->mobile)) {
-				$fields['mobile'] = $user->mobile;
+				$emp->mobile = $user->mobile;
 			}
 			if (!empty($user->telephoneNumber)) {
-				$fields['telephone'] = $user->telephoneNumber;
+				$emp->telephone = $user->telephoneNumber;
 			}
 			if (!empty($user->homePhone)) {
-				$fields['telephone'] = $user->homePhone;
+				$emp->telephone = $user->homePhone;
 			}
 			if (!empty($user->registeredAddress)) {
-				$fields['address'] = $user->registeredAddress;
+				$emp->address = $user->registeredAddress;
 			}
 			if (!empty($user->homePostalAddress)) {
-				$fields['address'] = $user->homePostalAddress;
+				$emp->address = $user->homePostalAddress;
 			}
 			if (!empty($user->mail)) {
-				$fields['email'] = preg_replace('/\s(?=)/', '', $user->mail);
+				$emp->email = preg_replace('/\s(?=)/', '', $user->mail);
 			}
 			if (!empty($user->wWWHomePage)) {
-				$fields['www'] = $user->wWWHomePage;
-			}
-			if (!empty($tclass)) {
-				$fields['tutor_class'] = $myclass;
-			}
-			if (!empty($myclass)) {
-				$fields['class'] = $myclass;
-			}
-			if (!empty($myseat)) {
-				$fields['seat'] = $myseat;
+				$emp->www = $user->wWWHomePage;
 			}
 			if (!empty($user->tpCharacter)) {
 				if (is_array($user->tpCharacter)) {
-					$fields['character'] = implode(',', $user->tpCharacter);
+					$emp->character = implode(',', $user->tpCharacter);
 				} else {
-					$fields['character'] = $user->tpCharacter;
+					$emp->character = $user->tpCharacter;
 				}
 			}
-			if ($stu) {
-				DB::table('students')->updateOrInsert($fields);
-			} else {
-				DB::table('teachers')->updateOrInsert($fields);
-			}
+			$emp->save();
 			return true;
 		}
 		return false;
 	}
 
 	function user_type($uuid) {
-		$user = api('one_user', ['uuid' => $uuid]);
+		$user = $this->api('one_user', ['uuid' => $uuid]);
 		if ($user) {
 			if ($user->employeeType == '學生') {
 				return 'Student';
@@ -400,69 +415,79 @@ class TpeduServiceProvider extends ServiceProvider
 
 	function sync_units()
 	{
-		DB::table('units')->delete();
-		$ous = api('all_units');
-		if ($ous) {
-			foreach ($ous as $o) {
-				$fields = [
-					'id' => $o->ou,
-					'name' => $o->description,
-				];
-				DB::table('units')->updateOrInsert($fields);
-			}
+		$fetch = Unit::first()->updated_at;
+		$expire = new Carbon($fetch);
+    	if (Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'))) {
+			$ous = $this->api('all_units');
+			if ($ous) {
+				foreach ($ous as $o) {
+					$unit = Unit::firstOrNew(['id' => $o->ou]);
+					$unit->name = $o->description;
+					$unit->save();
+				}
+			}	
 		}
 	}
+
 	function sync_roles()
 	{
-		DB::table('roles')->delete();
-		$ous = api('all_units');
-		if ($ous) {
-			foreach ($ous as $o) {
-				$roles = api('roles_of_unit', ['ou' => $o->ou]);
-				if ($roles) {
-					foreach ($roles as $r) {
-						$fields = [
-							'id' => $r->cn,
-							'unit_id' => $o->ou,
-							'name' => $r->description,
-						];
-						DB::table('roles')->updateOrInsert($fields);
-					}
-				}
-			}
+		$fetch = Unit::first()->updated_at;
+		$expire = new Carbon($fetch);
+    	if (Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'))) {
+			DB::table('roles')->delete();
+//		$ous = $this->api('all_units');
+//		if ($ous) {
+//			foreach ($ous as $o) {
+//				$roles = $this->api('roles_of_unit', ['unit' => $o->ou]);
+//				if ($roles) {
+//					foreach ($roles as $r) {
+//						$role = Role::create([
+//							'role_no' => $r->cn,
+//							'unit_id' => $o->ou,
+//							'name' => $r->description,
+//						]);
+//					}
+//				}	
+//			}
+//		}
 		}
 	}
+
 	function sync_subjects()
 	{
-		DB::table('subjects')->delete();
-		$subjects = api('all_subjects');
-		if ($subjects) {
-			$n = 1;
-			foreach ($subjects as $s) {
-				$fields = [
-					'id' => 'subj' . ($n<10) ? "0$n" : "$n",
-					'name' => $s->description,
-				];
-				$n += 1;
-				DB::table('subjects')->updateOrInsert($fields);
+		$fetch = Subject::first()->updated_at;
+		$expire = new Carbon($fetch);
+    	if (Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'))) {
+			$subjects = $this->api('all_subjects');
+			if ($subjects) {
+				foreach ($subjects as $s) {
+					$subj = Subject::firstOrNew(['name' => $s->description]);
+					$subj->save();
+				}
 			}
 		}
 	}
+
 	function sync_classes()
 	{
-		DB::table('classes')->delete();
-		$classes = api('all_classes');
-		if ($classes) {
-			foreach ($classes as $c) {
-				$fields = [
-					'id' => $c->ou,
-					'grade_id' => $c->grade,
-					'name' => $c->description,
-				];
-				if (isset($c->tutor[0])) {
-					$fields['tutor'] = $c->tutor[0];
+		$fetch = Classroom::first()->updated_at;
+		$expire = new Carbon($fetch);
+    	if (Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'))) {
+			$classes = $this->api('all_classes');
+			if ($classes) {
+				foreach ($classes as $c) {
+					$cls = Classroom::firstOrNew(['id' => $c->ou]);
+					$cls->grade_id = $c->grade;
+					$cls->name = $c->description;
+					$tutors = [];
+					foreach ($c->tutor as $t) {
+						if ($t) $tutors[] = $t;
+					}
+					if (!empty($tutors)) {
+						$cls->tutor = $tutors;
+					}
+					$cls->save();
 				}
-				DB::table('classes')->updateOrInsert($fields);
 			}
 		}
 	}

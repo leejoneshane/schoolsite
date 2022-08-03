@@ -57,6 +57,11 @@ class User extends Authenticatable
     	return $this->hasMany('App\Models\SocialiteAccount', 'uuid', 'uuid');
 	}
 
+    public function permissions()
+	{
+    	return $this->belongsToMany('App\Models\Permissions', 'user_permission', 'uuid', 'perm_id');
+	}
+
     public function getProfileAttribute()
     {
         if ($this->user_type == 'Teacher') {

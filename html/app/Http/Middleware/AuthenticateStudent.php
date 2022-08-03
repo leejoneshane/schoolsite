@@ -14,8 +14,8 @@ class AuthenticateStudent
             if ($request->ajax() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
             } else {
-                session('error', '只有學生才能連結此頁面！');
-                return redirect('home');
+                session()->flash('error', '只有學生才能連結此頁面！');
+                return redirect()->route('home');
             }
         }
         return $next($request);

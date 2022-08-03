@@ -25,19 +25,28 @@ class Classroom extends Model
         'name',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'tutor' => 'array',
+    ];
+
     public function grade()
     {
-        return $this->belongsTo('App\Models\Grade', 'id', 'grade');
+        return $this->belongsTo('App\Models\Grade');
     }
 
-    public function tutor()
+    public function tutors()
     {
-        return $this->hasOne('App\Models\Teacher', 'uuid', 'tutor');
+        return $this->hasMany('App\Models\Teacher', 'tutor_class');
     }
 
     public function students()
     {
-        return $this->hasMany('App\Models\Student', 'class_id', 'id');
+        return $this->hasMany('App\Models\Student', 'class_id');
     }
 
     public function teachers()
@@ -48,12 +57,6 @@ class Classroom extends Model
     public function subjects()
     {
         return $this->belongsToMany('App\Models\Subject', 'assigment', 'class_id', 'subject_id');
-    }
-
-    public function sync()
-    {
-        $sso = new SSO();
-        // todo
     }
 
 }
