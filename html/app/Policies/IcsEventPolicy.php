@@ -38,12 +38,9 @@ class IcsEventPolicy
     public function create(User $user)
     {
         if ($user->user_type == 'Teacher') {
-            $teacher = $user->profile();
-            $jobs = $teacher->roles();
-            foreach ($jobs as $job) {
-                if (strpos($job->name, '主任') || strpos($job->name, '組長')) {
-                    return true;
-                }        
+            if ($user->profile['role_id'] == 'C02' ||
+                $user->profile['role_id'] == 'C03') {
+                return true;
             }
         }
         return Response::deny('您沒有權限編輯校內行事曆.');
@@ -52,12 +49,10 @@ class IcsEventPolicy
     public function update(User $user, IcsEvent $event)
     {
         if ($user->user_type == 'Teacher') {
-            $teacher = $user->profile();
-            $jobs = $teacher->roles();
-            foreach ($jobs as $job) {
-                if ((strpos($job->name, '主任') || strpos($job->name, '組長')) && $job->unit_id == $event->unit_id) {
-                    return true;
-                }        
+            if (substr($event->unit_id, 0, 3) == substr($user->profile['unit_id'], 0, 3) && (
+                $user->profile['role_id'] == 'C02' ||
+                $user->profile['role_id'] == 'C03')) {
+                return true;
             }
         }
         return Response::deny('您無法編輯其他處室建立的行事曆事件！');
@@ -66,12 +61,9 @@ class IcsEventPolicy
     public function delete(User $user, IcsEvent $event)
     {
         if ($user->user_type == 'Teacher') {
-            $teacher = $user->profile();
-            $jobs = $teacher->roles();
-            foreach ($jobs as $job) {
-                if (strpos($job->name, '主任') && $job->unit_id == $event->unit_id) {
-                    return true;
-                }        
+            if ($event->unit_id == substr($user->profile['unit_id'], 0, 3) &&
+                $user->profile['role_id'] == 'C02') {
+                return true;
             }
         }
         return falseResponse::deny('只有處室主任可以刪除該處室的行事曆事件！');;

@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Carbon\Carbon;
 
-class SyncCompletedNotification extends Notification
+class SyncCompletedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -47,7 +47,8 @@ class SyncCompletedNotification extends Notification
         $end = Carbon::createFromTimestamp($this->job->end)->format('Y-m-d H:m:s l');
         $times = $this->job->attempts();
         return (new MailMessage)
-                    ->line("資料庫同步作業於 $start 開始進行，中斷重試共 $times 次,已經於 $end 順利完成！");
+                ->subject('資料庫同步完成通知')
+                ->line("資料庫同步作業於 $start 開始進行，中斷重試共 $times 次,已經於 $end 順利完成！");
     }
 
     /**

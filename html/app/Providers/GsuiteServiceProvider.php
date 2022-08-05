@@ -246,13 +246,13 @@ class GsuiteServiceProvider extends ServiceProvider
 				$user->setOrgUnitPath(config('services.gsuite.student_orgunit'));
 			}
 		} elseif ($t instanceof Teacher) {
-			$jobs = $t->roles();
+			$jobs = $t->units();
 			foreach ($jobs as $job) {
 				$neworg = new \Google_Service_Directory_UserOrganization();
 				$neworg->setType('school');
-				$neworg->setDepartment($job->unit()->name);
+				$neworg->setDepartment('教師');
 				$neworg->setTitle($job->name);
-				if ($job->id == $t->role_id) {
+				if ($job->id == $t->unit_id) {
 					$neworg->setPrimary(true);
 				}
 				$orgs[] = $neworg;

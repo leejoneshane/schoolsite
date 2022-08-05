@@ -6,7 +6,7 @@
 <body class="h-screen">
     @include('layouts.partials.header')
     @include('layouts.partials.nav')
-    <div class="grid grid-cols-12 grid-flow-col gap-3">
+    <div class="h-full grid grid-cols-12 grid-flow-col gap-3">
         @include('layouts.partials.sidebar')
         @include('layouts.partials.content')
     </div>

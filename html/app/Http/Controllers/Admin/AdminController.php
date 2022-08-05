@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 use App\Models\Menu;
 use App\Jobs\SyncFromTpedu;
 use App\Providers\TpeduServiceProvider as SSO;
+use App\Models\Unit;
+use App\Models\Role;
+use App\Models\Grade;
+use App\Models\Classroom;
+use App\Models\Subject;
 use App\Models\Teacher;
 
 class AdminController extends Controller
@@ -29,23 +34,23 @@ class AdminController extends Controller
             Menu::create([
                 'id' => 'sync',
                 'parent_id' => 'database',
-                'caption' => '資料同步',
+                'caption' => '更新快取資料',
                 'url' => 'route.sync',
+                'weight' => 10,
+            ]);
+            Menu::create([
+                'id' => 'forcesync',
+                'parent_id' => 'database',
+                'caption' => '強制資料同步',
+                'url' => 'route.forcesync',
                 'weight' => 10,
             ]);
             Menu::create([
                 'id' => 'units',
                 'parent_id' => 'database',
-                'caption' => '行政單位與職稱',
+                'caption' => '行政單位與職權',
                 'url' => 'route.units',
                 'weight' => 20,
-            ]);
-            Menu::create([
-                'id' => 'jobs',
-                'parent_id' => 'database',
-                'caption' => '職務編排',
-                'url' => 'route.jobs',
-                'weight' => 30,
             ]);
             Menu::create([
                 'id' => 'classes',
@@ -92,30 +97,66 @@ class AdminController extends Controller
      */
     public function index(Request $request)
     {
-        session()->flash('message', Teacher::first()->updated_at);
         return view('admin');
     }
 
     public function syncFromTpedu()
     {
-        $this->dispatch(new SyncFromTpedu);
+        SyncFromTpedu::dispatch(true);
+        session()->flash('success', '此同步作業僅同步超過'.config('services.tpedu.expired_days').'天的資料，同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
+        return view('admin');
+    }
+
+    public function forceSyncFromTpedu()
+    {
+        SyncFromTpedu::dispatch(false);
         session()->flash('success', '同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
         return view('admin');
     }
 
-    public function units()
+    public function unitList()
     {
-        return view('admin');
+        $units = Unit::with('roles')->get();
+        return view('admin.units', ['units' => $units]);
     }
 
-    public function jobs()
+    public function unitUpdate(Request $request)
     {
-        return view('admin');
+        foreach ($request->all() as $k => $i) {
+            if ($k == '_token') continue;
+            $a = explode('_', $k);
+            if (isset($a[1])) {
+                $role = Role::find($a[1]);
+                $role->name = $i;
+                $role->save();
+            } else {
+                $unit = Unit::find($a[0]);
+                $unit->name = $i;
+                $unit->save();
+            }
+        }
+        return $this->unitList();
     }
 
-    public function classes()
+    public function classList()
     {
-        return view('admin');
+        $grades = Grade::all();
+        $classes = Classroom::all();
+        $teachers = Teacher::all();
+        return view('admin.classes', ['grades' => $grades, 'classes' => $classes, 'teachers' => $teachers]);
+    }
+
+    public function classUpdate(Request $request)
+    {
+        $names = $request->input('name');
+        $tutors = $request->input('tutor');
+        foreach ($names as $k => $i) {
+            $cls = Classroom::find($k);
+            $cls->name = $i;
+            $cls->tutor = array($tutors[$k]);
+            $cls->save();
+        }
+        return $this->classList();
     }
 
     public function subjects()

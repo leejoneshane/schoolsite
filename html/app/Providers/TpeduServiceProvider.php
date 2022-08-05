@@ -199,37 +199,19 @@ class TpeduServiceProvider extends ServiceProvider
 		}
 	}
 
-	function sync_teachers()
+	public function fetch_user($uuid, $only = false)
 	{
-    	$uuids = $this->api('all_teachers');
-    	if ($uuids && is_array($uuids)) {
-        	foreach ($uuids as $uuid) {
-            	$this->fetch_user($uuid);
-        	}
-    	}
-	}
-
-	function sync_students($cls)
-	{
-    	$uuids = $this->api('students_of_class', ['class' => $cls]);
-    	if ($uuids && is_array($uuids)) {
-        	foreach ($uuids as $uuid) {
-            	$this->fetch_user($uuid);
-        	}
-    	}
-	}
-
-	public function fetch_user($uuid)
-	{
-		$temp = Student::find($uuid);
-		if ($temp) {
-			if (!$temp->expired) return false;
-		} else {
-			$temp = Teacher::find($uuid);
+		if ($only) {
+			$temp = Student::find($uuid);
 			if ($temp) {
-				$expire = new Carbon($temp->updated_at);
-				if (!$temp->expired) return false;
-			}
+				if (!$temp->expired()) return false;
+			} else {
+				$temp = Teacher::find($uuid);
+				if ($temp) {
+					$expire = new Carbon($temp->updated_at);
+					if (!$temp->expired()) return false;
+				}
+			}	
 		}
 		$o = config('services.tpedu.school');
 		$user = $this->api('one_user', ['uuid' => $uuid]);
@@ -413,12 +395,14 @@ class TpeduServiceProvider extends ServiceProvider
 		}
 	}
 
-	function sync_units()
+	function sync_units($only = false)
 	{
-		$fetch = Unit::first();
-		if ($fetch) {
-			$expire = new Carbon($fetch->updated_at);
-    		if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return false;
+		if ($only) {
+			$fetch = Unit::first();
+			if ($fetch) {
+				$expire = new Carbon($fetch->updated_at);
+				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return;
+			}	
 		}
 		$ous = $this->api('all_units');
 		if ($ous) {
@@ -430,23 +414,26 @@ class TpeduServiceProvider extends ServiceProvider
 		}
 	}
 
-	function sync_roles()
+	function sync_roles($only = false)
 	{
-		$fetch = Role::first();
-		if ($fetch) {
-			$expire = new Carbon($fetch->updated_at);
-    		if (Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'))) {
-				DB::table('roles')->delete();
-			}
+		if ($only) {
+			$fetch = Role::first();
+			if ($fetch) {
+				$expire = new Carbon($fetch->updated_at);
+				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return;
+			}	
 		}
+		DB::table('roles')->delete();
 	}
 
-	function sync_subjects()
+	function sync_subjects($only = false)
 	{
-		$fetch = Subject::first();
-		if ($fetch) {
-			$expire = new Carbon($fetch->updated_at);
-    		if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return false;
+		if ($only) {
+			$fetch = Subject::first();
+			if ($fetch) {
+				$expire = new Carbon($fetch->updated_at);
+				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return;
+			}	
 		}
 		$subjects = $this->api('all_subjects');
 		if ($subjects) {
@@ -457,12 +444,14 @@ class TpeduServiceProvider extends ServiceProvider
 		}
 	}
 
-	function sync_classes()
+	function sync_classes($only = false)
 	{
-		$fetch = Classroom::first();
-		if ($fetch) {
-			$expire = new Carbon($fetch->updated_at);
-    		if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return false;
+		if ($only) {
+			$fetch = Classroom::first();
+			if ($fetch) {
+				$expire = new Carbon($fetch->updated_at);
+				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return;
+			}	
 		}
 		$classes = $this->api('all_classes');
 		if ($classes) {
@@ -478,6 +467,29 @@ class TpeduServiceProvider extends ServiceProvider
 					$cls->tutor = $tutors;
 				}
 				$cls->save();
+			}
+		}
+	}
+
+	function sync_teachers($only = false)
+	{
+    	$uuids = $this->api('all_teachers');
+    	if ($uuids && is_array($uuids)) {
+        	foreach ($uuids as $uuid) {
+            	$this->fetch_user($uuid, $only);
+        	}
+    	}
+	}
+
+	function sync_students($only = false)
+	{
+		$classes = DB::table('classrooms')->get();
+        foreach ($classes as $cls) {
+			$uuids = $this->api('students_of_class', ['class' => $cls->id]);
+			if ($uuids && is_array($uuids)) {
+				foreach ($uuids as $uuid) {
+					$this->fetch_user($uuid, $only);
+				}
 			}
 		}
 	}

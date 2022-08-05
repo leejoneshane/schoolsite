@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;
-use App\Providers\RouteServiceProvider;
+use Illuminate\Auth\Access\Response;
 
 class AuthenticateTeacher
 {
@@ -14,8 +14,7 @@ class AuthenticateTeacher
             if ($request->ajax() || $request->wantsJson()) {
                 return response('Unauthorized.', 401);
             } else {
-                session()->flash('error', '只有教師才能連結此頁面！');
-                return redirect()->route('home');
+                Request::deny('只有教職員才能連結此頁面！');
             }
         }
         return $next($request);

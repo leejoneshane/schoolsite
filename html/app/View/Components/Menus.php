@@ -8,15 +8,17 @@ use App\Models\Menu;
 class Menus extends Component
 {
     public $id;
+    public $display;
 
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct($id)
+    public function __construct($id, $display)
     {
         $this->id = $id;
+        $this->display = $display;
     }
 
     /**
@@ -28,6 +30,6 @@ class Menus extends Component
     {
         $menu = Menu::find($this->id);
         $items = $menu->childs->sortBy('weight');
-        return view('components.menus', ['menu' => $menu, 'items' => $items]);
+        return view('components.menus', ['display' => $this->display, 'menu' => $menu, 'items' => $items]);
     }
 }

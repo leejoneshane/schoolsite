@@ -49,9 +49,11 @@ Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@re
 Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
     Route::get('sync', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('sync');
-    Route::get('units', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('units');
-    Route::get('jobs', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('jobs');
-    Route::get('classes', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('classes');
+    Route::get('forcesync', 'App\Http\Controllers\Admin\AdminController@forceSyncFromTpedu')->name('forcesync');
+    Route::get('units', 'App\Http\Controllers\Admin\AdminController@unitList');
+    Route::post('units', 'App\Http\Controllers\Admin\AdminController@unitUpdate')->name('units');
+    Route::get('classes', 'App\Http\Controllers\Admin\AdminController@classList');
+    Route::post('classes', 'App\Http\Controllers\Admin\AdminController@classUpdate')->name('classes');
     Route::get('subjects', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('subjects');
     Route::get('assignment', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('assignment');
     Route::get('teachers', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('teachers');

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Blade;
 use App\View\Components\Menus;
 use App\Jobs\SyncFromTpedu;
 use App\Models\User;
+use App\Notifications\SyncCompletedNotification;
 
 class AppServiceProvider extends ServiceProvider
 {
