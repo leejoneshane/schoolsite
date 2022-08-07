@@ -238,7 +238,6 @@ class TpeduServiceProvider extends ServiceProvider
 				$m_role_id = '';
 				$m_role_name = '';
 				DB::table('job_title')->where('uuid', $uuid)->delete();
-				DB::table('assignment')->where('uuid', $uuid)->delete();	
 				if (isset($user->ou) && isset($user->title)) {
 					$keywords = explode(',', config('services.tpedu.base_unit'));
 					if (is_array($user->ou)) {
@@ -315,7 +314,7 @@ class TpeduServiceProvider extends ServiceProvider
 									'name' => $role_name,
 								]);	
 							}
-						$m_role_id = $role->id;
+							$m_role_id = $role->id;
 							$m_role_name = $role_name;
 							DB::table('job_title')->insert([
 								'uuid' => $uuid,
@@ -330,10 +329,11 @@ class TpeduServiceProvider extends ServiceProvider
 				if (!empty($user->tpTutorClass)) {
 					$emp->tutor_class = $user->tpTutorClass;
 				}
+				DB::table('assignment')->where('uuid', $uuid)->delete();
 				if (isset($user->tpTeachClass)) {
 					foreach ($user->tpTeachClass as $assign_pair) {
 						$a = explode(',', $assign_pair);
-						$s = Subject::where('name', substr($a[2], 4))->first();
+						$s = Subject::where('name', mb_substr($a[2], 4))->first();
 						DB::table('assignment')->insert([
 							'uuid' => $uuid,
 							'class_id' => $a[1],
@@ -416,14 +416,9 @@ class TpeduServiceProvider extends ServiceProvider
 
 	function sync_roles($only = false)
 	{
-		if ($only) {
-			$fetch = Role::first();
-			if ($fetch) {
-				$expire = new Carbon($fetch->updated_at);
-				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return;
-			}	
+		if (!$only) {
+			DB::table('roles')->delete();
 		}
-		DB::table('roles')->delete();
 	}
 
 	function sync_subjects($only = false)

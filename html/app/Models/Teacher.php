@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Providers\TpeduServiceProvider as SSO;
+use Illuminate\Support\Facades\DB;
 
 class Teacher extends Model
 {
@@ -54,7 +55,7 @@ class Teacher extends Model
     	return $this->morphMany('App\Models\Gsuite', 'owner');
 	}
 
-    public function tutor_class()
+    public function tutor_classroom()
 	{
     	return $this->belongsTo('App\Models\Classroom', 'tutor_class');
 	}
@@ -67,6 +68,13 @@ class Teacher extends Model
     public function roles()
 	{
     	return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id')->withPivot('unit_id');
+	}
+
+
+    public function assignment()
+	{
+        $assignment = DB::table('assignment')->where('uuid', $this->uuid)->get();
+    	return $assignment;
 	}
 
     public function subjects()

@@ -48,15 +48,23 @@ Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@re
 // Administrator Interface Routes...
 Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
-    Route::get('sync', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('sync');
-    Route::get('forcesync', 'App\Http\Controllers\Admin\AdminController@forceSyncFromTpedu')->name('forcesync');
-    Route::get('units', 'App\Http\Controllers\Admin\AdminController@unitList');
-    Route::post('units', 'App\Http\Controllers\Admin\AdminController@unitUpdate')->name('units');
-    Route::get('classes', 'App\Http\Controllers\Admin\AdminController@classList');
-    Route::post('classes', 'App\Http\Controllers\Admin\AdminController@classUpdate')->name('classes');
-    Route::get('subjects', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('subjects');
-    Route::get('assignment', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('assignment');
-    Route::get('teachers', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('teachers');
-    Route::get('students', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('students');
+    Route::get('database/sync', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('sync');
+    Route::get('database/forcesync', 'App\Http\Controllers\Admin\AdminController@forceSyncFromTpedu')->name('forcesync');
+    Route::get('database/units', 'App\Http\Controllers\Admin\AdminController@unitList');
+    Route::post('database/units', 'App\Http\Controllers\Admin\AdminController@unitUpdate')->name('units');
+    Route::get('database/units/add', 'App\Http\Controllers\Admin\AdminController@unitAdd');
+    Route::post('database/units/add', 'App\Http\Controllers\Admin\AdminController@unitInsert')->name('units.add');
+    Route::get('database/units/role/add', 'App\Http\Controllers\Admin\AdminController@roleAdd');
+    Route::post('database/units/role/add', 'App\Http\Controllers\Admin\AdminController@roleInsert')->name('roles.add');
+    Route::get('database/classes', 'App\Http\Controllers\Admin\AdminController@classList');
+    Route::post('database/classes', 'App\Http\Controllers\Admin\AdminController@classUpdate')->name('classes');
+    Route::get('database/subjects', 'App\Http\Controllers\Admin\AdminController@subjectList');
+    Route::post('database/subjects', 'App\Http\Controllers\Admin\AdminController@subjectUpdate')->name('subjects');
+    Route::get('database/teachers/{unit?}', 'App\Http\Controllers\Admin\AdminController@teacherList')->name('teachers');
+    Route::get('database/teachers/{uuid}/edit', 'App\Http\Controllers\Admin\AdminController@teacherEdit');
+    Route::post('database/teachers/{uuid}/edit', 'App\Http\Controllers\Admin\AdminController@teacherUpdate')->name('teachers.edit');
+    Route::get('database/students/{myclass?}', 'App\Http\Controllers\Admin\AdminController@studentList')->name('students');
+    Route::get('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\AdminController@studentEdit');
+    Route::post('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\AdminController@studentUpdate')->name('students.edit');
 });
 

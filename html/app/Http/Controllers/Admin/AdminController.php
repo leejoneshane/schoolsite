@@ -7,12 +7,14 @@ use Illuminate\Http\Request;
 use App\Models\Menu;
 use App\Jobs\SyncFromTpedu;
 use App\Providers\TpeduServiceProvider as SSO;
+use Illuminate\Support\Facades\DB;
 use App\Models\Unit;
 use App\Models\Role;
 use App\Models\Grade;
 use App\Models\Classroom;
 use App\Models\Subject;
 use App\Models\Teacher;
+use App\Models\Student;
 
 class AdminController extends Controller
 {
@@ -48,7 +50,7 @@ class AdminController extends Controller
             Menu::create([
                 'id' => 'units',
                 'parent_id' => 'database',
-                'caption' => '行政單位與職權',
+                'caption' => '行政單位與職稱',
                 'url' => 'route.units',
                 'weight' => 20,
             ]);
@@ -65,13 +67,6 @@ class AdminController extends Controller
                 'caption' => '學習科目',
                 'url' => 'route.subjects',
                 'weight' => 50,
-            ]);
-            Menu::create([
-                'id' => 'assignment',
-                'parent_id' => 'database',
-                'caption' => '課務安排',
-                'url' => 'route.assignment',
-                'weight' => 60,
             ]);
             Menu::create([
                 'id' => 'teachers',
@@ -116,25 +111,68 @@ class AdminController extends Controller
 
     public function unitList()
     {
-        $units = Unit::with('roles')->get();
+        $units = Unit::with('roles')->orderBy('id')->get();
         return view('admin.units', ['units' => $units]);
     }
 
     public function unitUpdate(Request $request)
     {
-        foreach ($request->all() as $k => $i) {
-            if ($k == '_token') continue;
-            $a = explode('_', $k);
-            if (isset($a[1])) {
-                $role = Role::find($a[1]);
-                $role->name = $i;
-                $role->save();
-            } else {
-                $unit = Unit::find($a[0]);
-                $unit->name = $i;
+        if ($request->has('units')) {
+            $units = $request->collect('units');
+            foreach ($units as $id => $name) {
+                $unit = Unit::find($id);
+                $unit->name = $name;
                 $unit->save();
             }
+            session()->flash('success', '行政單位已更新並儲存！');
         }
+        if ($request->has('roles')) {
+            $roles = $request->collect('roles');
+            foreach ($roles as $id => $name) {
+                $role = Role::find($id);
+                $role->name = $name;
+                $role->save();    
+            }
+            session()->flash('success', '職稱已更新並儲存！');
+        }
+        return $this->unitList();
+    }
+
+    public function unitAdd()
+    {
+        return view('admin.unitadd');
+    }
+
+    public function unitInsert(Request $request)
+    {
+        $input = $request->only(['unit_id', 'unit_name']);
+        if ($input) {
+            Unit::create([
+                'id' => $input['unit_id'],
+                'name' => $input['unit_name'],
+            ]);
+        }
+        session()->flash('success', '行政單位已新增完成！');
+        return $this->unitList();
+    }
+
+    public function roleAdd()
+    {
+        $units = Unit::with('roles')->orderBy('id')->get();
+        return view('admin.roleadd', ['units' => $units]);
+    }
+
+    public function roleInsert(Request $request)
+    {
+        $input = $request->only(['role_id', 'role_unit', 'role_name']);
+        if ($input) {
+            Role::create([
+                'role_no' => $input['role_id'],
+                'unit_id' => $input['role_unit'],
+                'name' => $input['role_name'],
+            ]);
+        }
+        session()->flash('success', '職務層級已新增完成！');
         return $this->unitList();
     }
 
@@ -142,41 +180,193 @@ class AdminController extends Controller
     {
         $grades = Grade::all();
         $classes = Classroom::all();
-        $teachers = Teacher::all();
+        $teachers = Teacher::orderBy('realname')->get();
         return view('admin.classes', ['grades' => $grades, 'classes' => $classes, 'teachers' => $teachers]);
     }
 
     public function classUpdate(Request $request)
     {
-        $names = $request->input('name');
-        $tutors = $request->input('tutor');
-        foreach ($names as $k => $i) {
-            $cls = Classroom::find($k);
-            $cls->name = $i;
-            $cls->tutor = array($tutors[$k]);
+        $names = $request->collect('name');
+        $tutors = $request->collect('tutor');
+        foreach ($names as $id => $name) {
+            $cls = Classroom::find($id);
+            $old_tutors = $cls->tutors();
+            $found = false;
+            foreach ($old_tutors as $t) {
+                if ($t->uuid == $tutors[$id]) {
+                    $found = true;
+                    continue;
+                } else {
+                    $t->tutor_class = null;
+                    $t->save();
+                }
+            }
+            if (!$found) {
+                $new_tutor = Teacher::find($tutors[$id]);
+                $new_tutor->tutor_class = $id;
+                $new_tutor->save();
+            }
+            $cls->name = $name;
+            $cls->tutor = array($tutors[$id]);
             $cls->save();
         }
+        session()->flash('success', '班級資料已更新並儲存！');
         return $this->classList();
     }
 
-    public function subjects()
+    public function subjectList()
     {
-        return view('admin');
+        $subjects = Subject::all();
+        return view('admin.subjects', ['subjects' => $subjects]);
     }
 
-    public function assignment()
+    public function subjectUpdate(Request $request)
     {
-        return view('admin');
+        $subjects = $request->collect('subjects');
+        foreach ($subjects as $id => $name) {
+            $subj = Subject::find($id);
+            $subj->name = $name;
+            $subj->save();
+        }
+        session()->flash('success', '科目名稱已更新並儲存！');
+        return $this->subjectList();
     }
 
-    public function teachers()
+    public function teacherList($unit = '')
     {
-        return view('admin');
+        $units = Unit::main();
+        if (empty($unit)) {
+            $unit_id = $units->first()->id;
+        } else {
+            $unit_id = $unit;
+        }
+        $keys = Unit::subkeys($unit_id);
+        $teachers = Teacher::whereIn('unit_id', $keys)->orderBy('realname')->get();
+        return view('admin.teachers', ['current' => $unit_id, 'units' => $units, 'teachers' => $teachers]);
     }
 
-    public function students()
+    public function teacherEdit($uuid, Request $request)
     {
-        return view('admin');
+        $referer = $request->headers->get('referer');
+        $units = Unit::all();
+        $roles = Role::orderBy('role_no')->get();
+        $classes = Classroom::all();
+        $subjects = Subject::all();
+        $teacher = Teacher::with('roles')->find($uuid);
+        $assignment = DB::table('assignment')->where('uuid', $uuid)->get();
+        return view('admin.teacheredit', ['referer' => $referer, 'teacher' => $teacher, 'units' => $units, 'roles' => $roles, 'assignment' => $assignment, 'classes' => $classes, 'subjects' => $subjects]);
+    }
+    
+    public function teacherUpdate($uuid, Request $request)
+    {
+        $teacher = Teacher::find($uuid);
+        $new_roles = $request->collect('roles');
+        $old_roles = $teacher->roles(); 
+        foreach ($old_roles as $old) {
+            if ($pos = array_search($old->id, $new_roles)) {
+                unset($new_roles[$pos]);
+            } else {
+                DB::table('job_title')->where('uuid', $uuid)->where('role_id', $old->id)->delete();
+            }
+        }
+        if (!empty($new_roles)) {
+            foreach ($new_roles as $role) {
+                $new = Role::find($role);
+                DB::table('job_title')->Insert([
+                    'uuid' => $uuid,
+                    'unit_id' => $new->unit_id,
+                    'role_id' => $new->id,
+                ]);
+            }
+        }
+        $new_classes = $request->collect('classes');
+        $new_subjects = $request->collect('subjects');
+        $old_assign = $teacher->assignment();
+        foreach ($old_assign as $old) {
+            $found = false;
+            for ($i=0; $i<count($new_classes); $i++) {
+                if ($new_classes[$i] == $old->class_id && $new_subjects[$i] == $old->subject_id) {
+                    $found = true;
+                    unset($new_classes[$i]);
+                    unset($new_subjects[$i]);
+                }
+            }
+            if (!$found) {
+                DB::table('assignment')->where('id', $old->id)->delete();
+            } 
+        }
+        if (!empty($new_classes)) {
+            for ($i=0; $i<count($new_classes); $i++) {
+                DB::table('assignment')->Insert([
+                    'uuid' => $uuid,
+                    'class_id' => $new_classes[$i],
+                    'subject_id' => $new_subjects[$i],
+                ]);
+            }
+        }
+        $characters = $request->collect('character');
+        if (!empty($character)) {
+            $teacher->character = implode(',', $characters);
+        }
+        $teacher->idno = $request->input('idno');
+        $teacher->sn = $request->input('sn');
+        $teacher->gn = $request->input('gn');
+        $teacher->realname = $request->input('sn').$request->input('gn');
+        $teacher->gender = $request->input('gender');
+        $teacher->birthdate = $request->input('birthdate');
+        $teacher->email = $request->input('email');
+        $teacher->mobile = $request->input('mobile');
+        $teacher->telephone = $request->input('telephone');
+        $teacher->address = $request->input('address');
+        $teacher->www = $request->input('www');
+        $teacher->save();
+        session()->flash('success', '教職員個人資料已更新儲存！');
+        return redirect(urldecode($request->input('referer')));
+    }
+    
+    public function studentList($myclass = '')
+    {
+        $classes = Classroom::all();
+        if (empty($myclass)) {
+            $class_id = $classes->first()->id;
+        } else {
+            $class_id = $myclass;
+        }
+        $students = Student::where('class_id', $class_id)->orderByRaw('cast(seat as unsigned)')->get();
+        return view('admin.students', ['current' => $class_id, 'classes' => $classes, 'students' => $students]);
+    }
+
+    public function studentEdit($uuid, Request $request)
+    {
+        $referer = $request->headers->get('referer');
+        $classes = Classroom::all();
+        $student = Student::with('classroom')->find($uuid);
+        return view('admin.studentedit', ['referer' => $referer, 'student' => $student, 'classes' => $classes]);
+    }
+
+    public function studentUpdate($uuid, Request $request)
+    {
+        $student = Student::find($uuid);
+        $characters = $request->collect('character');
+        if (!empty($character)) {
+            $student->character = implode(',', $characters);
+        }
+        $student->idno = $request->input('idno');
+        $student->sn = $request->input('sn');
+        $student->gn = $request->input('gn');
+        $student->realname = $request->input('sn').$request->input('gn');
+        $student->gender = $request->input('gender');
+        $student->birthdate = $request->input('birthdate');
+        $student->class_id = $request->input('myclass');
+        $student->seat = $request->input('seat');
+        $student->email = $request->input('email');
+        $student->mobile = $request->input('mobile');
+        $student->telephone = $request->input('telephone');
+        $student->address = $request->input('address');
+        $student->www = $request->input('www');
+        $student->save();
+        session()->flash('success', '學生個人資料已更新儲存！');
+        return redirect(urldecode($request->input('referer')));
     }
 
 }

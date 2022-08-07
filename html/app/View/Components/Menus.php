@@ -2,11 +2,13 @@
 
 namespace App\View\Components;
 
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\View\Component;
 use App\Models\Menu;
 
 class Menus extends Component
 {
+    public $url;
     public $id;
     public $display;
 
@@ -17,7 +19,9 @@ class Menus extends Component
      */
     public function __construct($id, $display)
     {
-        $this->id = $id;
+        $this->url = $id;
+        $a = explode('/', $id);
+        $this->id = array_pop($a);
         $this->display = $display;
     }
 
@@ -30,6 +34,6 @@ class Menus extends Component
     {
         $menu = Menu::find($this->id);
         $items = $menu->childs->sortBy('weight');
-        return view('components.menus', ['display' => $this->display, 'menu' => $menu, 'items' => $items]);
+        return view('components.menus', ['url' => $this->url, 'display' => $this->display, 'menu' => $menu, 'items' => $items]);
     }
 }

@@ -23,6 +23,30 @@ class Unit extends Model
         'name',
     ];
 
+    public static function main()
+    {
+        return Unit::whereRaw('CHAR_LENGTH(id) = 3 or LEFT(id, 1) = ?', ['Z'])->get();
+    }
+
+    public static function sub($main)
+    {
+        if (strlen($main) > 3) return false;
+        return Unit::whereRaw('LEFT(id, 3) = ?', [$main])->get();
+    }
+
+    public static function subkeys($main)
+    {
+        if (strlen($main) > 3) return array($main);
+        $keys = [];
+        $subs = Unit::sub($main);
+        if ($subs) {
+            foreach ($subs as $sub) {
+                $keys[] = $sub->id;
+            }    
+        }
+        return $keys;
+    }
+    
     public function roles()
     {
         return $this->hasMany('App\Models\Role');

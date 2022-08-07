@@ -1,7 +1,7 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="m-5 bg-white text-black dark:bg-black dark:text-white relative">
+<div class="m-5 relative bg-white dark:bg-gray-700 text-black dark:text-gray-200">
     <div class="p-10">
         @if (session()->missing('error') && session()->missing('success') && session()->missing('message'))
             @if (Auth::check())
