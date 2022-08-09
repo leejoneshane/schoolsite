@@ -357,8 +357,8 @@ class ADServiceProvider extends ServiceProvider
 				}
 				if ($t->units()) {
 					foreach ($units as $unit) {
-						$detail_log[] = "正在處理 $unit->unit_name ......";
-						$group = $this->find_group($unit->unit_name);
+						$detail_log[] = "正在處理 $unit->name ......";
+						$group = $this->find_group($unit->name);
 						if ($group) {
 							$group_dn = $group['distinguishedname'][0];
 							$depgroup = $group['samaccountname'][0];
@@ -418,7 +418,7 @@ class ADServiceProvider extends ServiceProvider
 						$detail_log[] = "$clsgroup => 在 AD 中找到匹配的使用者群組！......";
 					} else {
 						$detail_log[] = '無法在 AD 中找到匹配的群組，現在正在建立新的使用者群組......';
-						$result = $this->create_group($clsgroup, $group_key, "$grade年級");
+						$result = $this->create_group($clsgroup, $group_dn, "$grade年級");
 						if ($result) {
 							$detail_log[] = '建立成功！';
 						} else {

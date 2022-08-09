@@ -179,7 +179,7 @@ class AdminController extends Controller
 
     public function startSyncToAD(Request $request)
     {
-        $password = $request->input('password');
+        $password = ($request->input('password') == 'sync') ? true : false;
         $leave = $request->input('leave');
         SyncToAd::dispatch($password, $leave);
         session()->flash('success', 'AD 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
@@ -188,14 +188,16 @@ class AdminController extends Controller
 
     public function syncToGsuite()
     {
+        $gsuite = new GSUITE; //for test
+        $all_users = $gsuite->all_users('student');
+        dd($all_users);
         return view('admin.gsuite');
     }
 
     public function startSyncToGsuite(Request $request)
     {
-        $password = $request->input('password');
-        $leave = $request->input('leave');
-        SyncToGsuite::dispatch($password, $leave);
+        $password = ($request->input('password') == 'sync') ? true : false;
+        SyncToGsuite::dispatch($password);
         session()->flash('success', 'Google 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
         return view('admin');
     }
