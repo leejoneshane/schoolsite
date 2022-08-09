@@ -6,7 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Menu;
 use App\Jobs\SyncFromTpedu;
+use App\Jobs\SyncToAd;
+use App\Jobs\SyncToGsuite;
 use App\Providers\TpeduServiceProvider as SSO;
+use App\Providers\ADServiceProvider as AD;
+use App\Providers\GsuiteServiceProvider as GSUITE;
 use Illuminate\Support\Facades\DB;
 use App\Models\Unit;
 use App\Models\Role;
@@ -33,55 +37,114 @@ class AdminController extends Controller
                 'url' => '#',
                 'weight' => 10,
             ]);
+            if (!Menu::find('sync')) {
+                Menu::create([
+                    'id' => 'sync',
+                    'parent_id' => 'database',
+                    'caption' => '更新快取資料',
+                    'url' => 'route.sync',
+                    'weight' => 10,
+                ]);
+            }
+            if (!Menu::find('forcesync')) {
+                Menu::create([
+                    'id' => 'forcesync',
+                    'parent_id' => 'database',
+                    'caption' => '強制資料同步',
+                    'url' => 'route.forcesync',
+                    'weight' => 20,
+                ]);
+            }
+            if (!Menu::find('ADsync')) {
+                Menu::create([
+                    'id' => 'ADsync',
+                    'parent_id' => 'database',
+                    'caption' => '同步到 AD',
+                    'url' => 'route.syncAd',
+                    'weight' => 30,
+                ]);
+            }
+            if (!Menu::find('Gsuitesync')) {
+                Menu::create([
+                    'id' => 'Gsuitesync',
+                    'parent_id' => 'database',
+                    'caption' => '同步到 Google',
+                    'url' => 'route.syncGsuite',
+                    'weight' => 40,
+                ]);
+            }
+            if (!Menu::find('units')) {
+                Menu::create([
+                    'id' => 'units',
+                    'parent_id' => 'database',
+                    'caption' => '行政單位與職稱',
+                    'url' => 'route.units',
+                    'weight' => 50,
+                ]);
+            }
+            if (!Menu::find('classes')) {
+                Menu::create([
+                    'id' => 'classes',
+                    'parent_id' => 'database',
+                    'caption' => '年級與班級',
+                    'url' => 'route.classes',
+                    'weight' => 60,
+                ]);
+            }
+            if (!Menu::find('subjects')) {
+                Menu::create([
+                    'id' => 'subjects',
+                    'parent_id' => 'database',
+                    'caption' => '學習科目',
+                    'url' => 'route.subjects',
+                    'weight' => 70,
+                ]);
+            }
+            if (!Menu::find('teachers')) {
+                Menu::create([
+                    'id' => 'teachers',
+                    'parent_id' => 'database',
+                    'caption' => '教職員',
+                    'url' => 'route.teachers',
+                    'weight' => 80,
+                ]);
+            }
+            if (!Menu::find('students')) {
+                Menu::create([
+                    'id' => 'students',
+                    'parent_id' => 'database',
+                    'caption' => '學生',
+                    'url' => 'route.students',
+                    'weight' => 90,
+                ]);
+            }
+        }
+        if (!Menu::find('website')) {
             Menu::create([
-                'id' => 'sync',
-                'parent_id' => 'database',
-                'caption' => '更新快取資料',
-                'url' => 'route.sync',
-                'weight' => 10,
-            ]);
-            Menu::create([
-                'id' => 'forcesync',
-                'parent_id' => 'database',
-                'caption' => '強制資料同步',
-                'url' => 'route.forcesync',
-                'weight' => 10,
-            ]);
-            Menu::create([
-                'id' => 'units',
-                'parent_id' => 'database',
-                'caption' => '行政單位與職稱',
-                'url' => 'route.units',
+                'id' => 'website',
+                'parent_id' => 'admin',
+                'caption' => '網站組態管理',
+                'url' => '#',
                 'weight' => 20,
             ]);
-            Menu::create([
-                'id' => 'classes',
-                'parent_id' => 'database',
-                'caption' => '年級與班級',
-                'url' => 'route.classes',
-                'weight' => 40,
-            ]);
-            Menu::create([
-                'id' => 'subjects',
-                'parent_id' => 'database',
-                'caption' => '學習科目',
-                'url' => 'route.subjects',
-                'weight' => 50,
-            ]);
-            Menu::create([
-                'id' => 'teachers',
-                'parent_id' => 'database',
-                'caption' => '教職員',
-                'url' => 'route.teachers',
-                'weight' => 70,
-            ]);
-            Menu::create([
-                'id' => 'students',
-                'parent_id' => 'database',
-                'caption' => '學生',
-                'url' => 'route.students',
-                'weight' => 80,
-            ]);
+            if (!Menu::find('menus')) {
+                Menu::create([
+                    'id' => 'menus',
+                    'parent_id' => 'website',
+                    'caption' => '選單管理',
+                    'url' => 'route.menus',
+                    'weight' => 10,
+                ]);
+            }
+            if (!Menu::find('permission')) {
+                Menu::create([
+                    'id' => 'permission',
+                    'parent_id' => 'website',
+                    'caption' => '權限管理',
+                    'url' => 'route.permission',
+                    'weight' => 20,
+                ]);
+            }
         }
     }
 
@@ -109,6 +172,34 @@ class AdminController extends Controller
         return view('admin');
     }
 
+    public function syncToAD()
+    {
+        return view('admin.ad');
+    }
+
+    public function startSyncToAD(Request $request)
+    {
+        $password = $request->input('password');
+        $leave = $request->input('leave');
+        SyncToAd::dispatch($password, $leave);
+        session()->flash('success', 'AD 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
+        return view('admin');
+    }
+
+    public function syncToGsuite()
+    {
+        return view('admin.gsuite');
+    }
+
+    public function startSyncToGsuite(Request $request)
+    {
+        $password = $request->input('password');
+        $leave = $request->input('leave');
+        SyncToGsuite::dispatch($password, $leave);
+        session()->flash('success', 'Google 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
+        return view('admin');
+    }
+
     public function unitList()
     {
         $units = Unit::with('roles')->orderBy('id')->get();
@@ -119,8 +210,10 @@ class AdminController extends Controller
     {
         if ($request->has('units')) {
             $units = $request->collect('units');
+            $unit_ids = $request->collect('uid');
             foreach ($units as $id => $name) {
                 $unit = Unit::find($id);
+                $unit->unit_no = $unit_ids[$id];
                 $unit->name = $name;
                 $unit->save();
             }
@@ -128,8 +221,10 @@ class AdminController extends Controller
         }
         if ($request->has('roles')) {
             $roles = $request->collect('roles');
+            $role_ids = $request->collect('rid');
             foreach ($roles as $id => $name) {
                 $role = Role::find($id);
+                $role->role_no = $role_ids[$id];
                 $role->name = $name;
                 $role->save();    
             }
@@ -148,7 +243,7 @@ class AdminController extends Controller
         $input = $request->only(['unit_id', 'unit_name']);
         if ($input) {
             Unit::create([
-                'id' => $input['unit_id'],
+                'unit_no' => $input['unit_id'],
                 'name' => $input['unit_name'],
             ]);
         }
@@ -158,7 +253,7 @@ class AdminController extends Controller
 
     public function roleAdd()
     {
-        $units = Unit::with('roles')->orderBy('id')->get();
+        $units = Unit::with('roles')->orderBy('unit_no')->get();
         return view('admin.roleadd', ['units' => $units]);
     }
 

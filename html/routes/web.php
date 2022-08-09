@@ -50,6 +50,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
     Route::get('database/sync', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('sync');
     Route::get('database/forcesync', 'App\Http\Controllers\Admin\AdminController@forceSyncFromTpedu')->name('forcesync');
+    Route::get('database/sync/ad', 'App\Http\Controllers\Admin\AdminController@syncToAD');
+    Route::post('database/sync/ad', 'App\Http\Controllers\Admin\AdminController@startSyncToAD')->name('syncAD');
+    Route::get('database/sync/google', 'App\Http\Controllers\Admin\AdminController@syncToGsuite');
+    Route::post('database/sync/google', 'App\Http\Controllers\Admin\AdminController@startSyncToGsuite')->name('syncGsuite');
     Route::get('database/units', 'App\Http\Controllers\Admin\AdminController@unitList');
     Route::post('database/units', 'App\Http\Controllers\Admin\AdminController@unitUpdate')->name('units');
     Route::get('database/units/add', 'App\Http\Controllers\Admin\AdminController@unitAdd');
@@ -66,5 +70,22 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('database/students/{myclass?}', 'App\Http\Controllers\Admin\AdminController@studentList')->name('students');
     Route::get('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\AdminController@studentEdit');
     Route::post('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\AdminController@studentUpdate')->name('students.edit');
+
+    Route::get('website/menus', 'App\Http\Controllers\Admin\AdminController@index');
+    Route::post('website/menus', 'App\Http\Controllers\Admin\AdminController@index')->name('menus');
+    Route::get('website/menus/add', 'App\Http\Controllers\Admin\AdminController@index');
+    Route::post('website/menus/add', 'App\Http\Controllers\Admin\AdminController@index')->name('menus.add');
+    Route::get('website/menus/{id}/edit', 'App\Http\Controllers\Admin\AdminController@index');
+    Route::post('website/menus/{id}/edit', 'App\Http\Controllers\Admin\AdminController@index')->name('menus.edit');
+    Route::post('website/menus/{id}/remove', 'App\Http\Controllers\Admin\AdminController@index')->name('menus.remove');
+    Route::get('website/permission', 'App\Http\Controllers\Admin\AdminController@index')->name('permission');
+    Route::get('website/permission/add', 'App\Http\Controllers\Admin\AdminController@index');
+    Route::post('website/permission/add', 'App\Http\Controllers\Admin\AdminController@index')->name('permission.add');
+    Route::get('website/permission/{id}/edit', 'App\Http\Controllers\Admin\AdminController@index');
+    Route::post('website/permission/{id}/edit', 'App\Http\Controllers\Admin\AdminController@index')->name('permission.edit');
+    Route::post('website/permission/{id}/remove', 'App\Http\Controllers\Admin\AdminController@index')->name('permission.remove');
+    Route::get('website/permission/grant', 'App\Http\Controllers\Admin\AdminController@index');
+    Route::post('website/permission/grant', 'App\Http\Controllers\Admin\AdminController@index')->name('permission.grant');
+    Route::post('website/permission/{id}/cancel/{uuid}', 'App\Http\Controllers\Admin\AdminController@index')->name('permission.cancel');
 });
 

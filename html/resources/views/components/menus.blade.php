@@ -22,7 +22,7 @@
       <i id="{{ $item->id }}_up" class="pl-2 fa-solid fa-angle-up"></i>
       <i id="{{ $item->id }}_down" class="hidden pl-2 fa-solid fa-angle-down"></i>
       </span>
-      @if (Request::is($url.'/*'))
+      @if (Request::is($url.'/'.$item->id.'/*'))
         <x-menus id="{{ $url }}/{{ $item->id }}" display="show"/>
       @else
         <x-menus id="{{ $url }}/{{ $item->id }}" display="hidden"/>

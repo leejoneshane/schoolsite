@@ -4,12 +4,12 @@
 <div class="relative m-5">
     <div class="p-10">
         @if (session('error'))
-        <div class="border border-red-500 bg-red-100 border-b-2" role="alert">
+        <div class="border border-red-500 bg-red-100 dark:bg-red-700 border-b-2" role="alert">
             {{ session('error') }}
         </div>
         @endif
         @if (session('success'))
-        <div class="border border-green-500 bg-green-100 border-b-2" role="alert">
+        <div class="border border-green-500 bg-green-100 dark:bg-green-700 border-b-2" role="alert">
             {{ session('success') }}
         </div>
         @endif

@@ -244,7 +244,7 @@ class TpeduServiceProvider extends ServiceProvider
 						foreach ($user->ou as $ou_pair) {
 							$a = explode(',', $ou_pair);
 							if ($a[0] == $o) {
-								$dept_name = Unit::find($a[1])->name;
+								$dept = Unit::where('unit_no', $a[1])->first();
 								$ckf = false;
 								foreach ($keywords as $k) {
 									if (!(mb_strpos($dept_name, $k) === false)) {
@@ -252,17 +252,17 @@ class TpeduServiceProvider extends ServiceProvider
 									}
 								}
 								if (!$ckf || empty($m_dept_id)) {
-									$m_dept_id = $a[1];
-									$m_dept_name = $dept_name;
+									$m_dept_id = $dept->id;
+									$m_dept_name = $dept->name;
 								}
 							}
 						}
 					} else {
 						$a = explode(',', $user->ou);
 						if ($a[0] == $o) {
-							$m_dept_id = $a[1];
-							$dept_name = Unit::find($a[1])->name;
-							$m_dept_name = $dept_name;	
+							$dept = Unit::where('unit_no', $a[1])->first();
+							$m_dept_id = $dept->id;
+							$m_dept_name = $dept->name;	
 						}
 					}
 					$emp->unit_id = $m_dept_id;
@@ -271,8 +271,6 @@ class TpeduServiceProvider extends ServiceProvider
 						foreach ($user->titleName->{$o} as $ro) {
 							$a = explode(',', $ro->key);
 							if ($a[0] == $o) {
-								$u = $a[1];
-								$r = $a[2];
 								$role_name = $ro->name; 
 								$ckf = false;
 								foreach ($keywords as $k) {
@@ -280,11 +278,12 @@ class TpeduServiceProvider extends ServiceProvider
 										$ckf = true;
 									}
 								}
-								$role = Role::where('role_no', $r)->where('unit_id', $u)->first();
+								$dept = Unit::where('unit_no', $a[1])->first();
+								$role = Role::where('role_no', $a[2])->where('unit_id', $dept->id)->first();
 								if (!$role) {
 									$role = Role::create([
-										'role_no' => $r,
-										'unit_id' => $u,
+										'role_no' => $a[2],
+										'unit_id' => $dept->id,
 										'name' => $role_name,
 									]);	
 								}
@@ -294,7 +293,7 @@ class TpeduServiceProvider extends ServiceProvider
 								}
 								DB::table('job_title')->insert([
 									'uuid' => $uuid,
-									'unit_id' => $u,
+									'unit_id' => $dept->id,
 									'role_id' => $role->id,
 								]);	
 							}
@@ -303,22 +302,21 @@ class TpeduServiceProvider extends ServiceProvider
 						$ro = $user->titleName->{$o};
 						$a = explode(',', $ro->key);
 						if ($a[0] == $o) {
-							$u = $a[1];
-							$r = $a[2];
-							$role_name = $ro->name; 
-							$role = Role::where('role_no', $r)->where('unit_id', $u)->first();
+							$role_name = $ro->name;
+							$dept = Unit::where('unit_no', $a[1])->first();
+							$role = Role::where('role_no', $a[2])->where('unit_id', $dept->id)->first();
 							if (!$role) {
 								$role = Role::create([
-									'role_no' => $r,
-									'unit_id' => $u,
+									'role_no' => $a[2],
+									'unit_id' => $dept->id,
 									'name' => $role_name,
-								]);	
+								]);
 							}
 							$m_role_id = $role->id;
 							$m_role_name = $role_name;
 							DB::table('job_title')->insert([
 								'uuid' => $uuid,
-								'unit_id' => $u,
+								'unit_id' => $dept->id,
 								'role_id' => $role->id,
 							]);	
 						}
@@ -407,7 +405,11 @@ class TpeduServiceProvider extends ServiceProvider
 		$ous = $this->api('all_units');
 		if ($ous) {
 			foreach ($ous as $o) {
-				$unit = Unit::firstOrNew(['id' => $o->ou]);
+				$unit = Unit::where('unit_no', $o->ou)->first();
+				if (!$unit) {
+					$unit = new Unit;
+				}
+				$unit->unit_no = $o->ou;
 				$unit->name = $o->description;
 				$unit->save();
 			}
@@ -417,7 +419,7 @@ class TpeduServiceProvider extends ServiceProvider
 	function sync_roles($only = false)
 	{
 		if (!$only) {
-			DB::table('roles')->delete();
+			DB::table('roles')->truncate();
 		}
 	}
 

@@ -4,12 +4,12 @@
 <div class="relative m-5">
     <div class="p-10">
         @if (session('error'))
-        <div class="border border-red-500 bg-red-100 border-b-2" role="alert">
+        <div class="border border-red-500 bg-red-100 dark:bg-red-700 border-b-2" role="alert">
             {{ session('error') }}
         </div>
         @endif
         @if (session('success'))
-        <div class="border border-green-500 bg-green-100 border-b-2" role="alert">
+        <div class="border border-green-500 bg-green-100 dark:bg-green-700 border-b-2" role="alert">
             {{ session('success') }}
         </div>
         @endif
@@ -19,7 +19,7 @@
                 <i class="fa-solid fa-eject"></i>返回上一頁
             </a>
         </div>
-        <div class="border-blue-500 bg-blue-100 border-b-2 m-5" role="alert">
+        <div class="border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 m-5" role="alert">
             <p>
                 行政單位分為上層單位與次級單位，上層單位代號為 3 碼，次級單位代號為 6 碼，
                 其前 3 碼即該次級單位的上層單位代號！<br>在單一身份驗證服務中，上層單位通常就是

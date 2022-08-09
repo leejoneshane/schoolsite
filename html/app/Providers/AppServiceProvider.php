@@ -49,6 +49,18 @@ class AppServiceProvider extends ServiceProvider
                     $admin->notify(new SyncCompletedNotification($event->job));
                 }
             }
+            if ($event->job->getName() == 'SyncToAd') {
+                $admins = User::where('is_admin', true)->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new SyncADCompletedNotification($event->job));
+                }
+            }
+            if ($event->job->getName() == 'SyncToGsuite') {
+                $admins = User::where('is_admin', true)->get();
+                foreach ($admins as $admin) {
+                    $admin->notify(new SyncGsuiteCompletedNotification($event->job));
+                }
+            }
         });
     }
 }

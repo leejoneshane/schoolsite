@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Auth\Access\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AuthenticateStudent
 {
@@ -12,9 +12,9 @@ class AuthenticateStudent
     {
         if (Auth::guard($guard)->guest() || Auth::guard($guard)->user()->user_type != 'Student') {
             if ($request->ajax() || $request->wantsJson()) {
-                return response('Unauthorized.', 401);
+                return response('只有學生才能連結此頁面！', 401);
             } else {
-                return Response::deny('只有學生才能連結此頁面！');
+                throw new AccessDeniedHttpException('只有學生才能連結此頁面！');
             }
         }
         return $next($request);

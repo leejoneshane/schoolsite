@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Auth\Access\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 class AuthenticateAdmin
 {
@@ -12,9 +12,9 @@ class AuthenticateAdmin
     {
         if (Auth::guard($guard)->guest() || (!Auth::guard($guard)->user()->is_admin && Auth::guard($guard)->user()->id != 1)) {
             if ($request->ajax() || $request->wantsJson()) {
-                return response('Unauthorized.', 401);
+                return response('只有管理員才能使用管理介面！', 401);
             } else {
-                return Response::deny('只有管理員才能使用管理介面！');
+                throw new AccessDeniedHttpException('只有管理員才能使用管理介面！');
             }
         }
         return $next($request);

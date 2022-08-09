@@ -20,6 +20,7 @@ class Permission extends Model
     protected $fillable = [
         'group',
         'permission',
+        'description',
     ];
 
     public function delete()

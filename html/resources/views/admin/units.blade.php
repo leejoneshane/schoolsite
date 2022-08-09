@@ -4,12 +4,12 @@
 <div class="relative m-5">
     <div class="p-10">
         @if (session('error'))
-        <div class="border border-red-500 bg-red-100 border-b-2" role="alert">
+        <div class="border border-red-500 bg-red-100 dark:bg-red-700 border-b-2" role="alert">
             {{ session('error') }}
         </div>
         @endif
         @if (session('success'))
-        <div class="border border-green-500 bg-green-100 border-b-2" role="alert">
+        <div class="border border-green-500 bg-green-100 dark:bg-green-700 border-b-2" role="alert">
             {{ session('success') }}
         </div>
         @endif
@@ -37,7 +37,10 @@
                             }
                         }
                         ">
-                        <td class="p-2">{{ $u->id }}</td>
+                        <td class="p-2">
+                            <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                                type="text" name="uid['{{ $u->id }}']" value="{{ $u->unit_no }}">
+                        </td>
                         <td class="p-2">
                             <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                                 type="text" name="units['{{ $u->id }}']" value="{{ $u->name }}">
@@ -68,7 +71,10 @@
                 <table class="w-full text-sm text-left">
                     @foreach ($u->roles as $r)
                     <tr>
-                        <td class="py-4 px-6">{{ $r->role_no }}</td>
+                        <td class="py-4 px-6">
+                            <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                            type="text" name="rid['{{ $r->id }}']" value="{{ $r->role_no }}">
+                        </td>
                         <td class="py-4 px-6">
                             <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                                 type="text" name="roles['{{ $r->id }}']" value="{{ $r->name }}">

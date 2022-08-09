@@ -4,12 +4,12 @@
 <div class="relative m-5">
     <div class="p-10">
         @if (session('error'))
-        <div class="border border-red-500 bg-red-100 border-b-2" role="alert">
+        <div class="border border-red-500 bg-red-100 dark:bg-red-700 border-b-2" role="alert">
             {{ session('error') }}
         </div>
         @endif
         @if (session('success'))
-        <div class="border border-green-500 bg-green-100 border-b-2" role="alert">
+        <div class="border border-green-500 bg-green-100 dark:bg-green-700 border-b-2" role="alert">
             {{ session('success') }}
         </div>
         @endif
@@ -19,7 +19,7 @@
                 <i class="fa-solid fa-eject"></i>返回上一頁
             </a>
         </div>
-        <div class="border-blue-500 bg-blue-100 border-b-2 m-5" role="alert">
+        <div class="border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 m-5" role="alert">
             <p>
                 在單一身份驗證服務中，職務層級用來分辨行政人員的等階，目前已知層級為校長 C01，
                 主任 C02，組長 C03，其它行政人員 C04，級任教師 C05，科任教師 C06，約聘僱人員 C99。

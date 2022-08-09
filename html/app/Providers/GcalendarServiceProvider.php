@@ -44,7 +44,7 @@ class GcalendarServiceProvider extends ServiceProvider
 	{
 		try {
 			$cals = $this->calendar->calendarList->listCalendarList()->getItems();
-			DB::table('ics_calendars')->delete();
+			DB::table('ics_calendars')->truncate();
 			foreach ($cals as $cal) {
 				$ics = IcsCalendar::firstOrNew(['id' => $cal->getId()]);
 				$ics->summary = $cal->getSummary();

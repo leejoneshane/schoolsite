@@ -9,9 +9,6 @@ class Unit extends Model
 {
 
 	protected $table = 'units';
-	protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -20,28 +17,38 @@ class Unit extends Model
      */
     protected $fillable = [
         'id',
+        'unit_no',
         'name',
     ];
 
     public static function main()
     {
-        return Unit::whereRaw('CHAR_LENGTH(id) = 3 or LEFT(id, 1) = ?', ['Z'])->get();
+        return Unit::whereRaw('CHAR_LENGTH(unit_no) = 3 or LEFT(unit_no, 1) = ?', ['Z'])->get();
     }
 
     public static function sub($main)
     {
         if (strlen($main) > 3) return false;
-        return Unit::whereRaw('LEFT(id, 3) = ?', [$main])->get();
+        return Unit::whereRaw('LEFT(unit_no, 3) = ?', [$main])->get();
     }
 
-    public static function subkeys($main)
+    public static function subkeys($main = '')
     {
         if (strlen($main) > 3) return array($main);
         $keys = [];
-        $subs = Unit::sub($main);
-        if ($subs) {
-            foreach ($subs as $sub) {
-                $keys[] = $sub->id;
+        if (empty($main)) {
+            $all_subs = Unit::whereRaw('CHAR_LENGTH(unit_no) > 3 and LEFT(unit_no, 1) <> ?', ['Z'])->get();
+            if ($all_subs) {
+                foreach ($all_subs as $sub) {
+                    $keys[] = $sub->id;
+                }
+            }    
+        } else {
+            $subs = Unit::sub($main);
+            if ($subs) {
+                foreach ($subs as $sub) {
+                    $keys[] = $sub->id;
+                }
             }    
         }
         return $keys;
