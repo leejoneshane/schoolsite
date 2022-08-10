@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Models\Menu;
 use App\Jobs\SyncFromTpedu;
@@ -462,6 +463,97 @@ class AdminController extends Controller
         $student->save();
         session()->flash('success', '學生個人資料已更新儲存！');
         return redirect(urldecode($request->input('referer')));
+    }
+
+    public function menuList($menu = '')
+    {
+        $routename = [];
+        $routeCollection = Route::getRoutes();
+        foreach ($routeCollection as $value) {
+            $name = $value->getName();
+            if (!empty($name)) $routename[] = $name;
+        }
+        $menus = Menu::parents();
+        if (!empty($menu)) {
+            $items = Menu::subItems($menu);
+        } else {
+            $items = Menu::top();
+        }
+        return view('admin.menus', ['current' => $menu, 'menus' => $menus, 'items' => $items, 'routes' => $routename]);
+    }
+
+    public function menuUpdate($menu = '', Request $request)
+    {
+        $ids = $request->collect('ids');
+        $captions = $request->collect('captions');
+        $parents = $request->collect('parents');
+        $urls = $request->collect('urls');
+        $weights = $request->collect('weights');
+        foreach ($captions as $id => $title) {
+            $m = Menu::find($id);
+            $m->parent_id = $parents[$id];
+            $m->caption = $title;
+            $m->url = $urls[$id];
+            $m->weight = $weights[$id];
+            $m->save();
+        }
+        foreach ($ids as $old => $new) {
+            if ($old == $new) continue;
+            $m = Menu::find($old);
+            $m->id = $new;
+            $m->save();
+        }
+        return $this->menuList($menu);
+    }
+
+    public function menuAdd($menu = '')
+    {
+        $routename = [];
+        $routeCollection = Route::getRoutes();
+        foreach ($routeCollection as $value) {
+            $name = $value->getName();
+            if (!empty($name)) $routename[] = $name;
+        }
+        return view('admin.menuadd', ['current' => $menu, 'routes' => $routename]);
+    }
+
+    public function menuInsert($menu = '', Request $request)
+    {
+        $mid = $request->input('mid');
+        $caption = $request->input('caption');
+        $url = $request->input('url');
+        $weight = $request->input('weight');
+        if (!empty($menu)) {
+            Menu::create([
+                'id' => $mid,
+                'parent_id' => $menu,
+                'caption' => $caption,
+                'url' => $url,
+                'weight' => $weight,
+            ]);
+        } else {
+            Menu::create([
+                'id' => $mid,
+                'caption' => $caption,
+                'url' => $url,
+                'weight' => $weight,
+            ]);
+        }
+        return $this->menuList($menu);
+    }
+
+    public function menuDelete($menu)
+    {
+        $item = Menu::find($menu);
+        $parent = $item->parent_id;
+        if ($item->url == '#') {
+            DB::table('menus')->where('parent_id', $menu)->update([
+                'parent_id' => $parent,
+            ]);    
+        }
+        $item->delete();
+
+        return $this->menuList($parent);
     }
 
 }

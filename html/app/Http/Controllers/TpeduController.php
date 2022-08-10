@@ -13,7 +13,7 @@ use App\Providers\TpeduServiceProvider;
 class TpeduController extends Controller
 {
 
-    private static $sso = null;
+    private $sso = null;
 
     public function __construct()
     {

@@ -1,11 +1,11 @@
 @if ($items->count() > 0)
-<ul id="{{ $menu->id }}" class="{{ $display }} z-10 mt-1 w-full h-auto rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
+<ul id="mc_{{ $menu->id }}" class="{{ $display }} z-10 mt-1 w-full h-auto rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
   @foreach ($items as $item)
   <li class="text-white cursor-default select-none relative py-2 pl-3 pr-9" id="listbox-option-0" role="option">
     <div>
     @if ($item->link == '#')
       <span class="font-normal ml-3 block truncate" onclick="
-        element = document.getElementById('{{ $item->id }}');
+        element = document.getElementById('mc_{{ $item->id }}');
         element.classList.toggle('hidden');
         if (element.classList.contains('hidden')) {
           var icon = document.getElementById('{{ $item->id }}_up');

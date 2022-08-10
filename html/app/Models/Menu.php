@@ -38,10 +38,25 @@ class Menu extends Model
         return $this->hasMany('App\Models\Menu','parent_id','id');
     }
 
+    public static function top()
+    {
+        return Menu::with('childs')->whereNull('parent_id')->get();
+    }
+
+    public static function parents()
+    {
+        return Menu::where('url', '#')->get();
+    }
+
+    public static function subItems($menu)
+    {
+        return Menu::with('childs')->where('parent_id', $menu)->orderBy('weight')->get();
+    }
+
     public function render()
     {
         $html = '<ul>';
-        $items = $this->childs()->orderBy('weight')->get();
+        $items = $this->childs->sortBy('weight')->get();
         foreach ($items as $item) {
             $html .= '<li>';
             if ($item->link == '#') {

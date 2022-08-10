@@ -71,13 +71,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\AdminController@studentEdit');
     Route::post('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\AdminController@studentUpdate')->name('students.edit');
 
-    Route::get('website/menus', 'App\Http\Controllers\Admin\AdminController@index');
-    Route::post('website/menus', 'App\Http\Controllers\Admin\AdminController@index')->name('menus');
-    Route::get('website/menus/add', 'App\Http\Controllers\Admin\AdminController@index');
-    Route::post('website/menus/add', 'App\Http\Controllers\Admin\AdminController@index')->name('menus.add');
-    Route::get('website/menus/{id}/edit', 'App\Http\Controllers\Admin\AdminController@index');
-    Route::post('website/menus/{id}/edit', 'App\Http\Controllers\Admin\AdminController@index')->name('menus.edit');
-    Route::post('website/menus/{id}/remove', 'App\Http\Controllers\Admin\AdminController@index')->name('menus.remove');
+    Route::get('website/menus/{menu?}', 'App\Http\Controllers\Admin\AdminController@menuList');
+    Route::post('website/menus/{menu?}', 'App\Http\Controllers\Admin\AdminController@menuUpdate')->name('menus');
+    Route::get('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\AdminController@menuAdd');
+    Route::post('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\AdminController@menuInsert')->name('menus.add');
+    Route::get('website/menus/remove/{menu}', 'App\Http\Controllers\Admin\AdminController@menuDelete')->name('menus.remove');
     Route::get('website/permission', 'App\Http\Controllers\Admin\AdminController@index')->name('permission');
     Route::get('website/permission/add', 'App\Http\Controllers\Admin\AdminController@index');
     Route::post('website/permission/add', 'App\Http\Controllers\Admin\AdminController@index')->name('permission.add');
