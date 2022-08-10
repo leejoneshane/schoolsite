@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Models\Menu;
+use App\Models\Permission;
 use App\Jobs\SyncFromTpedu;
 use App\Jobs\SyncToAd;
 use App\Jobs\SyncToGsuite;
@@ -503,6 +504,7 @@ class AdminController extends Controller
             $m->id = $new;
             $m->save();
         }
+        session()->flash('success', '選單項目已經更新！');
         return $this->menuList($menu);
     }
 
@@ -539,6 +541,7 @@ class AdminController extends Controller
                 'weight' => $weight,
             ]);
         }
+        session()->flash('success', '選單項目新增完成！');
         return $this->menuList($menu);
     }
 
@@ -552,8 +555,83 @@ class AdminController extends Controller
             ]);    
         }
         $item->delete();
-
+        session()->flash('success', '選單項目已經刪除！');
         return $this->menuList($parent);
+    }
+
+    public function permissionList()
+    {
+        $perms = Permission::orderBy('group')->get();
+        return view('admin.permission', ['permission' => $perms]);
+    }
+
+    public function permissionAdd()
+    {
+        return view('admin.permissionadd');
+    }
+
+    public function permissionInsert(Request $request)
+    {
+        $app = $request->input('app');
+        $perm = $request->input('perm');
+        $desc = $request->input('desc');
+        $ckf = Permission::findByName("$app.$perm");
+        if ($ckf) {
+            $request->flash();
+            session()->flash('error', '該權限已經存在，無法再新增！');
+            return back();
+        }
+        Permission::create([
+            'group' => $app,
+            'permission' => $perm,
+            'description' => $desc,
+        ]);
+        session()->flash('success', '權限新增完成！');
+        return $this->permissionList();
+    }
+
+    public function permissionEdit($id)
+    {
+        $perm = Permission::find($id);
+        return view('admin.permissionedit', ['perm' => $perm]);
+    }
+
+    public function permissionUpdate($id, Request $request)
+    {
+        $app = $request->input('app');
+        $perm = $request->input('perm');
+        $desc = $request->input('desc');
+        $ckf = Permission::findByName("$app.$perm");
+        if ($ckf && $ckf->id != $id) {
+            $request->flash();
+            session()->flash('error', '該權限已經存在，無法修改成新的代號！');
+            return back();
+        }
+        Permission::find($id)->update([
+            'group' => $app,
+            'permission' => $perm,
+            'description' => $desc,
+        ]);
+        session()->flash('success', '權限更新完成！');
+        return $this->permissionList();
+    }
+
+    public function permissionRemove($id)
+    {
+        Permission::destroy($id);
+        session()->flash('success', '權限已經移除！');
+        return $this->permissionList();
+    }
+
+    public function grantList($id)
+    {
+        $perm = Permission::find($id);
+        $units = Unit::main();
+        $already = $perm->users();
+        $teachers = Teacher::all()->reject(function ($teacher) {
+            return $teacher->user->is_admin;
+        });
+        return view('admin.permission', ['permission' => $perm, 'already' => $already, 'units' => $units]);
     }
 
 }

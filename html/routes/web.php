@@ -76,14 +76,13 @@ Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\AdminController@menuAdd');
     Route::post('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\AdminController@menuInsert')->name('menus.add');
     Route::get('website/menus/remove/{menu}', 'App\Http\Controllers\Admin\AdminController@menuDelete')->name('menus.remove');
-    Route::get('website/permission', 'App\Http\Controllers\Admin\AdminController@index')->name('permission');
-    Route::get('website/permission/add', 'App\Http\Controllers\Admin\AdminController@index');
-    Route::post('website/permission/add', 'App\Http\Controllers\Admin\AdminController@index')->name('permission.add');
-    Route::get('website/permission/{id}/edit', 'App\Http\Controllers\Admin\AdminController@index');
-    Route::post('website/permission/{id}/edit', 'App\Http\Controllers\Admin\AdminController@index')->name('permission.edit');
-    Route::post('website/permission/{id}/remove', 'App\Http\Controllers\Admin\AdminController@index')->name('permission.remove');
-    Route::get('website/permission/grant', 'App\Http\Controllers\Admin\AdminController@index');
-    Route::post('website/permission/grant', 'App\Http\Controllers\Admin\AdminController@index')->name('permission.grant');
-    Route::post('website/permission/{id}/cancel/{uuid}', 'App\Http\Controllers\Admin\AdminController@index')->name('permission.cancel');
+    Route::get('website/permission', 'App\Http\Controllers\Admin\AdminController@permissionList')->name('permission');
+    Route::get('website/permission/add', 'App\Http\Controllers\Admin\AdminController@permissionAdd');
+    Route::post('website/permission/add', 'App\Http\Controllers\Admin\AdminController@permissionInsert')->name('permission.add');
+    Route::get('website/permission/{id}/edit', 'App\Http\Controllers\Admin\AdminController@permissionEdit');
+    Route::post('website/permission/{id}/edit', 'App\Http\Controllers\Admin\AdminController@permissionUpdate')->name('permission.edit');
+    Route::get('website/permission/{id}/remove', 'App\Http\Controllers\Admin\AdminController@permissionRemove')->name('permission.remove');
+    Route::get('website/permission/{id}/grant', 'App\Http\Controllers\Admin\AdminController@grantList');
+    Route::post('website/permission/{id}/grant', 'App\Http\Controllers\Admin\AdminController@grantUpdate')->name('permission.grant');
 });
 

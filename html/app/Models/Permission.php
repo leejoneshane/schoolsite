@@ -34,7 +34,7 @@ class Permission extends Model
     	return $this->belongsToMany('App\Models\User', 'user_permissions', 'perm_id', 'uuid');
 	}
 
-    public function findByName($permissions)
+    public static function findByName($permissions)
     {
         list($group, $permission) = explode('.', $permissions);
         return Permission::where('group', $group)
