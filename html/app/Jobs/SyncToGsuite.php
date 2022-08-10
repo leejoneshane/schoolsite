@@ -18,6 +18,7 @@ class SyncToGsuite implements ShouldQueue, ShouldBeUnique
     private static $key = 'sync';
     public $timeout = 12000;
     public $password;
+    public $leave;
     public $start;
     public $end;
     public $log = [];
@@ -27,10 +28,11 @@ class SyncToGsuite implements ShouldQueue, ShouldBeUnique
      *
      * @return void
      */
-    public function __construct($password)
+    public function __construct($password, $leave)
     {
         $this->onQueue('app');
         $this->password = $password;
+        $this->leave = $leave;
     }
 
     /**
@@ -42,9 +44,13 @@ class SyncToGsuite implements ShouldQueue, ShouldBeUnique
     {
         $google = new GsuiteServiceProvider;
         $this->start = time();
-        $logs1 = $google->sync_teachers($this->password);
-        $logs2 = $google->sync_students($this->password);
-        $this->log = array_merge($logs1, $logs2);
+        if ($leave == 'onduty') {
+            $logs1 = $google->sync_teachers($this->password);
+            $logs2 = $google->sync_students($this->password);
+            $this->log = array_merge($logs1, $logs2);    
+        } else {
+            $this->log = $google->deal_graduate($this->leave);
+        }
         $this->end = time();
     }
 

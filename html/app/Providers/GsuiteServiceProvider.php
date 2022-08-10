@@ -125,7 +125,7 @@ class GsuiteServiceProvider extends ServiceProvider
 			} while ($page_token);
 			return $users;
 		} catch (\Google_Service_Exception $e) {
-			Log::notice("google findUsers($filter):" . $e->getMessage());
+			Log::notice("google allUsers($user_type):" . $e->getMessage());
 			return false;
 		}
 	}
@@ -173,6 +173,21 @@ class GsuiteServiceProvider extends ServiceProvider
 			return $this->directory->users->update($userKey, $userObj);
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google updateUser($userKey,".var_export($userObj, true).'):' . $e->getMessage());
+			return false;
+		}
+	}
+
+	public function suspend_user($userKey)
+	{
+		if (!strpos($userKey, '@')) {
+			$userKey .= '@' . config('services.gsuite.domain');
+		}
+		try {
+			$user = $this->directory->users->get($userKey);
+			$user->setSuspended(true);
+			return $this->directory->users->update($userKey, $user);
+		} catch (\Google_Service_Exception $e) {
+			Log::notice("google deleteUser($userKey):" . $e->getMessage());
 			return false;
 		}
 	}
@@ -274,7 +289,8 @@ class GsuiteServiceProvider extends ServiceProvider
 		if ($user_type == 'Student') {
 			$neworg = new \Google_Service_Directory_UserOrganization();
 			$neworg->setType('school');
-			$neworg->setDepartment('學生');
+			$neworg->setName('學生');
+			$neworg->setDepartment(substr($t->id, 0, 3));
 			$neworg->setTitle($t->classroom()->name . $t->seat . '號');
 			$neworg->setPrimary(true);
 			$orgs[] = $neworg;
@@ -282,11 +298,12 @@ class GsuiteServiceProvider extends ServiceProvider
 				$user->setOrgUnitPath(config('services.gsuite.student_orgunit'));
 			}
 		} elseif ($user_type == 'Teacher') {
-			$jobs = $t->units();
+			$jobs = $t->roles();
 			foreach ($jobs as $job) {
 				$neworg = new \Google_Service_Directory_UserOrganization();
 				$neworg->setType('school');
-				$neworg->setDepartment('教師');
+				$neworg->setName('教師');
+				$neworg->setDepartment($job->unit()->name);
 				$neworg->setTitle($job->name);
 				if ($job->id == $t->unit_id) {
 					$neworg->setPrimary(true);
@@ -764,4 +781,43 @@ class GsuiteServiceProvider extends ServiceProvider
 		}
 		return $detail_log;
 	}
+
+	public function deal_graduate($leave)
+	{
+		$detail_log = [];
+		$domain = config('services.gsuite.domain');
+		$classes = Classroom::all();
+		if (date('m') > 7) { //計算畢業生入學年
+        	$year = date('Y') - 1917;
+    	} else {
+        	$year = date('Y') - 1918;
+    	}
+		$students = $this->find_users('orgDepartment='.$year);
+		foreach ($students as $s) {
+			$realname = $s->getName()->getFullName();
+			$org = $s->getOrganizations();
+			$org_title = $org[0]->getTitle();
+			$user_key = $s->getPrimaryEmail();
+			$detail_log[] = "在 G Suite 中找到畢業生 $org_title $realname ($user_key)......";
+			if ($leave == 'suspend') {
+				$detail_log[] = '正在停用帳號中......';
+				$user = $this->suspend_user($user_key);
+				if ($user) {
+					$detail_log[] = '已停用！';
+				} else {
+					$detail_log[] = "$org_title $realname 停用失敗！";
+				}
+			} elseif ($leave == 'remove') {
+				$detail_log[] = '正在移除帳號中......';
+				$result = $this->delete_user($user_key);
+				if ($result) {
+					$detail_log[] = '已移除！';
+				} else {
+					$detail_log[] = "$org_title $realname 移除失敗！";
+				}
+			}
+		}
+		return $detail_log;
+	}
+
 }

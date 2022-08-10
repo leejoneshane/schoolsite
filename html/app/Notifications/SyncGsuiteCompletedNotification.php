@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Carbon\Carbon;
 
-class SyncCompletedNotification extends Notification implements ShouldQueue
+class SyncGsuiteCompletedNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -48,8 +48,14 @@ class SyncCompletedNotification extends Notification implements ShouldQueue
         $times = $this->job->attempts();
         $mail = (new MailMessage)
             ->subject('Google 同步完成通知')
-            ->line("Google 同步作業於 $start 開始進行，中斷重試共 $times 次,已經於 $end 順利完成！")
-            ->line('詳細記錄如下：');
+            ->line("Google 同步作業於 $start 開始進行，中斷重試共 $times 次,已經於 $end 順利完成！");
+        if ($this->job->leave == 'onduty') {
+            $mail->line('本次同步作業為同步在校生帳號，詳細記錄如下：');
+        } elseif ($this->job->leave == 'suspend') {
+            $mail->line('本次同步作業為停用畢業生帳號，詳細記錄如下：');
+        } else {
+            $mail->line('本次同步作業為移除畢業生帳號，詳細記錄如下：');
+        }
         foreach ($this->job->log as $line) {
             $mail->line($line);
         }

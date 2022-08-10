@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.0.2",
         "beyondcode/laravel-websockets": "^1.13",
-        "doctrine/dbal": "^3.3",
+        "doctrine/dbal": "^3.4",
         "google/apiclient": "^2.12",
         "guzzlehttp/guzzle": "^7.2",
         "http-interop/http-factory-guzzle": "^1.2",
@@ -20,7 +20,7 @@
         "laravel/telescope": "^4.9",
         "laravel/tinker": "^2.7",
         "laravel/ui": "^3.4",
-        "meilisearch/meilisearch-php": "^0.24.0",
+        "meilisearch/meilisearch-php": "^0.24.1",
         "spatie/icalendar-generator": "^2.3"
     },
     "require-dev": {
