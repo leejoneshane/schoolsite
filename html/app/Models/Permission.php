@@ -34,6 +34,11 @@ class Permission extends Model
     	return $this->belongsToMany('App\Models\User', 'user_permissions', 'perm_id', 'uuid');
 	}
 
+    public function teachers()
+	{
+    	return $this->belongsToMany('App\Models\Teacher', 'user_permissions', 'perm_id', 'uuid');
+	}
+
     public static function findByName($permissions)
     {
         list($group, $permission) = explode('.', $permissions);
@@ -67,23 +72,21 @@ class Permission extends Model
     public function assign($users)
     {
         if ($users instanceof User) {
-            $user = array([
+            $user_permissions[] = [
                 'uuid' => $users->uuid,
                 'perm_id' => $this->id,
-            ]);
-            $user_permissions[] = $user;
+            ];
         } elseif ($users instanceof Collection) {
             foreach ($users as $user) {
-                $user = array([
+                $user_permissions[] = [
                     'uuid' => $user->uuid,
                     'perm_id' => $this->id,    
-                ]);
-                $user_permissions[] = $user;    
+                ];
             }
         }
-        foreach ($users as $uuid) {
-            DB::table('user_permissions')->updateOrInsert($user_permissions);    
-        }
+        foreach ($user_permissions as $u) {
+            DB::table('user_permissions')->updateOrInsert($u, $u);
+        }   
         return $this;
     }
 
@@ -91,26 +94,29 @@ class Permission extends Model
     {
         $user_permissions = [];
         if (!is_array($uuids)) {
-            $user = array([
+            $user_permissions[] = [
                 'uuid' => $uuids,
                 'perm_id' => $this->id,
-            ]);
-            $user_permissions[] = $user;
+            ];
         } else {
             foreach ($uuids as $uuid) {
-                $user = array([
+                $user_permissions[] = [
                     'uuid' => $uuid,
-                    'perm_id' => $this->id,    
-                ]);
-                $user_permissions[] = $user;    
+                    'perm_id' => $this->id,
+                ];
             }
         }
-        foreach ($users as $uuid) {
-            DB::table('user_permissions')->updateOrInsert($user_permissions);    
+        foreach ($user_permissions as $u) {
+            DB::table('user_permissions')->updateOrInsert($u, $u);
         }
         return $this;
     }
 
+    public function removeAll()
+    {
+        DB::table('user_permissions')->where('perm_id', $this->id)->delete();
+        return $this;
+    }
 
     public function remove($users)
     {

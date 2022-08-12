@@ -158,7 +158,7 @@ function add_assign() {
 	@foreach ($classes as $cls)
 	my_cls += '<option value="{{ $cls->id }}">{{ $cls->name }}</option>';
 	@endforeach
-	my_item += '</select>';
+	my_cls += '</select>';
     const elemc = document.createElement('select');
     target.parentNode.insertBefore(elemc, target);
     elemc.outerHTML = my_cls;

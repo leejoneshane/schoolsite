@@ -34,7 +34,10 @@ class Unit extends Model
 
     public static function subkeys($main = '')
     {
-        if (strlen($main) > 3) return array($main);
+        if (strlen($main) > 3) {
+            $u = Unit::where('unit_no', $main)->first();
+            return array($u->id);
+        }
         $keys = [];
         if (empty($main)) {
             $all_subs = Unit::whereRaw('CHAR_LENGTH(unit_no) > 3 and LEFT(unit_no, 1) <> ?', ['Z'])->get();

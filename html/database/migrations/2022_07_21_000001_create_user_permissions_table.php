@@ -18,7 +18,6 @@ return new class extends Migration
             $table->id();
 			$table->uuid('uuid')->index();
 			$table->integer('perm_id');
-            $table->timestamps();
         });
     }
 

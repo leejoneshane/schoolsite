@@ -21,48 +21,36 @@
         </div>
         <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
             <p>
-                請點擊權限所在的列，就可以進行授權！
+                具有管理員身分的使用者擁有全部權限，因此不需要也無法進行授權！
             </p>
         </div>
-        <table class="w-full py-4 text-left font-normal">
-            <tr class="font-semibold text-lg">
-                <th scope="col" class="p-2">
-                    權限代碼
-                </th>
-                <th scope="col" class="p-2">
-                    權限描述
-                </th>
-                <th></th>
-            </tr>
-            <tr>
-                <td class="p-2 sm:w-auto w-36">
-                    {{ $permission->group }}.{{ $permission->permission }}
-                </td>
-                <td class="p-2 sm:w-auto w-64">
-                    {{ $permission->description }}
-                </td>
-            </tr>
-        </table>
-        <form id="edit-teacher" action="{{ route('teachers.edit', ['uuid' => $teacher->uuid]) }}" method="POST">
+        <div class="w-full py-2 text-left font-normal">
+            <span class="font-semibold">權限代碼：</span>{{ $permission->group }}.{{ $permission->permission }}　
+            <span class="font-semibold">權限描述：</span>{{ $permission->description }}
+        </div>
+        <form id="edit-teacher" action="{{ route('permission.grant', ['id' => $permission->id]) }}" method="POST">
             @csrf
-            <p class="p-2"><label for="roles" class="inline">已授權人員：</label>
-                @foreach ($already as $u)
-                <select class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    name="classes[]">
-                    @foreach ($classes as $cls)
-                    <option value="{{ $cls->id }}"{{ $assign->class_id == $cls->id  ? ' selected' : '' }}>{{ $cls->name }}</option>
+            <p class="p-2">
+                <label for="roles" class="inline">已授權人員：</label>
+                <div id="nassign">
+                @foreach ($already as $user)
+                <select class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                name="teachers[]">
+                    @foreach ($teachers as $t)
+                    @php
+                        $gap = '';
+                        for ($i=0;$i<6-mb_strlen($t->role_name);$i++) {
+                            $gap .= '　';
+                        }
+                    @endphp
+                    <option {{ ($user->uuid == $t->uuid) ? 'selected' : ''}} value="{{ $t->uuid }}">{{ $t->role_name }}{{ $gap }}{{ $t->realname }}</option>
                     @endforeach
                 </select>
-                <select class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    name="subjects[]">
-                    @foreach ($subjects as $subj)
-                    <option value="{{ $subj->id }}"{{ $assign->subject_id == $subj->id  ? ' selected' : '' }}>{{ $subj->name }}</option>
-                    @endforeach
-                </select>
-                <button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_assign(this);"><i class="fa-solid fa-circle-minus"></i></button>
+                <button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_teacher(this);"><i class="fa-solid fa-circle-minus"></i></button>
                 @endforeach
+                </div>
                 <button id="nassign" type="button" class="py-2 px-6 rounded text-blue-300 hover:text-blue-600"
-                    onclick="add_assign()"><i class="fa-solid fa-circle-plus"></i>
+                    onclick="add_teacher()"><i class="fa-solid fa-circle-plus"></i>
                 </button>
             </p>
             <p class="py-4 px-6">
@@ -73,4 +61,34 @@
         </form>
     </div>
 </div>
+<script>
+    function remove_teacher(elem) {
+    const parent = elem.parentNode;
+    const brother = elem.previousElementSibling;
+    parent.removeChild(brother);
+    parent.removeChild(elem);
+}
+
+function add_teacher() {
+    var target = document.getElementById('nassign');
+    var my_cls = '<select class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200" name="teachers[]">';
+	@foreach ($teachers as $t)
+    @php
+        $gap = '';
+        for ($i=0;$i<6-mb_strlen($t->role_name);$i++) {
+            $gap .= '　';
+        }
+    @endphp
+	my_cls += '<option value="{{ $t->uuid }}">{{ $t->role_name }}{{ $gap }}{{ $t->realname }}</option>';
+	@endforeach
+	my_cls += '</select>';
+    const elemc = document.createElement('select');
+    target.parentNode.insertBefore(elemc, target);
+    elemc.outerHTML = my_cls;
+	my_btn = '<button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_teacher(this);"><i class="fa-solid fa-circle-minus"></i></button>';
+    const elemb = document.createElement('button');
+    target.parentNode.insertBefore(elemb, target);
+    elemb.outerHTML = my_btn;
+}
+</script>
 @endsection

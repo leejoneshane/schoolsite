@@ -382,7 +382,7 @@ class ADServiceProvider extends ServiceProvider
 							if ($result) {
 								$detail_log[] = '加入成功！';
 							} else {
-								$detail_log[] = "無法將使用者 $unit->unit_name $t->realname 加入 $job->dept_name 群組！".ad_error();
+								$detail_log[] = "無法將使用者 $t->role_name $t->realname 加入 $unit->name 群組！".ad_error();
 							}
 						}
 					}

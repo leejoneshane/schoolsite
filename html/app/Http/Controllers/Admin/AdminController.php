@@ -62,7 +62,7 @@ class AdminController extends Controller
                     'id' => 'ADsync',
                     'parent_id' => 'database',
                     'caption' => '同步到 AD',
-                    'url' => 'route.syncAd',
+                    'url' => 'route.syncAD',
                     'weight' => 30,
                 ]);
             }
@@ -337,7 +337,8 @@ class AdminController extends Controller
         } else {
             $unit_id = $unit;
         }
-        $keys = Unit::subkeys($unit_id);
+        $unit = Unit::find($unit_id);
+        $keys = Unit::subkeys($unit->unit_no);
         $teachers = Teacher::whereIn('unit_id', $keys)->orderBy('realname')->get();
         return view('admin.teachers', ['current' => $unit_id, 'units' => $units, 'teachers' => $teachers]);
     }
@@ -627,11 +628,29 @@ class AdminController extends Controller
     {
         $perm = Permission::find($id);
         $units = Unit::main();
-        $already = $perm->users();
-        $teachers = Teacher::all()->reject(function ($teacher) {
-            return $teacher->user->is_admin;
-        });
-        return view('admin.permission', ['permission' => $perm, 'already' => $already, 'units' => $units]);
+        $already = $perm->teachers()->orderBy('uuid')->get();
+        $teachers = Teacher::leftJoin('units', 'units.id', '=', 'unit_id')
+            ->leftJoin('roles', 'roles.id', '=', 'role_id')
+            ->orderBy('units.unit_no')
+            ->orderBy('roles.role_no')
+            ->get()
+            ->reject(function ($teacher) {
+                return $teacher->user->is_admin;
+            });
+        return view('admin.grant', ['permission' => $perm, 'already' => $already, 'units' => $units, 'teachers' => $teachers]);
+    }
+
+    public function grantUpdate($id, Request $request)
+    {
+        $users = $request->input('teachers');
+        $perm = Permission::find($id)->removeAll();
+        $log = '已經移除所有授權！';
+        if (!empty($users)) {
+            $perm->assignByUUID($users);
+            $log .= '並重新授權給指定人員！';
+        }
+        session()->flash('success', $log);
+        return back();
     }
 
 }

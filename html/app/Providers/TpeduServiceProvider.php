@@ -247,7 +247,7 @@ class TpeduServiceProvider extends ServiceProvider
 								$dept = Unit::where('unit_no', $a[1])->first();
 								$ckf = false;
 								foreach ($keywords as $k) {
-									if (!(mb_strpos($dept_name, $k) === false)) {
+									if (!(mb_strpos($dept->name, $k) === false)) {
 										$ckf = true;
 									}
 								}
