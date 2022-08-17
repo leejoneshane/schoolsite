@@ -199,7 +199,7 @@ class TpeduServiceProvider extends ServiceProvider
 		}
 	}
 
-	public function fetch_user($uuid, $only = false)
+	public function fetch_user($uuid, $only = false, $pwd = false)
 	{
 		if ($only) {
 			$temp = Student::find($uuid);
@@ -224,6 +224,12 @@ class TpeduServiceProvider extends ServiceProvider
 				}
 			} else {
 				$account = $user->uid;
+			}
+			if ($pwd && $sys_user = User::find($uuid)) {
+				$sys_user->forceFill([
+					'password' => Hash::make(substr($user->cn, -6))
+				])->setRememberToken(Str::random(60));
+				$sys_user->save();;
 			}
 			$birth = date('Y-m-d', strtotime($user->birthDate));
 			$stu = ($user->employeeType == '學生') ? true : false; 
@@ -393,14 +399,15 @@ class TpeduServiceProvider extends ServiceProvider
 		}
 	}
 
-	function sync_units($only = false)
+	function sync_units($only = false, $sync = false)
 	{
-		if ($only) {
-			$fetch = Unit::first();
-			if ($fetch) {
+		$fetch = Unit::first();
+		if ($fetch) {
+			if (!$sync) return;	
+			if ($only) {
 				$expire = new Carbon($fetch->updated_at);
 				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return;
-			}	
+			}
 		}
 		$ous = $this->api('all_units');
 		if ($ous) {
@@ -416,21 +423,22 @@ class TpeduServiceProvider extends ServiceProvider
 		}
 	}
 
-	function sync_roles($only = false)
+	function sync_roles($only = false, $sync = false)
 	{
-		if (!$only) {
+		if (!$only && $sync) {
 			DB::table('roles')->truncate();
 		}
 	}
 
-	function sync_subjects($only = false)
+	function sync_subjects($only = false, $sync = false)
 	{
-		if ($only) {
-			$fetch = Subject::first();
-			if ($fetch) {
+		$fetch = Subject::first();
+		if ($fetch) {
+			if (!$sync) return;	
+			if ($only) {
 				$expire = new Carbon($fetch->updated_at);
 				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return;
-			}	
+			}
 		}
 		$subjects = $this->api('all_subjects');
 		if ($subjects) {
@@ -441,14 +449,15 @@ class TpeduServiceProvider extends ServiceProvider
 		}
 	}
 
-	function sync_classes($only = false)
+	function sync_classes($only = false, $sync = false)
 	{
-		if ($only) {
-			$fetch = Classroom::first();
-			if ($fetch) {
+		$fetch = Classroom::first();
+		if ($fetch) {
+			if (!$sync) return;	
+			if ($only) {
 				$expire = new Carbon($fetch->updated_at);
 				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return;
-			}	
+			}
 		}
 		$classes = $this->api('all_classes');
 		if ($classes) {
@@ -468,25 +477,39 @@ class TpeduServiceProvider extends ServiceProvider
 		}
 	}
 
-	function sync_teachers($only = false)
+	function sync_teachers($only = false, $password = false, $remove = true)
 	{
     	$uuids = $this->api('all_teachers');
     	if ($uuids && is_array($uuids)) {
         	foreach ($uuids as $uuid) {
-            	$this->fetch_user($uuid, $only);
+            	$this->fetch_user($uuid, $only, $password);
         	}
     	}
+		if ($remove) {
+			$leaves = Teacher::whereNotIN('uuid', $uuids)->get();
+			foreach ($leaves as $l) {
+				User::destroy($l->uuid);
+				$l->delete();
+			}	
+		}
 	}
 
-	function sync_students($only = false)
+	function sync_students($only = false, $password = false, $remove = true)
 	{
 		$classes = DB::table('classrooms')->get();
         foreach ($classes as $cls) {
 			$uuids = $this->api('students_of_class', ['class' => $cls->id]);
 			if ($uuids && is_array($uuids)) {
 				foreach ($uuids as $uuid) {
-					$this->fetch_user($uuid, $only);
+					$this->fetch_user($uuid, $only, password);
 				}
+			}
+			if ($remove) {
+				$leaves = Student::where('class_id', $cls->id)->whereNotIN('uuid', $uuids)->get();
+				foreach ($leaves as $l) {
+					User::destroy($l->uuid);
+					$l->delete();
+				}	
 			}
 		}
 	}

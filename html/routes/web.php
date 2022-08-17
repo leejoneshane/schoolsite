@@ -48,8 +48,8 @@ Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@re
 // Administrator Interface Routes...
 Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
-    Route::get('database/sync', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu')->name('sync');
-    Route::get('database/forcesync', 'App\Http\Controllers\Admin\AdminController@forceSyncFromTpedu')->name('forcesync');
+    Route::get('database/sync', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu');
+    Route::post('database/sync', 'App\Http\Controllers\Admin\AdminController@startSyncFromTpedu')->name('sync');
     Route::get('database/sync/ad', 'App\Http\Controllers\Admin\AdminController@syncToAD');
     Route::post('database/sync/ad', 'App\Http\Controllers\Admin\AdminController@startSyncToAD')->name('syncAD');
     Route::get('database/sync/google', 'App\Http\Controllers\Admin\AdminController@syncToGsuite');

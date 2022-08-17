@@ -48,15 +48,6 @@ class AdminController extends Controller
                     'weight' => 10,
                 ]);
             }
-            if (!Menu::find('forcesync')) {
-                Menu::create([
-                    'id' => 'forcesync',
-                    'parent_id' => 'database',
-                    'caption' => '強制資料同步',
-                    'url' => 'route.forcesync',
-                    'weight' => 20,
-                ]);
-            }
             if (!Menu::find('ADsync')) {
                 Menu::create([
                     'id' => 'ADsync',
@@ -162,14 +153,18 @@ class AdminController extends Controller
 
     public function syncFromTpedu()
     {
-        SyncFromTpedu::dispatch(true);
-        session()->flash('success', '此同步作業僅同步超過'.config('services.tpedu.expired_days').'天的資料，同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
-        return view('admin');
+        return view('admin.tpedu');
     }
 
-    public function forceSyncFromTpedu()
+    public function startSyncFromTpedu(Request $request)
     {
-        SyncFromTpedu::dispatch(false);
+        $expire = ($request->input('expire') == 'yes') ? true : false;
+        $password = ($request->input('password') == 'sync') ? true : false;
+        $unit = ($request->input('sync_units') == 'yes') ? true : false;
+        $classroom = ($request->input('sync_classes') == 'sync') ? true : false;
+        $subject = ($request->input('sync_subjects') == 'sync') ? true : false;
+        $remove = ($request->input('leave') == 'remove') ? true : false;
+        SyncFromTpedu::dispatch($expire, $password, $unit, $classroom, $subject, $remove);
         session()->flash('success', '同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
         return view('admin');
     }
@@ -211,8 +206,8 @@ class AdminController extends Controller
     public function unitUpdate(Request $request)
     {
         if ($request->has('units')) {
-            $units = $request->collect('units');
-            $unit_ids = $request->collect('uid');
+            $units = $request->input('units');
+            $unit_ids = $request->input('uid');
             foreach ($units as $id => $name) {
                 $unit = Unit::find($id);
                 $unit->unit_no = $unit_ids[$id];
@@ -222,8 +217,8 @@ class AdminController extends Controller
             session()->flash('success', '行政單位已更新並儲存！');
         }
         if ($request->has('roles')) {
-            $roles = $request->collect('roles');
-            $role_ids = $request->collect('rid');
+            $roles = $request->input('roles');
+            $role_ids = $request->input('rid');
             foreach ($roles as $id => $name) {
                 $role = Role::find($id);
                 $role->role_no = $role_ids[$id];
@@ -283,8 +278,8 @@ class AdminController extends Controller
 
     public function classUpdate(Request $request)
     {
-        $names = $request->collect('name');
-        $tutors = $request->collect('tutor');
+        $names = $request->input('name');
+        $tutors = $request->input('tutor');
         foreach ($names as $id => $name) {
             $cls = Classroom::find($id);
             $old_tutors = $cls->tutors();
@@ -319,7 +314,7 @@ class AdminController extends Controller
 
     public function subjectUpdate(Request $request)
     {
-        $subjects = $request->collect('subjects');
+        $subjects = $request->input('subjects');
         foreach ($subjects as $id => $name) {
             $subj = Subject::find($id);
             $subj->name = $name;
@@ -358,7 +353,7 @@ class AdminController extends Controller
     public function teacherUpdate($uuid, Request $request)
     {
         $teacher = Teacher::find($uuid);
-        $new_roles = $request->collect('roles');
+        $new_roles = $request->input('roles');
         $old_roles = $teacher->roles(); 
         foreach ($old_roles as $old) {
             if ($pos = array_search($old->id, $new_roles)) {
@@ -445,7 +440,7 @@ class AdminController extends Controller
     public function studentUpdate($uuid, Request $request)
     {
         $student = Student::find($uuid);
-        $characters = $request->collect('character');
+        $characters = $request->input('character');
         if (!empty($character)) {
             $student->character = implode(',', $characters);
         }
@@ -486,11 +481,11 @@ class AdminController extends Controller
 
     public function menuUpdate($menu = '', Request $request)
     {
-        $ids = $request->collect('ids');
-        $captions = $request->collect('captions');
-        $parents = $request->collect('parents');
-        $urls = $request->collect('urls');
-        $weights = $request->collect('weights');
+        $ids = $request->input('ids');
+        $captions = $request->input('captions');
+        $parents = $request->input('parents');
+        $urls = $request->input('urls');
+        $weights = $request->input('weights');
         foreach ($captions as $id => $title) {
             $m = Menu::find($id);
             $m->parent_id = $parents[$id];

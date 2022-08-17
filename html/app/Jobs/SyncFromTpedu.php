@@ -17,7 +17,12 @@ class SyncFromTpedu implements ShouldQueue, ShouldBeUnique
 
     private static $key = 'sync';
     public $timeout = 12000;
-    public $only_expired = false;
+    public $only_expired = true;
+    public $reset_password = false;
+    public $sync_units = false;
+    public $sync_classes = false;
+    public $sync_subjects = false;
+    public $remove_leave = false;
     public $start;
     public $end;
 
@@ -26,10 +31,15 @@ class SyncFromTpedu implements ShouldQueue, ShouldBeUnique
      *
      * @return void
      */
-    public function __construct($only_expired)
+    public function __construct($only_expired, $password, $unit, $classroom, $subject, $remove)
     {
         $this->onQueue('app');
         $this->only_expired = $only_expired;
+        $this->reset_password = $password;
+        $this->sync_units = $unit;
+        $this->sync_classes = $classroom;
+        $this->sync_subjects = $subject;
+        $this->remove_leave = $remove;
     }
 
     /**
@@ -41,12 +51,12 @@ class SyncFromTpedu implements ShouldQueue, ShouldBeUnique
     {
         $sso = new TpeduServiceProvider;
         $this->start = time();
-        $sso->sync_units($this->only_expired);
-        $sso->sync_roles($this->only_expired);
-        $sso->sync_subjects($this->only_expired);
-        $sso->sync_classes($this->only_expired);
-        $sso->sync_teachers($this->only_expired);
-        $sso->sync_students($this->only_expired);
+        $sso->sync_units($this->only_expired, $this->sync_units);
+        $sso->sync_roles($this->only_expired, $this->sync_units);
+        $sso->sync_subjects($this->only_expired, $this->sync_subjects);
+        $sso->sync_classes($this->only_expired, $this->sync_classes);
+        $sso->sync_teachers($this->only_expired, $this->reset_password, $this->remove_leave);
+        $sso->sync_students($this->only_expired, $this->reset_password, $this->remove_leave);
         $this->end = time();
     }
 

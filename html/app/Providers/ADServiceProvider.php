@@ -304,6 +304,7 @@ class ADServiceProvider extends ServiceProvider
 	public function sync_teachers($password_sync, $leave)
 	{
 		$detail_log = [];
+		$base_dn = config('services.ad.users_dn');
 		$depts = Unit::main();
 		$all_users = $this->all_users();
 		unset($all_users['count']);
