@@ -15,17 +15,17 @@
         @endif
 
         @if (session('error'))
-        <div class="border-red-500 bg-red-100 border-b-2" role="alert">
+        <div class="border-red-500 bg-red-100 dark:bg-red-700 border-b-2" role="alert">
             {{ session('error') }}
         </div>
         @endif
         @if (session('success'))
-        <div class="border-green-500 bg-green-100 border-b-2" role="alert">
+        <div class="border-green-500 bg-green-100 dark:bg-green-700 border-b-2" role="alert">
             {{ session('success') }}
         </div>
         @endif
         @if (session('message'))
-        <div class="border-blue-500 bg-blue-100 border-b-2" role="alert">
+        <div class="border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2" role="alert">
             {{ session('message') }}
         </div>
         @endif

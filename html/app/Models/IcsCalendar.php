@@ -17,6 +17,11 @@ class IcsCalendar extends Model
         'id', 'summary',
     ];
 
+    public static function forStudent()
+    {
+        return IcsCalendar::where('summary', 'like', '%學生%')->first();
+    }
+
     public function events()
     {
         return $this->hasMany('App\Models\IcsEvent', 'calendar_id', 'id');

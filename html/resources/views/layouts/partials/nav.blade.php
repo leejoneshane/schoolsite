@@ -1,6 +1,12 @@
 <nav class="flex items-center justify-between flex-wrap bg-teal-500 px-6 py-1">
   <div id="left-section" class="flex items-center flex-shrink-0 text-white">
     <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto divide-x divide-teal-200">
+      @if (!Request::is('/'))
+      <span class="block lg:inline-block mt-2 lg:mt-0 px-4 lg:px-2">
+        <i class="fa-solid fa-house"></i>
+        <a href="{{ route('home') }}" class="text-teal-200 hover:text-white">回首頁</a>
+      </span>
+      @endif
       <span class="block lg:inline-block mt-2 lg:mt-0 px-4 lg:px-2">
         <i class="fa-solid fa-school"></i>
         <a href="https://www.meps.tp.edu.tw" class="text-teal-200 hover:text-white">前往官網</a>

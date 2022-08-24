@@ -32,7 +32,8 @@ class IcsEventPolicy
                 return true;      
             }
         }
-        return Response::deny('您只能閱覽學生行事曆.');
+        return false;
+        //return Response::deny('您只能閱覽學生行事曆.');
     }
 
     public function create(User $user)
@@ -43,7 +44,8 @@ class IcsEventPolicy
                 return true;
             }
         }
-        return Response::deny('您沒有權限編輯校內行事曆.');
+        return false;
+        //return Response::deny('您沒有權限編輯校內行事曆.');
     }
 
     public function update(User $user, IcsEvent $event)
@@ -55,7 +57,8 @@ class IcsEventPolicy
                 return true;
             }
         }
-        return Response::deny('您無法編輯其他處室建立的行事曆事件！');
+        return false;
+        //return Response::deny('您無法編輯其他處室建立的行事曆事件！');
     }
 
     public function delete(User $user, IcsEvent $event)
@@ -66,7 +69,8 @@ class IcsEventPolicy
                 return true;
             }
         }
-        return falseResponse::deny('只有處室主任可以刪除該處室的行事曆事件！');;
+        return false;
+        //return falseResponse::deny('只有處室主任可以刪除該處室的行事曆事件！');;
     }
 
     public function restore(User $user, IcsEvent $event)

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\IcalendarGenerator\Components\Event;
 use Carbon\Carbon;
+use App\Models\IcsCalendar;
 
 class IcsEvent extends Model
 {
@@ -17,7 +18,20 @@ class IcsEvent extends Model
 
     protected $casts = [
         'all_day' => 'boolean',
+        'start' => 'date',
+        'end' => 'date',
     ];
+
+    public static function inTime($date)
+    {
+        return IcsEvent::whereDate('start', '<=', $date)->whereDate('end', '>=', $date)->get();
+    }
+
+    public static function inTimeForStudent($date)
+    {
+        $cal_id = IcsCalendar::forStudent()->id;
+        return IcsEvent::where('calendar_id', $cal_id)->whereDate('start', '<=', $date)->whereDate('end', '>=', $date)->get();
+    }
 
     public function calendar()
     {

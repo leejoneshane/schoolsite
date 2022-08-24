@@ -45,6 +45,12 @@ Route::get('email/verify', 'App\Http\Controllers\Auth\VerificationController@sho
 Route::get('email/verify/{id}/{hash}', 'App\Http\Controllers\Auth\VerificationController@verify')->name('verification.verify');
 Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@resend')->name('verification.resend');
 
+// User Interface Routes...
+Route::get('calendar', 'App\Http\Controllers\HomeController@calendar')->name('calendar');
+Route::get('calendar/seme', 'App\Http\Controllers\HomeController@calendar')->name('calendar.seme');
+Route::get('calendar/traning', 'App\Http\Controllers\HomeController@calendar')->name('calendar.traning');
+Route::get('calendar/student', 'App\Http\Controllers\HomeController@calendar')->name('calendar.student');
+
 // Administrator Interface Routes...
 Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');

@@ -122,7 +122,7 @@ class GcalendarServiceProvider extends ServiceProvider
 			$calendarId = 'primary';
 		}
 		if (empty($opt_param)) {
-			$mydate = gevent_current_seme();
+			$mydate = $this->current_seme();
 			$opt_param['timeMin'] = $mydate['min'];
 			$opt_param['timeMax'] = $mydate['max'];
 			$opt_param['singleEvents'] = true;
@@ -254,7 +254,7 @@ class GcalendarServiceProvider extends ServiceProvider
 		return $event;
 	}
 
-	private function gevent_current_seme()
+	public static function current_seme()
 	{
 		if (date('m') > 7) {
 			$syear = date('Y');
@@ -279,7 +279,7 @@ class GcalendarServiceProvider extends ServiceProvider
 			$max = "$eyear-07-31T00:00:00+08:00";
 		}
 	
-		return ['min' => $min, 'max' => $max, 'syear' => $syear, 'eyear' => $eyear, 'gyear' => $stryear, 'seme' => $seme];
+		return ['min' => $min, 'max' => $max, 'syear' => $syear, 'eyear' => $eyear, 'gyear' => $gyear, 'seme' => $seme];
 	}
 
 }
