@@ -24,7 +24,7 @@
             @endforeach
         </select>
         <table class="w-full py-4 text-left font-normal">
-            <tr class="font-semibold text-lg">
+            <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
                 <th scope="col" class="p-2">
                     識別碼
                 </th>

@@ -22,8 +22,8 @@
     <div class="text-2xl font-bold leading-normal pb-5">
         學校行事曆
         @if ($create)
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.seme') }}">
-            <<i class="fa-solid fa-calendar-plus"></i>新增事件
+        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.addEvent') }}">
+            <i class="fa-solid fa-calendar-plus"></i>新增事件
         </a>
         @endif
         @teacher
@@ -46,7 +46,38 @@
             max="{{ substr($seme['max'], 0, 10) }}"
             onchange="document.getElementById('select-date').submit();">
     </form>
-    <div class="col-span-5">
-    </div>
+    <table class="w-full text-sm text-left">
+        <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
+            <th scope="col" class="p-2">負責單位</th>
+            <th scope="col" class="p-2">起訖日期</th>
+            <th scope="col" class="p-2">起訖時間</th>
+            <th scope="col" class="p-2">事件摘要</th>
+            <th scope="col" class="p-2">補充說明</th>
+            <th scope="col" class="p-2">地點</th>
+        </tr>
+        @foreach ($events as $event)
+        <tr class="even:bg-white odd:bg-gray-100 hover:bg-blue-100 dark:hover:bg-blue-600 dark:even:bg-gray-700 dark:odd:bg-gray-600">
+            <td class="p-2">{{ $event->unit->name }}</td>
+            <td class="p-2">{{ $event->startDate }}{{ ($event->startDate == $event->endDate) ? '' : '～'.$event->endDate }}</td>
+            <td class="p-2">{{ ($event->all_day) ? '全天' : $event->startTime.'～'.$event->endTime }}</td>
+            <td class="p-2">{{ $event->summary }}</td>
+            <td class="p-2">{{ $event->description }}</td>
+            <td class="p-2">{{ $event->location }}
+            @if ($editable[$event->id])
+            <a class="py-2 px-6 text-blue-300 hover:text-blue-600"
+                href="{{ route('calendar.editEvent', ['event' => $event->id]) }}">
+                <i class="fa-solid fa-pen"></i>
+            </a>
+            @endif
+            @if ($deleteable[$event->id])
+            <a class="py-2 px-6 text-blue-300 hover:text-blue-600"
+                href="{{ route('calendar.removeEvent', ['event' => $event->id]) }}">
+                <i class="fa-solid fa-trash"></i>
+            </a>
+            @endif
+            </td>
+        </tr>
+        @endforeach
+    </table>
 </div>
 @endsection

@@ -111,10 +111,10 @@
                     </td>
                     @endif
                     <td class="p-2">
-                        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600"
+                        <a class="py-2 px-6 text-blue-300 hover:text-blue-600"
                             href="{{ route('menus.remove', ['menu' => $i->id]) }}">
                             <i class="fa-solid fa-trash"></i>
-                    </button>
+                        </a>
                     </td>
                 </tr>
                 @endforeach

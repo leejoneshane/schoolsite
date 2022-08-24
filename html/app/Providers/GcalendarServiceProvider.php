@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Log;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
 use App\Models\IcsCalendar;
@@ -226,21 +227,22 @@ class GcalendarServiceProvider extends ServiceProvider
 		$organizer->setEmail(config('services.gsuite.calendar'));
 		$organizer->setDisplayName($node->unit()->name);
 		$event->setOrganizer($organizer);
-		$start_date = Carbon::createFromTimestamp($node->start, env('TZ'));
-		$end_date = Carbon::createFromTimestamp($node->end, env('TZ'));
-		$event_start = new \Google_Service_Calendar_EventDateTime();
-		$event_end = new \Google_Service_Calendar_EventDateTime();
-		$event_start->setTimeZone(env('TZ'));
-		$event_end->setTimeZone(env('TZ'));
-		if ($node->all_day) {
-			$event_start->setDate($start_date->toDateString());
-			$event_end->setDate($end_date->toDateString());
-		} else {
-			$event_start->setDateTime($start_date->toDateTimeString());
-			$event_end->setDateTime($end_date->toDateTimeString());
+		$period = CarbonPeriod::create($node->startDate, $node->endDate);
+		foreach ($period as $date) {
+			$event_start = new \Google_Service_Calendar_EventDateTime();
+			$event_end = new \Google_Service_Calendar_EventDateTime();
+			$event_start->setTimeZone(env('TZ'));
+			$event_end->setTimeZone(env('TZ'));
+			if ($node->all_day) {
+				$event_start->setDate($date->format('Y-m-d'));
+				$event_end->setDate($date->format('Y-m-d'));
+			} else {
+				$event_start->setDateTime($date->format('Y-m-d').' '.$node->startTime);
+				$event_end->setDateTime($date->format('Y-m-d').' '.$node->endTime);
+			}
+			$event->setStart($event_start);
+			$event->setEnd($event_end);	
 		}
-		$event->setStart($event_start);
-		$event->setEnd($event_end);
 		if (!empty($event_id)) {
 			$event = $this->update_event($calendar_id, $event_id, $event);
 		} else {

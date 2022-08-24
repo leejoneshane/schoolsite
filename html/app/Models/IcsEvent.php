@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\IcalendarGenerator\Components\Event;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use App\Models\IcsCalendar;
 
 class IcsEvent extends Model
@@ -13,24 +14,26 @@ class IcsEvent extends Model
     protected $table = 'ics_events';
 
     protected $fillable = [
-        'unit_id', 'all_day', 'start', 'end', 'summary', 'description', 'location', 'calendar_id', 'event_id',
+        'unit_id', 'startDate', 'endDate', 'all_day', 'startTime', 'endTime', 'summary', 'description', 'location', 'calendar_id', 'event_id',
     ];
 
     protected $casts = [
         'all_day' => 'boolean',
-        'start' => 'date',
-        'end' => 'date',
+        'startDate' => 'datetime:Y-m-d',
+        'endDate' => 'datetime:Y-m-d',
+        'startTime' => 'datetime:H:i:s',
+        'endTime' => 'datetime:H:i:s',
     ];
 
     public static function inTime($date)
     {
-        return IcsEvent::whereDate('start', '<=', $date)->whereDate('end', '>=', $date)->get();
+        return IcsEvent::with('unit')->whereDate('startDate', '<=', $date)->whereDate('endDate', '>=', $date)->get();
     }
 
     public static function inTimeForStudent($date)
     {
         $cal_id = IcsCalendar::forStudent()->id;
-        return IcsEvent::where('calendar_id', $cal_id)->whereDate('start', '<=', $date)->whereDate('end', '>=', $date)->get();
+        return IcsEvent::with('unit')->where('calendar_id', $cal_id)->whereDate('startDate', '<=', $date)->whereDate('endDate', '>=', $date)->get();
     }
 
     public function calendar()
@@ -47,12 +50,26 @@ class IcsEvent extends Model
     {
         $event = Event::create($this->summary)
             ->organizer(config('services.gsuite.calendar'), $this->unit()->name)
-            ->createdAt(Carbon::createFromTimestamp($this->created_at, env('TZ')))
-            ->startsAt(Carbon::createFromTimestamp($this->start, env('TZ')))
-            ->endsAt(Carbon::createFromTimestamp($this->end, env('TZ')));
+            ->createdAt(Carbon::createFromTimestamp($this->updated_at, env('TZ')));
+        $start = Carbon::createFromFormat('Y-m-d', $this->startDate, env('TZ'));
+        $end = Carbon::createFromFormat('Y-m-d', $this->endDate, env('TZ'));
+        $start_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate.' '.$this->startTime, env('TZ'));
+        $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate.' '.$this->endTime, env('TZ'));
+        if ($node->all_day) {
+            $event->startsAt($start)->fullDay();
+        } else {
+            $event->period($start_time, $end_time);
+        }
+        if ($start->toDateString() != $end->toDateString()) {
+            $days = [];
+            $period = CarbonPeriod::create($start->addDay(), $end);
+            foreach ($period as $date) {
+                $days[] = new DateTime($date->format('Y-m-d').' '.$this->startTime);
+            }
+            $event->repeatOn($days); 
+        }
         if (!empty($this->description)) $event->description($this->description);
         if (!empty($this->location)) $event->addressName($this->location);
-        if ($this->all_day) $event->fullDay();
 
         return $event;
     }

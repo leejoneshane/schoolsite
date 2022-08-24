@@ -47,6 +47,11 @@ Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@re
 
 // User Interface Routes...
 Route::get('calendar', 'App\Http\Controllers\HomeController@calendar')->name('calendar');
+Route::get('calendar/event/add', 'App\Http\Controllers\HomeController@calendar');
+Route::post('calendar/event/add', 'App\Http\Controllers\HomeController@calendar')->name('calendar.addEvent');
+Route::get('calendar/event/edit/{event}', 'App\Http\Controllers\HomeController@calendar');
+Route::post('calendar/event/edit/{event}', 'App\Http\Controllers\HomeController@calendar')->name('calendar.editEvent');
+Route::get('calendar/event/remove/{event}', 'App\Http\Controllers\HomeController@calendar')->name('calendar.removeEvent');
 Route::get('calendar/seme', 'App\Http\Controllers\HomeController@calendar')->name('calendar.seme');
 Route::get('calendar/traning', 'App\Http\Controllers\HomeController@calendar')->name('calendar.traning');
 Route::get('calendar/student', 'App\Http\Controllers\HomeController@calendar')->name('calendar.student');

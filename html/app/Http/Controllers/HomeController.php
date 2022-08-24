@@ -49,7 +49,13 @@ class HomeController extends Controller
                 $events = IcsEvent::inTime($today);
             }
         }
-        return view('app.calendar', ['create' => $create, 'current' => $today, 'seme' => $seme, 'events' => $events]);
+        $edit = [];
+        $delete = [];
+        foreach ($events as $event) {
+            $edit[$event->id] = $request->user()->can('update', $event);
+            $delete[$event->id] = $request->user()->can('delete', $event);
+        }
+        return view('app.calendar', ['create' => $create, 'current' => $today, 'seme' => $seme, 'events' => $events, 'editable' => $edit, 'deleteable' => $delete]);
     }
 
 }

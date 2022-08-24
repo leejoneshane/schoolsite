@@ -15,10 +15,12 @@ return new class extends Migration
     {
         Schema::create('ics_events', function (Blueprint $table) {
             $table->increments('id');
-			$table->string('unit_id');
+			$table->string('unit_id')->index();
             $table->boolean('all_day');
-			$table->timestamp('start')->useCurrent();
-			$table->timestamp('end')->useCurrent();
+			$table->date('startDate')->useCurrent();
+			$table->date('endDate')->useCurrent();
+			$table->time('startTime');
+			$table->time('endTime');
             $table->text('summary');
             $table->text('description')->nullable();
             $table->string('location')->nullable();
