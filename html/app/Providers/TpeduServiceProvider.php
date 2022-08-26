@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
-use Log;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\STR;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\ServiceProvider;
@@ -218,7 +220,7 @@ class TpeduServiceProvider extends ServiceProvider
 		if ($user) {
 			if (is_array($user->uid)) {
 				foreach ($user->uid as $u) {
-					if (!strpos($u, '@') && !is_phone($u)) {
+					if (!strpos($u, '@') && !$this->is_phone($u)) {
 						$account = $u;
 					}
 				}
@@ -501,7 +503,7 @@ class TpeduServiceProvider extends ServiceProvider
 			$uuids = $this->api('students_of_class', ['class' => $cls->id]);
 			if ($uuids && is_array($uuids)) {
 				foreach ($uuids as $uuid) {
-					$this->fetch_user($uuid, $only, password);
+					$this->fetch_user($uuid, $only, $password);
 				}
 			}
 			if ($remove) {

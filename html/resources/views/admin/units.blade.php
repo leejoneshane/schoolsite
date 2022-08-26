@@ -39,11 +39,11 @@
                         ">
                         <td class="p-2">
                             <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                                type="text" name="uid['{{ $u->id }}']" value="{{ $u->unit_no }}">
+                                type="text" name="uid[{{ $u->id }}]" value="{{ $u->unit_no }}">
                         </td>
                         <td class="p-2">
                             <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                                type="text" name="units['{{ $u->id }}']" value="{{ $u->name }}">
+                                type="text" name="units[{{ $u->id }}]" value="{{ $u->name }}">
                         </td>
                     </tr>
                     @endforeach
@@ -73,11 +73,11 @@
                     <tr>
                         <td class="py-4 px-6">
                             <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                            type="text" name="rid['{{ $r->id }}']" value="{{ $r->role_no }}">
+                            type="text" name="rid[{{ $r->id }}]" value="{{ $r->role_no }}">
                         </td>
                         <td class="py-4 px-6">
                             <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                                type="text" name="roles['{{ $r->id }}']" value="{{ $r->name }}">
+                                type="text" name="roles[{{ $r->id }}]" value="{{ $r->name }}">
                         </td>
                     </tr>
                     @endforeach

@@ -26,7 +26,7 @@
                 職務層級代號為 3 碼，同一職務層級在不同行政單位可以設定不同職稱，通常會使用該職務的簡稱。
             </p>
         </div>
-        <form id="edit-unit" action="{{ route('units') }}" method="POST">
+        <form id="edit-unit" action="{{ route('roles.add') }}" method="POST">
             @csrf
             <div class="block">
             <label for="role_id" class="inline p-2">職級代號：</label>

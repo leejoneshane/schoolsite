@@ -26,7 +26,7 @@
                 處室，次級單位即該處室中所有行政人員的完整職稱（即包含處室名稱＋職稱）。
             </p>
         </div>
-        <form id="edit-unit" action="{{ route('units') }}" method="POST">
+        <form id="edit-unit" action="{{ route('units.add') }}" method="POST">
             @csrf
             <div class="block">
             <label for="unit_id" class="inline p-2">單位代號：</label>

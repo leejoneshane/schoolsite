@@ -16,7 +16,6 @@ class Unit extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'id',
         'unit_no',
         'name',
     ];

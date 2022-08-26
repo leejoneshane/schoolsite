@@ -141,7 +141,7 @@ class AdminController extends Controller
         }
     }
 
-    public function index(Request $request)
+    public function index()
     {
         return view('admin');
     }
@@ -194,7 +194,7 @@ class AdminController extends Controller
 
     public function unitList()
     {
-        $units = Unit::with('roles')->orderBy('id')->get();
+        $units = Unit::with('roles')->orderBy('unit_no')->get();
         return view('admin.units', ['units' => $units]);
     }
 
@@ -319,7 +319,7 @@ class AdminController extends Controller
         return $this->subjectList();
     }
 
-    public function teacherList($unit = '')
+    public function teacherList(Request $request, $unit = '')
     {
         $units = Unit::main();
         if (empty($unit)) {
@@ -333,23 +333,23 @@ class AdminController extends Controller
         return view('admin.teachers', ['current' => $unit_id, 'units' => $units, 'teachers' => $teachers]);
     }
 
-    public function teacherEdit($uuid, Request $request)
+    public function teacherEdit(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');
-        $units = Unit::all();
+        $units = Unit::orderBy('unit_no')->get();
         $roles = Role::orderBy('role_no')->get();
         $classes = Classroom::all();
         $subjects = Subject::all();
-        $teacher = Teacher::with('roles')->find($uuid);
+        $teacher = Teacher::with('roles')->with('units')->find($uuid);
         $assignment = DB::table('assignment')->where('uuid', $uuid)->get();
         return view('admin.teacheredit', ['referer' => $referer, 'teacher' => $teacher, 'units' => $units, 'roles' => $roles, 'assignment' => $assignment, 'classes' => $classes, 'subjects' => $subjects]);
     }
     
-    public function teacherUpdate($uuid, Request $request)
+    public function teacherUpdate(Request $request, $uuid)
     {
-        $teacher = Teacher::find($uuid);
+        $teacher = Teacher::with('roles')->with('assignment')->find($uuid);
         $new_roles = $request->input('roles');
-        $old_roles = $teacher->roles(); 
+        $old_roles = $teacher->roles; 
         foreach ($old_roles as $old) {
             if ($pos = array_search($old->id, $new_roles)) {
                 unset($new_roles[$pos]);
@@ -367,8 +367,8 @@ class AdminController extends Controller
                 ]);
             }
         }
-        $new_classes = $request->collect('classes');
-        $new_subjects = $request->collect('subjects');
+        $new_classes = $request->input('classes');
+        $new_subjects = $request->input('subjects');
         $old_assign = $teacher->assignment();
         foreach ($old_assign as $old) {
             $found = false;
@@ -392,7 +392,7 @@ class AdminController extends Controller
                 ]);
             }
         }
-        $characters = $request->collect('character');
+        $characters = $request->input('character');
         if (!empty($character)) {
             $teacher->character = implode(',', $characters);
         }
@@ -412,7 +412,7 @@ class AdminController extends Controller
         return redirect(urldecode($request->input('referer')));
     }
     
-    public function studentList($myclass = '')
+    public function studentList(Request $request, $myclass = '')
     {
         $classes = Classroom::all();
         if (empty($myclass)) {
@@ -424,7 +424,7 @@ class AdminController extends Controller
         return view('admin.students', ['current' => $class_id, 'classes' => $classes, 'students' => $students]);
     }
 
-    public function studentEdit($uuid, Request $request)
+    public function studentEdit(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');
         $classes = Classroom::all();
@@ -432,7 +432,7 @@ class AdminController extends Controller
         return view('admin.studentedit', ['referer' => $referer, 'student' => $student, 'classes' => $classes]);
     }
 
-    public function studentUpdate($uuid, Request $request)
+    public function studentUpdate(Request $request, $uuid)
     {
         $student = Student::find($uuid);
         $characters = $request->input('character');
@@ -474,7 +474,7 @@ class AdminController extends Controller
         return view('admin.menus', ['current' => $menu, 'menus' => $menus, 'items' => $items, 'routes' => $routename]);
     }
 
-    public function menuUpdate($menu = '', Request $request)
+    public function menuUpdate(Request $request, $menu = '')
     {
         $ids = $request->input('ids');
         $captions = $request->input('captions');
@@ -510,7 +510,7 @@ class AdminController extends Controller
         return view('admin.menuadd', ['current' => $menu, 'routes' => $routename]);
     }
 
-    public function menuInsert($menu = '', Request $request)
+    public function menuInsert(Request $request, $menu = '')
     {
         $mid = $request->input('mid');
         $caption = $request->input('caption');
@@ -587,7 +587,7 @@ class AdminController extends Controller
         return view('admin.permissionedit', ['perm' => $perm]);
     }
 
-    public function permissionUpdate($id, Request $request)
+    public function permissionUpdate(Request $request, $id)
     {
         $app = $request->input('app');
         $perm = $request->input('perm');
@@ -630,7 +630,7 @@ class AdminController extends Controller
         return view('admin.grant', ['permission' => $perm, 'already' => $already, 'units' => $units, 'teachers' => $teachers]);
     }
 
-    public function grantUpdate($id, Request $request)
+    public function grantUpdate(Request $request, $id)
     {
         $users = $request->input('teachers');
         $perm = Permission::find($id)->removeAll();
