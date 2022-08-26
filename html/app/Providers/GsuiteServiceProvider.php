@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Log;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Gsuite;
@@ -236,7 +236,7 @@ class GsuiteServiceProvider extends ServiceProvider
 			$user->setHashFunction('SHA-1');
 			$user->setPassword(sha1(substr($t->idno, -6)));
 		}
-		$gmails = $t->gmails();
+		$gmails = $t->gmails;
 		if (empty($gmails)) {
 			Gsuite::create([
 				'owner_id' => $t->uuid,
@@ -291,19 +291,19 @@ class GsuiteServiceProvider extends ServiceProvider
 			$neworg->setType('school');
 			$neworg->setName('學生');
 			$neworg->setDepartment(substr($t->id, 0, 3));
-			$neworg->setTitle($t->classroom()->name . $t->seat . '號');
+			$neworg->setTitle($t->classroom->name . $t->seat . '號');
 			$neworg->setPrimary(true);
 			$orgs[] = $neworg;
 			if (config('services.gsuite.student_orgunit')) {
 				$user->setOrgUnitPath(config('services.gsuite.student_orgunit'));
 			}
 		} elseif ($user_type == 'Teacher') {
-			$jobs = $t->roles();
+			$jobs = $t->roles;
 			foreach ($jobs as $job) {
 				$neworg = new \Google_Service_Directory_UserOrganization();
 				$neworg->setType('school');
 				$neworg->setName('教師');
-				$neworg->setDepartment($job->unit()->name);
+				$neworg->setDepartment($job->unit->name);
 				$neworg->setTitle($job->name);
 				if ($job->id == $t->unit_id) {
 					$neworg->setPrimary(true);
@@ -365,7 +365,7 @@ class GsuiteServiceProvider extends ServiceProvider
 		if ($create) {
 			return $this->create_user($user);
 		} else {
-			return $this->update_user($user_key, $user);
+			return $this->update_user($userKey, $user);
 		}
 	}
 	
@@ -438,7 +438,7 @@ class GsuiteServiceProvider extends ServiceProvider
 		if (!strpos($groupId, '@')) {
 			$groupId .= '@' . config('services.gsuite.domain');
 		}
-		$group = new Google_Service_Directory_Group();
+		$group = new \Google_Service_Directory_Group();
 		$group->setEmail($groupId);
 		$group->setDescription($groupName);
 		$group->setName($groupName);
@@ -456,9 +456,9 @@ class GsuiteServiceProvider extends ServiceProvider
 			$groupId .= '@' . config('services.gsuite.domain');
 		}
 		try {
-			return $directory->members->listMembers($groupId)->getMembers();
+			return $this->directory->members->listMembers($groupId)->getMembers();
 		} catch (\Google_Service_Exception $e) {
-			\Drupal::logger('google')->debug("gs_listMembers($groupId):".$e->getMessage());
+			Log::debug("gs_listMembers($groupId):".$e->getMessage());
 	
 			return false;
 		}
@@ -571,8 +571,8 @@ class GsuiteServiceProvider extends ServiceProvider
 						$detail_log[] = "$t->role_name $t->realname 建立失敗！";
 					}
 				}
-				if ($t->units()) {
-					foreach ($units as $unit) {
+				if ($t->units) {
+					foreach ($t->units as $unit) {
 						$detail_log[] = "正在處理 $unit->name ......";
 						$found = false;
                         if ($all_groups) {

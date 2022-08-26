@@ -28,7 +28,7 @@ class IcsEventPolicy
         if ($user->user_type == 'Teacher') {
             return true;
         } else {
-            if (strpos($event->calendar()->summary, '學生')) {
+            if (strpos($event->calendar->summary, '學生')) {
                 return true;      
             }
         }

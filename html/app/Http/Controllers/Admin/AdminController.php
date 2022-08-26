@@ -277,7 +277,7 @@ class AdminController extends Controller
         $tutors = $request->input('tutor');
         foreach ($names as $id => $name) {
             $cls = Classroom::find($id);
-            $old_tutors = $cls->tutors();
+            $old_tutors = $cls->tutors;
             $found = false;
             foreach ($old_tutors as $t) {
                 if ($t->uuid == $tutors[$id]) {
@@ -349,13 +349,32 @@ class AdminController extends Controller
     {
         $teacher = Teacher::with('roles')->with('assignment')->find($uuid);
         $new_roles = $request->input('roles');
-        $old_roles = $teacher->roles; 
-        foreach ($old_roles as $old) {
-            if ($pos = array_search($old->id, $new_roles)) {
-                unset($new_roles[$pos]);
-            } else {
-                DB::table('job_title')->where('uuid', $uuid)->where('role_id', $old->id)->delete();
+        $old_roles = $teacher->roles;
+        if (!empty($new_roles)) {
+            $keywords = explode(',', config('services.tpedu.base_unit'));
+            foreach ($new_roles as $new_id) {
+                $ckf = true;
+                $new = Role::find($new_id);
+                foreach ($keywords as $k) {
+                    if (mb_strpos($new->name, $k) === false) {
+                        $ckf = false;
+                    }
+                }
+                if ($ckf) {
+                    $teacher->unit_id = $new->unit_id;
+                    $teacher->unit_name = $new->unit->name;
+                    $teacher->role_id = $new->id;
+                    $teacher->role_name = $new->name;
+                }
             }
+            foreach ($old_roles as $old) {
+                $pos = array_search($old->id, $new_roles);
+                if ($pos !== false) {
+                    unset($new_roles[$pos]);
+                } else {
+                    DB::table('job_title')->where('uuid', $uuid)->where('role_id', $old->id)->delete();
+                }
+            }    
         }
         if (!empty($new_roles)) {
             foreach ($new_roles as $role) {
@@ -372,8 +391,8 @@ class AdminController extends Controller
         $old_assign = $teacher->assignment();
         foreach ($old_assign as $old) {
             $found = false;
-            for ($i=0; $i<count($new_classes); $i++) {
-                if ($new_classes[$i] == $old->class_id && $new_subjects[$i] == $old->subject_id) {
+            foreach ($new_classes as $i => $nc) {
+                if ($nc == $old->class_id && $new_subjects[$i] == $old->subject_id) {
                     $found = true;
                     unset($new_classes[$i]);
                     unset($new_subjects[$i]);
@@ -393,15 +412,19 @@ class AdminController extends Controller
             }
         }
         $characters = $request->input('character');
-        if (!empty($character)) {
-            $teacher->character = implode(',', $characters);
+        if (!empty($characters)) {
+            if (is_array($characters)) {
+                $teacher->character = implode(',', $characters);
+            } else {
+                $teacher->character = $characters;
+            }
         }
         $teacher->idno = $request->input('idno');
         $teacher->sn = $request->input('sn');
         $teacher->gn = $request->input('gn');
         $teacher->realname = $request->input('sn').$request->input('gn');
         $teacher->gender = $request->input('gender');
-        $teacher->birthdate = $request->input('birthdate');
+        $teacher->birthdate = $request->input('birth');
         $teacher->email = $request->input('email');
         $teacher->mobile = $request->input('mobile');
         $teacher->telephone = $request->input('telephone');

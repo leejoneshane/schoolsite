@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Log;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use App\Models\Teacher;
 use App\Models\Unit;
@@ -39,11 +39,11 @@ class ADServiceProvider extends ServiceProvider
 			if ($this->bind) {
 				return true;
 			} else {
-				Log::error('AD server can not login with user/passwd！'.ldap_error($this->connect));
+				Log::error('AD server can not login with user/passwd！'.$this->error());
 				return false;
 			}
 		} else {
-			Log::error('AD server reject LDAPS connection.'.ldap_error($this->connect));
+			Log::error('AD server reject LDAPS connection.'.$this->error());
 			return false;
 		}
 	}
@@ -319,6 +319,7 @@ class ADServiceProvider extends ServiceProvider
 				}
 				if ($user) {
 					for ($i=0; $i<count($all_users); $i++) {
+						$old = $all_users[$i];
 						if ($old['description'] == $t->idno || $old['samacountname'] == $t->account) {
 							unset($all_users[$i]);
 						}
@@ -343,7 +344,7 @@ class ADServiceProvider extends ServiceProvider
 					if ($result) {
 						$detail_log[] = '更新完成！';
 					} else {
-						$detail_log[] = "$dept->name $t->realname 更新失敗！".ad_error();
+						$detail_log[] = "$t->role_name $t->realname 更新失敗！".$this->error();
 					}
 
 				} else {
@@ -353,11 +354,11 @@ class ADServiceProvider extends ServiceProvider
 					if ($result) {
 						$detail_log[] = '建立完成！';
 					} else {
-						$detail_log[] = "$dept->name $t->realname 建立失敗！".ad_error();
+						$detail_log[] = "$t->role_name $t->realname 建立失敗！".$this->error();
 					}
 				}
-				if ($t->units()) {
-					foreach ($units as $unit) {
+				if ($t->units) {
+					foreach ($t->units as $unit) {
 						$detail_log[] = "正在處理 $unit->name ......";
 						$group = $this->find_group($unit->name);
 						if ($group) {
@@ -372,7 +373,7 @@ class ADServiceProvider extends ServiceProvider
 							if ($result) {
 								$detail_log[] = '建立成功！';
 							} else {
-								$detail_log[] = "$unit->unit_name 群組建立失敗！".ad_error();
+								$detail_log[] = "$unit->unit_name 群組建立失敗！".$this->error();
 							}
 						}
 						if (is_array($groups) && ($k = array_search($group_dn, $groups)) !== false) {
@@ -383,7 +384,7 @@ class ADServiceProvider extends ServiceProvider
 							if ($result) {
 								$detail_log[] = '加入成功！';
 							} else {
-								$detail_log[] = "無法將使用者 $t->role_name $t->realname 加入 $unit->name 群組！".ad_error();
+								$detail_log[] = "無法將使用者 $t->role_name $t->realname 加入 $unit->name 群組！".$this->error();
 							}
 						}
 					}
@@ -419,11 +420,11 @@ class ADServiceProvider extends ServiceProvider
 						$detail_log[] = "$clsgroup => 在 AD 中找到匹配的使用者群組！......";
 					} else {
 						$detail_log[] = '無法在 AD 中找到匹配的群組，現在正在建立新的使用者群組......';
-						$result = $this->create_group($clsgroup, $group_dn, "$grade年級");
+						$result = $this->create_group($clsgroup, $group_dn, $grade."年級");
 						if ($result) {
 							$detail_log[] = '建立成功！';
 						} else {
-							$detail_log[] = "$grade 年級群組建立失敗！".ad_error();
+							$detail_log[] = "$grade 年級群組建立失敗！".$this->error();
 						}
 					}
 					if (is_array($groups) && ($k = array_search($group_dn, $groups)) !== false) {
@@ -434,19 +435,17 @@ class ADServiceProvider extends ServiceProvider
 						if ($result) {
 							$detail_log[] = '加入成功！';
 						} else {
-							$detail_log[] = "無法將使用者 $t->role_name $t->realname 加入 $grade 年級群組！".ad_error();
+							$detail_log[] = "無法將使用者 $t->role_name $t->realname 加入 $grade 年級群組！".$this->error();
 						}
 					}
 				}
 				foreach ($groups as $g) {
-					if ($log) {
-						$detail_log[] = "正在將使用者： $t->role_name $t->realname 從群組 $g 移除......";
-					}
+					$detail_log[] = "正在將使用者： $t->role_name $t->realname 從群組 $g 移除......";
 					$result = $this->remove_member($g, $user_dn);
 					if ($result) {
 						$detail_log[] = '移除成功！';
 					} else {
-						$detail_log[] = "無法將使用者 $t->role_name $t->realname 從群組 $g 移除！".ad_error();
+						$detail_log[] = "無法將使用者 $t->role_name $t->realname 從群組 $g 移除！".$this->error();
 					}
 				}
 			}

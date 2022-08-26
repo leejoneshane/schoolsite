@@ -49,7 +49,7 @@ class Permission extends Model
 
     public function check($user)
     {
-        if (!($users instanceof User)) return false;
+        if (!($user instanceof User)) return false;
         $checked = DB::table('user_permissions')
             ->where('perm_id', $this->id)
             ->where('uuid', $user->uuid)

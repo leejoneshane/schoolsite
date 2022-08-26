@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Log;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\ServiceProvider;
@@ -216,29 +216,29 @@ class GcalendarServiceProvider extends ServiceProvider
 		} else {
 			$event = new \Google_Service_Calendar_Event();
 		}
-		$event->setSummary($node->summary);
-		if (!empty($node->description)) {
-			$event->setDescription($node->description);
+		$event->setSummary($ics->summary);
+		if (!empty($ics->description)) {
+			$event->setDescription($ics->description);
 		}
-		if (!empty($node->location)) {
-			$event->setLocation($node->location);
+		if (!empty($ics->location)) {
+			$event->setLocation($ics->location);
 		}
 		$organizer = new \Google_Service_Calendar_EventOrganizer();
 		$organizer->setEmail(config('services.gsuite.calendar'));
-		$organizer->setDisplayName($node->unit()->name);
+		$organizer->setDisplayName($ics->unit->name);
 		$event->setOrganizer($organizer);
-		$period = CarbonPeriod::create($node->startDate, $node->endDate);
+		$period = CarbonPeriod::create($ics->startDate, $ics->endDate);
 		foreach ($period as $date) {
 			$event_start = new \Google_Service_Calendar_EventDateTime();
 			$event_end = new \Google_Service_Calendar_EventDateTime();
 			$event_start->setTimeZone(env('TZ'));
 			$event_end->setTimeZone(env('TZ'));
-			if ($node->all_day) {
+			if ($ics->all_day) {
 				$event_start->setDate($date->format('Y-m-d'));
 				$event_end->setDate($date->format('Y-m-d'));
 			} else {
-				$event_start->setDateTime($date->format('Y-m-d').' '.$node->startTime);
-				$event_end->setDateTime($date->format('Y-m-d').' '.$node->endTime);
+				$event_start->setDateTime($date->format('Y-m-d').' '.$ics->startTime);
+				$event_end->setDateTime($date->format('Y-m-d').' '.$ics->endTime);
 			}
 			$event->setStart($event_start);
 			$event->setEnd($event_end);	
@@ -249,8 +249,8 @@ class GcalendarServiceProvider extends ServiceProvider
 			$event = $this->create_event($calendar_id, $event);
 		}
 		if ($event instanceof \Google_Service_Calendar_Event) {
-			$node->event_id = $event->getId();
-			$node->save();
+			$ics->event_id = $event->getId();
+			$ics->save();
 		}
 	
 		return $event;

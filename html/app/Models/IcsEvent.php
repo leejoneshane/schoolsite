@@ -49,13 +49,13 @@ class IcsEvent extends Model
     public function toICS()
     {
         $event = Event::create($this->summary)
-            ->organizer(config('services.gsuite.calendar'), $this->unit()->name)
+            ->organizer(config('services.gsuite.calendar'), $this->unit->name)
             ->createdAt(Carbon::createFromTimestamp($this->updated_at, env('TZ')));
         $start = Carbon::createFromFormat('Y-m-d', $this->startDate, env('TZ'));
         $end = Carbon::createFromFormat('Y-m-d', $this->endDate, env('TZ'));
         $start_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate.' '.$this->startTime, env('TZ'));
         $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate.' '.$this->endTime, env('TZ'));
-        if ($node->all_day) {
+        if ($this->all_day) {
             $event->startsAt($start)->fullDay();
         } else {
             $event->period($start_time, $end_time);

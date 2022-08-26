@@ -30,7 +30,7 @@ class IcsCalendar extends Model
     public function toICS()
     {
         $calendar = Calendar::create($this->summary);
-        foreach ($this->events() as $event) {
+        foreach ($this->events as $event) {
             $event = $calendar->event($event->toICS());
         }
         
