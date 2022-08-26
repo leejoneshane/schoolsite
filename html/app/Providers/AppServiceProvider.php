@@ -2,14 +2,16 @@
 
 namespace App\Providers;
 
-use Queue;
+use Illuminate\Support\Facades\Queue;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 use App\View\Components\Menus;
-use App\Jobs\SyncFromTpedu;
 use App\Models\User;
 use App\Notifications\SyncCompletedNotification;
+use App\Notifications\SyncADCompletedNotification;
+use App\Notifications\SyncGsuiteCompletedNotification;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
+
         Blade::component('menus', Menus::class);
 
         Blade::if('admin', function () {
