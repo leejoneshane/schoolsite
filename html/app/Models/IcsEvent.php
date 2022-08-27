@@ -64,7 +64,7 @@ class IcsEvent extends Model
             $days = [];
             $period = CarbonPeriod::create($start->addDay(), $end);
             foreach ($period as $date) {
-                $days[] = new DateTime($date->format('Y-m-d').' '.$this->startTime);
+                $days[] = new \DateTime($date->format('Y-m-d').' '.$this->startTime);
             }
             $event->repeatOn($days); 
         }

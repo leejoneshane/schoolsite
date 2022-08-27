@@ -2,6 +2,7 @@
 /public/build
 /node_modules
 /storage/*.cer
+/storage/*.pem
 /storage/*.key
 /storage/*.json
 /data.ms
