@@ -347,20 +347,20 @@ class AdminController extends Controller
     
     public function teacherUpdate(Request $request, $uuid)
     {
-        $teacher = Teacher::with('roles')->with('assignment')->find($uuid);
+        $teacher = Teacher::find($uuid);
         $new_roles = $request->input('roles');
         $old_roles = $teacher->roles;
         if (!empty($new_roles)) {
             $keywords = explode(',', config('services.tpedu.base_unit'));
             foreach ($new_roles as $new_id) {
-                $ckf = true;
+                $ckf = false;
                 $new = Role::find($new_id);
                 foreach ($keywords as $k) {
-                    if (mb_strpos($new->name, $k) === false) {
-                        $ckf = false;
+                    if (!(mb_strpos($new->name, $k) === false)) {
+                        $ckf = true;
                     }
                 }
-                if ($ckf) {
+                if (!$ckf) {
                     $teacher->unit_id = $new->unit_id;
                     $teacher->unit_name = $new->unit->name;
                     $teacher->role_id = $new->id;
@@ -467,7 +467,7 @@ class AdminController extends Controller
         $student->gn = $request->input('gn');
         $student->realname = $request->input('sn').$request->input('gn');
         $student->gender = $request->input('gender');
-        $student->birthdate = $request->input('birthdate');
+        $student->birthdate = $request->input('birth');
         $student->class_id = $request->input('myclass');
         $student->seat = $request->input('seat');
         $student->email = $request->input('email');

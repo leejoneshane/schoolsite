@@ -62,8 +62,8 @@ class ADServiceProvider extends ServiceProvider
 			$infos = @ldap_get_entries($this->connect, $result);
 			if ($infos['count'] > 0) {
 				$data = $infos[0];
+				return $data;
 			}
-			return $data;
 		} else {
 			return false;
 		}
@@ -320,17 +320,20 @@ class ADServiceProvider extends ServiceProvider
 				if ($user) {
 					for ($i=0; $i<count($all_users); $i++) {
 						$old = $all_users[$i];
-						if ($old['description'] == $t->idno || $old['samacountname'] == $t->account) {
+						if (isset($old['description']) && $old['description'] == $t->idno || isset($old['samaccountname']) && $old['samaccountname'] == $t->account) {
 							unset($all_users[$i]);
 						}
 					}
 					$detail_log[] = '在 AD 中找到這位使用者';
 					$user_dn = $user['distinguishedname'][0];
-					$groups = $user['memberof'];
-					foreach ($groups as $k => $g) {
-						if (substr($g, 0, 9) != 'CN=group-') {
-							unset($groups[$k]);
-						}
+					if (isset($user['memberof'])) {
+						$groups = $user['memberof'];
+						unset($groups['count']);
+						foreach ($groups as $k => $g) {
+							if (substr($g, 0, 9) != 'CN=group-') {
+								unset($groups[$k]);
+							}
+						}	
 					}
 					$detail_log[] = '使用者先前已加入以下群組：';
 					foreach ($groups as $g) {

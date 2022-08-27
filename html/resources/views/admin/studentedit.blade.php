@@ -48,9 +48,10 @@
                 <option value="{{ $cls->id }}"{{ $student->class_id == $cls->id  ? ' selected' : '' }}>{{ $cls->name }}</option>
                 @endforeach
             </select>
+            <label for="seat" class="inline px-3">座號：</label>
             <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
               type="text" name="seat" value="{{ $student->seat }}">
-            <label for="character" class="inline">特殊身分註記：</label>
+            <label for="character" class="inline px-3">特殊身分註記：</label>
                 @php
                     $characters = explode(',', $student->character);    
                 @endphp
