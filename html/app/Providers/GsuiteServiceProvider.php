@@ -586,7 +586,7 @@ class GsuiteServiceProvider extends ServiceProvider
 						if ($found) {
 							$group_key = $group->getEmail();
 							$depgroup = explode('@', $group_key)[0];
-							$detail_log .= "$depgroup => 在 G Suite 中找到匹配的 Google 群組！";
+							$detail_log[] = "$depgroup => 在 G Suite 中找到匹配的 Google 群組！";
 						} else {
 							$detail_log[] = '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
 							$depgroup = 'group-'.$unit->unit_no;
@@ -695,7 +695,7 @@ class GsuiteServiceProvider extends ServiceProvider
 			foreach ($classes as $c) {
 				$stdgroup = 'class-'.$c->id;
 				$group_key = $stdgroup.'@'.$domain;
-				$detail_log .= "正在處理 $c->name......";
+				$detail_log[] = "正在處理 $c->name......";
 				$found = false;
                 if ($all_groups) {
                     foreach ($all_groups as $group) {
@@ -770,6 +770,101 @@ class GsuiteServiceProvider extends ServiceProvider
 					$detail_log[] = '別名建立失敗！';
 				}
 				$myclass = Classroom::find($s->class);
+				$detail_log[] = "正在將使用者：$s->class $s->seat $s->realname 加入到 $myclass->name 群組裡....";
+				$members = $this->add_member($group_key, $user_key);
+				if (!empty($members)) {
+					$detail_log[] = '加入成功！';
+				} else {
+					$detail_log[] = "將 $s->class $s->seat $s->realname 加入 $myclass->name 群組失敗！";
+				}
+			}
+		}
+		return $detail_log;
+	}
+
+	public function sync_class($password_sync, $class_id)
+	{
+		$detail_log = [];
+		$domain = config('services.gsuite.domain');
+		$all_groups = $this->all_groups();
+		if (!$all_groups) $all_groups = [];
+		$myclass = Classroom::find($class_id);
+		if ($myclass) {
+			$stdgroup = 'class-'.$myclass->id;
+			$group_key = $stdgroup.'@'.$domain;
+			$detail_log[] = '正在處理 '.$myclass->name.'.....';
+			$found = false;
+			if ($all_groups) {
+				foreach ($all_groups as $group) {
+					if ($group->getEmail() == $group_key) {
+						$found = true;
+						break;
+					}
+				}
+			}
+			if ($found) {
+				$detail_log[] = "$stdgroup => 在 G Suite 中找到匹配的 Google 群組！......";
+				$members = $this->list_members($group_key);
+				foreach ($members as $u) {
+					$this->remove_member($group_key, $u->getEmail());
+				}
+				$detail_log[] = '已經移除群組裡的所有成員！';
+			} else {
+				$detail_log[] = '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
+				$group = $this->create_group($group_key, $c->name);
+				if ($group) {
+					$detail_log[] = '建立成功！';
+				} else {
+					$detail_log[] = "$c->name 群組建立失敗！";
+				}
+			}
+		}
+ 		$students = $myclass->students;
+		if (!empty($students)) {
+			foreach ($students as $s) {
+				$user_alias = $s->id.'@'.$domain;
+				if (empty($s->account)) {
+					$user_key = 'meps'.$s->id.'@'.$domain;
+				} else {
+					$user_key = $s->account.'@'.$domain;
+				}
+				$detail_log[] = "正在處理 $s->class $s->seat $s->realname ($user_key)......";
+				$user = $this->get_user($user_key);
+				if (!$user) {
+					$result = $this->find_users('externalId='.$s->id);
+					if ($result) {
+						$user = $result[0];
+					} else {
+						$result = $this->find_users('externalId='.$s->uuid);
+						if ($result) {
+							$user = $result[0];
+						}	
+					}
+				}
+				if ($user) {
+					$detail_log[] = '在 G Suite 中找到這位使用者，正在更新使用者資訊中......';
+					$user = $this->sync_user($s, $user_key, $user, $password_sync);
+					if ($user) {
+						$detail_log[] = '更新完成！';
+					} else {
+						$detail_log[] = "$s->class $s->seat $s->realname 更新失敗！";
+					}
+				} else {
+					$detail_log[] = '無法在 G Suite 中找到使用者，現在正在為使用者建立帳號......';
+					$user = $this->sync_user($s, $user_key);
+					if ($user) {
+						$detail_log[] = '建立完成！';
+					} else {
+						$detail_log[] = "$s->class $s->seat $s->realname 建立失敗！";
+					}
+				}
+				$detail_log[] = "正在建立使用者別名 $user_alias ......";
+				$result = $this->create_alias($user_key, $user_alias);
+				if ($result) {
+					$detail_log[] = '建立完成！';
+				} else {
+					$detail_log[] = '別名建立失敗！';
+				}
 				$detail_log[] = "正在將使用者：$s->class $s->seat $s->realname 加入到 $myclass->name 群組裡....";
 				$members = $this->add_member($group_key, $user_key);
 				if (!empty($members)) {
