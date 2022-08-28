@@ -89,8 +89,7 @@ class ADServiceProvider extends ServiceProvider
 	public function create_group($group, $dn, $group_name)
 	{
 		$groupinfo = [];
-		$groupinfo['objectClass'] = 'top';
-		$groupinfo['objectClass'] = 'group';
+		$groupinfo['objectClass'] = [ 'top', 'group' ];
 		$groupinfo['cn'] = $group;
 		$groupinfo['sAMAccountName'] = $group;
 		$groupinfo['displayName'] = $group_name;
@@ -136,7 +135,7 @@ class ADServiceProvider extends ServiceProvider
 	public function all_users()
 	{
 		$base_dn = config('services.ad.users_dn');
-		$filter = "(&(objectCategory=person)(sAMAccountName=*))";
+		$filter = "(&(objectCategory=person)(objectClass=user)(description=*))";
 		$result = @ldap_search($this->connect, $base_dn, $filter);
 		if ($result) {
 			$users = @ldap_get_entries($this->connect, $result);
@@ -372,7 +371,7 @@ class ADServiceProvider extends ServiceProvider
 							$detail_log[] = '無法在 AD 中找到匹配的群組，現在正在建立新的使用者群組......';
 							$depgroup = 'group-'.$unit->unit_no;
 							$group_dn = "CN=$depgroup,$base_dn";
-							$result = $this->create_group($depgroup, $group_dn, $unit->unit_name);
+							$result = $this->create_group($depgroup, $group_dn, $unit->name);
 							if ($result) {
 								$detail_log[] = '建立成功！';
 							} else {
