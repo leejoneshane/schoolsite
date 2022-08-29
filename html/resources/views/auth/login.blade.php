@@ -4,7 +4,16 @@
 <div class="m-5 bg-white relative flex flex-col gap-3 justify-center items-center">
     <div class="md:border md:border-gray-300 bg-white md:shadow-lg shadow rounded p-10">
         <div class="text-2xl font-bold leading-normal text-center pb-5" >登入</div>
-
+        @if (session('error'))
+        <div class="border border-red-500 bg-red-100 dark:bg-red-700 border-b-2" role="alert">
+            {{ session('error') }}
+        </div>
+        @endif
+        @if (session('success'))
+        <div class="border border-green-500 bg-green-100 dark:bg-green-700 border-b-2" role="alert">
+            {{ session('success') }}
+        </div>
+        @endif
         <form method="POST" action="{{ route('login') }}">
             @csrf
 
@@ -43,7 +52,7 @@
                     <a href="/login/facebook"><i class="fab fa-2x fa-facebook text-blue-700" title="使用 Facebook 登入"></i></a>　
                     <a href="/login/yahoo"><i class="fab fa-2x fa-yahoo text-purple-800" title="使用 Yahoo 登入"></i></a>　
                     <a href="/login/line"><i class="fab fa-2x fa-line text-green-700" title="使用 Line 登入"></i></a>　　
-                    <a href="/login/tpedu"><img src="{{ asset('images/tpedusso_240.png') }}" class="inline h-14" title="使用臺北市教育局單一身份驗證登入"</a>
+                    <a href="/login/tpedu"><img src="{{ asset('images/tpedusso_240.png') }}" class="inline h-14" title="使用臺北市教育局單一身份驗證登入"></a>
                 </div>
             </div>
         </form>
