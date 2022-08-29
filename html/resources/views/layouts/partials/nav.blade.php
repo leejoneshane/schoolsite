@@ -29,8 +29,12 @@
   </div>
   <div id="right-section" class="flex items-center flex-shrink-0 text-white">
 @auth
+    <span class="block lg:inline-block mt-2 lg:mt-0 px-4 lg:px-2">
+      <i class="fa-solid fa-share-nodes"></i>
+      <a href="{{ route('social') }}" class="text-teal-200 hover:text-white">社群帳號管理</a>
+    </span>
     <span class="inline-block mt-2 lg:mt-0 px-4 lg:px-2 py-1 leading-none border rounded border-white hover:border-transparent text-white hover:text-teal-500 hover:bg-white">    
-      <i class="fa-solid fa-person-to-door"></i>
+      <i class="fa-solid fa-door-open"></i>
       <a href="#" onclick="document.getElementById('logout-form').submit();" class="text-sm">登出</a>
     </span>
     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">

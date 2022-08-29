@@ -522,9 +522,13 @@ class GsuiteServiceProvider extends ServiceProvider
 		if (!empty($teachers)) {
 			foreach ($teachers as $t) {
 				$groups = [];
-				$user_key = $t->email;
-				list($account, $path) = explode('@', $user_key);
-				if ($domain != $path) {
+				if (!empty($t->email)) {
+					$user_key = $t->email;
+					list($account, $path) = explode('@', $user_key);
+					if ($domain != $path) {
+						$user_key = $t->account.'@'.$domain;
+					}	
+				} else {
 					$user_key = $t->account.'@'.$domain;
 				}
 				$detail_log[] = "正在處理 $t->role_name $t->realname ($user_key)......";
@@ -533,10 +537,12 @@ class GsuiteServiceProvider extends ServiceProvider
 					$result = $this->find_users('externalId='.$t->id);
 					if ($result) {
 						$user = $result[0];
+						$user_key = $user->getPrimaryEmail();
 					} else {
 						$result = $this->find_users('externalId='.$t->uuid);
 						if ($result) {
 							$user = $result[0];
+							$user_key = $user->getPrimaryEmail();
 						}	
 					}
 				}
@@ -811,11 +817,11 @@ class GsuiteServiceProvider extends ServiceProvider
 				$detail_log[] = '已經移除群組裡的所有成員！';
 			} else {
 				$detail_log[] = '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
-				$group = $this->create_group($group_key, $c->name);
+				$group = $this->create_group($group_key, $myclass->name);
 				if ($group) {
 					$detail_log[] = '建立成功！';
 				} else {
-					$detail_log[] = "$c->name 群組建立失敗！";
+					$detail_log[] = "$myclass->name 群組建立失敗！";
 				}
 			}
 		}

@@ -35,7 +35,13 @@
                     姓名
                 </th>
                 <th scope="col" class="p-2">
+                    帳號
+                </th>
+                <th scope="col" class="p-2">
                     電子郵件
+                </th>
+                <th scope="col" class="p-2">
+                    管理
                 </th>
             </tr>
             @foreach ($teachers as $t)
@@ -43,6 +49,7 @@
                 <td class="p-2">{{ $t->uuid }}</td>
                 <td class="p-2">{{ $t->role_name }}</td>
                 <td class="p-2">{{ $t->realname }}</td>
+                <td class="p-2">{{ $t->account }}</td>
                 <td class="p-2">{{ $t->email }}</td>
                 <td class="p-2">
                     <a class="py-2 px-6 text-blue-300 hover:text-blue-600"

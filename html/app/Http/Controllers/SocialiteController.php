@@ -24,7 +24,7 @@ class SocialiteController extends Controller
             if (Auth::check()) {
                 $myuser = Auth::user();
                 SocialiteAccount::create([
-                    'idno' => $myuser->idno,
+                    'uuid' => $myuser->uuid,
                     'socialite' => $provider,
                     'userID' => $userID,
                 ]);
@@ -76,9 +76,9 @@ class SocialiteController extends Controller
     public function removeSocialite(Request $request)
     {
         $user = Auth::user();
-        $socialite = $request->get('socialite');
-        $userid = $request->get('userid');
-        $account = SocialiteAccount::where('idno', $user->idno)->where('socialite', $socialite)->where('userId', $userid)->delete();
+        $socialite = $request->input('socialite');
+        $userid = $request->input('userid');
+        $account = SocialiteAccount::where('uuid', $user->uuid)->where('socialite', $socialite)->where('userId', $userid)->delete();
 
         return redirect()->route('socialite');
     }
