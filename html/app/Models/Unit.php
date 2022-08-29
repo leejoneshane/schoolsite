@@ -55,7 +55,18 @@ class Unit extends Model
         }
         return $keys;
     }
-    
+
+    public function is_main()
+    {
+        if (strlen($this->unit_no) == 3) return true;
+        return false;
+    }
+
+    public function uplevel()
+    {
+        return Unit::where('unit_no', substr($this->unit_no, 0, 3))->first();
+    }
+
     public function roles()
     {
         return $this->hasMany('App\Models\Role');

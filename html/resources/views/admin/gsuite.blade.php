@@ -90,9 +90,13 @@
                         <label for="target">選擇同步對象：</label>
                         <select class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                             name="target">
-                            <option value="all">全校師生</option>
                             <option value="teachers">所有教職員</option>
-                            <option value="students">所有學生</option>
+                            <option value="grade1">一年級學生</option>
+                            <option value="grade2">二年級學生</option>
+                            <option value="grade3">三年級學生</option>
+                            <option value="grade4">四年級學生</option>
+                            <option value="grade5">五年級學生</option>
+                            <option value="grade6">六年級學生</option>
                             @foreach ($classes as $cls)
                             <option value="{{ $cls->id }}">{{ $cls->name }}</option>
                             @endforeach

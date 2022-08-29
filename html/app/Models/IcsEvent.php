@@ -32,7 +32,8 @@ class IcsEvent extends Model
 
     public static function inTimeForStudent($date)
     {
-        $cal_id = IcsCalendar::forStudent()->id;
+        $cal = IcsCalendar::forStudent();
+        if ($cal) $cal_id = $cal->id;
         return IcsEvent::with('unit')->where('calendar_id', $cal_id)->whereDate('startDate', '<=', $date)->whereDate('endDate', '>=', $date)->get();
     }
 

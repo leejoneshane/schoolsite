@@ -47,16 +47,13 @@ class SyncToGsuite implements ShouldQueue, ShouldBeUnique
         $google = new GsuiteServiceProvider;
         $this->start = time();
         if ($this->leave == 'onduty') {
-            if ($this->target == 'all') {
-                $logs1 = $google->sync_teachers($this->password);
-                $logs2 = $google->sync_students($this->password);
-                $this->log = array_merge($logs1, $logs2);    
-            } elseif ($this->target == 'teachers') {
+            if ($this->target == 'teachers') {
                 $this->log = $google->sync_teachers($this->password);
-            } elseif ($this->target == 'students') {
-                $this->log = $google->sync_students($this->password);
+            } elseif (substr($this->target, 0, 5) == 'grade') {
+                $grade = substr($this->target, -1);
+                $this->log = $google->sync_grade($grade, $this->password);
             } else {
-                $this->log = $google->sync_class($this->password, $this->target);
+                $this->log = $google->sync_class($this->target, $this->password);
             }
         } else {
             $this->log = $google->deal_graduate($this->leave);

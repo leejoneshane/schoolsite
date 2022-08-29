@@ -32,6 +32,11 @@ class HomeController extends Controller
 
     public function index()
     {
+        $check_data = IcsCalendar::first();
+        if (is_null($check_data)) {
+            $cal = new GCAL;
+            $cal->list_calendars();
+        }
         return view('home');
     }
 
@@ -48,6 +53,8 @@ class HomeController extends Controller
             } else {
                 $events = IcsEvent::inTime($today);
             }
+        } else {
+            $events = IcsEvent::inTimeForStudent($today);
         }
         $edit = [];
         $delete = [];

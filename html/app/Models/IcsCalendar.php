@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\IcalendarGenerator\Components\Calendar;
+use App\Providers\GcalendarServiceProvider;
 
 class IcsCalendar extends Model
 {

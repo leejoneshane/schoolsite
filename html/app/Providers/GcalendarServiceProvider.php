@@ -36,7 +36,7 @@ class GcalendarServiceProvider extends ServiceProvider
 		$client->setScopes($scopes);
 		$client->setSubject($user_to_impersonate);
 		try {
-			$this->calendar = new \Google_Service_Directory($client);
+			$this->calendar = new \Google_Service_Calendar($client);
 		} catch (\Google_Service_Exception $e) {
 			Log::error('google calendar:' . $e->getMessage());
 		}

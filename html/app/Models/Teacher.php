@@ -62,12 +62,25 @@ class Teacher extends Model
 
     public function units()
 	{
-    	return $this->belongsToMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id')->withPivot('role_id');
+    	return $this->belongsToMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id');
 	}
+
+    public function union()
+    {
+        $uni = [];
+        $units = $this->units;
+        foreach ($units as $u) {
+            $uni[] = $u;
+            if (!$u->is_main()) {
+                $uni[] = $u->parent();
+            }
+        }
+        return $uni;
+    }
 
     public function roles()
 	{
-    	return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id')->withPivot('unit_id');
+    	return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id');
 	}
 
 
