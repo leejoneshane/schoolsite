@@ -737,21 +737,19 @@ class GsuiteServiceProvider extends ServiceProvider
 				if (!empty($students)) {
 					foreach ($students as $s) {
 						$user_alias = $s->id.'@'.$domain;
-						if (empty($s->account)) {
-							$user_key = 'meps'.$s->id.'@'.$domain;
-						} else {
-							$user_key = $s->account.'@'.$domain;
-						}
+						$user_key = 'meps'.$s->id.'@'.$domain;
 						$detail_log[] = "正在處理 $s->class $s->seat $s->realname ($user_key)......";
 						$user = $this->get_user($user_key);
 						if (!$user) {
 							$result = $this->find_users('externalId='.$s->id);
 							if ($result) {
 								$user = $result[0];
+								$user_key = $user->getPrimaryEmail();
 							} else {
 								$result = $this->find_users('externalId='.$s->uuid);
 								if ($result) {
 									$user = $result[0];
+									$user_key = $user->getPrimaryEmail();
 								}	
 							}
 						}
@@ -826,21 +824,19 @@ class GsuiteServiceProvider extends ServiceProvider
 		if (!empty($students)) {
 			foreach ($students as $s) {
 				$user_alias = $s->id.'@'.$domain;
-				if (empty($s->account)) {
-					$user_key = 'meps'.$s->id.'@'.$domain;
-				} else {
-					$user_key = $s->account.'@'.$domain;
-				}
+				$user_key = 'meps'.$s->id.'@'.$domain;
 				$detail_log[] = "正在處理 $s->class $s->seat $s->realname ($user_key)......";
 				$user = $this->get_user($user_key);
 				if (!$user) {
 					$result = $this->find_users('externalId='.$s->id);
 					if ($result) {
 						$user = $result[0];
+						$user_key = $user->getPrimaryEmail();
 					} else {
 						$result = $this->find_users('externalId='.$s->uuid);
 						if ($result) {
 							$user = $result[0];
+							$user_key = $user->getPrimaryEmail();
 						}	
 					}
 				}
