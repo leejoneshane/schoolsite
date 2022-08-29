@@ -62,6 +62,6 @@ class SyncFromTpedu implements ShouldQueue, ShouldBeUnique
 
     public function middleware()
     {
-        return [(new WithoutOverlapping(self::$key))->dontRelease()->expireAfter(1200)];
+        return [(new WithoutOverlapping(self::$key))->dontRelease()];
     }
 }

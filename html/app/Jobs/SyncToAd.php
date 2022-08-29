@@ -15,7 +15,7 @@ class SyncToAd implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private static $key = 'sync';
+    private static $key = 'syncAD';
     public $timeout = 12000;
     public $password;
     public $leave;
@@ -50,6 +50,6 @@ class SyncToAd implements ShouldQueue, ShouldBeUnique
 
     public function middleware()
     {
-        return [(new WithoutOverlapping(self::$key))->dontRelease()->expireAfter(1200)];
+        return [(new WithoutOverlapping(self::$key))->dontRelease()];
     }
 }

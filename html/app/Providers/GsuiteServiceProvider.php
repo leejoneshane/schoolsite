@@ -718,7 +718,6 @@ class GsuiteServiceProvider extends ServiceProvider
 				$detail_log[] = "正在處理 $c->name......";
 				$group = $this->get_group($group_key);
 				if ($group) {
-	
                     $detail_log[] = "$stdgroup => 在 G Suite 中找到匹配的 Google 群組！......";
                     $members = $this->list_members($group_key);
                     foreach ($members as $u) {
