@@ -188,6 +188,7 @@ class AdminController extends Controller
     {
         $password = ($request->input('password') == 'sync') ? true : false;
         $leave = $request->input('leave');
+        $target = false;
         if ($leave == 'onduty') $target = $request->input('target');
         SyncToGsuite::dispatch($password, $leave, $target);
         session()->flash('success', 'Google 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');

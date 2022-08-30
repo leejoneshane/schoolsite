@@ -56,40 +56,40 @@
     @endif
                 
     @if ($yahoo)
-    <div class="col-md-8">
+    <div class="col-span-1">
         Yahoo 帳號：{{ $yahoo->userId }}
-        <button type="button" class="py-2 px-6 rounded text-white btn bg-red-500 hover:bg-red-600"
+        <button type="button" class="p-2 rounded text-white btn bg-red-500 hover:bg-red-600"
                  onclick="$('#socialite').val('yahoo');
                          $('#userid').val('{{ $yahoo->userId }}');
                          $('#form').submit();">解除</button>
     </div>
     @else
-    <div class="col-md-8">
+    <div class="col-span-1">
         Yahoo 帳號：
-        <a href="/login/yahoo" class="py-2 px-6 rounded text-white btn bg-blue-500 hover:bg-blue-600">綁定</a>
+        <a href="/login/yahoo" class="p-2 rounded text-white btn bg-blue-500 hover:bg-blue-600">綁定</a>
     </div>
     @endif
 
     @if ($line)
-    <div class="col-md-8">
+    <div class="col-span-1">
         Line 帳號：{{ $line->userId }}
-        <button type="button" class="py-2 px-6 rounded text-white btn bg-red-500 hover:bg-red-600"
+        <button type="button" class="p-2 rounded text-white btn bg-red-500 hover:bg-red-600"
                  onclick="$('#socialite').val('line');
                          $('#userid').val('{{ $line->userId }}');
                          $('#form').submit();">解除</button>
     </div>
     @else
-    <div class="col-md-8">
+    <div class="col-span-1">
         Line 帳號：
-        <a href="/login/line" class="py-2 px-6 rounded text-white btn bg-blue-500 hover:bg-blue-600">綁定</a>
+        <a href="/login/line" class="p-2 rounded text-white btn bg-blue-500 hover:bg-blue-600">綁定</a>
     </div>
     @endif
 
-                <form class="hidden" id="form" action="{{ route('social.remove') }}" method="POST">
-                @csrf
-                <input type="hidden" id='socialite' name='socialite' value="">
-                <input type="hidden" id='userid' name='userid' value="">
-                </form>
+    <form class="hidden" id="form" action="{{ route('social.remove') }}" method="POST">
+        @csrf
+        <input type="hidden" id='socialite' name='socialite' value="">
+        <input type="hidden" id='userid' name='userid' value="">
+    </form>
     </div>
 </div>
 @endsection
