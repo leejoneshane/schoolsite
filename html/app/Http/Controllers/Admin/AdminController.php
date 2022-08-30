@@ -8,11 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\Menu;
 use App\Models\Permission;
 use App\Jobs\SyncFromTpedu;
-use App\Jobs\SyncToAd;
-use App\Jobs\SyncToGsuite;
-use App\Providers\TpeduServiceProvider as SSO;
-use App\Providers\ADServiceProvider as AD;
-use App\Providers\GsuiteServiceProvider as GSUITE;
+use App\Jobs\SyncToAD;
+use App\Jobs\SyncToGoogle;
 use Illuminate\Support\Facades\DB;
 use App\Models\Unit;
 use App\Models\Role;
@@ -173,7 +170,7 @@ class AdminController extends Controller
     {
         $password = ($request->input('password') == 'sync') ? true : false;
         $leave = $request->input('leave');
-        SyncToAd::dispatch($password, $leave);
+        SyncToAD::dispatch($password, $leave);
         session()->flash('success', 'AD 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
         return view('admin');
     }
@@ -190,7 +187,7 @@ class AdminController extends Controller
         $leave = $request->input('leave');
         $target = false;
         if ($leave == 'onduty') $target = $request->input('target');
-        SyncToGsuite::dispatch($password, $leave, $target);
+        SyncToGoogle::dispatch($password, $leave, $target);
         session()->flash('success', 'Google 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
         return view('admin');
     }

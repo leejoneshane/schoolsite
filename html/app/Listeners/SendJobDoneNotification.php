@@ -7,8 +7,8 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Events\JobProcessed;
 use App\Models\User;
 use App\Jobs\SyncFromTpedu;
-use App\Jobs\SyncToAd;
-use App\Jobs\SyncToGsuite;
+use App\Jobs\SyncToAD;
+use App\Jobs\SyncToGoogle;
 use App\Notifications\SyncCompletedNotification;
 use App\Notifications\SyncADCompletedNotification;
 use App\Notifications\SyncGsuiteCompletedNotification;
@@ -37,13 +37,13 @@ class SendJobDoneNotification implements ShouldQueue
                 $admin->notify(new SyncCompletedNotification($event->job));
             }
         }
-        if ($event->job instanceof SyncToAd) {
+        if ($event->job instanceof SyncToAD) {
             $admins = User::where('is_admin', true)->get();
             foreach ($admins as $admin) {
                 $admin->notify(new SyncADCompletedNotification($event->job));
             }
         }
-        if ($event->job instanceof SyncToGsuite) {
+        if ($event->job instanceof SyncToGoogle) {
             $admins = User::where('is_admin', true)->get();
             foreach ($admins as $admin) {
                 $admin->notify(new SyncGsuiteCompletedNotification($event->job));

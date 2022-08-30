@@ -58,7 +58,7 @@ class Unit extends Model
 
     public function is_main()
     {
-        if (strlen($this->unit_no) == 3) return true;
+        if (strlen($this->unit_no) == 3 || substr($this->unit_no, 0, 1) == 'Z') return true;
         return false;
     }
 

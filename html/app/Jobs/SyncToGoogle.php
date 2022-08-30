@@ -8,14 +8,13 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use App\Providers\GsuiteServiceProvider;
 
-class SyncToGsuite implements ShouldQueue, ShouldBeUnique
+class SyncToGoogle implements ShouldQueue, ShouldBeUnique
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    private static $key = 'sync';
+    private static $key = 'syncGoogle';
     public $timeout = 12000;
     public $password;
     public $leave;
@@ -59,10 +58,5 @@ class SyncToGsuite implements ShouldQueue, ShouldBeUnique
             $this->log = $google->deal_graduate($this->leave);
         }
         $this->end = time();
-    }
-
-    public function middleware()
-    {
-        return [(new WithoutOverlapping(self::$key))->dontRelease()];
     }
 }

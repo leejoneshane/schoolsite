@@ -359,8 +359,9 @@ class ADServiceProvider extends ServiceProvider
 						$detail_log[] = "$t->role_name $t->realname 建立失敗！".$this->error();
 					}
 				}
-				if ($t->units) {
-					foreach ($t->units as $unit) {
+				$units = $t->union();
+				if (!empty($units)) {
+					foreach ($units as $unit) {
 						$detail_log[] = "正在處理 $unit->name ......";
 						$group = $this->find_group($unit->name);
 						if ($group) {

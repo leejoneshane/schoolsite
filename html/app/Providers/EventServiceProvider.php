@@ -17,6 +17,9 @@ use \SocialiteProviders\Facebook\FacebookExtendSocialite;
 use \SocialiteProviders\Yahoo\YahooExtendSocialite;
 use \SocialiteProviders\Line\LineExtendSocialite;
 use \SocialiteProviders\Manager\SocialiteWasCalled;
+use App\Jobs\SyncFromTpedu;
+use App\Jobs\SyncToAD;
+use App\Jobs\SyncToGoogle;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -48,19 +51,19 @@ class EventServiceProvider extends ServiceProvider
     public function boot()
     {
         Queue::after(function (JobProcessed $event) {
-            if ($event->job->getName() == 'SyncFromTpedu') {
+            if ($event->job instanceof SyncFromTpedu) {
                 $admins = User::where('is_admin', true)->get();
                 foreach ($admins as $admin) {
                     $admin->notify(new SyncCompletedNotification($event->job));
                 }
             }
-            if ($event->job->getName() == 'SyncToAd') {
+            if ($event->job instanceof SyncToAD) {
                 $admins = User::where('is_admin', true)->get();
                 foreach ($admins as $admin) {
                     $admin->notify(new SyncADCompletedNotification($event->job));
                 }
             }
-            if ($event->job->getName() == 'SyncToGsuite') {
+            if ($event->job instanceof SyncToGoogle) {
                 $admins = User::where('is_admin', true)->get();
                 foreach ($admins as $admin) {
                     $admin->notify(new SyncGsuiteCompletedNotification($event->job));
