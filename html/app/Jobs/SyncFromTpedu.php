@@ -3,18 +3,16 @@
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use App\Providers\TpeduServiceProvider;
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SyncCompletedNotification;
 
-class SyncFromTpedu implements ShouldQueue, ShouldBeUnique
+class SyncFromTpedu implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -61,10 +59,5 @@ class SyncFromTpedu implements ShouldQueue, ShouldBeUnique
         $end_time = time();
         $admins = User::admins();
         Notification::sendNow($admins, new SyncCompletedNotification('SyncFromeTpedu', $start_time, $end_time));
-    }
-
-    public function middleware()
-    {
-        return [(new WithoutOverlapping(self::$key))->dontRelease()];
     }
 }

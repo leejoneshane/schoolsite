@@ -3,18 +3,16 @@
 namespace App\Jobs;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Queue\Middleware\WithoutOverlapping;
 use App\Providers\ADServiceProvider;
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SyncCompletedNotification;
 
-class SyncToAD implements ShouldQueue, ShouldBeUnique
+class SyncToAD implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -48,10 +46,5 @@ class SyncToAD implements ShouldQueue, ShouldBeUnique
         $end_time = time();
         $admins = User::admins();
         Notification::sendNow($admins, new SyncCompletedNotification('SyncToAD', $start_time, $end_time, $logs));
-    }
-
-    public function middleware()
-    {
-        return [(new WithoutOverlapping(self::$key))->dontRelease()];
     }
 }
