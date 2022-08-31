@@ -227,7 +227,8 @@ class TpeduServiceProvider extends ServiceProvider
 			} else {
 				$account = $user->uid;
 			}
-			if ($pwd && $sys_user = User::find($uuid)) {
+			$sys_user = User::where('uuid', $uuid)->first();
+			if ($pwd && $sys_user) {
 				$sys_user->forceFill([
 					'password' => Hash::make(substr($user->cn, -6))
 				])->setRememberToken(Str::random(60));

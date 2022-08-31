@@ -7,6 +7,9 @@ use Spatie\IcalendarGenerator\Components\Event;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Models\IcsCalendar;
+use App\Events\IcsEventCreated;
+use App\Events\IcsEventUpdated;
+use App\Events\IcsEventDeleted;
 
 class IcsEvent extends Model
 {
@@ -23,6 +26,12 @@ class IcsEvent extends Model
         'endDate' => 'datetime:Y-m-d',
         'startTime' => 'datetime:H:i:s',
         'endTime' => 'datetime:H:i:s',
+    ];
+
+    protected $dispatchesEvents = [
+        'created' => IcsEventCreated::class,
+        'updated' => IcsEventUpdated::class,
+        'deleted' => IcsEventDeleted::class,
     ];
 
     public static function inTime($date)

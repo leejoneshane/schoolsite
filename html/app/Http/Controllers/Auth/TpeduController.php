@@ -38,7 +38,7 @@ class TpeduController extends Controller
             if ($auth_code) {
                 $this->sso->get_tokens($auth_code);
                 $uuid = $this->sso->who();
-                $user = User::find($uuid);
+                $user = User::where('uuid', $uuid)->first();
                 if ($user) { //user exists
                     if ($user->email != $user->profile->email) {
                         $user->email = $user->profile->email;
