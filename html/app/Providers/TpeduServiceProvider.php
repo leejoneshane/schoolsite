@@ -131,7 +131,7 @@ class TpeduServiceProvider extends ServiceProvider
 			])->get(config('services.tpedu.endpoint.user'));
 			$user = json_decode($response->getBody());
 			if ($response->getStatusCode() == 200) {
-				return User::where('uuid', $user->uuid)->first();
+				return $user->uuid;
 			} else {
 				$this->error = $response->getBody();
 				Log::error('oauth2 user response =>'.$this->error);
