@@ -304,7 +304,6 @@ class ADServiceProvider extends ServiceProvider
 	{
 		$detail_log = [];
 		$base_dn = config('services.ad.users_dn');
-		$depts = Unit::main();
 		$all_users = $this->all_users();
 		unset($all_users['count']);
 		$teachers = Teacher::all();

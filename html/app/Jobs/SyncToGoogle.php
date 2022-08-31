@@ -9,6 +9,9 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Providers\GsuiteServiceProvider;
+use App\Models\User;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\SyncCompletedNotification;
 
 class SyncToGoogle implements ShouldQueue, ShouldBeUnique
 {
@@ -19,9 +22,6 @@ class SyncToGoogle implements ShouldQueue, ShouldBeUnique
     public $password;
     public $leave;
     public $target;
-    public $start;
-    public $end;
-    public $log = [];
 
     /**
      * Create a new job instance.
@@ -44,19 +44,21 @@ class SyncToGoogle implements ShouldQueue, ShouldBeUnique
     public function handle()
     {
         $google = new GsuiteServiceProvider;
-        $this->start = time();
+        $start_time = time();
         if ($this->leave == 'onduty') {
             if ($this->target == 'teachers') {
-                $this->log = $google->sync_teachers($this->password);
+                $logs = $google->sync_teachers($this->password);
             } elseif (substr($this->target, 0, 5) == 'grade') {
                 $grade = substr($this->target, -1);
-                $this->log = $google->sync_grade($grade, $this->password);
+                $logs = $google->sync_grade($grade, $this->password);
             } else {
-                $this->log = $google->sync_class($this->target, $this->password);
+                $logs = $google->sync_class($this->target, $this->password);
             }
         } else {
-            $this->log = $google->deal_graduate($this->leave);
+            $logs = $google->deal_graduate($this->leave);
         }
-        $this->end = time();
+        $end_time = time();
+        $admins = User::admins();
+        Notification::sendNow($admins, new SyncCompletedNotification('SyncToGoogle', $start_time, $end_time, $logs));
     }
 }

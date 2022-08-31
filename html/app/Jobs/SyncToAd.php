@@ -10,6 +10,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use App\Providers\ADServiceProvider;
+use App\Models\User;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\SyncCompletedNotification;
 
 class SyncToAD implements ShouldQueue, ShouldBeUnique
 {
@@ -19,9 +22,6 @@ class SyncToAD implements ShouldQueue, ShouldBeUnique
     public $timeout = 12000;
     public $password;
     public $leave;
-    public $start;
-    public $end;
-    public $log = array();
 
     /**
      * Create a new job instance.
@@ -43,9 +43,11 @@ class SyncToAD implements ShouldQueue, ShouldBeUnique
     public function handle()
     {
         $ad = new ADServiceProvider;
-        $this->start = time();
-        $this->log = $ad->sync_teachers($this->password, $this->leave);
-        $this->end = time();
+        $start_time = time();
+        $logs = $ad->sync_teachers($this->password, $this->leave);
+        $end_time = time();
+        $admins = User::admins();
+        Notification::sendNow($admins, new SyncCompletedNotification('SyncToAD', $start_time, $end_time, $logs));
     }
 
     public function middleware()

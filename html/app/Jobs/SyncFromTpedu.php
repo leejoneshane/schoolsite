@@ -10,6 +10,9 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use App\Providers\TpeduServiceProvider;
+use App\Models\User;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\SyncCompletedNotification;
 
 class SyncFromTpedu implements ShouldQueue, ShouldBeUnique
 {
@@ -23,8 +26,6 @@ class SyncFromTpedu implements ShouldQueue, ShouldBeUnique
     public $sync_classes = false;
     public $sync_subjects = false;
     public $remove_leave = false;
-    public $start;
-    public $end;
 
     /**
      * Create a new job instance.
@@ -50,14 +51,16 @@ class SyncFromTpedu implements ShouldQueue, ShouldBeUnique
     public function handle()
     {
         $sso = new TpeduServiceProvider;
-        $this->start = time();
+        $start_time = time();
         $sso->sync_units($this->only_expired, $this->sync_units);
         $sso->sync_roles($this->only_expired, $this->sync_units);
         $sso->sync_subjects($this->only_expired, $this->sync_subjects);
         $sso->sync_classes($this->only_expired, $this->sync_classes);
         $sso->sync_teachers($this->only_expired, $this->reset_password, $this->remove_leave);
         $sso->sync_students($this->only_expired, $this->reset_password, $this->remove_leave);
-        $this->end = time();
+        $end_time = time();
+        $admins = User::admins();
+        Notification::sendNow($admins, new SyncCompletedNotification('SyncFromeTpedu', $start_time, $end_time));
     }
 
     public function middleware()

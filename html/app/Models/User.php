@@ -52,6 +52,11 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public static function admins()
+    {
+        return User::where('is_admin', true)->get();
+    }
+
 	public function socialite_accounts()
 	{
     	return $this->hasMany('App\Models\SocialiteAccount', 'uuid', 'uuid');
