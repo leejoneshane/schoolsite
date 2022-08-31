@@ -7,6 +7,11 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+    protected function scheduleTimezone()
+    {
+        return 'Asia/Taipei';
+    }
+
     /**
      * Define the application's command schedule.
      *
