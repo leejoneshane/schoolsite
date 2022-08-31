@@ -41,7 +41,10 @@ class SendNewsLetters implements ShouldQueue
         $news = News::where('cron', 'monthly.'.$monthday)->orWhere('cron', 'weekly.'.$weekday)->get();
         foreach ($news as $new) {
             $subscribers = $new->subscribers;
-            Notification::sendNow($subscribers, new NewsLetter($new));
+            $data_model = new $new->model;
+            $view = $data_model::template();
+            $content = $data_model::newsletter();
+            Notification::sendNow($subscribers, new NewsLetter($new->name, $view, $content));
         }
     }
 }

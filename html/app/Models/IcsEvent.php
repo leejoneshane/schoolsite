@@ -34,6 +34,16 @@ class IcsEvent extends Model
         'deleted' => IcsEventDeleted::class,
     ];
 
+    public static function template()
+    {
+        return 'app.calendar_student';
+    }
+
+    public static function newsletter()
+    {
+        return ['events' => $this->inMonthForStudent()];
+    }
+
     public static function inTime($date)
     {
         return IcsEvent::with('unit')->whereDate('startDate', '<=', $date)->whereDate('endDate', '>=', $date)->get();
@@ -44,6 +54,24 @@ class IcsEvent extends Model
         $cal = IcsCalendar::forStudent();
         if ($cal) $cal_id = $cal->id;
         return IcsEvent::with('unit')->where('calendar_id', $cal_id)->whereDate('startDate', '<=', $date)->whereDate('endDate', '>=', $date)->get();
+    }
+
+    public static function inMonthForStudent()
+    {
+        $cal = IcsCalendar::forStudent();
+        if ($cal) $cal_id = $cal->id;
+        $min = (new Carbon('first day of this month'))->toDateString();
+        $max = (new Carbon('last day of this month'))->toDateString();
+        return IcsEvent::with('unit')->where('calendar_id', $cal_id)
+            ->where(function ($query) {
+                $query->where(function ($query) {
+                    $query->whereDate('startDate', '>=', $min)
+                        ->whereDate('startDate', '<=', $max);
+                })->orWhere(function ($query) {
+                    $query->whereDate('endDate', '>=', $min)
+                        ->whereDate('endDate', '<=', $max);
+                });
+            })->get();
     }
 
     public function calendar()
