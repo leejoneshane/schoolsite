@@ -390,17 +390,6 @@ class TpeduServiceProvider extends ServiceProvider
 		return false;
 	}
 
-	function user_type($uuid) {
-		$user = $this->api('one_user', ['uuid' => $uuid]);
-		if ($user) {
-			if ($user->employeeType == '學生') {
-				return 'Student';
-			} else {
-				return 'Teacher';
-			}
-		}
-	}
-
 	function sync_units($only = false, $sync = false)
 	{
 		$fetch = Unit::first();

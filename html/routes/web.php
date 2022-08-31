@@ -18,12 +18,12 @@ Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
 // Login Routes...
 Route::get('login', 'App\Http\Controllers\Auth\LoginController@showLoginForm')->middleware('firsttime')->name('login');
 Route::post('login', 'App\Http\Controllers\Auth\LoginController@login');
-Route::get('login/tpedu', 'App\Http\Controllers\TpeduController@redirect');
-Route::get('login/tpedu/callback', 'App\Http\Controllers\TpeduController@handleCallback');
-Route::get('login/{provider}', 'App\Http\Controllers\SocialiteController@redirect');
-Route::get('login/{provider}/callback', 'App\Http\Controllers\SocialiteController@handleCallback');
-Route::get('socialite', 'App\Http\Controllers\SocialiteController@socialite')->middleware('auth')->name('social');
-Route::post('socialite/remove', 'App\Http\Controllers\SocialiteController@socialite')->middleware('auth')->name('social.remove');
+Route::get('login/tpedu', 'App\Http\Controllers\Auth\TpeduController@redirect');
+Route::get('login/tpedu/callback', 'App\Http\Controllers\Auth\TpeduController@handleCallback');
+Route::get('login/{provider}', 'App\Http\Controllers\Auth\SocialiteController@redirect');
+Route::get('login/{provider}/callback', 'App\Http\Controllers\Auth\SocialiteController@handleCallback');
+Route::get('socialite', 'App\Http\Controllers\Auth\SocialiteController@socialite')->middleware('auth')->name('social');
+Route::post('socialite/remove', 'App\Http\Controllers\Auth\SocialiteController@socialite')->middleware('auth')->name('social.remove');
 
 // Logout Routes...
 Route::post('logout', 'App\Http\Controllers\Auth\LoginController@logout')->name('logout');
