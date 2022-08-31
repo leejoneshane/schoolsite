@@ -4,11 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\IcalendarGenerator\Components\Calendar;
-use App\Providers\GcalendarServiceProvider;
 
 class IcsCalendar extends Model
 {
-
     protected $table = 'ics_calendars';
 	protected $primaryKey = 'id';
     public $incrementing = false;

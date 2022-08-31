@@ -1,7 +1,8 @@
 <?php
 
-namespace Mydnic\Subscribers\Notifications;
+namespace App\Notifications;
 
+use Illuminate\Support\Facades\URL;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -9,7 +10,7 @@ use Illuminate\Notifications\Notification;
 use Carbon\Carbon;
 use App\Models\News;
 
-class SubscriberVerifyEmail extends Notification
+class SubscriberVerifyEmail extends Notification implements ShouldQueue
 {
     use Queueable;
 

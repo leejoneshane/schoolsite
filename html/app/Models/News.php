@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Providers\TpeduServiceProvider as SSO;
 
 class News extends Model
 {

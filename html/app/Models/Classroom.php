@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Providers\TpeduServiceProvider as SSO;
-use Illuminate\Database\Eloquent\Casts\AsArrayObject;
 
 class Classroom extends Model
 {

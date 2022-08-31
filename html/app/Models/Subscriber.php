@@ -1,9 +1,7 @@
 <?php
 
-namespace Mydnic\Subscribers;
+namespace App\Models;
 
-use Illuminate\Auth\MustVerifyEmail;
-use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use App\Events\SubscriberCreated;
