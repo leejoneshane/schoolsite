@@ -1,6 +1,6 @@
 <?php
 
-namespace Mydnic\Subscribers\Notifications;
+namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Providers\TpeduServiceProvider as SSO;
 
-class Grade extends Model
+class News extends Model
 {
 
 	protected $table = 'news_letters';
