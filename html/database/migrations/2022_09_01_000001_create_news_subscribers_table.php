@@ -14,11 +14,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('subscribers', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('email')->unique();
+        Schema::create('news_subscribers', function (Blueprint $table) {
+            $table->integer('news_id');
+            $table->integer('subscriber_id');
             $table->timestamps();
-            $table->timestamp('email_verified_at')->nullable();
+            $table->unique(['news_id', 'subscriber_id']);
         });
     }
 

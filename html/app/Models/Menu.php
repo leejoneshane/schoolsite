@@ -40,12 +40,12 @@ class Menu extends Model
 
     public static function top()
     {
-        return Menu::with('childs')->whereNull('parent_id')->get();
+        return Menu::with('childs')->where('id', '!=', 'admin')->whereNull('parent_id')->get();
     }
 
     public static function parents()
     {
-        return Menu::where('url', '#')->get();
+        return Menu::whereNotIn('id', ['admin', 'database', 'website'])->where('url', '#')->get();
     }
 
     public static function subItems($menu)

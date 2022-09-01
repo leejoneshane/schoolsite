@@ -492,7 +492,7 @@ class AdminController extends Controller
         if (!empty($menu)) {
             $items = Menu::subItems($menu);
         } else {
-            $items = Menu::top();
+            $items = Menu::top()->where('id', '!=', 'admin');;
         }
         return view('admin.menus', ['current' => $menu, 'menus' => $menus, 'items' => $items, 'routes' => $routename]);
     }

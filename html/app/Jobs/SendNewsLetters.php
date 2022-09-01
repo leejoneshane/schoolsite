@@ -40,7 +40,7 @@ class SendNewsLetters implements ShouldQueue
         $weekday = Carbon::today()->dayOfWeek;
         $news = News::where('cron', 'monthly.'.$monthday)->orWhere('cron', 'weekly.'.$weekday)->get();
         foreach ($news as $new) {
-            $subscribers = $new->subscribers;
+            $subscribers = $new->subscribers->whereNotNul('email_verified_at');
             $data_model = new $new->model;
             $view = $data_model::template();
             $content = $data_model::newsletter();

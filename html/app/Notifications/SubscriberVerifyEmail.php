@@ -14,16 +14,14 @@ class SubscriberVerifyEmail extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $news_id;
-
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($news_id)
+    public function __construct()
     {
-        $this->news_id = $news_id;
+        //
     }
 
     /**
@@ -53,7 +51,6 @@ class SubscriberVerifyEmail extends Notification implements ShouldQueue
         $mail->greeting(config('subscribers.mail.verify.greeting'));
 
         $news = News::find($this->news_id);
-        $mail->greeting(config('subscribers.mail.verify.newsletter').$news->name);
         if (!empty(config('subscribers.mail.verify.content'))) {
             foreach (config('subscribers.mail.verify.content') as $value) {
                 $mail->line($value);

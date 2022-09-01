@@ -22,7 +22,7 @@ class News extends Model
 
     public function subscribers()
     {
-        return $this->hasMany('App\Models\Subscriber', 'news_id', 'id');
+        return $this->belongsToMany('App\Models\Subscriber', 'news_subscribers', 'news_id', 'subscriber_id');
     }
 
 }
