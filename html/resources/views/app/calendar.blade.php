@@ -22,31 +22,33 @@
     <div class="text-2xl font-bold leading-normal pb-5">
         學校行事曆
         @if ($create)
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.addEvent').'?current='.$current }}">
+        <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.addEvent').'?current='.$current }}">
             <i class="fa-solid fa-calendar-plus"></i>新增事件
         </a>
         @endif
         @adminorteacher
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.seme').'?current='.$current }}">
+        <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.seme').'?current='.$current }}">
             <i class="fa-solid fa-calendar"></i>學期行事曆
         </a>
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.traning').'?current='.$current }}">
+        <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.traning').'?current='.$current }}">
             <i class="fa-solid fa-calendar-days"></i>研習行事曆
         </a>
         @endadminorteacher
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.student').'?current='.$current }}">
+        <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.student').'?current='.$current }}">
             <i class="fa-solid fa-calendar-check"></i>學生行事曆
         </a>
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.download').'?current='.$current }}">
-            <i class="fa-solid fa-download"></i>下載日曆
+        <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.import') }}">
+            <i class="fa-solid fa-cloud-arrow-down"></i>匯入
         </a>
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.import').'?current='.$current }}">
-            <i class="fa-solid fa-cloud-arrow-down"></i>匯入行事曆
+        <span class="text-sm text-blue-300">或</span>
+        <a class="text-sm py-2 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.download') }}">
+            下載
         </a>
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="#" onclick="
-            navigator.clipboard.writeText('{{ $calendar->url() }}').then( function() => {
-                alert('行事曆分享連結已經複製到剪貼簿！請在 Google 日曆左側選單選取「新增其它日曆」->「加入日曆網址」，然後貼上連結就完成了！')
-            });
+        <span class="text-sm text-blue-300">日曆</span>
+        <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="#" onclick="
+            navigator.clipboard.writeText('{{ $calendar->url() }}').then(
+                result => alert('行事曆分享連結已經複製到剪貼簿！請在 Google 日曆左側選單選取「新增其它日曆」->「加入日曆網址」，然後貼上連結就完成了！')
+            );
         ">
             <i class="fa-solid fa-cloud-arrow-up"></i>取得日曆網址
         </a>

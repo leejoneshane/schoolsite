@@ -57,7 +57,7 @@ class IcsCalendar extends Model
         $calendar = $this->toICS()->get();
         return response($calendar, 200, [
             'Content-Type' => 'text/calendar; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="'. $this->summary .'行事曆.ics"',
+            'Content-Disposition' => 'attachment; filename="'. $this->summary .'.ics"',
          ]);
     }
 

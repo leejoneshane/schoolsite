@@ -122,6 +122,6 @@
             </div>    
         </p>
     </form>
-    <p></p>
+    <p class="py-12"></p>
 </div>
 @endsection
