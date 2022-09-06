@@ -52,15 +52,15 @@ Route::post('news/{id}/subscriber', 'SubscriberController@store')->name('store')
 Route::get('news/{id}/delete', 'SubscriberController@delete')->name('delete');
 Route::get('news/verify/{id}/{hash}', 'SubscriberController@verify')->name('verify');
 
-Route::get('calendar', 'App\Http\Controllers\HomeController@calendar')->name('calendar');
-Route::get('calendar/event/add', 'App\Http\Controllers\CalendarController@calendar');
-Route::post('calendar/event/add', 'App\Http\Controllers\CalendarController@calendar')->name('calendar.addEvent');
+Route::get('calendar', 'App\Http\Controllers\CalendarController@calendar')->name('calendar');
+Route::get('calendar/event/add', 'App\Http\Controllers\CalendarController@eventAdd');
+Route::post('calendar/event/add', 'App\Http\Controllers\CalendarController@eventInsert')->name('calendar.addEvent');
 Route::get('calendar/event/edit/{event}', 'App\Http\Controllers\CalendarController@calendar');
 Route::post('calendar/event/edit/{event}', 'App\Http\Controllers\CalendarController@calendar')->name('calendar.editEvent');
 Route::get('calendar/event/remove/{event}', 'App\Http\Controllers\CalendarController@calendar')->name('calendar.removeEvent');
 Route::get('calendar/seme', 'App\Http\Controllers\CalendarController@calendar')->name('calendar.seme');
 Route::get('calendar/traning', 'App\Http\Controllers\CalendarController@calendar')->name('calendar.traning');
-Route::get('calendar/student', 'App\Http\Controllers\CalendarController@calendar')->name('calendar.student');
+Route::get('calendar/student', 'App\Http\Controllers\CalendarController@student')->name('calendar.student');
 
 // Administrator Interface Routes...
 Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {

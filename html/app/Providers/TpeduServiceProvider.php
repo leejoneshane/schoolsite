@@ -109,12 +109,10 @@ class TpeduServiceProvider extends ServiceProvider
 	public function login()
     {
 			return config('services.tpedu.server') . '/' .
-				config('services.tpedu.login') . '?' .
+				config('services.tpedu.endpoint.login') . '?' .
 				'client_id' . '=' . config('services.tpedu.app') . '&' .
 				'redirect_uri' . '=' . config('services.tpedu.callback') . '&' .
-				'response_type=code' . '&' .
-				'scope=user' . '&' .
-				'sub=laravel';
+				'response_type=code&scope=user';
 	}
 
 	public function error()

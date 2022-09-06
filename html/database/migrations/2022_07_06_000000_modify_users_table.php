@@ -18,7 +18,7 @@ return new class extends Migration
                 $table->uuid('uuid')->unique();
                 $table->string('user_type');
             });
-            $table->boolean('is_admin');
+            $table->boolean('is_admin')->default(0);
         });
     }
 

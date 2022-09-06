@@ -22,27 +22,19 @@
     <div class="text-2xl font-bold leading-normal pb-5">
         學校行事曆
         @if ($create)
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.addEvent') }}">
+        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.addEvent').'?current='.$current }}">
             <i class="fa-solid fa-calendar-plus"></i>新增事件
         </a>
         @endif
-        @admin
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.seme') }}">
+        @adminorteacher
+        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.seme').'?current='.$current }}">
             <i class="fa-solid fa-calendar"></i>學期行事曆
         </a>
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.traning') }}">
+        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.traning').'?current='.$current }}">
             <i class="fa-solid fa-calendar-days"></i>週三行事曆
         </a>
-        @endadmin
-        @teacher
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.seme') }}">
-            <i class="fa-solid fa-calendar"></i>學期行事曆
-        </a>
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.traning') }}">
-            <i class="fa-solid fa-calendar-days"></i>週三行事曆
-        </a>
-        @endteacher
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.student') }}">
+        @endadminorteacher
+        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.student').'?current='.$current }}">
             <i class="fa-solid fa-calendar-check"></i>學生行事曆
         </a>
     </div>

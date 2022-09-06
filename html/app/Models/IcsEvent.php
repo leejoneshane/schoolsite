@@ -7,41 +7,114 @@ use Spatie\IcalendarGenerator\Components\Event;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Models\IcsCalendar;
-use App\Events\IcsEventCreated;
-use App\Events\IcsEventUpdated;
-use App\Events\IcsEventDeleted;
+use App\Providers\GcalendarServiceProvider as GCAL;
 
 class IcsEvent extends Model
 {
 
     protected $table = 'ics_events';
+    protected static $monthMap = [
+        1 => '一',
+        2 => '二',
+        3 => '三',
+        4 => '四',
+        5 => '五',
+        6 => '六',
+        7 => '七',
+        8 => '八',
+        9 => '九',
+        10 => '十',
+        11 => '十一',
+        12 => '十二',
+    ];
+    protected static $weekMap = [
+        0 => '日',
+        1 => '一',
+        2 => '二',
+        3 => '三',
+        4 => '四',
+        5 => '五',
+        6 => '六',
+    ];
 
     protected $fillable = [
-        'unit_id', 'startDate', 'endDate', 'all_day', 'startTime', 'endTime', 'summary', 'description', 'location', 'calendar_id', 'event_id',
+        'unit_id', 'all_day', 'important', 'startDate', 'endDate', 'startTime', 'endTime', 'summary', 'description', 'location', 'calendar_id', 'event_id',
     ];
 
     protected $casts = [
         'all_day' => 'boolean',
+        'important' => 'boolean',
         'startDate' => 'datetime:Y-m-d',
         'endDate' => 'datetime:Y-m-d',
         'startTime' => 'datetime:H:i:s',
         'endTime' => 'datetime:H:i:s',
     ];
 
-    protected $dispatchesEvents = [
-        'created' => IcsEventCreated::class,
-        'updated' => IcsEventUpdated::class,
-        'deleted' => IcsEventDeleted::class,
-    ];
+    public static function boot()
+    {
+        parent::boot();
+        static::created(function($item)
+        {
+            $cal = new GCAL;
+            $cal->sync_event($this);
+        });
+        static::updated(function($item)
+        {
+            $cal = new GCAL;
+            $cal->sync_event($this);
+        });
+        static::deleted(function($item)
+        {
+            $cal = new GCAL;
+            $cal->delete_event($this->calendar_id, $this->event_id);
+        });
+    }
 
     public static function template()
     {
-        return 'app.calendar_student';
+        return 'app.calendar_newsletter';
     }
 
     public static function newsletter()
     {
-        return ['events' => $this->inMonthForStudent()];
+        $year = date('Y') - 1911;
+        $month = date('n');
+        $twmonth = self::$monthMap[$month];
+        $event_list = [];
+        $min = 1;
+        $max = (new Carbon('last day of this month'))->day();
+        for ($day = $min; $day <= $max; $day++) {
+            $obj = new \stdClass;
+            $sd = new Carbon($year.'-'.$month.'-'.$day);
+            $wd = self::$weekMap[$sd->dayOfWeek];
+            $obj->weekday = $wd;
+            $events = self::inTimeForStudent($sd);
+            $important = $events->where('important', true);
+            $events = $events->where('important', false); 
+            $content = '';
+            if ($important->count() > 0) $content .= '[學校重要活動]';
+            foreach ($important as $i) {
+                $content .= '　'.$i->summary;
+                if (!empty($i->location)) $content .= ' 地點：'.$i->location;
+                if (!($i->all_day)) $content .= ' 時間：'.$i->startTime.'到'.$i->endTime;
+                if ($i->startDate != $i->endDate) $content .= '(至'.$i->endDate.'止)';
+            }
+            $last = '';
+            foreach ($events as $e) {
+                if ($last != $e->unit_id) {
+                    $uname = Unit::find($e->unit_id)->name;
+                    $content .= "[$uname]";
+                    $last = $e->unit_id;
+                }
+                $content .= '　'.$e->summary;
+                if (!empty($e->location)) $content .= ' 地點：'.$e->location;
+                if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
+                if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate.'止)';
+            }
+            $obj->content = $content;
+            $event_list[$day] = $obj;
+        }
+        return ['year' => $year, 'month' => $twmonth, 'events' => $event_list];
     }
 
     public static function inTime($date)
@@ -62,16 +135,9 @@ class IcsEvent extends Model
         if ($cal) $cal_id = $cal->id;
         $min = (new Carbon('first day of this month'))->toDateString();
         $max = (new Carbon('last day of this month'))->toDateString();
-        return IcsEvent::with('unit')->where('calendar_id', $cal_id)
-            ->where(function ($query) {
-                $query->where(function ($query) {
-                    $query->whereDate('startDate', '>=', $min)
-                        ->whereDate('startDate', '<=', $max);
-                })->orWhere(function ($query) {
-                    $query->whereDate('endDate', '>=', $min)
-                        ->whereDate('endDate', '<=', $max);
-                });
-            })->get();
+        return IcsEvent::with('unit')
+            ->whereRaw('calendar_id = ? and ((startDate >= ? and startDate <= ?) or (endDate >= ? and endDate <= ?))', [$cal_id, $min, $max, $min, $max])
+            ->get();
     }
 
     public function calendar()

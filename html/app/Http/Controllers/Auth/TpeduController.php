@@ -40,6 +40,14 @@ class TpeduController extends Controller
                 $uuid = $this->sso->who();
                 $user = User::where('uuid', $uuid)->first();
                 if ($user) { //user exists
+                    if ($user->user_type == 'Teacher') {
+                        $tpuser = Teacher::find($uuid);
+                        if ($tpuser->expired()) $this->sso->fetch_user($uuid);
+                    }
+                    if ($user->user_type == 'Student') {
+                        $tpuser = Student::find($uuid);
+                        if ($tpuser->expired()) $this->sso->fetch_user($uuid);
+                    }
                     if ($user->email != $user->profile->email) {
                         $user->email = $user->profile->email;
                         $user->save();
@@ -60,7 +68,6 @@ class TpeduController extends Controller
                         }
                     }
                     if ($tpuser) {
-                        if ($tpuser->expired()) $this->sso->fetch_user($uuid);
                         $user = User::create([
                             'uuid' => $uuid,
                             'user_type' => $user_type,
@@ -73,6 +80,8 @@ class TpeduController extends Controller
                             $user->is_admin = true;
                             $user->save();
                         }
+                        Auth::login($user);
+                        return redirect()->route('home');
                     } else {
                         return redirect()->route('login')->with('error', "您的帳號並非隸屬於本校，因此無法登入！");
                     }

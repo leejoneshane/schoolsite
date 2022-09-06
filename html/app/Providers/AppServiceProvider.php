@@ -44,6 +44,9 @@ class AppServiceProvider extends ServiceProvider
         Blade::if('student', function () {
             return auth()->user() && auth()->user()->user_type == 'Student';
         });
+        Blade::if('adminorteacher', function () {
+            return auth()->user() && (auth()->user()->is_admin || auth()->user()->user_type == 'Teacher');
+        });
 
         Queue::before(function (JobProcessing $event) {
             // $event->connectionName
