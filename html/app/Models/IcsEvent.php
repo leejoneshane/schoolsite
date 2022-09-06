@@ -44,6 +44,7 @@ class IcsEvent extends Model
     protected $casts = [
         'all_day' => 'boolean',
         'important' => 'boolean',
+        'training' => 'boolean',
         'startDate' => 'datetime:Y-m-d',
         'endDate' => 'datetime:Y-m-d',
         'startTime' => 'datetime:H:i:s',
@@ -127,6 +128,11 @@ class IcsEvent extends Model
         $cal = IcsCalendar::forStudent();
         if ($cal) $cal_id = $cal->id;
         return IcsEvent::with('unit')->where('calendar_id', $cal_id)->whereDate('startDate', '<=', $date)->whereDate('endDate', '>=', $date)->get();
+    }
+
+    public static function inTimeForTraining($date)
+    {
+        return IcsEvent::with('unit')->where('training', true)->whereDate('startDate', '<=', $date)->whereDate('endDate', '>=', $date)->get();
     }
 
     public static function inMonthForStudent()

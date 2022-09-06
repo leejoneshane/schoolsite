@@ -17,6 +17,7 @@ return new class extends Migration
             $table->increments('id');
 			$table->string('unit_id')->index();
             $table->boolean('important')->default(0);
+            $table->boolean('training')->default(0);
             $table->boolean('all_day')->default(0);
 			$table->date('startDate')->useCurrent();
 			$table->date('endDate')->useCurrent();

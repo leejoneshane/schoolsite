@@ -21,9 +21,19 @@ class IcsCalendar extends Model
         return IcsCalendar::where('summary', 'like', '%學生%')->first();
     }
 
+    public static function main()
+    {
+        return IcsCalendar::find(config('services.gsuite.calendar'));
+    }
+
     public function events()
     {
         return $this->hasMany('App\Models\IcsEvent', 'calendar_id', 'id');
+    }
+
+    public function url()
+    {
+        return 'https://calendar.google.com/calendar/embed?src='.urlencode($this->id).'&ctz=Asia%2FTaipei';
     }
 
     public function toICS()

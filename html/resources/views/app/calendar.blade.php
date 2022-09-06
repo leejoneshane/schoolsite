@@ -31,16 +31,29 @@
             <i class="fa-solid fa-calendar"></i>學期行事曆
         </a>
         <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.traning').'?current='.$current }}">
-            <i class="fa-solid fa-calendar-days"></i>週三行事曆
+            <i class="fa-solid fa-calendar-days"></i>研習行事曆
         </a>
         @endadminorteacher
         <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.student').'?current='.$current }}">
             <i class="fa-solid fa-calendar-check"></i>學生行事曆
         </a>
+        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.download').'?current='.$current }}">
+            <i class="fa-solid fa-download"></i>下載日曆
+        </a>
+        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.import').'?current='.$current }}">
+            <i class="fa-solid fa-cloud-arrow-down"></i>匯入行事曆
+        </a>
+        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="#" onclick="
+            navigator.clipboard.writeText('{{ $calendar->url() }}').then( function() => {
+                alert('行事曆分享連結已經複製到剪貼簿！請在 Google 日曆左側選單選取「新增其它日曆」->「加入日曆網址」，然後貼上連結就完成了！')
+            });
+        ">
+            <i class="fa-solid fa-cloud-arrow-up"></i>取得日曆網址
+        </a>
     </div>
     <form id="select-date" action="{{ route('calendar') }}" method="GET">
         <label for="current">顯示哪一天的事件:</label>
-        <input type="date" id="current" name="current"
+        <input class="w-36" type="date" id="current" name="current"
             value="{{ $current }}"
             min="{{ substr($seme['min'], 0, 10) }}"
             max="{{ substr($seme['max'], 0, 10) }}"

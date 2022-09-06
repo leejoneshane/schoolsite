@@ -29,7 +29,7 @@
             <i class="fa-solid fa-calendar"></i>學期行事曆
         </a>
         <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.traning').'?current='.$current }}">
-            <i class="fa-solid fa-calendar-days"></i>週三行事曆
+            <i class="fa-solid fa-calendar-days"></i>研習行事曆
         </a>
         @endadminorteacher
         <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.student').'?current='.$current }}">
@@ -62,6 +62,13 @@
                 <input type="checkbox" id="important" name="important" value="yes" class="sr-only peer">
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">學校重要活動</span>
+            </label>
+        </div></p>
+        <p><div class="p-3">
+            <label for="training" class="inline-flex relative items-center cursor-pointer">
+                <input type="checkbox" id="training" name="training" value="yes" class="sr-only peer">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">研習活動</span>
             </label>
         </div></p>
         <p><div class="p-3">

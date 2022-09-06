@@ -58,9 +58,11 @@ Route::post('calendar/event/add', 'App\Http\Controllers\CalendarController@event
 Route::get('calendar/event/edit/{event}', 'App\Http\Controllers\CalendarController@calendar');
 Route::post('calendar/event/edit/{event}', 'App\Http\Controllers\CalendarController@calendar')->name('calendar.editEvent');
 Route::get('calendar/event/remove/{event}', 'App\Http\Controllers\CalendarController@calendar')->name('calendar.removeEvent');
-Route::get('calendar/seme', 'App\Http\Controllers\CalendarController@calendar')->name('calendar.seme');
-Route::get('calendar/traning', 'App\Http\Controllers\CalendarController@calendar')->name('calendar.traning');
+Route::get('calendar/seme', 'App\Http\Controllers\CalendarController@seme')->name('calendar.seme');
+Route::get('calendar/training', 'App\Http\Controllers\CalendarController@training')->name('calendar.training');
 Route::get('calendar/student', 'App\Http\Controllers\CalendarController@student')->name('calendar.student');
+Route::get('calendar/download', 'App\Http\Controllers\CalendarController@student')->name('calendar.download');
+Route::get('calendar/import', 'App\Http\Controllers\CalendarController@student')->name('calendar.import');
 
 // Administrator Interface Routes...
 Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {

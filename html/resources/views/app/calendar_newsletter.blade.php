@@ -18,9 +18,9 @@
             <th colspan="4" class="p-2 text-center">民國{{ $year }}年{{ $month }}月</th>
         </tr>
         <tr class="bg-gray-300 font-semibold text-lg">
-            <th scope="col" class="p-2">月</th>
-            <th scope="col" class="p-2">日</th>
-            <th scope="col" class="p-2">星期</th>
+            <th scope="col" class="p-2 w-8">月</th>
+            <th scope="col" class="p-2 w-8">日</th>
+            <th scope="col" class="p-2 w-8">星期</th>
             <th scope="col" class="p-2 text-justify">當日行事</th>
         </tr>
         @foreach ($events as $day => $event)

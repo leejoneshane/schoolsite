@@ -72,12 +72,26 @@ class Teacher extends Model
         foreach ($units as $u) {
             $uni[] = $u;
             if (!$u->is_main()) {
-                $uni[] = $u->parent();
+                $uni[] = $u->uplevel();
             }
         }
         return $uni;
     }
 
+    public function upper()
+    {
+        $upper = [];
+        $units = $this->units;
+        foreach ($units as $u) {
+            if ($u->is_main()) {
+                $upper[] = $u;
+            } else {
+                $upper[] = $u->uplevel();
+            }
+        }
+        return $upper;
+    }
+    
     public function roles()
 	{
     	return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id');
