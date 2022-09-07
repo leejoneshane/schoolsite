@@ -9,6 +9,7 @@ use App\Models\IcsCalendar;
 use App\Models\IcsEvent;
 use App\Providers\GcalendarServiceProvider as GCAL;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 
 class CalendarController extends Controller
 {
@@ -128,6 +129,59 @@ class CalendarController extends Controller
         return $this->calendar($request);
     }
 
+    public function eventEdit(Request $request, $event_id)
+    {
+        $event = IcsEvent::find($event_id);
+        $today = $request->input('current');
+        if (!$today) $today = date('Y-m-d');
+        $seme = GCAL::current_seme();
+        $calendars = IcsCalendar::all();
+        $user = $request->user();
+        $units = [];
+        if ($user->is_admin) {
+            $units = Unit::main();
+        }
+        if ($user->user_type == 'Teacher') {
+            $t = Teacher::find($user->uuid);
+            $units = $t->upper();
+        }
+        return view('app.eventedit', ['current' => $today, 'seme' => $seme, 'calendars' => $calendars, 'units' => $units, 'event' => $event]);
+    }
+
+    public function eventUpdate(Request $request, $event_id)
+    {
+        $event = IcsEvent::find($event_id);
+        $event->fill([
+            'unit_id' => $request->input('unit_id'),
+            'startDate' => $request->input('start_date'),
+            'endDate' => $request->input('end_date'),
+            'summary' => $request->input('summary'),
+            'description' => $request->input('desc'),
+            'location' => $request->input('location'),
+            'calendar_id' => $request->input('calendar_id'),
+        ]);
+        if ($request->has('important')) {
+            $event->important = true;
+        }
+        if ($request->has('training')) {
+            $event->training = true;
+        }
+        if ($request->has('all_day')) {
+            $event->all_day = true;
+        } else {
+            $event->startTime = $request->input('start_time');
+            $event->endTime = $request->input('end_time');
+        }
+        $event->save();
+        return $this->calendar($request);
+    }
+
+    public function eventRemove(Request $request, $event_id)
+    {
+        IcsEvent::destroy($event_id);
+        return $this->calendar($request);
+    }
+
     public function seme(Request $request)
     {
         $today = $request->input('current');
@@ -144,10 +198,10 @@ class CalendarController extends Controller
         }
         foreach ($year as $y) {
             foreach ($month as $m) {
-                $min = 1;
-                $max = Carbon::parse($y.'-'.$m.'-1')->endOfMonth()->day;
-                for ($day = $min; $day <= $max; $day++) {
-                    $sd = new Carbon($y.'-'.$m.'-'.$day);
+                $min = Carbon::parse($y.'-'.$m.'-1');
+                $max = $min->endOfMonth();
+                $period = CarbonPeriod::create($min, $max);
+                foreach ($period as $sd) {
                     $events = IcsEvent::inTime($sd);
                     $important = $events->where('important', true);
                     $events = $events->where('important', false);
@@ -174,10 +228,10 @@ class CalendarController extends Controller
                     if ($content) {
                         $obj = new \stdClass;
                         $obj->month = $this->monthMap[$m];
-                        $obj->day = $day;
+                        $obj->day = $sd->day;
                         $obj->weekday = $this->weekMap[$sd->dayOfWeek];
                         $obj->content = $content;
-                        $event_list[$day] = $obj;    
+                        $event_list[] = $obj;    
                     }
                 }
             }
@@ -201,10 +255,10 @@ class CalendarController extends Controller
         }
         foreach ($year as $y) {
             foreach ($month as $m) {
-                $min = 1;
-                $max = Carbon::parse($y.'-'.$m.'-1')->endOfMonth()->day;
-                for ($day = $min; $day <= $max; $day++) {
-                    $sd = new Carbon($y.'-'.$m.'-'.$day);
+                $min = Carbon::parse($y.'-'.$m.'-1');
+                $max = $min->endOfMonth();
+                $period = CarbonPeriod::create($min, $max);
+                foreach ($period as $sd) {
                     $events = IcsEvent::inTimeForTraining($sd);
                     $important = $events->where('important', true);
                     $events = $events->where('important', false);
@@ -231,10 +285,10 @@ class CalendarController extends Controller
                     if ($content) {
                         $obj = new \stdClass;
                         $obj->month = $this->monthMap[$m];
-                        $obj->day = $day;
+                        $obj->day = $sd->day;
                         $obj->weekday = $this->weekMap[$sd->dayOfWeek];
                         $obj->content = $content;
-                        $event_list[$day] = $obj;    
+                        $event_list[] = $obj;    
                     }
                 }
             }
@@ -258,10 +312,10 @@ class CalendarController extends Controller
         }
         foreach ($year as $y) {
             foreach ($month as $m) {
-                $min = 1;
-                $max = Carbon::parse($y.'-'.$m.'-1')->endOfMonth()->day;
-                for ($day = $min; $day <= $max; $day++) {
-                    $sd = new Carbon($y.'-'.$m.'-'.$day);
+                $min = Carbon::parse($y.'-'.$m.'-1');
+                $max = $min->endOfMonth();
+                $period = CarbonPeriod::create($min, $max);
+                foreach ($period as $sd) {
                     $events = IcsEvent::inTimeForStudent($sd);
                     $important = $events->where('important', true);
                     $events = $events->where('important', false);
@@ -288,10 +342,10 @@ class CalendarController extends Controller
                     if ($content) {
                         $obj = new \stdClass;
                         $obj->month = $this->monthMap[$m];
-                        $obj->day = $day;
+                        $obj->day = $sd->day;
                         $obj->weekday = $this->weekMap[$sd->dayOfWeek];
                         $obj->content = $content;
-                        $event_list[$day] = $obj;    
+                        $event_list[] = $obj;    
                     }
                 }
             }

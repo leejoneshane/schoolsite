@@ -237,8 +237,8 @@ class GcalendarServiceProvider extends ServiceProvider
 				$event_start->setDate($date->format('Y-m-d'));
 				$event_end->setDate($date->format('Y-m-d'));
 			} else {
-				$event_start->setDateTime($date->format('Y-m-d').' '.$ics->startTime);
-				$event_end->setDateTime($date->format('Y-m-d').' '.$ics->endTime);
+				$event_start->setDateTime($date->format('Y-m-d').'T'.$ics->startTime.'.000+08:00');
+				$event_end->setDateTime($date->format('Y-m-d').'T'.$ics->endTime.'.000+08:00');
 			}
 			$event->setStart($event_start);
 			$event->setEnd($event_end);	
@@ -247,10 +247,10 @@ class GcalendarServiceProvider extends ServiceProvider
 			$event = $this->update_event($calendar_id, $event_id, $event);
 		} else {
 			$event = $this->create_event($calendar_id, $event);
-		}
-		if ($event instanceof \Google_Service_Calendar_Event) {
-			$ics->event_id = $event->getId();
-			$ics->save();
+			if ($event) {
+				$ics->event_id = $event->getId();
+				$ics->save();
+			}
 		}
 	
 		return $event;

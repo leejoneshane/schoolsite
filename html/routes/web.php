@@ -55,9 +55,9 @@ Route::get('news/verify/{id}/{hash}', 'SubscriberController@verify')->name('veri
 Route::get('calendar', 'App\Http\Controllers\CalendarController@calendar')->name('calendar');
 Route::get('calendar/event/add', 'App\Http\Controllers\CalendarController@eventAdd')->middleware('auth');
 Route::post('calendar/event/add', 'App\Http\Controllers\CalendarController@eventInsert')->middleware('auth')->name('calendar.addEvent');
-Route::get('calendar/event/edit/{event}', 'App\Http\Controllers\CalendarController@calendar')->middleware('auth');
-Route::post('calendar/event/edit/{event}', 'App\Http\Controllers\CalendarController@calendar')->middleware('auth')->name('calendar.editEvent');
-Route::get('calendar/event/remove/{event}', 'App\Http\Controllers\CalendarController@calendar')->middleware('auth')->name('calendar.removeEvent');
+Route::get('calendar/event/edit/{event}', 'App\Http\Controllers\CalendarController@eventEdit')->middleware('auth');
+Route::post('calendar/event/edit/{event}', 'App\Http\Controllers\CalendarController@eventUpdate')->middleware('auth')->name('calendar.editEvent');
+Route::get('calendar/event/remove/{event}', 'App\Http\Controllers\CalendarController@eventRemove')->middleware('auth')->name('calendar.removeEvent');
 Route::get('calendar/seme', 'App\Http\Controllers\CalendarController@seme')->name('calendar.seme');
 Route::get('calendar/training', 'App\Http\Controllers\CalendarController@training')->name('calendar.training');
 Route::get('calendar/student', 'App\Http\Controllers\CalendarController@student')->name('calendar.student');

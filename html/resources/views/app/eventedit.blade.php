@@ -20,7 +20,7 @@
         @endif
     </div>
     <div class="text-2xl font-bold leading-normal pb-5">
-        新增行事曆事件
+        編輯行事曆事件
         <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar').'?current='.$current }}">
             <i class="fa-solid fa-calendar-plus"></i>返回上一頁
         </a>
@@ -36,7 +36,7 @@
             <i class="fa-solid fa-calendar-check"></i>學生行事曆
         </a>
     </div>
-    <form id="edit-unit" action="{{ route('calendar.addEvent') }}" method="POST">
+    <form id="edit-unit" action="{{ route('calendar.editEvent', ['event' => $event->id]) }}" method="POST">
         @csrf
         <input type="hidden" name="current" value="{{ $current }}">
         <p><div class="p-3">
@@ -44,7 +44,7 @@
             <select class="inline w-44 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                 name="calendar_id">
                 @foreach ($calendars as $c)
-                <option value="{{ $c->id }}">{{ $c->summary }}</option>
+                <option value="{{ $c->id }}"{{ ($c->id == $event->id) ? ' selected' : ''}}>{{ $c->summary }}</option>
                 @endforeach
             </select>
         </div></p>
@@ -53,20 +53,20 @@
             <select class="inline w-28 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                 name="unit_id">
                 @foreach ($units as $u)
-                <option value="{{ $u->id }}"{{($u->id == $default) ? ' selected' : '' }}>{{ $u->name }}</option>
+                <option value="{{ $u->id }}"{{($u->id == $event->unit_id) ? ' selected' : '' }}>{{ $u->name }}</option>
                 @endforeach
             </select>
         </div></p>
         <p><div class="p-3">
             <label for="important" class="inline-flex relative items-center cursor-pointer">
-                <input type="checkbox" id="important" name="important" value="yes" class="sr-only peer">
+                <input type="checkbox" id="important" name="important" value="yes" class="sr-only peer"{{ $event->important ? ' checked' : '' }}>
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">學校重要活動</span>
             </label>
         </div></p>
         <p><div class="p-3">
             <label for="training" class="inline-flex relative items-center cursor-pointer">
-                <input type="checkbox" id="training" name="training" value="yes" class="sr-only peer">
+                <input type="checkbox" id="training" name="training" value="yes" class="sr-only peer"{{ $event->training ? ' checked' : '' }}>
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">研習活動</span>
             </label>
@@ -74,9 +74,9 @@
         <p><div class="p-3">
             <label class="inline">起迄日期：</label>
             <input class="inline w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="date" name="start_date" value="{{ $current }}" min="{{ substr($seme['min'], 0, 10) }}" max="{{ substr($seme['max'], 0, 10) }}">到
+                type="date" name="start_date" value="{{ $event->startDate }}" min="{{ substr($seme['min'], 0, 10) }}" max="{{ substr($seme['max'], 0, 10) }}">到
             <input class="inline w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="date" name="end_date" value="{{ $current }}" min="{{ substr($seme['min'], 0, 10) }}" max="{{ substr($seme['max'], 0, 10) }}">
+                type="date" name="end_date" value="{{ $event->endDate }}" min="{{ substr($seme['min'], 0, 10) }}" max="{{ substr($seme['max'], 0, 10) }}">
         </div></p>
         <p><div class="p-3">
             <label for="all_day" class="inline-flex relative items-center cursor-pointer">
@@ -87,7 +87,7 @@
                     } else {
                         document.getElementById('part_time').classList.remove('hidden');
                     }
-                ">
+                "{{ $event->all_day ? ' checked' : '' }}>
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">全天</span>
             </label>
@@ -95,24 +95,24 @@
         <p><div id="part_time" class="p-3">
             <label class="inline">起迄時間：</label>
             <input class="inline w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="time" id="stime" name="start_time" value="09:00" min="07:00" max="18:00" step="300">到
+                type="time" id="stime" name="start_time" value="{{ $event->startTime }}" min="07:00" max="18:00" step="300">到
             <input class="inline w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="time" id="etime" name="end_time" value="16:00" min="07:00" max="18:00" step="300">
+                type="time" id="etime" name="end_time" value="{{ $event->endTime }}" min="07:00" max="18:00" step="300">
         </div></p>
         <p><div class="p-3">
             <label for="unit_name" class="inline">事件摘要：</label>
             <input class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="text" name="summary">
+                type="text" name="summary" value="{{ $event->summary }}">
         </p>
         <p><div class="p-3">
             <label for="unit_name" class="inline">補充說明：</label>
             <textarea class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                name="desc" rows="5" cols="120"></textarea>
+                name="desc" rows="5" cols="120">{{ $event->description }}</textarea>
         </div></p>
         <p><div class="p-3">
             <label for="unit_name" class="inline">地點：</label>
             <input class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="text" name="location">
+                type="text" name="location" value="{{ $event->location }}">
         </div></p>
         <p class="p-6">
             <div class="inline">

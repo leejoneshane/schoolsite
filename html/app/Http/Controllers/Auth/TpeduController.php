@@ -48,8 +48,8 @@ class TpeduController extends Controller
                         $tpuser = Student::find($uuid);
                         if ($tpuser->expired()) $this->sso->fetch_user($uuid);
                     }
-                    if ($user->email != $user->profile->email) {
-                        $user->email = $user->profile->email;
+                    if ($user->email != $user->profile['email']) {
+                        $user->email = $user->profile['email'];
                         $user->save();
                     }
                     Auth::login($user);

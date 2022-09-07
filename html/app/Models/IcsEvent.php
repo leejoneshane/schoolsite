@@ -47,8 +47,6 @@ class IcsEvent extends Model
         'training' => 'boolean',
         'startDate' => 'datetime:Y-m-d',
         'endDate' => 'datetime:Y-m-d',
-        'startTime' => 'datetime:H:i:s',
-        'endTime' => 'datetime:H:i:s',
     ];
 
     public static function boot()
@@ -57,17 +55,19 @@ class IcsEvent extends Model
         static::created(function($item)
         {
             $cal = new GCAL;
-            $cal->sync_event($this);
+            $cal->sync_event($item);
         });
         static::updated(function($item)
         {
             $cal = new GCAL;
-            $cal->sync_event($this);
+            $cal->sync_event($item);
         });
         static::deleted(function($item)
         {
             $cal = new GCAL;
-            $cal->delete_event($this->calendar_id, $this->event_id);
+            if ($item->event_id) {
+                $cal->delete_event($item->calendar_id, $item->event_id);
+            }
         });
     }
 
