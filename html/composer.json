@@ -21,6 +21,10 @@
         "laravel/tinker": "^2.7",
         "laravel/ui": "^3.4",
         "meilisearch/meilisearch-php": "^0.24.2",
+        "socialiteproviders/facebook": "^4.1",
+        "socialiteproviders/google": "^4.1",
+        "socialiteproviders/line": "^4.1",
+        "socialiteproviders/yahoo": "^4.1",
         "spatie/icalendar-generator": "^2.3"
     },
     "require-dev": {

@@ -120,19 +120,34 @@ class IcsEvent extends Model
 
     public static function inTime($date)
     {
-        return IcsEvent::with('unit')->whereDate('startDate', '<=', $date)->whereDate('endDate', '>=', $date)->get();
+        if (is_string($date)) {
+            $dt = $date;
+        } else {
+            $dt = $date->toDateString();
+        }
+        return IcsEvent::with('unit')->whereDate('startDate', '<=', $dt)->whereDate('endDate', '>=', $dt)->get();
     }
 
     public static function inTimeForStudent($date)
     {
+        if (is_string($date)) {
+            $dt = $date;
+        } else {
+            $dt = $date->toDateString();
+        }
         $cal = IcsCalendar::forStudent();
         if ($cal) $cal_id = $cal->id;
-        return IcsEvent::with('unit')->where('calendar_id', $cal_id)->whereDate('startDate', '<=', $date)->whereDate('endDate', '>=', $date)->get();
+        return IcsEvent::with('unit')->where('calendar_id', $cal_id)->whereDate('startDate', '<=', $dt)->whereDate('endDate', '>=', $dt)->get();
     }
 
     public static function inTimeForTraining($date)
     {
-        return IcsEvent::with('unit')->where('training', true)->whereDate('startDate', '<=', $date)->whereDate('endDate', '>=', $date)->get();
+        if (is_string($date)) {
+            $dt = $date;
+        } else {
+            $dt = $date->toDateString();
+        }
+        return IcsEvent::with('unit')->where('training', true)->whereDate('startDate', '<=', $dt)->whereDate('endDate', '>=', $dt)->get();
     }
 
     public static function inMonthForStudent()
@@ -161,20 +176,20 @@ class IcsEvent extends Model
         $event = Event::create($this->summary)
             ->organizer(config('services.gsuite.calendar'), $this->unit->name)
             ->createdAt(Carbon::createFromTimestamp($this->updated_at, env('TZ')));
-        $start = Carbon::createFromFormat('Y-m-d', $this->startDate, env('TZ'));
-        $end = Carbon::createFromFormat('Y-m-d', $this->endDate, env('TZ'));
-        $start_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate.' '.$this->startTime, env('TZ'));
-        $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate.' '.$this->endTime, env('TZ'));
+        $start_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->toDateString().' '.$this->startTime, env('TZ'));
+        $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->toDateString().' '.$this->endTime, env('TZ'));
         if ($this->all_day) {
-            $event->startsAt($start)->fullDay();
+            $event->startsAt($this->startDate)->fullDay();
         } else {
             $event->period($start_time, $end_time);
         }
-        if ($start->toDateString() != $end->toDateString()) {
+        if ($this->startDate->toDateString() != $this->endDate->toDateString()) {
             $days = [];
-            $period = CarbonPeriod::create($start->addDay(), $end);
+            $nextday = $this->startDate;
+            $nextday = $nextday->addDay();
+            $period = CarbonPeriod::create($nextday, $this->endDate);
             foreach ($period as $date) {
-                $days[] = new \DateTime($date->format('Y-m-d').' '.$this->startTime);
+                $days[] = Carbon::createFromFormat('Y-m-d H:i:s', $date->format('Y-m-d').' '.$this->startTime);
             }
             $event->repeatOn($days); 
         }

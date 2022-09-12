@@ -21,14 +21,14 @@
         <tr class="bg-gray-300 font-semibold text-lg">
             <th scope="col" class="p-2 w-8">月</th>
             <th scope="col" class="p-2 w-8">日</th>
-            <th scope="col" class="p-2 w-8">星期</th>
-            <th scope="col" class="p-2 text-justify">當日行事</th>
+            <th scope="col" class="p-2 w-16">星期</th>
+            <th scope="col" class="p-2 text-center">當　　日　　行　　事</th>
         </tr>
         @foreach ($events as $event)
         <tr class="bg-white">
-            <td class="p-2">{{ $event->month }}</td>
-            <td class="p-2">{{ $event->day }}</td>
-            <td class="p-2">{{ $event->weekday }}</td>
+            <td class="p-2 text-center">{{ $event->month }}</td>
+            <td class="p-2 text-center">{{ $event->day }}</td>
+            <td class="p-2 text-center">{{ $event->weekday }}</td>
             <td class="p-2">{{ $event->content }}</td>
         </tr>
         @endforeach

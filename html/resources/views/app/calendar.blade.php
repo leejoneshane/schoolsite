@@ -37,14 +37,9 @@
         <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.student').'?current='.$current }}">
             <i class="fa-solid fa-calendar-check"></i>學生行事曆
         </a>
-        <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.import') }}">
-            <i class="fa-solid fa-cloud-arrow-down"></i>匯入
+        <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.download') }}">
+            <i class="fa-solid fa-cloud-arrow-down"></i>下載日曆
         </a>
-        <span class="text-sm text-blue-300">或</span>
-        <a class="text-sm py-2 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.download') }}">
-            下載
-        </a>
-        <span class="text-sm text-blue-300">日曆</span>
         <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="#" onclick="
             navigator.clipboard.writeText('{{ $calendar->url() }}').then(
                 result => alert('行事曆分享連結已經複製到剪貼簿！請在 Google 日曆左側選單選取「新增其它日曆」->「加入日曆網址」，然後貼上連結就完成了！')
@@ -79,13 +74,13 @@
             <td class="p-2">{{ $event->description }}</td>
             <td class="p-2">{{ $event->location }}
             @if ($editable[$event->id])
-            <a class="py-2 px-6 text-blue-300 hover:text-blue-600"
+            <a class="py-2 pl-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('calendar.editEvent', ['event' => $event->id]) }}">
                 <i class="fa-solid fa-pen"></i>
             </a>
             @endif
             @if ($deleteable[$event->id])
-            <a class="py-2 px-6 text-blue-300 hover:text-blue-600"
+            <a class="py-2 pl-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('calendar.removeEvent', ['event' => $event->id]) }}">
                 <i class="fa-solid fa-trash"></i>
             </a>

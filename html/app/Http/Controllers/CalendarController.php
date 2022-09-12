@@ -198,15 +198,15 @@ class CalendarController extends Controller
         }
         foreach ($year as $y) {
             foreach ($month as $m) {
-                $min = Carbon::parse($y.'-'.$m.'-1');
-                $max = $min->endOfMonth();
+                $min = Carbon::parse($y.'-'.$m)->startOfMonth();
+                $max = Carbon::parse($y.'-'.$m)->endOfMonth();
                 $period = CarbonPeriod::create($min, $max);
                 foreach ($period as $sd) {
                     $events = IcsEvent::inTime($sd);
                     $important = $events->where('important', true);
                     $events = $events->where('important', false);
                     $content = '';
-                    if ($important->count() > 0) $content .= '[學校重要活動]';
+                    if ($important->count() > 0) $content .= '【學校重要活動】';
                     foreach ($important as $i) {
                         $content .= '　'.$i->summary;
                         if (!empty($i->location)) $content .= ' 地點：'.$i->location;
@@ -217,7 +217,7 @@ class CalendarController extends Controller
                     foreach ($events as $e) {
                         if ($last != $e->unit_id) {
                             $uname = Unit::find($e->unit_id)->name;
-                            $content .= "[$uname]";
+                            $content .= '【'.$uname.'】';
                             $last = $e->unit_id;
                         }
                         $content .= '　'.$e->summary;
@@ -227,9 +227,9 @@ class CalendarController extends Controller
                     }
                     if ($content) {
                         $obj = new \stdClass;
-                        $obj->month = $this->monthMap[$m];
+                        $obj->month = self::$monthMap[$m];
                         $obj->day = $sd->day;
-                        $obj->weekday = $this->weekMap[$sd->dayOfWeek];
+                        $obj->weekday = self::$weekMap[$sd->dayOfWeek];
                         $obj->content = $content;
                         $event_list[] = $obj;    
                     }
@@ -255,15 +255,15 @@ class CalendarController extends Controller
         }
         foreach ($year as $y) {
             foreach ($month as $m) {
-                $min = Carbon::parse($y.'-'.$m.'-1');
-                $max = $min->endOfMonth();
+                $min = Carbon::parse($y.'-'.$m)->startOfMonth();
+                $max = Carbon::parse($y.'-'.$m)->endOfMonth();
                 $period = CarbonPeriod::create($min, $max);
                 foreach ($period as $sd) {
                     $events = IcsEvent::inTimeForTraining($sd);
                     $important = $events->where('important', true);
                     $events = $events->where('important', false);
                     $content = '';
-                    if ($important->count() > 0) $content .= '[學校重要活動]';
+                    if ($important->count() > 0) $content .= '【學校重要活動】';
                     foreach ($important as $i) {
                         $content .= '　'.$i->summary;
                         if (!empty($i->location)) $content .= ' 地點：'.$i->location;
@@ -274,7 +274,7 @@ class CalendarController extends Controller
                     foreach ($events as $e) {
                         if ($last != $e->unit_id) {
                             $uname = Unit::find($e->unit_id)->name;
-                            $content .= "[$uname]";
+                            $content .= '【'.$uname.'】';
                             $last = $e->unit_id;
                         }
                         $content .= '　'.$e->summary;
@@ -284,9 +284,9 @@ class CalendarController extends Controller
                     }
                     if ($content) {
                         $obj = new \stdClass;
-                        $obj->month = $this->monthMap[$m];
+                        $obj->month = self::$monthMap[$m];
                         $obj->day = $sd->day;
-                        $obj->weekday = $this->weekMap[$sd->dayOfWeek];
+                        $obj->weekday = self::$weekMap[$sd->dayOfWeek];
                         $obj->content = $content;
                         $event_list[] = $obj;    
                     }
@@ -312,15 +312,15 @@ class CalendarController extends Controller
         }
         foreach ($year as $y) {
             foreach ($month as $m) {
-                $min = Carbon::parse($y.'-'.$m.'-1');
-                $max = $min->endOfMonth();
+                $min = Carbon::parse($y.'-'.$m)->startOfMonth();
+                $max = Carbon::parse($y.'-'.$m)->endOfMonth();
                 $period = CarbonPeriod::create($min, $max);
                 foreach ($period as $sd) {
                     $events = IcsEvent::inTimeForStudent($sd);
                     $important = $events->where('important', true);
                     $events = $events->where('important', false);
                     $content = '';
-                    if ($important->count() > 0) $content .= '[學校重要活動]';
+                    if ($important->count() > 0) $content .= '【學校重要活動】';
                     foreach ($important as $i) {
                         $content .= '　'.$i->summary;
                         if (!empty($i->location)) $content .= ' 地點：'.$i->location;
@@ -331,7 +331,7 @@ class CalendarController extends Controller
                     foreach ($events as $e) {
                         if ($last != $e->unit_id) {
                             $uname = Unit::find($e->unit_id)->name;
-                            $content .= "[$uname]";
+                            $content .= '【'.$uname.'】';
                             $last = $e->unit_id;
                         }
                         $content .= '　'.$e->summary;
@@ -341,9 +341,9 @@ class CalendarController extends Controller
                     }
                     if ($content) {
                         $obj = new \stdClass;
-                        $obj->month = $this->monthMap[$m];
+                        $obj->month = self::$monthMap[$m];
                         $obj->day = $sd->day;
-                        $obj->weekday = $this->weekMap[$sd->dayOfWeek];
+                        $obj->weekday = self::$weekMap[$sd->dayOfWeek];
                         $obj->content = $content;
                         $event_list[] = $obj;    
                     }
