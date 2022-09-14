@@ -145,7 +145,8 @@ class AdminController extends Controller
 
     public function syncFromTpedu()
     {
-        return view('admin.tpedu');
+        $classes = Classroom::all();
+        return view('admin.tpedu', ['classes' => $classes]);
     }
 
     public function startSyncFromTpedu(Request $request)
@@ -155,10 +156,11 @@ class AdminController extends Controller
         $unit = ($request->input('sync_units') == 'yes') ? true : false;
         $classroom = ($request->input('sync_classes') == 'sync') ? true : false;
         $subject = ($request->input('sync_subjects') == 'sync') ? true : false;
+        $teacher = ($request->input('sync_teachers') == 'sync') ? true : false;
         $remove = ($request->input('leave') == 'remove') ? true : false;
-        SyncFromTpedu::dispatch($expire, $password, $unit, $classroom, $subject, $remove);
-        session()->flash('success', '同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
-        return view('admin');
+        $target = !empty($request->input('target')) ? $request->input('target') : false;
+        SyncFromTpedu::dispatch($expire, $password, $unit, $classroom, $subject, $teacher, $target, $remove);
+        return view('admin')->with('success', '同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
     }
 
     public function syncToAD()
@@ -171,8 +173,7 @@ class AdminController extends Controller
         $password = ($request->input('password') == 'sync') ? true : false;
         $leave = $request->input('leave');
         SyncToAD::dispatch($password, $leave);
-        session()->flash('success', 'AD 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
-        return view('admin');
+        return view('admin')->with('success', 'AD 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
     }
 
     public function syncToGsuite()
@@ -188,8 +189,7 @@ class AdminController extends Controller
         $target = false;
         if ($leave == 'onduty') $target = $request->input('target');
         SyncToGoogle::dispatch($password, $leave, $target);
-        session()->flash('success', 'Google 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
-        return view('admin');
+        return view('admin')->with('success', 'Google 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
     }
 
     public function unitList()
@@ -209,7 +209,7 @@ class AdminController extends Controller
                 $unit->name = $name;
                 $unit->save();
             }
-            session()->flash('success', '行政單位已更新並儲存！');
+            $message ='行政單位已更新並儲存！';
         }
         if ($request->has('roles')) {
             $roles = $request->input('roles');
@@ -220,9 +220,10 @@ class AdminController extends Controller
                 $role->name = $name;
                 $role->save();    
             }
-            session()->flash('success', '職稱已更新並儲存！');
+            $message = '職稱已更新並儲存！';
         }
-        return $this->unitList();
+        $units = Unit::with('roles')->orderBy('unit_no')->get();
+        return view('admin.units', ['units' => $units])->with('success', $message);
     }
 
     public function unitAdd()
@@ -239,8 +240,7 @@ class AdminController extends Controller
                 'name' => $input['unit_name'],
             ]);
         }
-        session()->flash('success', '行政單位已新增完成！');
-        return $this->unitList();
+        return $this->unitList()->with('success', '行政單位已新增完成！');
     }
 
     public function roleAdd()
@@ -259,8 +259,8 @@ class AdminController extends Controller
                 'name' => $input['role_name'],
             ]);
         }
-        session()->flash('success', '職務層級已新增完成！');
-        return $this->unitList();
+        $units = Unit::with('roles')->orderBy('unit_no')->get();
+        return view('admin.roleadd', ['units' => $units])->with('success', '職務層級已新增完成！');
     }
 
     public function classList()
@@ -297,14 +297,22 @@ class AdminController extends Controller
             $cls->tutor = array($tutors[$id]);
             $cls->save();
         }
-        session()->flash('success', '班級資料已更新並儲存！');
-        return $this->classList();
+        $grades = Grade::all();
+        $classes = Classroom::all();
+        $teachers = Teacher::orderBy('realname')->get();
+        return view('admin.classes', ['grades' => $grades, 'classes' => $classes, 'teachers' => $teachers])->with('success', '班級資料已更新並儲存！');
     }
 
-    public function subjectList()
+    public function subjectList($message = null)
     {
         $subjects = Subject::all();
-        return view('admin.subjects', ['subjects' => $subjects]);
+        if ($message) {
+            $key = array_key_first($message);
+            $val = $message[$key];
+            return view('admin.subjects', ['subjects' => $subjects])->with($key, $val);
+        } else {
+            return view('admin.subjects', ['subjects' => $subjects]);
+        }
     }
 
     public function subjectUpdate(Request $request)
@@ -315,8 +323,7 @@ class AdminController extends Controller
             $subj->name = $name;
             $subj->save();
         }
-        session()->flash('success', '科目名稱已更新並儲存！');
-        return $this->subjectList();
+        return $this->subjectList(['success' => '科目名稱已更新並儲存！']);
     }
 
     public function teacherList(Request $request, $unit = '')
@@ -431,8 +438,7 @@ class AdminController extends Controller
         $teacher->address = $request->input('address');
         $teacher->www = $request->input('www');
         $teacher->save();
-        session()->flash('success', '教職員個人資料已更新儲存！');
-        return redirect(urldecode($request->input('referer')));
+        return redirect(urldecode($request->input('referer')))->with('success', '教師資訊已經更新完成！');
     }
     
     public function studentList(Request $request, $myclass = '')
@@ -476,11 +482,10 @@ class AdminController extends Controller
         $student->address = $request->input('address');
         $student->www = $request->input('www');
         $student->save();
-        session()->flash('success', '學生個人資料已更新儲存！');
-        return redirect(urldecode($request->input('referer')));
+        return redirect(urldecode($request->input('referer')))->with('success', '學生資訊已經更新完成！');
     }
 
-    public function menuList($menu = '')
+    public function menuList($menu = '', $message = null)
     {
         $routename = [];
         $routeCollection = Route::getRoutes();
@@ -494,7 +499,14 @@ class AdminController extends Controller
         } else {
             $items = Menu::top()->where('id', '!=', 'admin');;
         }
-        return view('admin.menus', ['current' => $menu, 'menus' => $menus, 'items' => $items, 'routes' => $routename]);
+        if ($message) {
+            $key = array_key_first($message);
+            $val = $message[$key];
+            return view('admin.menus', ['current' => $menu, 'menus' => $menus, 'items' => $items, 'routes' => $routename])
+                ->with($key, $val);
+        } else {
+            return view('admin.menus', ['current' => $menu, 'menus' => $menus, 'items' => $items, 'routes' => $routename]);
+        }
     }
 
     public function menuUpdate(Request $request, $menu = '')
@@ -518,8 +530,7 @@ class AdminController extends Controller
             $m->id = $new;
             $m->save();
         }
-        session()->flash('success', '選單項目已經更新！');
-        return $this->menuList($menu);
+        return $this->menuList($menu, ['success' => '選單項目已經更新！']);
     }
 
     public function menuAdd($menu = '')
@@ -555,8 +566,7 @@ class AdminController extends Controller
                 'weight' => $weight,
             ]);
         }
-        session()->flash('success', '選單項目新增完成！');
-        return $this->menuList($menu);
+        return $this->menuList($menu, ['success' => '選單項目新增完成！']);
     }
 
     public function menuDelete($menu)
@@ -569,14 +579,19 @@ class AdminController extends Controller
             ]);    
         }
         $item->delete();
-        session()->flash('success', '選單項目已經刪除！');
-        return $this->menuList($parent);
+        return $this->menuList($parent, ['success' => '選單項目已經刪除！']);
     }
 
-    public function permissionList()
+    public function permissionList($message = null)
     {
         $perms = Permission::orderBy('group')->get();
-        return view('admin.permission', ['permission' => $perms]);
+        if ($message) {
+            $key = array_key_first($message);
+            $val = $message[$key];
+            return view('admin.permission', ['permission' => $perms])->with($key, $val);
+        } else {
+            return view('admin.permission', ['permission' => $perms]);
+        }
     }
 
     public function permissionAdd()
@@ -591,17 +606,14 @@ class AdminController extends Controller
         $desc = $request->input('desc');
         $ckf = Permission::findByName("$app.$perm");
         if ($ckf) {
-            $request->flash();
-            session()->flash('error', '該權限已經存在，無法再新增！');
-            return back();
+            return back()->withInput()->with('error', '該權限已經存在，無法再新增！');
         }
         Permission::create([
             'group' => $app,
             'permission' => $perm,
             'description' => $desc,
         ]);
-        session()->flash('success', '權限新增完成！');
-        return $this->permissionList();
+        return $this->permissionList(['success' => '權限新增完成！']);
     }
 
     public function permissionEdit($id)
@@ -617,24 +629,20 @@ class AdminController extends Controller
         $desc = $request->input('desc');
         $ckf = Permission::findByName("$app.$perm");
         if ($ckf && $ckf->id != $id) {
-            $request->flash();
-            session()->flash('error', '該權限已經存在，無法修改成新的代號！');
-            return back();
+            return back()->withInput()->with('error', '該權限已經存在，無法修改成新的代號！');
         }
         Permission::find($id)->update([
             'group' => $app,
             'permission' => $perm,
             'description' => $desc,
         ]);
-        session()->flash('success', '權限更新完成！');
-        return $this->permissionList();
+        return $this->permissionList(['success' => '權限更新完成！']);
     }
 
     public function permissionRemove($id)
     {
         Permission::destroy($id);
-        session()->flash('success', '權限已經移除！');
-        return $this->permissionList();
+        return $this->permissionList(['success' => '權限已經移除！']);
     }
 
     public function grantList($id)
@@ -662,8 +670,7 @@ class AdminController extends Controller
             $perm->assignByUUID($users);
             $log .= '並重新授權給指定人員！';
         }
-        session()->flash('success', $log);
-        return back();
+        return back()->with('success', $log);
     }
 
 }

@@ -27,7 +27,7 @@
 @endadmin
     </div>
   </div>
-  <div id="notify"></div>
+  <x-messager />
   <div id="right-section" class="flex items-center flex-shrink-0 text-white">
 @auth
     <span class="block lg:inline-block mt-2 lg:mt-0 px-4 lg:px-2">
@@ -49,27 +49,4 @@
     </span>
 @endguest
   </div>
-  <script type="module">
-    document.addEventListener("DOMContentLoaded", function(event) { 
-        window.Echo.channel('public')
-            .listen('PublicMessage', (e) => {
-                let notify = document.getElementById('notify');
-                notify.innerHTML = e.message;
-            });
-@auth
-        window.Echo.channel('private.{{ auth()->user()->id }}')
-            .listen('PrivateMessage', (e) => {
-                let notify = document.getElementById('notify');
-                notify.innerHTML = e.message;
-            });
-@endauth
-@admin
-        window.Echo.channel('admin')
-            .listen('AdminMessage', (e) => {
-                let notify = document.getElementById('notify');
-                notify.innerHTML = e.message;
-            });
-@endadmin
-    });
-  </script>
 </nav> 

@@ -1,66 +1,52 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="relative m-5">
-    <div class="p-10">
-        @if (session('error'))
-        <div class="border border-red-500 bg-red-100 dark:bg-red-700 border-b-2" role="alert">
-            {{ session('error') }}
-        </div>
-        @endif
-        @if (session('success'))
-        <div class="border border-green-500 bg-green-100 dark:bg-green-700 border-b-2" role="alert">
-            {{ session('success') }}
-        </div>
-        @endif
-        <div class="text-2xl font-bold leading-normal pb-5">
-            授權給使用者
-            <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('permission') }}">
-                <i class="fa-solid fa-eject"></i>返回上一頁
-            </a>
-        </div>
-        <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
-            <p>
-                具有管理員身分的使用者擁有全部權限，因此不需要也無法進行授權！
-            </p>
-        </div>
-        <div class="w-full py-2 text-left font-normal">
-            <span class="font-semibold">權限代碼：</span>{{ $permission->group }}.{{ $permission->permission }}　
-            <span class="font-semibold">權限描述：</span>{{ $permission->description }}
-        </div>
-        <form id="edit-teacher" action="{{ route('permission.grant', ['id' => $permission->id]) }}" method="POST">
-            @csrf
-            <p class="p-2">
-                <label for="roles" class="inline">已授權人員：</label>
-                <div id="nassign">
-                @foreach ($already as $user)
-                <select class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                name="teachers[]">
-                    @foreach ($teachers as $t)
-                    @php
-                        $gap = '';
-                        for ($i=0;$i<6-mb_strlen($t->role_name);$i++) {
-                            $gap .= '　';
-                        }
-                    @endphp
-                    <option {{ ($user->uuid == $t->uuid) ? 'selected' : ''}} value="{{ $t->uuid }}">{{ $t->role_name }}{{ $gap }}{{ $t->realname }}</option>
-                    @endforeach
-                </select>
-                <button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_teacher(this);"><i class="fa-solid fa-circle-minus"></i></button>
-                @endforeach
-                </div>
-                <button id="nassign" type="button" class="py-2 px-6 rounded text-blue-300 hover:text-blue-600"
-                    onclick="add_teacher()"><i class="fa-solid fa-circle-plus"></i>
-                </button>
-            </p>
-            <p class="py-4 px-6">
-                <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    修改
-                </button>
-            </p>
-        </form>
-    </div>
+<div class="text-2xl font-bold leading-normal pb-5">
+    授權給使用者
+    <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('permission') }}">
+        <i class="fa-solid fa-eject"></i>返回上一頁
+    </a>
 </div>
+<div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
+    <p>
+        具有管理員身分的使用者擁有全部權限，因此不需要也無法進行授權！
+    </p>
+</div>
+<div class="w-full py-2 text-left font-normal">
+    <span class="font-semibold">權限代碼：</span>{{ $permission->group }}.{{ $permission->permission }}　
+    <span class="font-semibold">權限描述：</span>{{ $permission->description }}
+</div>
+<form id="edit-teacher" action="{{ route('permission.grant', ['id' => $permission->id]) }}" method="POST">
+    @csrf
+    <p class="p-2">
+        <label for="roles" class="inline">已授權人員：</label>
+        <div id="nassign">
+        @foreach ($already as $user)
+        <select class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+        name="teachers[]">
+            @foreach ($teachers as $t)
+            @php
+                $gap = '';
+                for ($i=0;$i<6-mb_strlen($t->role_name);$i++) {
+                    $gap .= '　';
+                }
+            @endphp
+            <option {{ ($user->uuid == $t->uuid) ? 'selected' : ''}} value="{{ $t->uuid }}">{{ $t->role_name }}{{ $gap }}{{ $t->realname }}</option>
+            @endforeach
+        </select>
+        <button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_teacher(this);"><i class="fa-solid fa-circle-minus"></i></button>
+        @endforeach
+        </div>
+        <button id="nassign" type="button" class="py-2 px-6 rounded text-blue-300 hover:text-blue-600"
+            onclick="add_teacher()"><i class="fa-solid fa-circle-plus"></i>
+        </button>
+    </p>
+    <p class="py-4 px-6">
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            修改
+        </button>
+    </p>
+</form>
 <script>
     function remove_teacher(elem) {
     const parent = elem.parentNode;

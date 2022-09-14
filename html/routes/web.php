@@ -47,11 +47,12 @@ Route::get('email/verify', 'App\Http\Controllers\Auth\VerificationController@sho
 Route::get('email/verify/{id}/{hash}', 'App\Http\Controllers\Auth\VerificationController@verify')->name('verification.verify');
 Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@resend')->name('verification.resend');
 
-// User Interface Routes...
+// news letter routes...
 Route::post('news/{id}/subscriber', 'SubscriberController@store')->name('store');
 Route::get('news/{id}/delete', 'SubscriberController@delete')->name('delete');
 Route::get('news/verify/{id}/{hash}', 'SubscriberController@verify')->name('verify');
 
+// calendar Routes...
 Route::get('calendar', 'App\Http\Controllers\CalendarController@calendar')->name('calendar');
 Route::get('calendar/event/add', 'App\Http\Controllers\CalendarController@eventAdd')->middleware('auth');
 Route::post('calendar/event/add', 'App\Http\Controllers\CalendarController@eventInsert')->middleware('auth')->name('calendar.addEvent');
@@ -64,8 +65,11 @@ Route::get('calendar/student', 'App\Http\Controllers\CalendarController@student'
 Route::get('calendar/download', 'App\Http\Controllers\CalendarController@student')->name('calendar.download');
 Route::get('calendar/import', 'App\Http\Controllers\CalendarController@student')->name('calendar.import');
 
+//intime messager routes...
+Route::post('messager/send', 'App\Http\Controllers\MessagerController@send')->middleware('auth')->name('messager.send');
+
 // Administrator Interface Routes...
-Route::group(['prefix' => 'admin', 'middleware' => 'admin'], function () {
+Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
     Route::get('database/sync', 'App\Http\Controllers\Admin\AdminController@syncFromTpedu');
     Route::post('database/sync', 'App\Http\Controllers\Admin\AdminController@startSyncFromTpedu')->name('sync');

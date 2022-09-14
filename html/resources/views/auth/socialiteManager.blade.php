@@ -3,16 +3,6 @@
 @section('content')
 <div class="m-5 w-full items-center">
     <div class="text-2xl font-bold leading-normal text-center pb-5">社群帳號綁定</div>
-    @if (session('error'))
-    <div class="border border-red-500 bg-red-100 dark:bg-red-700 border-b-2" role="alert">
-        {{ session('error') }}
-    </div>
-    @endif
-    @if (session('success'))
-    <div class="border border-green-500 bg-green-100 dark:bg-green-700 border-b-2" role="alert">
-        {{ session('success') }}
-    </div>
-    @endif
     <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
         <p>社群帳號綁定說明：</p>
         <p>

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use App\Models\Unit;
 use App\Models\Role;
+use App\Models\Grade;
 use App\Models\Classroom;
 use App\Models\Subject;
 use App\Models\Teacher;
@@ -391,12 +392,19 @@ class TpeduServiceProvider extends ServiceProvider
 
 	function sync_units($only = false, $sync = false)
 	{
+		$detail_log = [];
 		$fetch = Unit::first();
 		if ($fetch) {
-			if (!$sync) return;	
+			if (!$sync) {
+				$detail_log[] = '快取資料庫中已經有行政單位資料，跳過不處理！';
+				return $detail_log;
+			}
 			if ($only) {
 				$expire = new Carbon($fetch->updated_at);
-				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return;
+				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) {
+					$detail_log[] = '快取資料庫中已經有行政單位資料，且資料尚未過期，跳過不處理！';
+					return $detail_log;
+				}
 			}
 		}
 		$ous = $this->api('all_units');
@@ -409,25 +417,37 @@ class TpeduServiceProvider extends ServiceProvider
 				$unit->unit_no = $o->ou;
 				$unit->name = $o->description;
 				$unit->save();
+				$detail_log[] = '行政單位'.$o->ou.' '.$o->description.'同步完成！';
 			}
 		}
+		return $detail_log;
 	}
 
 	function sync_roles($only = false, $sync = false)
 	{
+		$detail_log = [];
 		if (!$only && $sync) {
 			DB::table('roles')->truncate();
+			$detail_log[] = '快取資料庫中已經有職稱資料，職稱資料必須在同步教師資料時才能同步處理，已經將職稱資料清空！';
 		}
+		return $detail_log;
 	}
 
 	function sync_subjects($only = false, $sync = false)
 	{
+		$detail_log = [];
 		$fetch = Subject::first();
 		if ($fetch) {
-			if (!$sync) return;	
+			if (!$sync) {
+				$detail_log[] = '快取資料庫中已經有科目資料，跳過不處理！';
+				return $detail_log;
+			}
 			if ($only) {
 				$expire = new Carbon($fetch->updated_at);
-				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return;
+				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) {
+					$detail_log[] = '快取資料庫中已經有科目資料，且資料尚未過期，跳過不處理！';
+					return $detail_log;
+				}
 			}
 		}
 		$subjects = $this->api('all_subjects');
@@ -435,18 +455,27 @@ class TpeduServiceProvider extends ServiceProvider
 			foreach ($subjects as $s) {
 				$subj = Subject::firstOrNew(['name' => $s->description]);
 				$subj->save();
+				$detail_log[] = '科目'.$s->description.'同步完成！';
 			}
 		}
+		return $detail_log;
 	}
 
 	function sync_classes($only = false, $sync = false)
 	{
+		$detail_log = [];
 		$fetch = Classroom::first();
 		if ($fetch) {
-			if (!$sync) return;	
+			if (!$sync) {
+				$detail_log[] = '快取資料庫中已經有班級資料，跳過不處理！';
+				return $detail_log;
+			}
 			if ($only) {
 				$expire = new Carbon($fetch->updated_at);
-				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) return;
+				if (Carbon::today() < $expire->addDays(config('services.tpedu.expired_days'))) {
+					$detail_log[] = '快取資料庫中已經有班級資料，且資料尚未過期，跳過不處理！';
+					return $detail_log;
+				}
 			}
 		}
 		$classes = $this->api('all_classes');
@@ -463,44 +492,106 @@ class TpeduServiceProvider extends ServiceProvider
 					$cls->tutor = $tutors;
 				}
 				$cls->save();
+				$detail_log[] = ' 班級'.$c->description.'同步完成！';
 			}
 		}
+		return $detail_log;
 	}
 
-	function sync_teachers($only = false, $password = false, $remove = true)
+	function sync_teachers($only = false, $sync = false, $password = false, $remove = true)
 	{
+		$detail_log = [];
+		$fetch = Teacher::first();
+		if ($fetch && !$sync) {
+			$detail_log[] = '快取資料庫中已經有教師資料，跳過不處理！';
+			return $detail_log;
+		}
     	$uuids = $this->api('all_teachers');
     	if ($uuids && is_array($uuids)) {
         	foreach ($uuids as $uuid) {
             	$this->fetch_user($uuid, $only, $password);
+				$t = Teacher::find($uuid);
+				$detail_log[] = '教師'.$t->idno.' '.$t->realname.'已同步完成！';
         	}
     	}
 		if ($remove) {
 			$leaves = Teacher::whereNotIN('uuid', $uuids)->get();
 			foreach ($leaves as $l) {
+				$detail_log[] = '離職教師'.$l->idno.' '.$l->realname.'已刪除！';
 				User::destroy($l->uuid);
 				$l->delete();
 			}	
 		}
+		return $detail_log;
 	}
 
 	function sync_students($only = false, $password = false, $remove = true)
 	{
-		$classes = DB::table('classrooms')->get();
+		$detail_log = [];
+		$classes = Classroom::all();
         foreach ($classes as $cls) {
 			$uuids = $this->api('students_of_class', ['class' => $cls->id]);
 			if ($uuids && is_array($uuids)) {
 				foreach ($uuids as $uuid) {
 					$this->fetch_user($uuid, $only, $password);
+					$s = Student::find($uuid);
+					$detail_log[] = '學生'.$s->idno.' '.$s->realname.'已同步完成！';
 				}
 			}
 			if ($remove) {
 				$leaves = Student::where('class_id', $cls->id)->whereNotIN('uuid', $uuids)->get();
 				foreach ($leaves as $l) {
+					$detail_log[] = '轉學或畢業學生'.$l->idno.' '.$l->realname.'已刪除！';
 					User::destroy($l->uuid);
 					$l->delete();
 				}	
 			}
+		}
+		return $detail_log;
+	}
+
+	function sync_students_for_grade($grade, $only = false, $password = false, $remove = true)
+	{
+		$detail_log = [];
+		$classes = Grade::find($grade)->classrooms;
+        foreach ($classes as $cls) {
+			$uuids = $this->api('students_of_class', ['class' => $cls->id]);
+			if ($uuids && is_array($uuids)) {
+				foreach ($uuids as $uuid) {
+					$this->fetch_user($uuid, $only, $password);
+					$s = Student::find($uuid);
+					$detail_log[] = '學生'.$s->idno.' '.$s->realname.'已同步完成！';
+				}
+			}
+			if ($remove) {
+				$leaves = Student::where('class_id', $cls->id)->whereNotIN('uuid', $uuids)->get();
+				foreach ($leaves as $l) {
+					$detail_log[] = '轉學或畢業學生'.$l->idno.' '.$l->realname.'已刪除！';
+					User::destroy($l->uuid);
+					$l->delete();
+				}	
+			}
+		}
+		return $detail_log;
+	}
+
+	function sync_students_for_class($class_id, $only = false, $password = false, $remove = true)
+	{
+		$uuids = $this->api('students_of_class', ['class' => $class_id]);
+		if ($uuids && is_array($uuids)) {
+			foreach ($uuids as $uuid) {
+				$this->fetch_user($uuid, $only, $password);
+				$s = Student::find($uuid);
+				$detail_log[] = '學生'.$s->idno.' '.$s->realname.'已同步完成！';
+			}
+		}
+		if ($remove) {
+			$leaves = Student::where('class_id', $class_id)->whereNotIN('uuid', $uuids)->get();
+			foreach ($leaves as $l) {
+				$detail_log[] = '轉學或畢業學生'.$l->idno.' '.$l->realname.'已刪除！';
+				User::destroy($l->uuid);
+				$l->delete();
+			}	
 		}
 	}
 

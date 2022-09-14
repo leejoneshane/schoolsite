@@ -526,7 +526,7 @@ class GsuiteServiceProvider extends ServiceProvider
 		}
 	}
 
-	public function sync_teachers($password_sync)
+	public function sync_teachers($password_sync = false)
 	{
 		$detail_log = [];
 		$domain = config('services.gsuite.domain');
@@ -706,7 +706,7 @@ class GsuiteServiceProvider extends ServiceProvider
 		return $detail_log;
 	}
 
-	public function sync_grade($grade, $password_sync)
+	public function sync_grade($grade, $password_sync = false)
 	{
 		$detail_log = [];
 		$domain = config('services.gsuite.domain');
@@ -793,7 +793,7 @@ class GsuiteServiceProvider extends ServiceProvider
 		return $detail_log;
 	}
 
-	public function sync_class($class_id, $password_sync)
+	public function sync_class($class_id, $password_sync = false)
 	{
 		$detail_log = [];
 		$domain = config('services.gsuite.domain');

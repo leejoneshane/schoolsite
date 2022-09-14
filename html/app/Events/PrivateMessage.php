@@ -1,3 +1,4 @@
+<?php
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
@@ -7,17 +8,20 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\User;
 
 class PrivateMessage implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $user;
+    public $from_user;
+    public $to_user;
     public $message;
 
-    public function __construct($user, $message)
+    public function __construct($from, $to, $message)
     {
-        $this->user = $user;
+        $this->from_user = User::find($from)->realname;
+        $this->to_user = User::find($to)->id;
         $this->message = $message;
     }
 
@@ -28,6 +32,6 @@ class PrivateMessage implements ShouldBroadcast
      */
     public function broadcastOn() : Channel
     {
-        return new PrivateChannel('private.' . $this->user->id);
+        return new PrivateChannel('private.' . $this->to_user);
     }
 }
