@@ -37,10 +37,10 @@ return [
             'app_id' => env('VITE_PUSHER_APP_ID', 'app-id'),
             'options' => [
                 'host' => env('VITE_PUSHER_HOST', '127.0.0.1'),
-                'port' => env('VITE_PUSHER_PORT', 6001),
-                'scheme' => env('VITE_PUSHER_SCHEME', 'http'),
+                'port' => env('PUSHER_PORT', 6001),
+                'scheme' => env('PUSHER_SCHEME', 'http'),
                 'encrypted' => true,
-                'useTLS' => env('VITE_PUSHER_SCHEME') === 'https',
+                'useTLS' => env('PUSHER_SCHEME') === 'https',
             ],
             'client_options' => [
                 // Guzzle client options: https://docs.guzzlephp.org/en/stable/request-options.html
