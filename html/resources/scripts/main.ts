@@ -22,5 +22,5 @@ window.Echo =  new Echo({
     wsPort: 80,
     wssPort: 443,
     forceTLS: import.meta.env.VITE_PUSHER_SCHEME ===  'https',
-    enabledTransports: ['ws', 'wss'],
+    enabledTransports: ['wss', 'ws'],
 });

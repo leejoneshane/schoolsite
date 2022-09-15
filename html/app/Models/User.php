@@ -74,7 +74,9 @@ class User extends Authenticatable
         if ($this->user_type == 'Student') {
             return Student::find($this->uuid)->getAttributes();
         }
-        return [];
+        return [
+            'realname' => '網站管理員',
+        ];
     }
 
     public function givePermission($permission)

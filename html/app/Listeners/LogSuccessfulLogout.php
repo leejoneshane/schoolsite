@@ -26,9 +26,7 @@ class LogSuccessfulLogout
     public function handle(Logout $event)
     {
         $id = $event->user->id;
-        $namespace = 'users:'.$id;
-
-        // Deleting user from redis database when they log out
+        $namespace = 'online-users:'.$id;
         Redis::del($namespace);
     }
 }

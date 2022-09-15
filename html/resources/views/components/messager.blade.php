@@ -1,10 +1,12 @@
-@auth
 <div class="px-3">
+@auth
   <label for="user_id" class="inline">傳訊息給：</label>
   <select class="w-28 inline-block mt-2 lg:mt-0 px-4 lg:px-2 py-1 leading-none border rounded border-white hover:border-transparent"
       id="user_id" name="user_id">
       @foreach ($users as $u)
+      @if ($u->id != auth()->user()->id)
       <option value="{{ $u->id }}">{{ $u->profile['realname'] }}</option>
+      @endif
       @endforeach
   </select>
   <div class="inline">
@@ -24,6 +26,7 @@
         傳送
     </button>
   </div>
+@endauth
   <div id="messager" class="inline">
     <span id="from"></span><span id="notify"></span>
   </div>
@@ -38,7 +41,7 @@
               notify.innerHTML = e.message;
           });
 @auth
-      window.Echo.channel('private.{{ auth()->user()->id }}')
+      window.Echo.private('private.{{ auth()->user()->id }}')
           .listen('PrivateMessage', (e) => {
               let from = document.getElementById('from');
               from.innerHTML = '來自' + e.from_user;
@@ -57,4 +60,3 @@
 @endadmin
   });
 </script>
-@endauth

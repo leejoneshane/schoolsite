@@ -20,7 +20,7 @@ class PrivateMessage implements ShouldBroadcast
 
     public function __construct($from, $to, $message)
     {
-        $this->from_user = User::find($from)->realname;
+        $this->from_user = User::find($from)->profile['realname'];
         $this->to_user = User::find($to)->id;
         $this->message = $message;
     }

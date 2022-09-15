@@ -7,7 +7,7 @@
         <i class="fa-solid fa-calendar-plus"></i>返回上一頁
     </a>
     @adminorteacher
-    <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.traning').'?current='.$current }}">
+    <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.training').'?current='.$current }}">
         <i class="fa-solid fa-calendar-days"></i>研習行事曆
     </a>
     @endadminorteacher

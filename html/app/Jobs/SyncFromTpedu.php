@@ -69,9 +69,11 @@ class SyncFromTpedu implements ShouldQueue
         }
         $detail_log = [];
         for ($i = 0; $i < count($logs); $i++) {
-          for ($j = 0; $j < count($logs[$i]); $j++) {
-            $detail_log[] = $logs[$i][$j];
-          }
+            if (isset($logs[$i]) && !empty($logs[$i])) {
+                for ($j = 0; $j < count($logs[$i]); $j++) {
+                    $detail_log[] = $logs[$i][$j];
+                  }        
+            }
         }
         $end_time = time();
         $admins = User::admins();
