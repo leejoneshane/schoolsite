@@ -16,10 +16,15 @@
         if (uid) {
             var me = {{ auth()->user()->id }};
             var tell = prompt('您要告訴對方什麼？');
-            window.axios.post('{{ route('messager.send') }}',{
+            window.axios.post('{{ route('messager.send') }}', {
                 from: me,
                 to: uid,
                 message: tell,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
             });
         }
       ">
