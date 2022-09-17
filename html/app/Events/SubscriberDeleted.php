@@ -1,6 +1,6 @@
 <?php
 
-namespace Mydnic\Subscribers\Events;
+namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;

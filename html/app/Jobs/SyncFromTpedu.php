@@ -8,9 +8,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Providers\TpeduServiceProvider;
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SyncCompletedNotification;
+use App\Events\AdminMessage;
 
 class SyncFromTpedu implements ShouldQueue
 {
@@ -24,6 +26,7 @@ class SyncFromTpedu implements ShouldQueue
     public $sync_classes = false;
     public $sync_subjects = false;
     public $sync_teachers = false;
+    public $sync_students = false;
     public $sync_target = false;
     public $remove_leave = false;
 
@@ -32,7 +35,7 @@ class SyncFromTpedu implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($only_expired, $password, $unit, $classroom, $subject, $teacher, $target, $remove)
+    public function __construct($only_expired, $password, $unit, $classroom, $subject, $teacher, $student, $target, $remove)
     {
         $this->onQueue('app');
         $this->only_expired = $only_expired;
@@ -41,6 +44,7 @@ class SyncFromTpedu implements ShouldQueue
         $this->sync_classes = $classroom;
         $this->sync_subjects = $subject;
         $this->sync_teachers = $teacher;
+        $this->sync_students = $student;
         $this->sync_target = $target;
         $this->remove_leave = $remove;
     }
@@ -53,19 +57,21 @@ class SyncFromTpedu implements ShouldQueue
     public function handle()
     {
         $sso = new TpeduServiceProvider;
-        $start_time = time();
+        $start_time = Carbon::now()->format('Y-m-d H:m:s l');
         $logs[] = $sso->sync_units($this->only_expired, $this->sync_units);
         $logs[] = $sso->sync_roles($this->only_expired, $this->sync_units);
         $logs[] = $sso->sync_subjects($this->only_expired, $this->sync_subjects);
         $logs[] = $sso->sync_classes($this->only_expired, $this->sync_classes);
         $logs[] = $sso->sync_teachers($this->only_expired, $this->sync_teachers, $this->reset_password, $this->remove_leave);
-        if ($this->sync_target == 'students') {
-            $logs[] = $sso->sync_students($this->only_expired, $this->reset_password, $this->remove_leave);
-        } else if (substr($this->sync_target, 0, 5) == 'grade') {
-            $grade = substr($this->sync_target, -1);
-            $logs[] = $sso->sync_students_for_grade($grade, $this->only_expired, $this->reset_password, $this->remove_leave);
-        } else {
-            $logs[] = $sso->sync_students_for_class($this->sync_target, $this->only_expired, $this->reset_password, $this->remove_leave);
+        if ($this->sync_students) {
+            if ($this->sync_target == 'students') {
+                $logs[] = $sso->sync_students($this->only_expired, $this->reset_password, $this->remove_leave);
+            } else if (substr($this->sync_target, 0, 5) == 'grade') {
+                $grade = substr($this->sync_target, -1);
+                $logs[] = $sso->sync_students_for_grade($grade, $this->only_expired, $this->reset_password, $this->remove_leave);
+            } else {
+                $logs[] = $sso->sync_students_for_class($this->sync_target, $this->only_expired, $this->reset_password, $this->remove_leave);
+            }    
         }
         $detail_log = [];
         for ($i = 0; $i < count($logs); $i++) {
@@ -75,8 +81,9 @@ class SyncFromTpedu implements ShouldQueue
                   }        
             }
         }
-        $end_time = time();
+        $end_time = Carbon::now()->format('Y-m-d H:m:s l');
         $admins = User::admins();
         Notification::sendNow($admins, new SyncCompletedNotification('SyncFromTpedu', $start_time, $end_time, $detail_log));
+        broadcast(new AdminMessage("資料庫同步作業於 $start_time 開始進行，已經於 $end_time 順利完成！"));
     }
 }

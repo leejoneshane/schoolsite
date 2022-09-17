@@ -13,7 +13,7 @@ class MessagerController extends Controller
         $from = $request->input('from');
         $to = $request->input('to');
         $message = $request->input('message');
-        PrivateMessage::dispatch($from, $to, $message);
+        broadcast(new PrivateMessage($from, $to, $message));
     }
 
 }

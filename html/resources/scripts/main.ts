@@ -21,5 +21,8 @@ window.Echo =  new Echo({
     wsHost: import.meta.env.VITE_PUSHER_HOST,
     wssPort: import.meta.env.VITE_PUSHER_PORT,
     forceTLS: import.meta.env.VITE_PUSHER_SCHEME ===  'https',
+    encrypted: true,
+    enableLogging: true,
+    disableStats: true,
     enabledTransports: ['wss'],
 });

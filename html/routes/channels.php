@@ -13,6 +13,14 @@ use Illuminate\Support\Facades\Broadcast;
 |
 */
 
+Broadcast::channel('public', function () {
+    return true;
+});
+
+Broadcast::channel('admin', function ($user) {
+    return $user->is_admin;
+});
+
 Broadcast::channel('private.{id}', function ($user, $id) {
     return (int) $user->id === (int) $id;
 });

@@ -8,9 +8,11 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Providers\GsuiteServiceProvider;
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\SyncCompletedNotification;
+use App\Events\AdminMessage;
 
 class SyncToGoogle implements ShouldQueue
 {
@@ -43,7 +45,7 @@ class SyncToGoogle implements ShouldQueue
     public function handle()
     {
         $google = new GsuiteServiceProvider;
-        $start_time = time();
+        $start_time = Carbon::now()->format('Y-m-d H:m:s l');
         if ($this->leave == 'onduty') {
             if ($this->target == 'teachers') {
                 $logs = $google->sync_teachers($this->password);
@@ -56,8 +58,9 @@ class SyncToGoogle implements ShouldQueue
         } else {
             $logs = $google->deal_graduate($this->leave);
         }
-        $end_time = time();
+        $end_time = Carbon::now()->format('Y-m-d H:m:s l');
         $admins = User::admins();
         Notification::sendNow($admins, new SyncCompletedNotification('SyncToGoogle', $start_time, $end_time, $logs));
+        broadcast(new AdminMessage("Gsuite 同步作業於 $start_time 開始進行，已經於 $end_time 順利完成！"));
     }
 }

@@ -154,12 +154,13 @@ class AdminController extends Controller
         $expire = ($request->input('expire') == 'yes') ? true : false;
         $password = ($request->input('password') == 'sync') ? true : false;
         $unit = ($request->input('sync_units') == 'yes') ? true : false;
-        $classroom = ($request->input('sync_classes') == 'sync') ? true : false;
-        $subject = ($request->input('sync_subjects') == 'sync') ? true : false;
-        $teacher = ($request->input('sync_teachers') == 'sync') ? true : false;
-        $remove = ($request->input('leave') == 'remove') ? true : false;
+        $classroom = ($request->input('sync_classes') == 'yes') ? true : false;
+        $subject = ($request->input('sync_subjects') == 'yes') ? true : false;
+        $teacher = ($request->input('sync_teachers') == 'yes') ? true : false;
+        $student = ($request->input('sync_students') == 'yes') ? true : false;
         $target = !empty($request->input('target')) ? $request->input('target') : false;
-        SyncFromTpedu::dispatch($expire, $password, $unit, $classroom, $subject, $teacher, $target, $remove);
+        $remove = ($request->input('leave') == 'remove') ? true : false;
+        SyncFromTpedu::dispatch($expire, $password, $unit, $classroom, $subject, $teacher, $student, $target, $remove);
         return view('admin')->with('success', '同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
     }
 

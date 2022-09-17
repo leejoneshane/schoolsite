@@ -1,6 +1,6 @@
 <?php
 
-namespace Mydnic\Subscribers\Events;
+namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Queue\SerializesModels;
@@ -11,7 +11,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use App\Models\Subscriber;
 
-class SubscriberVerified implements ShouldBroadcast
+class SubscriberCreated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

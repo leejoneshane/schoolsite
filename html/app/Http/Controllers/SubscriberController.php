@@ -3,17 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Storage;
 use App\Events\SubscriberVerified;
 use App\Models\Subscriber;
-use App\Http\Requests\StoreSubscriberRequest;
-use App\Http\Requests\DeleteSubscriberRequest;
-use Mydnic\Subscribers\Http\Requests\VerifySubscriberRequest;
-use Mydnic\Subscribers\Exceptions\SubscriberVerificationException;
+use App\Models\News;
 
 class SubscriberController extends Controller
 {
@@ -59,7 +52,7 @@ class SubscriberController extends Controller
         }
 
         if ($subscriber->markEmailAsVerified()) {
-            event(new SubscriberVerified($subscriber));
+            broadcast(new SubscriberVerified($subscriber));
         }
 
         return redirect()->route('home')->with('success', '電子報訂閱成功！');

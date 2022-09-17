@@ -6,17 +6,18 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\User;
 
-class PrivateMessage implements ShouldBroadcast
+class PrivateMessage implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $from_user;
-    public $to_user;
-    public $message;
+    public string $from_user;
+    public int $to_user;
+    public string $message;
 
     public function __construct($from, $to, $message)
     {
