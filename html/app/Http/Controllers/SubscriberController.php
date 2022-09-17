@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use App\Events\SubscriberVerified;
+use Illuminate\Support\Facades\DB;
 use App\Models\Subscriber;
 use App\Models\News;
 
@@ -13,15 +13,26 @@ class SubscriberController extends Controller
     public function store(Request $request, $id)
     {
         $news = News::find($id);
-        $subscriber = Subscriber::create([
-            'news_id' => $id,
-            'email' => $request->input('email'),
-        ]);
+        $subscriber = Subscriber::where('email', $request->input('email'))->first();
+        if (!$subscriber) {
+            Subscriber::create([
+                'email' => $request->input('email'),
+            ]);    
+        }
+
+        if ($subscriber) {
+            DB::table('news_subscribers')->insert([
+                'news_id' => $id,
+                'subscriber_id' => $subscriber->id,
+            ]);
+        }
 
         if (config('subscribers.verify')) {
-            $subscriber->sendEmailVerificationNotification();
-            return redirect()->route('home')
-                ->with('success', '電子報：'.$news->name.'的驗證信已經寄送到您的電子郵件信箱，請收信並進行驗證！');
+            if (! $subscriber->hasVerifiedEmail()) {
+                $subscriber->sendEmailVerificationNotification();
+                return redirect()->route('home')
+                    ->with('success', '電子報：'.$news->name.'的驗證信已經寄送到您的電子郵件信箱，請收信並進行驗證！');
+            }
         }
 
         return redirect()->route('home')
@@ -30,9 +41,16 @@ class SubscriberController extends Controller
 
     public function delete(Request $request, $id)
     {
-        $sub = Subscriber::where('news_id', $id)->where('email', $request->input('email'))->firstOrFail();
-        if ($sub) $sub->delete();
-        return view('subscribe.deleted');
+        $news = News::find($id);
+        $subscriber = Subscriber::where('email', $request->input('email'))->first();
+        if ($subscriber) {
+            DB::table('news_subscribers')->where('news_id', $id)->where('subscriber_id', $subscriber->id)->delete();
+        }
+        if (empty($subscriber->news)) {
+            $subscriber->delete();    
+        }
+        return redirect()->route('home')
+            ->with('success', '您已經取消訂閱電子報：'.$news->name.'!');
     }
 
     public function verify(Request $request, $id, $hash)
@@ -46,15 +64,14 @@ class SubscriberController extends Controller
             return redirect()->route('home')->with('error', '您的電子郵件信箱驗證失敗！');
         }
 
-        $news = $subscriber->news->name;
         if ($subscriber->hasVerifiedEmail()) {
-            return redirect()->route('home')->with('success', '您先前已經訂閱過電子報：'.$news.'！');
+            return redirect()->route('home')->with('success', '您先前已經是電子報訂戶，無需再次驗證！');
         }
 
         if ($subscriber->markEmailAsVerified()) {
-            broadcast(new SubscriberVerified($subscriber));
+            return redirect()->route('home')->with('success', '恭喜您成為國語實小電子報訂戶！');
         }
 
-        return redirect()->route('home')->with('success', '電子報訂閱成功！');
+        return redirect()->route('home')->with('success', '因為不明原因，驗證失敗！');
     }
 }

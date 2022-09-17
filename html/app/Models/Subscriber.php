@@ -19,11 +19,6 @@ class Subscriber extends Model
         'email',
     ];
 
-    protected $dispatchesEvents = [
-        'created' => SubscriberCreated::class,
-        'deleted' => SubscriberDeleted::class,
-    ];
-
     public function news()
     {
         return $this->belongsToMany('App\Models\News', 'news_subscribers', 'subscriber_id', 'news_id');
