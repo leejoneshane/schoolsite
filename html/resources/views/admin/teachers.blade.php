@@ -40,9 +40,13 @@
         <td class="p-2">{{ $t->account }}</td>
         <td class="p-2">{{ $t->email }}</td>
         <td class="p-2">
-            <a class="py-2 px-6 text-blue-300 hover:text-blue-600"
+            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('teachers.edit', ['uuid' => $t->uuid]) }}">
                 <i class="fa-solid fa-user-pen"></i>
+            </a>
+            <a class="py-2 pr-6 text-red-300 hover:text-red-600"
+                href="{{ route('teachers.remove', ['uuid' => $t->uuid]) }}">    
+                <i class="fa-solid fa-trash"></i>
             </a>
         </td>
     </tr>

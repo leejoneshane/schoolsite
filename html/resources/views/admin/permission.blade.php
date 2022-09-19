@@ -38,10 +38,10 @@
             {{ $p->description }}
         </td>
         <td class="p-2 sm:w-auto w-32">
-            <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('permission.edit', ['id' => $p->id]) }}">
+            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" href="{{ route('permission.edit', ['id' => $p->id]) }}">
                 <i class="fa-solid fa-pen-to-square"></i>
             </a>
-            <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('permission.remove', ['id' => $p->id]) }}">    
+            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="{{ route('permission.remove', ['id' => $p->id]) }}">    
                 <i class="fa-solid fa-trash"></i>
             </a>
         </td>

@@ -99,7 +99,7 @@
             </td>
             @endif
             <td class="p-2">
-                <a class="py-2 px-6 text-blue-300 hover:text-blue-600"
+                <a class="py-2 pr-6 text-red-300 hover:text-red-600"
                     href="{{ route('menus.remove', ['menu' => $i->id]) }}">
                     <i class="fa-solid fa-trash"></i>
                 </a>
