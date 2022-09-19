@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('ics_events', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
 			$table->string('unit_id')->index();
             $table->boolean('important')->default(0);
             $table->boolean('training')->default(0);

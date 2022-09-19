@@ -21,7 +21,7 @@ class Subscriber extends Model
 
     public function news()
     {
-        return $this->belongsToMany('App\Models\News', 'news_subscribers', 'subscriber_id', 'news_id');
+        return $this->belongsToMany('App\Models\News', 'news_subscribers', 'subscriber_id', 'news_id')->as('subscription')->withTimestamps();
     }
 
     /**

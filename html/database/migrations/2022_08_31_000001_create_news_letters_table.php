@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('news_letters', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('name')->unique();
             $table->string('model');
             $table->string('cron');
