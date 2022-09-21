@@ -89,6 +89,7 @@ class Teacher extends Model
                 $upper[] = $u->uplevel();
             }
         }
+        $upper = array_unique($upper);
         return $upper;
     }
     

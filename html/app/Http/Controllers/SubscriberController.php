@@ -10,7 +10,7 @@ use App\Models\News;
 
 class SubscriberController extends Controller
 {
-    public function store(Request $request, $id)
+    public function subscription(Request $request, $id)
     {
         $news = News::find($id);
         $subscriber = Subscriber::where('email', $request->input('email'))->first();
@@ -39,7 +39,7 @@ class SubscriberController extends Controller
             ->with('success', '恭喜您！您已經成功訂閱電子報：'.$news->name.'!');
     }
 
-    public function delete(Request $request, $id)
+    public function remove(Request $request, $id)
     {
         $news = News::find($id);
         $subscriber = Subscriber::where('email', $request->input('email'))->first();

@@ -9,7 +9,7 @@
 <body>
     <div class="text-2xl font-bold leading-normal pb-5">
         國語實驗國民小學學生行事曆
-        <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.student') }}">
+        <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.student') }}">
             <i class="fa-solid fa-calendar-check"></i>線上版
         </a>
     </div>

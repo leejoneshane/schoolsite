@@ -3,8 +3,8 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     新增行事曆事件
-    <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar').'?current='.$current }}">
-        <i class="fa-solid fa-calendar-plus"></i>返回上一頁
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar').'?current='.$current }}">
+        <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
     @adminorteacher
     <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.seme').'?current='.$current }}">

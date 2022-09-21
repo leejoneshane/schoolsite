@@ -22,6 +22,15 @@ class HomeController extends Controller
                 'weight' => 10,
             ]);
         }
+        if (!Menu::find('club')) {
+            Menu::create([
+                'id' => 'club',
+                'parent_id' => 'main',
+                'caption' => '學生社團',
+                'url' => 'route.clubs',
+                'weight' => 10,
+            ]);
+        }
     }
 
     public function index()

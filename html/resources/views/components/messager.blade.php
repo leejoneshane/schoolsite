@@ -3,6 +3,7 @@
   <label for="user_id" class="inline">傳訊息給：</label>
   <select class="w-28 inline-block mt-2 lg:mt-0 px-4 lg:px-2 py-1 leading-none border rounded border-white hover:border-transparent"
       id="user_id" name="user_id">
+      <option>－請選擇－</option>
       @foreach ($users as $u)
       @if ($u->id != auth()->user()->id)
       <option value="{{ $u->id }}">{{ $u->profile['realname'] }}</option>

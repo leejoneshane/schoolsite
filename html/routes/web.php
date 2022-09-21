@@ -68,6 +68,22 @@ Route::get('calendar/import', 'App\Http\Controllers\CalendarController@student')
 //intime messager routes...
 Route::post('messager/send', 'App\Http\Controllers\MessagerController@send')->middleware('auth')->name('messager.send');
 
+//student club routes...
+Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
+    Route::get('/', 'App\Http\Controllers\ClubController@index')->name('clubs');
+    Route::get('enroll', 'App\Http\Controllers\ClubController@kindList');
+    Route::post('enroll', 'App\Http\Controllers\ClubController@kindList')->name('clubs.enroll');
+    Route::get('kind', 'App\Http\Controllers\ClubController@kindList')->name('clubs.kinds');
+    Route::get('kind/add', 'App\Http\Controllers\ClubController@kindAdd');
+    Route::post('kind/add', 'App\Http\Controllers\ClubController@kindInsert')->name('clubs.addkind');
+    Route::get('kind/{kid}/edit', 'App\Http\Controllers\ClubController@kindEdit');
+    Route::post('kind/{kid}/edit', 'App\Http\Controllers\ClubController@kindUpdate')->name('clubs.editkind');
+    Route::get('kind/{kid}/remove', 'App\Http\Controllers\ClubController@kindRemove')->name('clubs.removekind');
+    Route::get('kind/{kid}/up', 'App\Http\Controllers\ClubController@kindUp')->name('clubs.upkind');
+    Route::get('kind/{kid}/down', 'App\Http\Controllers\ClubController@kindDown')->name('clubs.downkind');
+    Route::get('admin', 'App\Http\Controllers\ClubController@kindList')->name('clubs.admin');
+});
+
 // Administrator Interface Routes...
 Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');

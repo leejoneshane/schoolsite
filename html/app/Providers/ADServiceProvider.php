@@ -331,6 +331,11 @@ class ADServiceProvider extends ServiceProvider
 							if (substr($g, 0, 9) != 'CN=group-') {
 								unset($groups[$k]);
 							}
+							$ad_group = $this->get_group($g);
+							$info = $ad_group['info'];
+							if ($info) {
+								unset($groups[$k]);
+							}
 						}	
 					}
 					$detail_log[] = '使用者先前已加入以下群組：';
@@ -387,6 +392,39 @@ class ADServiceProvider extends ServiceProvider
 								$detail_log[] = '加入成功！';
 							} else {
 								$detail_log[] = "無法將使用者 $t->role_name $t->realname 加入 $unit->name 群組！".$this->error();
+							}
+						}
+					}
+				}
+				$roles = $t->roles;
+				if (!empty($roles)) {
+					foreach ($roles as $role) {
+						$detail_log[] = "正在處理 $role->name ......";
+						$group = $this->find_group($role->name);
+						if ($group) {
+							$group_dn = $group['distinguishedname'][0];
+							$rolegroup = $group['samaccountname'][0];
+							$detail_log[] = "$group_dn => 在 AD 中找到匹配的使用者群組！";
+						} else {
+							$detail_log[] = '無法在 AD 中找到匹配的群組，現在正在建立新的使用者群組......';
+							$rolegroup = 'group-'.$role->role_no;
+							$group_dn = "CN=$rolegroup,$base_dn";
+							$result = $this->create_group($rolegroup, $group_dn, $role->name);
+							if ($result) {
+								$detail_log[] = '建立成功！';
+							} else {
+								$detail_log[] = "$role->name 群組建立失敗！".$this->error();
+							}
+						}
+						if (is_array($groups) && ($k = array_search($group_dn, $groups)) !== false) {
+							unset($groups[$k]);
+						} else {
+							$detail_log[] = "正在將使用者： $t->role_name $t->realname 加入到群組裡...";
+							$result = $this->add_member($group_dn, $user_dn);
+							if ($result) {
+								$detail_log[] = '加入成功！';
+							} else {
+								$detail_log[] = "無法將使用者 $t->role_name $t->realname 加入 $role->name 群組！".$this->error();
 							}
 						}
 					}

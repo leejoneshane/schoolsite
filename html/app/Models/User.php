@@ -82,19 +82,20 @@ class User extends Authenticatable
     public function givePermission($permission)
     {
         $perm = Permission::findByName($permission);
-        $perm->assignByUUID($this->uuid);
+        if ($perm) $perm->assignByUUID($this->uuid);
     }
 
     public function takePermission($permission)
     {
         $perm = Permission::findByName($permission);
-        $perm->removeByUUID($this->uuid);
+        if ($perm) $perm->removeByUUID($this->uuid);
     }
 
     public function hasPermission($permission)
     {
         $perm = Permission::findByName($permission);
-        return $perm->checkByUUID($this->uuid);
+        if ($perm) return $perm->checkByUUID($this->uuid);
+        return false;
     }
 
 }

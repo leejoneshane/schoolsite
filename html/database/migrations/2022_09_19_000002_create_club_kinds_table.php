@@ -23,7 +23,7 @@ return new class extends Migration
 			$table->date('expireDate');
             $table->time('workTime')->nullable();
 			$table->time('restTime')->nullable();
-            $table->string('style');
+            $table->string('style')->nullable();
             $table->integer('weight');
             $table->timestamps();
         });
