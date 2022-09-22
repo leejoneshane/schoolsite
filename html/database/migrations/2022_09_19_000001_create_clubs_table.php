@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('location');
             $table->text('memo');
             $table->integer('cash');
+            $table->integer('total');
             $table->integer('maximum');
             $table->timestamps();
         });

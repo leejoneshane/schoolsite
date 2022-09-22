@@ -55,16 +55,16 @@
         <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
             <td class="p-2">
                 <input class="rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="text" name="ids['{{ $i->id }}']" value="{{ $i->id }}">
+                type="text" name="ids[{{ $i->id }}]" value="{{ $i->id }}">
             </td>
             <td class="p-2">
                 <input class="rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    type="text" name="captions['{{ $i->id }}']" value="{{ $i->caption }}">
+                    type="text" name="captions[{{ $i->id }}]" value="{{ $i->caption }}">
             </td>
             @if (!empty($current))
             <td class="p-2">
                 <select class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    name="parents['{{ $i->id }}']">
+                    name="parents[{{ $i->id }}]">
                 @foreach ($menus as $m)
                     <option {{ ($m->id == $i->parent_id) ? 'selected ' : ''}}value="{{ $m->id }}">{{ $m->caption }}</option>
                 @endforeach
@@ -73,7 +73,7 @@
             @endif
             <td class="p-2">
                 <select class="form-select w-24 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    name="kind['{{ $i->id }}']" onchange="
+                    name="kind[{{ $i->id }}]" onchange="
                         var kind = this.value;
                         var myp = document.getElementById('url_{{ $i->id }}');
                         if (kind == 'sub') {
@@ -90,12 +90,12 @@
             </td>
             <td class="p-2">
                 <input class="{{ ($i->url == '#') ? 'hidden ' : '' }}rounded w-48 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    id="url_{{ $i->id }}" type="text" name="urls['{{ $i->id }}']" value="{{ $i->url }}">
+                    id="url_{{ $i->id }}" type="text" name="urls[{{ $i->id }}]" value="{{ $i->url }}">
             </td>
             @if (!empty($current))
             <td class="p-2">
                 <input class="rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    type="text" name="weights['{{ $i->id }}']" value="{{ $i->weight }}">
+                    type="text" name="weights[{{ $i->id }}]" value="{{ $i->weight }}">
             </td>
             @endif
             <td class="p-2">

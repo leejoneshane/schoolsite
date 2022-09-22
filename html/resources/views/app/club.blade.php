@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
-    學生社團
+    學生課外社團
     @student
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enroll') }}">
         <i class="fa-solid fa-pen-nib"></i>我要報名

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Club extends Model
 {
 
-	protected $table = 'club_kinds';
+	protected $table = 'clubs';
 
     /**
      * The attributes that are mass assignable.
@@ -33,6 +33,7 @@ class Club extends Model
         'location',
         'memo',
         'cash',
+        'total',
         'maximum',
     ];
 
@@ -52,19 +53,77 @@ class Club extends Model
         'endDate' => 'datetime:Y-m-d',
     ];
 
+    protected $appends = [
+		'grade',
+        'studytime',
+    ];
+
+    protected static $weekMap = [
+        0 => '日',
+        1 => '一',
+        2 => '二',
+        3 => '三',
+        4 => '四',
+        5 => '五',
+        6 => '六',
+    ];
+
+    public function getGradeAttribute()
+    {
+        sort($this->for_grade); 
+        $str = '';
+        foreach ($this->for_grade as $g) {
+            $str .= self::$weekMap[$g];
+        }
+        return $str.'年級';
+    }
+
+    public function getStudytimeAttribute()
+    {
+        $str ='';
+        $str .= substr($this->startDate, 0, 10);
+        $str .= '～';
+        $str .= substr($this->endDate, 0, 10);
+        $str .= ' 每週';
+        sort($this->weekdays);
+        foreach ($this->weekdays as $d) {
+            $str .= self::$weekMap[$d];
+        }
+        $str .= ' ';
+        $str .= $this->startTime;
+        $str .= '～';
+        $str .= $this->endTime;
+        return $str;
+    }
+
+    public function count_enroll()
+    {
+        return $this->enrolls()->count();
+    }
+
+    public function count_enrolled()
+    {
+        return $this->enrolled()->count();
+    }
+
     public function kind()
     {
         return $this->belongsTo('App\Models\ClubKind');
     }
 
+    public function unit()
+    {
+        return $this->belongsTo('App\Models\Unit');
+    }
+
     public function enrolls()
     {
-        return $this->hasMany('App\Models\ClubEnroll', 'club_id');
+        return $this->hasMany('App\Models\ClubEnroll');
     }
 
     public function enrolled()
     {
-        return $this->hasMany('App\Models\ClubEnroll', 'club_id')->where('accepted', 1);
+        return $this->hasMany('App\Models\ClubEnroll')->where('accepted', 1);
     }
 
     public function students()

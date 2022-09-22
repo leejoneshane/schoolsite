@@ -142,4 +142,22 @@ class ClubController extends Controller
         }
     }
 
+    public function clubList($kid = null)
+    {
+        $user = Auth::user();
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            if ($kid) {
+                $kind = ClubKind::find($kid);
+            } else {
+                $kind = ClubKind::first();
+            }
+            $kinds = ClubKind::orderBy('weight')->get();
+            $clubs = Club::orderBy('startDate', 'desc')->get();
+            return view('app.clubs', ['kind' => $kind, 'kinds' => $kinds, 'clubs' => $clubs]);
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
+    }
+
 }

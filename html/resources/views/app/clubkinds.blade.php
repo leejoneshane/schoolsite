@@ -62,7 +62,7 @@
         <td class="p-2">
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('clubs.editkind', ['kid' => $k->id]) }}">
-                <i class="fa-solid fa-user-pen"></i>
+                <i class="fa-solid fa-pen"></i>
             </a>
             <a class="py-2 pr-6 text-red-300 hover:text-red-600"
                 href="{{ route('clubs.removekind', ['kid' => $k->id]) }}">    

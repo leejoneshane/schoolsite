@@ -81,7 +81,8 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('kind/{kid}/remove', 'App\Http\Controllers\ClubController@kindRemove')->name('clubs.removekind');
     Route::get('kind/{kid}/up', 'App\Http\Controllers\ClubController@kindUp')->name('clubs.upkind');
     Route::get('kind/{kid}/down', 'App\Http\Controllers\ClubController@kindDown')->name('clubs.downkind');
-    Route::get('admin', 'App\Http\Controllers\ClubController@kindList')->name('clubs.admin');
+    Route::get('list/{kid?}', 'App\Http\Controllers\ClubController@clubList')->name('clubs.admin');
+    Route::get('list/enroll/{kid}/{club_id}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
 });
 
 // Administrator Interface Routes...

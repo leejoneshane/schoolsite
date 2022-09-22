@@ -26,7 +26,7 @@ class HomeController extends Controller
             Menu::create([
                 'id' => 'club',
                 'parent_id' => 'main',
-                'caption' => '學生社團',
+                'caption' => '學生課外社團',
                 'url' => 'route.clubs',
                 'weight' => 10,
             ]);

@@ -65,7 +65,7 @@ class MenuController extends Controller
             $m->id = $new;
             $m->save();
         }
-        return $this->menuList($menu, ['success' => '選單項目已經更新！']);
+        return $this->index($menu, ['success' => '選單項目已經更新！']);
     }
 
     public function add($menu = '')
@@ -101,7 +101,7 @@ class MenuController extends Controller
                 'weight' => $weight,
             ]);
         }
-        return $this->menuList($menu, ['success' => '選單項目新增完成！']);
+        return $this->index($menu, ['success' => '選單項目新增完成！']);
     }
 
     public function remove($menu)
@@ -114,7 +114,7 @@ class MenuController extends Controller
             ]);    
         }
         $item->delete();
-        return $this->menuList($parent, ['success' => '選單項目已經刪除！']);
+        return $this->index($parent, ['success' => '選單項目已經刪除！']);
     }
 
 }
