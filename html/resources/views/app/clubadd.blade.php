@@ -10,9 +10,7 @@
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
         不重複報名：指該類別的社團只允許一個學生報名一個社團。<br>
-		人工審核：由管理員錄取報名學生，若要讓系統自動錄取學生，請勿勾選。<br>
-		暫停報名：開啟此選項將讓所有該類社團全部無法報名。<br>
-		報名和截止日期將統一在社團分類設置，報名時間與休息時間是指在報名期間系統每天開啟報名功能的時段。<br>
+
     </p>
 </div>
 <form id="edit-unit" action="{{ route('clubs.addkind') }}" method="POST">
