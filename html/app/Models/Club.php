@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ClubEnroll;
 
 class Club extends Model
 {
@@ -84,10 +85,14 @@ class Club extends Model
         $str .= substr($this->startDate, 0, 10);
         $str .= '～';
         $str .= substr($this->endDate, 0, 10);
-        $str .= ' 每週';
-        sort($this->weekdays);
-        foreach ($this->weekdays as $d) {
-            $str .= self::$weekMap[$d];
+        if ($this->self_defined) {
+            $str .= ' 每週上課日由家長自選';
+        } else {
+            $str .= ' 每週';
+            sort($this->weekdays);
+            foreach ($this->weekdays as $d) {
+                $str .= self::$weekMap[$d];
+            }
         }
         $str .= ' ';
         $str .= $this->startTime;
@@ -96,7 +101,7 @@ class Club extends Model
         return $str;
     }
 
-    public function count_enroll()
+    public function count_enrolls()
     {
         return $this->enrolls()->count();
     }
@@ -124,6 +129,16 @@ class Club extends Model
     public function enrolled()
     {
         return $this->hasMany('App\Models\ClubEnroll')->where('accepted', 1);
+    }
+
+    public function current_enrolls()
+    {
+        return $this->enrolls()->where('year', ClubEnroll::current_year())->get();
+    }
+
+    public function current_enrolled()
+    {
+        return $this->enrolled()->where('year', ClubEnroll::current_year())->get();
     }
 
     public function students()

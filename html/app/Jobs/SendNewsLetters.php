@@ -9,7 +9,6 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\News;
-use App\Models\Subscriber;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\NewsLetter;
 

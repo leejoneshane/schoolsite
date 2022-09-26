@@ -80,6 +80,6 @@ class SocialiteController extends Controller
         $userid = $request->input('userid');
         $account = SocialiteAccount::where('uuid', $user->uuid)->where('socialite', $socialite)->where('userId', $userid)->delete();
 
-        return redirect()->route('socialite');
+        return redirect()->back();
     }
 }

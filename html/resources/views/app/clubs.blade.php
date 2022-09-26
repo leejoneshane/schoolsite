@@ -7,7 +7,7 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs') }}">
         <i class="fa-solid fa-calendar-plus"></i>返回上一頁
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.addkind') }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.add', ['kid' => $kind->id]) }}">
         <i class="fa-solid fa-circle-plus"></i>新增課外社團
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.addkind') }}">
@@ -21,6 +21,9 @@
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.addkind') }}">
         <i class="fa-solid fa-sack-dollar"></i>收費統計表
+    </a>
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.addkind') }}">
+        <i class="fa-solid fa-address-book"></i>各班錄取名冊
     </a>
 </div>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
@@ -80,19 +83,19 @@
         <td class="p-2">{{ $club->count_enrolls() }}</td>
         <td class="p-2">
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
-                href="{{ route('clubs.edit', ['kid' => $k->id]) }}">
+                href="{{ route('clubs.edit', ['club_id' => $club->id]) }}">
                 <i class="fa-solid fa-pen"></i>
             </a>
             <a class="py-2 pr-6 text-red-300 hover:text-red-600"
-                href="{{ route('clubs.remove', ['kid' => $k->id]) }}">    
+                href="{{ route('clubs.remove', ['club_id' => $club->id]) }}">    
                 <i class="fa-solid fa-trash"></i>
             </a>
             <a class="py-2 pr-6 text-red-300 hover:text-red-600"
-                href="{{ route('clubs.mail', ['kid' => $k->id]) }}">    
+                href="{{ route('clubs.mail', ['club_id' => $club->id]) }}">    
                 <i class="fa-regular fa-envelope"></i>
             </a>
             <a class="py-2 pr-6 text-red-300 hover:text-red-600"
-                href="{{ route('clubs.prune', ['kid' => $k->id]) }}">    
+                href="{{ route('clubs.prune', ['club_id' => $club->id]) }}">    
                 <i class="fa-solid fa-recycle"></i>
             </a>
         </td>

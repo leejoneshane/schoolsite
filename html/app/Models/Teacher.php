@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Providers\TpeduServiceProvider as SSO;
 use Illuminate\Support\Facades\DB;
+use App\Models\Unit;
 
 class Teacher extends Model
 {
@@ -43,6 +44,11 @@ class Teacher extends Model
         'address',
         'www',
         'character',
+    ];
+
+    protected $appends = [
+		'mainunit',
+        'unit',
     ];
 
     public function user()
@@ -93,6 +99,22 @@ class Teacher extends Model
         return $upper;
     }
     
+    public function getMainunitAttribute()
+    {
+        $unit = Unit::find($this->unit_id);
+        if (!$unit) return null;
+        if ($unit->is_main()) {
+            return $unit;
+        } else {
+            return $unit->uplevel();
+        }
+    }
+
+    public function getUnitAttribute()
+    {
+        return Unit::find($this->unit_id);
+    }
+
     public function roles()
 	{
     	return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id');

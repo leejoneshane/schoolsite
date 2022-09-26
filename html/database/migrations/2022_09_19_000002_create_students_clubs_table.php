@@ -18,9 +18,9 @@ return new class extends Migration
             $table->integer('year');
             $table->uuid();
             $table->integer('club_id');
-            $table->boolean('need_lunch');
-            $table->json('weekdays');
-            $table->integer('identity');
+            $table->integer('need_lunch')->default(0);
+            $table->json('weekdays')->nullable();
+            $table->integer('identity')->default(0);
             $table->string('email', 100);
             $table->string('parent');
             $table->string('mobile');

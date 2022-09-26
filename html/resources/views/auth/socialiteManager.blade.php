@@ -19,9 +19,7 @@
     <div class="col-span-1">
         Google 帳號：{{ $google->userId }}
         <button type="button" class="p-2 rounded text-white btn bg-red-500 hover:bg-red-600"
-                 onclick="$('#socialite').val('google');
-                         $('#userid').val('{{ $google->userId }}');
-                         $('#form').submit();">解除</button>
+                 onclick="mysubmit('google', '{{ $google->userId }}')">解除</button>
     </div>
     @else
     <div class="col-span-1">
@@ -34,9 +32,7 @@
     <div class="col-span-1">
         Facebook 帳號：{{ $facebook->userId }}
         <button type="button" class="p-2 rounded text-white btn bg-red-500 hover:bg-red-600"
-                 onclick="$('#socialite').val('facebook');
-                         $('#userid').val('{{ $facebook->userId }}');
-                         $('#form').submit();">解除</a>
+                 onclick="mysubmit('facebook', '{{ $facebook->userId }}')">解除</a>
     </div>
     @else
     <div class="col-span-1">
@@ -49,9 +45,7 @@
     <div class="col-span-1">
         Yahoo 帳號：{{ $yahoo->userId }}
         <button type="button" class="p-2 rounded text-white btn bg-red-500 hover:bg-red-600"
-                 onclick="$('#socialite').val('yahoo');
-                         $('#userid').val('{{ $yahoo->userId }}');
-                         $('#form').submit();">解除</button>
+                 onclick="mysubmit('yahoo', '{{ $yahoo->userId }}')">解除</button>
     </div>
     @else
     <div class="col-span-1">
@@ -64,9 +58,7 @@
     <div class="col-span-1">
         Line 帳號：{{ $line->userId }}
         <button type="button" class="p-2 rounded text-white btn bg-red-500 hover:bg-red-600"
-                 onclick="$('#socialite').val('line');
-                         $('#userid').val('{{ $line->userId }}');
-                         $('#form').submit();">解除</button>
+                 onclick="mysubmit('line', '{{ $line->userId }}')">解除</button>
     </div>
     @else
     <div class="col-span-1">
@@ -82,4 +74,11 @@
     </form>
     </div>
 </div>
+<script>
+    function mysubmit(via, uid) {
+        document.getElementById('socialite').value = via;
+        document.getElementById('userid').value = uid;
+        document.getElementById('form').submit();
+    }
+</script>
 @endsection

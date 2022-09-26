@@ -99,7 +99,7 @@ class CalendarController extends Controller
             $units = $t->upper();
             $default = $t->unit_id;
         }
-        return view('app.eventadd', ['current' => $today, 'seme' => $seme, 'calendars' => $calendars, 'default' => $default, 'units' => $units]);
+        return view('app.calendar_eventadd', ['current' => $today, 'seme' => $seme, 'calendars' => $calendars, 'default' => $default, 'units' => $units]);
     }
 
     public function eventInsert(Request $request)
@@ -145,7 +145,7 @@ class CalendarController extends Controller
             $t = Teacher::find($user->uuid);
             $units = $t->upper();
         }
-        return view('app.eventedit', ['current' => $today, 'seme' => $seme, 'calendars' => $calendars, 'units' => $units, 'event' => $event]);
+        return view('app.calendar_eventedit', ['current' => $today, 'seme' => $seme, 'calendars' => $calendars, 'units' => $units, 'event' => $event]);
     }
 
     public function eventUpdate(Request $request, $event_id)

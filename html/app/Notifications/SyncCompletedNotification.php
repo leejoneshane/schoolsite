@@ -84,6 +84,7 @@ class SyncCompletedNotification extends Notification implements ShouldQueue
         return [
             'start' => $this->start_time,
             'end' => $this->end_time,
+            'logs' => $this->logs,
         ];
     }
 }

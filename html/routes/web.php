@@ -23,7 +23,7 @@ Route::get('login/tpedu/callback', 'App\Http\Controllers\Auth\TpeduController@ha
 Route::get('login/{provider}', 'App\Http\Controllers\Auth\SocialiteController@redirect');
 Route::get('login/{provider}/callback', 'App\Http\Controllers\Auth\SocialiteController@handleCallback');
 Route::get('socialite', 'App\Http\Controllers\Auth\SocialiteController@socialite')->middleware('auth')->name('social');
-Route::post('socialite/remove', 'App\Http\Controllers\Auth\SocialiteController@socialite')->middleware('auth')->name('social.remove');
+Route::post('socialite/remove', 'App\Http\Controllers\Auth\SocialiteController@removeSocialite')->middleware('auth')->name('social.remove');
 
 // Logout Routes...
 Route::post('logout', 'App\Http\Controllers\Auth\LoginController@logout')->name('logout');
@@ -81,6 +81,14 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('kind/{kid}/remove', 'App\Http\Controllers\ClubController@kindRemove')->name('clubs.removekind');
     Route::get('kind/{kid}/up', 'App\Http\Controllers\ClubController@kindUp')->name('clubs.upkind');
     Route::get('kind/{kid}/down', 'App\Http\Controllers\ClubController@kindDown')->name('clubs.downkind');
+    Route::get('add/{kid?}', 'App\Http\Controllers\ClubController@clubAdd');
+    Route::post('add/{kid?}', 'App\Http\Controllers\ClubController@clubInsert')->name('clubs.add');
+    Route::get('edit/{club_id}', 'App\Http\Controllers\ClubController@clubEdit');
+    Route::post('edit/{club_id}', 'App\Http\Controllers\ClubController@clubUpdate')->name('clubs.edit');
+    Route::get('remove/{club_id}', 'App\Http\Controllers\ClubController@clubRemove')->name('clubs.remove');
+    Route::get('mail/{club_id}', 'App\Http\Controllers\ClubController@clubMail');
+    Route::post('mail/{club_id}', 'App\Http\Controllers\ClubController@clubNotify')->name('clubs.mail');
+    Route::get('prune/{club_id}', 'App\Http\Controllers\ClubController@clubPrune')->name('clubs.prune');
     Route::get('list/{kid?}', 'App\Http\Controllers\ClubController@clubList')->name('clubs.admin');
     Route::get('list/enroll/{kid}/{club_id}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
 });

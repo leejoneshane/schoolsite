@@ -73,7 +73,7 @@ class IcsEvent extends Model
 
     public static function template()
     {
-        return 'app.calendar_newsletter';
+        return 'emails.newsletter';
     }
 
     public static function newsletter()

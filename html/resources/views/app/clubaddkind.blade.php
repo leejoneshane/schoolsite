@@ -20,7 +20,7 @@
     <p><div class="p-3">
         <label for="title" class="inline">類別名稱：</label>
         <input class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="text" name="title">
+            type="text" name="title" required>
     </p>
     <p><div class="p-3">
         <label for="single" class="inline-flex relative items-center cursor-pointer">

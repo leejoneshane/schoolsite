@@ -3,11 +3,26 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Notifications\Notifiable;
+use App\Notifications\ClubNotification;
+use App\Notifications\ClubEnrollNotification;
+use App\Notifications\ClubEnrolledNotification;
 
 class ClubEnroll extends Model
 {
+    use Notifiable;
 
     protected $table = 'students_clubs';
+
+    protected static $weekMap = [
+        0 => '日',
+        1 => '一',
+        2 => '二',
+        3 => '三',
+        4 => '四',
+        5 => '五',
+        6 => '六',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +42,20 @@ class ClubEnroll extends Model
         'accepted',
         'audited_at',
     ];
+
+    protected $appends = [
+		'weekday',
+    ];
+
+    public function getWeekdayAttribute()
+    {
+        sort($this->weekdays); 
+        $str = [];
+        foreach ($this->weekdays as $g) {
+            $str[] = self::$weekMap[$g];
+        }
+        return '每週'.implode('、', $str);
+    }
 
     /**
      * The attributes that should be cast.
@@ -68,6 +97,26 @@ class ClubEnroll extends Model
     public function student()
     {
         return $this->belongsTo('App\Models\Student', 'uuid');
+    }
+
+    public function year_order()
+    {
+        return $this->query()->where('year', $this->year)->where('created_at', '<', $this->created_at)->count();
+    }
+
+    public function sendClubNotification($message)
+    {
+        $this->notify(new ClubNotification($message));
+    }
+
+    public function sendClubEnrollNotification()
+    {
+        $this->notify(new ClubEnrollNotification);
+    }
+
+    public function sendClubEnrolledNotification()
+    {
+        $this->notify(new ClubEnrolledNotification);
     }
 
 }
