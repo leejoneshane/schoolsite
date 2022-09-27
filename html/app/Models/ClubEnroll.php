@@ -101,7 +101,7 @@ class ClubEnroll extends Model
 
     public function year_order()
     {
-        return $this->query()->where('year', $this->year)->where('created_at', '<', $this->created_at)->count();
+        return ClubEnroll::where('club_id', $this->club_id)->where('year', $this->year)->where('created_at', '<', $this->created_at)->count();
     }
 
     public function sendClubNotification($message)

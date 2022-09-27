@@ -33,7 +33,7 @@
         <td class="p-2">{{ $club->studytime }}</td>
     </tr>
 </table>
-<form id="edit-unit" action="{{ route('clubs.mail') }}" method="POST">
+<form id="mail-club" action="{{ route('clubs.mail') }}" method="POST">
     @csrf
     <p><div class="p-3">
         <label for="message" class="inline">郵件內容：</label>

@@ -241,7 +241,7 @@ class GsuiteServiceProvider extends ServiceProvider
 		if (empty($gmails)) {
 			Gsuite::create([
 				'owner_id' => $t->uuid,
-				'owner_type' => $user_type,
+				'owner_type' => 'App\\Models\\'.$user_type,
 				'userKey' => $userKey,
 				'primary' => true,
 			]);		
@@ -262,7 +262,7 @@ class GsuiteServiceProvider extends ServiceProvider
 			if (! $found) {
 				Gsuite::create([
 					'owner_id' => $t->uuid,
-					'owner_type' => $user_type,
+					'owner_type' => 'App\\Models\\'.$user_type,
 					'userKey' => $userKey,
 					'primary' => true,
 				]);	
@@ -273,15 +273,16 @@ class GsuiteServiceProvider extends ServiceProvider
 		$sysid->setValue($t->uuid);
 		$user->setExternalIds([$sysid]);
 		$names = new \Google_Service_Directory_UserName();
-		if ($t->sn && $t->gn) {
+		if ($user_type == 'Student') {
+			$seat = ($t->seat < 10) ? '0'.$t->seat : $t->seat;
+			$names->setFamilyName($seat . $t->sn);
+			$names->setGivenName($t->gn);
+			$names->setFullName($t->seat . $t->realname);
+		} elseif ($user_type == 'Teacher') {
 			$names->setFamilyName($t->sn);
 			$names->setGivenName($t->gn);
-		} else {
-			$myname = $this->guess_name($t->realname);
-			$names->setFamilyName($myname[0]);
-			$names->setGivenName($myname[1]);
+			$names->setFullName($t->realname);
 		}
-		$names->setFullName($t->realname);
 		$user->setName($names);
 		if (!empty($t->email) && $t->email != $user->getPrimaryEmail()) {
 			$user->setRecoveryEmail($t->email);
@@ -306,7 +307,7 @@ class GsuiteServiceProvider extends ServiceProvider
 				$neworg->setName('教師');
 				$neworg->setDepartment($job->unit->name);
 				$neworg->setTitle($job->name);
-				if ($job->id == $t->unit_id) {
+				if ($job->id == $t->role_id) {
 					$neworg->setPrimary(true);
 				}
 				$orgs[] = $neworg;
@@ -567,7 +568,8 @@ class GsuiteServiceProvider extends ServiceProvider
                     if ($data) {
                         foreach ($data as $g) {
                             $gn = $g->getEmail();
-                            if (substr($gn, 0, 6) == 'group-') {
+							$desc = $g->getDescription();
+                            if (substr($gn, 0, 6) == 'group-' && !empty($desc)) {
                                 $groups[] = $gn;
                             }
                         }
@@ -618,7 +620,7 @@ class GsuiteServiceProvider extends ServiceProvider
                                 $all_groups[] = $group;
 								$detail_log[] = '建立成功！';
                             } else {
-								$detail_log[] = "$unit->unit_name 群組建立失敗！";
+								$detail_log[] = "$unit->name 群組建立失敗！";
                             }
 						}
 						if (($k = array_search($group_key, $groups)) !== false) {
@@ -630,6 +632,48 @@ class GsuiteServiceProvider extends ServiceProvider
 								$detail_log[] = '加入成功！';
 							} else {
 								$detail_log[] = "無法將使用者 $t->role_name $t->realname 加入 $unit->name 群組！";
+							}
+						}
+					}
+				}
+				$roles = $t->roles;
+				if (!empty($roles)) {
+					foreach ($roles as $role) {
+						$detail_log[] = "正在處理 $role->name ......";
+						$found = false;
+                        if ($all_groups) {
+                            foreach ($all_groups as $group) {
+                                if ($group->getDescription() == $role->name) {
+                                    $found = true;
+                                    break;
+                                }
+                            }
+                        }
+						if ($found) {
+							$group_key = $group->getEmail();
+							$jobgroup = explode('@', $group_key)[0];
+							$detail_log[] = "$jobgroup => 在 G Suite 中找到匹配的 Google 群組！";
+						} else {
+							$detail_log[] = '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
+							$jobgroup = 'group-'.$role->role_no;
+                            $group_key = $jobgroup.'@'.$domain;
+                            $group = $this->create_group($group_key, $role->name);
+                            if ($group) {
+                                $all_groups[] = $group;
+								$detail_log[] = '建立成功！';
+                            } else {
+								$detail_log[] = "$role->role_name 群組建立失敗！";
+                            }
+						}
+						if (($k = array_search($group_key, $groups)) !== false) {
+							unset($groups[$k]);
+						} else {
+							$detail_log[] = "正在將使用者：$t->role_name $t->realname 加入到群組裡......";
+							$members = $this->add_member($group_key, $user_key);
+							if (!empty($members)) {
+								$detail_log[] = '加入成功！';
+							} else {
+								$detail_log[] = "無法將使用者 $t->role_name $t->realname 加入 $role->name 群組！";
 							}
 						}
 					}

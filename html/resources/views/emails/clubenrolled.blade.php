@@ -72,7 +72,7 @@
                     午餐選擇
                 </th>
                 <td class="p-2">
-                    {{ ($enroll->need_lunch == 0) ? '自備' : '' }}{{ ($enroll->need_lunch == 1) ? '葷食' : '' }}{{ ($enroll->need_lunch == 2) ? '素食' : '' }}
+                    {{ ($enroll->need_lunch == 0) ? '自理' : '' }}{{ ($enroll->need_lunch == 1) ? '葷食' : '' }}{{ ($enroll->need_lunch == 2) ? '素食' : '' }}
                 </td>
             </tr>
             @endif

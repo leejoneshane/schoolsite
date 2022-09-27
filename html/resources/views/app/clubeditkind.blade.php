@@ -15,7 +15,7 @@
 		報名和截止日期將統一在社團分類設置，報名時間與休息時間是指在報名期間系統每天開啟報名功能的時段。<br>
     </p>
 </div>
-<form id="edit-unit" action="{{ route('clubs.editkind', ['kid' => $kind->id]) }}" method="POST">
+<form id="edit-kind" action="{{ route('clubs.editkind', ['kid' => $kind->id]) }}" method="POST">
     @csrf
     <p><div class="p-3">
         <label for="title" class="inline">類別名稱：</label>

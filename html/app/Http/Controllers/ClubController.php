@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Notification;
 use App\Notifications\ClubNotification;
 use App\Notifications\ClubEnrollNotification;
 use App\Notifications\ClubEnrolledNotification;
+use App\Imports\ClubImport;
 
 class ClubController extends Controller
 {
@@ -165,6 +166,30 @@ class ClubController extends Controller
         }
     }
 
+    public function clubUpload($kid = null)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            if ($kid) {
+                $kind = ClubKind::find($kid)->id;
+            } else {
+                $kind = ClubKind::first()->id;
+            }
+            $kinds = ClubKind::orderBy('weight')->get();
+            return view('app.clubupload', ['kind' => $kind, 'kinds' => $kinds]);
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
+    }
+
+    public function clubImport(Request $request, $kid = null)
+    {
+        $kid = $request->input('kind');
+        $importer = new ClubImport($kid);
+        $importer->import($request->file('file'));
+        return $this->clubList($kid)->with('success', '課外社團已經匯入完成！');
+    }
 
     public function clubAdd($kid = null)
     {

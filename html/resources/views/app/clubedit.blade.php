@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="edit-unit" action="{{ route('clubs.add') }}" method="POST">
+<form id="edit-club" action="{{ route('clubs.add') }}" method="POST">
     @csrf
     <p><div class="p-3">
         <label for="kind" class="inline">社團分類：</label>

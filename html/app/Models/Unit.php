@@ -19,6 +19,16 @@ class Unit extends Model
         'name',
     ];
 
+    public static function findByNo($unit_no)
+    {
+        return Unit::where('unit_no', $unit_no)->first();
+    }
+
+    public static function findByName($name)
+    {
+        return Unit::where('name', 'like', '%'.$name.'%')->first();
+    }
+
     public static function main()
     {
         return Unit::whereRaw('CHAR_LENGTH(unit_no) = 3 or LEFT(unit_no, 1) = ?', ['Z'])->get();

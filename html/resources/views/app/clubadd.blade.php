@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="edit-unit" action="{{ route('clubs.add') }}" method="POST">
+<form id="add-club" action="{{ route('clubs.add') }}" method="POST">
     @csrf
     <p><div class="p-3">
         <label for="kind" class="inline">社團分類：</label>
@@ -28,6 +28,7 @@
     <p><div class="p-3">
         <label for="title" class="inline">營隊全名：</label>
         <input type="text" name="title" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
+        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請不要包含學年學期資訊，系統會自動將學生報名資訊依學年度分開管理。</span>
     </div></p>
     <p><div class="p-3">
         <label for="short" class="inline">簡稱：</label>
@@ -112,7 +113,7 @@
     <p><div class="p-3">
         <label for="limit" class="inline">報名上限：</label>
         <input type="text" name="limit" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入數字，0或留白代表無限制！報名上限超過招生人數時，超過部分視同候補，將不會自動錄取！</span>
+        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入數字，0或留白代表無限制！報名上限低於招生人數時，將會保留招生名額，作為現場報名或其他安排。報名上限超過招生人數時，超過部分視同候補，將不會自動錄取！</span>
     </div></p>
     <p><div class="p-3">
         <label for="remove" class="inline-flex relative items-center cursor-pointer">
@@ -126,6 +127,7 @@
             <input type="checkbox" id="lunch" name="lunch" value="yes" class="sr-only peer">
             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
             <span class="ml-3 text-gray-900 dark:text-gray-300">顯示午餐選項</span>
+            <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>午餐選項包含：自理、葷食、素食。</span>
         </label>
     </div></p>
     <p><div class="p-3">

@@ -22,7 +22,7 @@ return new class extends Migration
             $table->json('for_grade');
             $table->json('weekdays')->nullable();
             $table->boolean('self_defined')->default(0);
-            $table->boolean('self_remove')->default(0);
+            $table->boolean('self_remove')->default(1);
             $table->boolean('has_lunch')->default(0);
             $table->boolean('stop_enroll')->default(0);
             $table->date('startDate')->useCurrent();

@@ -20,6 +20,16 @@ class Role extends Model
         'name',
     ];
 
+    public static function findByNo($role_no)
+    {
+        return Role::where('role_no', $role_no)->first();
+    }
+
+    public static function findByName($name)
+    {
+        return Role::where('name', 'like', '%'.$name.'%')->first();
+    }
+
     public function unit()
     {
         return $this->belongsTo('App\Models\Unit');

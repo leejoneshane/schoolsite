@@ -18,7 +18,7 @@
         <i class="fa-solid fa-calendar-check"></i>學生行事曆
     </a>
 </div>
-<form id="edit-unit" action="{{ route('calendar.editEvent', ['event' => $event->id]) }}" method="POST">
+<form id="edit-event" action="{{ route('calendar.editEvent', ['event' => $event->id]) }}" method="POST">
     @csrf
     <input type="hidden" name="current" value="{{ $current }}">
     <p><div class="p-3">
