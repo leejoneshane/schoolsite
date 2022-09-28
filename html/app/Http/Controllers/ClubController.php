@@ -17,6 +17,7 @@ use App\Notifications\ClubNotification;
 use App\Notifications\ClubEnrollNotification;
 use App\Notifications\ClubEnrolledNotification;
 use App\Imports\ClubImport;
+use App\Exports\ClubExport;
 
 class ClubController extends Controller
 {
@@ -189,6 +190,13 @@ class ClubController extends Controller
         $importer = new ClubImport($kid);
         $importer->import($request->file('excel'));
         return $this->clubList($kid)->with('success', '課外社團已經匯入完成！');
+    }
+
+    public function clubExport($kid)
+    {
+        $filename = ClubKind::find($kid)->name;
+        $exporter = new ClubExport($kid);
+        return $exporter->download("$filename.xlsx");;
     }
 
     public function clubAdd($kid = null)
