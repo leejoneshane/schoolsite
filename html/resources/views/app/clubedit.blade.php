@@ -38,17 +38,17 @@
         <label for="grades" class="inline">招生年級：</label>
         <div id="grades" class="inline">
             <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="checkbox" name="grades[]" value="1"{{ in_array('1', $club->grades) ? ' checked' : '' }}><span class="text-sm">一　</span>
+                type="checkbox" name="grades[]" value="1"{{ in_array('1', $club->for_grade) ? ' checked' : '' }}><span class="text-sm">一　</span>
             <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="checkbox" name="grades[]" value="2"{{ in_array('2', $club->grades) ? ' checked' : '' }}><span class="text-sm">二　</span>
+                type="checkbox" name="grades[]" value="2"{{ in_array('2', $club->for_grade) ? ' checked' : '' }}><span class="text-sm">二　</span>
             <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="checkbox" name="grades[]" value="3"{{ in_array('3', $club->grades) ? ' checked' : '' }}><span class="text-sm">三　</span>
+                type="checkbox" name="grades[]" value="3"{{ in_array('3', $club->for_grade) ? ' checked' : '' }}><span class="text-sm">三　</span>
             <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="checkbox" name="grades[]" value="4"{{ in_array('4', $club->grades) ? ' checked' : '' }}><span class="text-sm">四　</span>
+                type="checkbox" name="grades[]" value="4"{{ in_array('4', $club->for_grade) ? ' checked' : '' }}><span class="text-sm">四　</span>
             <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="checkbox" name="grades[]" value="5"{{ in_array('5', $club->grades) ? ' checked' : '' }}><span class="text-sm">五　</span>
+                type="checkbox" name="grades[]" value="5"{{ in_array('5', $club->for_grade) ? ' checked' : '' }}><span class="text-sm">五　</span>
             <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="checkbox" name="grades[]" value="6"{{ in_array('6', $club->grades) ? ' checked' : '' }}><span class="text-sm">六年級</span>
+                type="checkbox" name="grades[]" value="6"{{ in_array('6', $club->for_grade) ? ' checked' : '' }}><span class="text-sm">六年級</span>
         </div>
     </div></p>
     <p><div class="p-3">
@@ -74,9 +74,9 @@
     <p><div class="p-3">
         <label class="inline">開課日期：</label>
         <input class="inline w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" name="startdate" value="{{ substr($club->startdate, 0, 10) }}">　到　
+            type="date" name="startdate" value="{{ substr($club->startDate, 0, 10) }}">　到　
         <input class="inline w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" name="enddate" value="{{ substr($club->enddate, 0, 10) }}">
+            type="date" name="enddate" value="{{ substr($club->endDate, 0, 10) }}">
     </div></p>
     <p><div id="part_time" class="p-3">
         <label class="inline">上課時段：每週</label>
@@ -101,9 +101,9 @@
                     }
                 "{{ $club->self_defined ? ' checked' : '' }}><span class="text-sm">家長自訂　</span>
             <input class="pl-6 inline w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="time" name="starttime" value="{{ $club->starttime }}" step="300">　到　
+                type="time" name="starttime" value="{{ $club->startTime }}" step="300">　到　
             <input class="inline w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="time" name="endtime" value="{{ $club->endtime }}" step="300">
+                type="time" name="endtime" value="{{ $club->endTime }}" step="300">
         </div>
     </div></p>
     <p><div class="p-3">

@@ -187,7 +187,7 @@ class ClubController extends Controller
     {
         $kid = $request->input('kind');
         $importer = new ClubImport($kid);
-        $importer->import($request->file('file'));
+        $importer->import($request->file('excel'));
         return $this->clubList($kid)->with('success', '課外社團已經匯入完成！');
     }
 

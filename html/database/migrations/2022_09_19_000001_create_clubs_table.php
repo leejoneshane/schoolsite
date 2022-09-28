@@ -25,10 +25,10 @@ return new class extends Migration
             $table->boolean('self_remove')->default(1);
             $table->boolean('has_lunch')->default(0);
             $table->boolean('stop_enroll')->default(0);
-            $table->date('startDate')->useCurrent();
-			$table->date('endDate')->useCurrent();
-			$table->time('startTime')->nullable();
-			$table->time('endTime')->nullable();
+            $table->date('startDate');
+			$table->date('endDate');
+			$table->time('startTime');
+			$table->time('endTime');
             $table->string('teacher')->nullable();
             $table->string('location')->nullable();
             $table->text('memo')->nullable();

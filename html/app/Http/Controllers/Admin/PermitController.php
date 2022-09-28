@@ -51,7 +51,7 @@ class PermitController extends Controller
             'permission' => $perm,
             'description' => $desc,
         ]);
-        return $this->permissionList(['success' => '權限新增完成！']);
+        return $this->index(['success' => '權限新增完成！']);
     }
 
     public function edit($id)
@@ -74,13 +74,13 @@ class PermitController extends Controller
             'permission' => $perm,
             'description' => $desc,
         ]);
-        return $this->permissionList(['success' => '權限更新完成！']);
+        return $this->index(['success' => '權限更新完成！']);
     }
 
     public function remove($id)
     {
         Permission::destroy($id);
-        return $this->permissionList(['success' => '權限已經移除！']);
+        return $this->index(['success' => '權限已經移除！']);
     }
 
     public function grantList($id)

@@ -2,7 +2,6 @@
 
 namespace App\Imports;
 
-use Carbon\Carbon;
 use App\Models\Club;
 use App\Models\Unit;
 use Maatwebsite\Excel\Concerns\ToModel;
@@ -28,7 +27,7 @@ class ClubImport implements ToModel, WithHeadingRow, WithUpserts
 
     public function model(array $rows)
     {
-        if (!isset($row['name']) || !isset($row['short'])) {
+        if (!isset($rows['name']) || !isset($rows['short'])) {
             return null;
         }
         $unit = Unit::findByName($rows['dep']);
@@ -48,20 +47,20 @@ class ClubImport implements ToModel, WithHeadingRow, WithUpserts
                 if (substr($rows['week'], $i, 1) == '1') {
                     $weekdays[] = $i + 1;
                 }
-            }    
+            }
         }
-        if ($rows['remove'] == '1') {
+        $self_remove = false;
+        if (isset($rows['remove']) && $rows['remove'] == '1') {
             $self_remove = true;
-        } else {
-            $self_remove = false;
         }
-        if ($rows['lunch'] == '1') {
+        $has_lunch = false;
+        if (isset($rows['lunch']) && $rows['lunch'] == '1') {
             $has_lunch = true;
-        } else {
-            $has_lunch = false;
         }
-        $sdate = Carbon::parse($rows['sdate'])->format('Y-m-d');
-        $edate = Carbon::parse($rows['edate'])->format('Y-m-d');
+        $sdate = str_replace('/', '-', $rows['sdate']);
+        $edate = str_replace('/', '-', $rows['edate']);
+        $stime = substr($rows['stime'], 0, 2).':'.substr($rows['stime'], -2);
+        $etime = substr($rows['etime'], 0, 2).':'.substr($rows['etime'], -2);
         return new Club([
             'name' => $rows['name'],
             'short_name' => $rows['short'],
@@ -75,10 +74,10 @@ class ClubImport implements ToModel, WithHeadingRow, WithUpserts
             'stop_enroll' => false,
             'startDate' => $sdate,
             'endDate' => $edate,
-            'startTime' => $rows['stime'],
-            'endTime' => $rows['etime'],
+            'startTime' => $stime,
+            'endTime' => $etime,
             'teacher' => $rows['teacher'],
-            'location' => $rows['location'],
+            'location' => $rows['place'],
             'memo' => $rows['memo'],
             'cash' => $rows['cash'],
             'total' => $rows['total'],

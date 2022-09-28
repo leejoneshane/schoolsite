@@ -71,7 +71,6 @@ class Club extends Model
 
     public function getGradeAttribute()
     {
-        sort($this->for_grade); 
         $str = '';
         foreach ($this->for_grade as $g) {
             $str .= self::$weekMap[$g];
@@ -89,7 +88,6 @@ class Club extends Model
             $str .= ' 每週上課日由家長自選';
         } else {
             $str .= ' 每週';
-            sort($this->weekdays);
             foreach ($this->weekdays as $d) {
                 $str .= self::$weekMap[$d];
             }
