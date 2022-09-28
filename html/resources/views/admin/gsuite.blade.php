@@ -33,23 +33,27 @@
                 <input type="radio" id="onduty" name="leave" value="onduty" class="sr-only peer" onclick="
                     const elem = document.getElementById('onduty');
                     if (elem.checked) {
-                        document.getElementById('target').classList.remove('hidden');
+                        document.getElementById('target1').classList.remove('hidden');
+                        document.getElementById('target2').classList.add('hidden');
                     } else {
-                        document.getElementById('target').classList.add('hidden');
+                        document.getElementById('target1').classList.add('hidden');
+                        document.getElementById('target2').classList.remove('hidden');
                     }
                     " checked>
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">只同步在校生帳號！</span>
+                <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">只同步在職或在學人員！</span>
             </label>
             <br>
             <label for="suspend" class="inline-flex relative items-center cursor-pointer">
                 <input type="radio" id="suspend" name="leave" value="suspend" class="sr-only peer" onclick="
-                const elem = document.getElementById('onduty');
-                if (elem.checked) {
-                    document.getElementById('target').classList.remove('hidden');
-                } else {
-                    document.getElementById('target').classList.add('hidden');
-                }
+                    const elem = document.getElementById('onduty');
+                    if (elem.checked) {
+                        document.getElementById('target1').classList.remove('hidden');
+                        document.getElementById('target2').classList.add('hidden');
+                    } else {
+                        document.getElementById('target1').classList.add('hidden');
+                        document.getElementById('target2').classList.remove('hidden');
+                    }
                 ">
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">只停用畢業生帳號！</span>
@@ -57,12 +61,14 @@
             <br>
             <label for="remove" class="inline-flex relative items-center cursor-pointer">
                 <input type="radio" id="remove" name="leave" value="remove" class="sr-only peer" onclick="
-                const elem = document.getElementById('onduty');
-                if (elem.checked) {
-                    document.getElementById('target').classList.remove('hidden');
-                } else {
-                    document.getElementById('target').classList.add('hidden');
-                }
+                    const elem = document.getElementById('onduty');
+                    if (elem.checked) {
+                        document.getElementById('target1').classList.remove('hidden');
+                        document.getElementById('target2').classList.add('hidden');
+                    } else {
+                        document.getElementById('target1').classList.add('hidden');
+                        document.getElementById('target2').classList.remove('hidden');
+                    }
                 ">
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">只移除畢業生帳號！</span>
@@ -74,10 +80,10 @@
             </p>
         </div>
         <div class="col-span-1">
-            <div id="target" class="p-2">
-                <label for="target">選擇同步對象：</label>
+            <div id="target1" class="p-2">
+                <label for="target1">選擇同步對象：</label>
                 <select class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    name="target">
+                    name="target1">
                     <option value="teachers">所有教職員</option>
                     <option value="grade1">一年級學生</option>
                     <option value="grade2">二年級學生</option>
@@ -88,6 +94,19 @@
                     @foreach ($classes as $cls)
                     <option value="{{ $cls->id }}">{{ $cls->name }}</option>
                     @endforeach
+                </select>
+            </div>
+            <div id="target2" class="p-2 hidden">
+                <label for="target2">處理哪一年度？</label>
+                <select class="inline rounded w-20 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                    name="target2">
+                    @php
+                        $syear = date("Y")-1917;
+                        $eyear = $syear - 5;
+                    @endphp
+                    @for ($i=$syear; $i>= $eyear; $i--)
+                    <option value="{{ $i }}">{{ $i }}</option>
+                    @endfor
                 </select>
             </div>
         </div>

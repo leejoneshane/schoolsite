@@ -29,7 +29,7 @@ class SyncToGoogle implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($password, $leave, $target = false)
+    public function __construct($password, $leave, $target)
     {
         $this->onQueue('app');
         $this->password = $password;
@@ -56,7 +56,7 @@ class SyncToGoogle implements ShouldQueue
                 $logs = $google->sync_class($this->target, $this->password);
             }
         } else {
-            $logs = $google->deal_graduate($this->leave);
+            $logs = $google->deal_graduate($this->leave, $this->target);
         }
         $end_time = Carbon::now()->format('Y-m-d H:m:s l');
         $admins = User::admins();

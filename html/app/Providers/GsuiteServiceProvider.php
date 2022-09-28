@@ -121,8 +121,8 @@ class GsuiteServiceProvider extends ServiceProvider
 			do {
 				if ($page_token) $opt['pageToken'] = $page_token;
 				$result = $this->directory->users->listUsers($opt);
-				$page_token = $result->getNectPageToken();
-				$users = $users + $result->getUsers();
+				$page_token = $result->getNextPageToken();
+				$users = array_merge($users, $result->getUsers());
 			} while ($page_token);
 			return $users;
 		} catch (\Google_Service_Exception $e) {
@@ -133,9 +133,20 @@ class GsuiteServiceProvider extends ServiceProvider
 
 	public function find_users($filter)
 	{
+		$users = [];
+		$opt = [
+			'domain' => config('services.gsuite.domain'),
+			'query' => $filter,
+		];
+		$page_token = null;
 		try {
-			$result = $this->directory->users->listUsers(['domain' => config('services.gsuite.domain'), 'query' => $filter]);
-			return $result->getUsers();
+			do {
+				if ($page_token) $opt['pageToken'] = $page_token;
+				$result = $this->directory->users->listUsers($opt);
+				$page_token = $result->getNextPageToken();
+				$users = array_merge($users, $result->getUsers());
+			} while ($page_token);
+			return $users;
 		} catch (\Google_Service_Exception $e) {
 			Log::notice("google findUsers($filter):" . $e->getMessage());
 			return false;
@@ -920,17 +931,10 @@ class GsuiteServiceProvider extends ServiceProvider
 		return $detail_log;
 	}
 
-	public function deal_graduate($leave)
+	public function deal_graduate($leave, $target)
 	{
 		$detail_log = [];
-		$domain = config('services.gsuite.domain');
-		$classes = Classroom::all();
-		if (date('m') > 7) { //計算畢業生入學年
-        	$year = date('Y') - 1917;
-    	} else {
-        	$year = date('Y') - 1918;
-    	}
-		$students = $this->find_users('orgDepartment='.$year);
+		$students = $this->find_users("email:$target* isSuspended=false");
 		foreach ($students as $s) {
 			$realname = $s->getName()->getFullName();
 			$org = $s->getOrganizations();
