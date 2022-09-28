@@ -59,8 +59,13 @@ class ClubImport implements ToModel, WithHeadingRow, WithUpserts
         }
         $sdate = str_replace('/', '-', $rows['sdate']);
         $edate = str_replace('/', '-', $rows['edate']);
-        $stime = substr($rows['stime'], 0, 2).':'.substr($rows['stime'], -2);
-        $etime = substr($rows['etime'], 0, 2).':'.substr($rows['etime'], -2);
+        if (strlen($rows['stime']) > 5) {
+            $stime = substr($rows['stime'], 0, 2).':'.substr($rows['stime'], 3, 2);
+            $etime = substr($rows['etime'], 0, 2).':'.substr($rows['etime'], 3, 2);
+        } else {
+            $stime = substr($rows['stime'], 0, 2).':'.substr($rows['stime'], -2);
+            $etime = substr($rows['etime'], 0, 2).':'.substr($rows['etime'], -2);
+        }
         return new Club([
             'name' => $rows['name'],
             'short_name' => $rows['short'],

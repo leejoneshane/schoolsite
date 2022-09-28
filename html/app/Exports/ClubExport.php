@@ -71,8 +71,6 @@ class ClubExport implements FromCollection, WithHeadings, WithColumnFormatting, 
             }
             $week = implode('', $weekdays);
         }
-        $sdate = $club->startDate->format('Y-m-d');
-        $edate = $club->endDate->format('Y-m-d');
         $lunch = 0;
         if ($club->has_lunch) $lunch = 1;
         $remove = 0;
@@ -83,10 +81,10 @@ class ClubExport implements FromCollection, WithHeadings, WithColumnFormatting, 
             $club->short_name,
             $grade,
             $week,
-            $sdate,
-            $edate,
-            $club->startTime,
-            $club->endTime,
+            $club->startDate->format('Y-m-d'),
+            $club->endDate->format('Y-m-d'),
+            $club->startTime->format('H:i'),
+            $club->endTime->format('H:i'),
             $club->teacher,
             $club->location,
             $club->cash,
