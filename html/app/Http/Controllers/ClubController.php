@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Teacher;
+use App\Models\Student;
 use App\Models\Club;
 use App\Models\ClubKind;
 use App\Models\ClubEnroll;
@@ -266,6 +267,36 @@ class ClubController extends Controller
         }
     }
 
+    public function clubUpdate(Request $request, $club_id)
+    {
+        $club = Club::find($club_id);
+        $kind_id =$club->kind_id;
+        $grades = $request->input('grades');
+        $club->update([
+            'name' => $request->input('title'),
+            'short_name' => $request->input('short'),
+            'kind_id' => $kind_id,
+            'unit_id' => $request->input('unit'),
+            'for_grade' => $grades ?: [],
+            'weekdays' => $request->input('weekdays'),
+            'self_defined' => $request->has('selfdefine') ? true : false,
+            'self_remove' => $request->has('remove') ? true : false,
+            'has_lunch' => $request->has('lunch') ? true : false,
+            'stop_enroll' => $request->has('stop') ? true : false,
+            'startDate' => $request->input('startdate'),
+            'endDate' => $request->input('enddate'),
+            'startTime' => $request->input('starttime'),
+            'endTime' => $request->input('endtime'),
+            'teacher' => $request->input('teacher'),
+            'location' => $request->input('location'),
+            'memo' => $request->input('memo'),
+            'cash' => $request->input('cash'),
+            'total' => $request->input('total'),
+            'maximum' => $request->input('limit'),
+        ]);
+        return $this->clubList($kind_id)->with('success', '課外社團已經修改完成！');
+    }
+
     public function clubRemove($club_id)
     {
         $user = User::find(Auth::user()->id);
@@ -312,6 +343,15 @@ class ClubController extends Controller
         } else {
             return view('app.error', ['message' => '您沒有權限使用此功能！']);
         }
+    }
+
+    public function clubEnroll()
+    {
+        $user = User::find(Auth::user()->id);
+        if ($user->user_type != 'Student') return view('app.error', ['message' => '您不是學生，因此無法報名參加學生社團！']);
+        $clubs = Club::can_enroll();
+        $student = Student::find($user->uuid);
+        return view('app.clubprepareenroll', ['clubs' => $clubs, 'student' => $student]);
     }
 
 }

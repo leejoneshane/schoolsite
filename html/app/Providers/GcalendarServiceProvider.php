@@ -3,10 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Log;
-use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\DB;
 use App\Models\IcsCalendar;
 use App\Models\IcsEvent;
 
@@ -45,11 +43,12 @@ class GcalendarServiceProvider extends ServiceProvider
 	{
 		try {
 			$cals = $this->calendar->calendarList->listCalendarList()->getItems();
-			DB::table('ics_calendars')->truncate();
+			IcsCalendar::truncate();
 			foreach ($cals as $cal) {
-				$ics = IcsCalendar::firstOrNew(['id' => $cal->getId()]);
-				$ics->summary = $cal->getSummary();
-				$ics->save();
+				IcsCalendar::create([
+					'id' => $cal->getId(),
+					'summary' => $cal->getSummary(),
+				]);
 			}
 			return $cals;
 		} catch (\Google_Service_Exception $e) {

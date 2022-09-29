@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Providers\TpeduServiceProvider as SSO;
 use Carbon\Carbon;
+use App\Models\Grade;
 
 class Student extends Model
 {
@@ -51,9 +52,19 @@ class Student extends Model
         return $this->morphMany('App\Models\Gsuite', 'owner');
 	}
     
+    public function grade()
+    {
+        return Grade::find(substr($this->class_id, 0, 1));
+    }
+
     public function classroom()
     {
         return $this->belongsTo('App\Models\Classroom', 'class_id');
+    }
+
+    public function enrolls()
+    {
+        return $this->hasMany('App\Models\ClubEnroll', 'uuid', 'uuid');
     }
 
     public function sync()

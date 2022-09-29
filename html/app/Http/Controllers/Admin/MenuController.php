@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Models\Menu;
-use Illuminate\Support\Facades\DB;
 
 class MenuController extends Controller
 {
@@ -109,9 +108,9 @@ class MenuController extends Controller
         $item = Menu::find($menu);
         $parent = $item->parent_id;
         if ($item->url == '#') {
-            DB::table('menus')->where('parent_id', $menu)->update([
+            Menu::where('parent_id', $menu)->update([
                 'parent_id' => $parent,
-            ]);    
+            ]);
         }
         $item->delete();
         return $this->index($parent, ['success' => '選單項目已經刪除！']);

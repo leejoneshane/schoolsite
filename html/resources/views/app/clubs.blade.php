@@ -29,7 +29,7 @@
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
         請從下方選單挑選要瀏覽的社團類別。<br>
-		點擊社團名稱可以管理社團報名資訊，點擊圖示「筆」可以編輯，點擊圖示「垃圾桶」刪除社團，點擊圖示「信封」寄信給報名的家長，點擊圖示「資源回收」將刪除所有報名資訊，以便重新報名。<br>
+	    點擊社團名稱可以管理社團報名資訊，點擊圖示「筆」可以編輯，點擊圖示「垃圾桶」刪除社團，點擊圖示「信封」寄信給報名的家長，點擊圖示「資源回收」將刪除本學年度所有報名資訊，以便重新報名。<br>
     </p>
 </div>
 <select id="kinds" class="block w-full py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
@@ -83,19 +83,19 @@
         <td class="p-2">{{ $club->count_enrolls() }}</td>
         <td class="p-2">
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
-                href="{{ route('clubs.edit', ['club_id' => $club->id]) }}">
+                href="{{ route('clubs.edit', ['club_id' => $club->id]) }}" title="編輯">
                 <i class="fa-solid fa-pen"></i>
             </a>
             <a class="py-2 pr-6 text-red-300 hover:text-red-600"
-                href="{{ route('clubs.remove', ['club_id' => $club->id]) }}">    
+                href="{{ route('clubs.remove', ['club_id' => $club->id]) }}" title="刪除">
                 <i class="fa-solid fa-trash"></i>
             </a>
             <a class="py-2 pr-6 text-gray-500 hover:text-black"
-                href="{{ route('clubs.mail', ['club_id' => $club->id]) }}">    
+                href="{{ route('clubs.mail', ['club_id' => $club->id]) }}" title="通知">
                 <i class="fa-regular fa-envelope"></i>
             </a>
             <a class="py-2 pr-6 text-red-300 hover:text-red-600"
-                href="{{ route('clubs.prune', ['club_id' => $club->id]) }}">    
+                href="{{ route('clubs.prune', ['club_id' => $club->id]) }}" title="重新報名">
                 <i class="fa-solid fa-recycle"></i>
             </a>
         </td>

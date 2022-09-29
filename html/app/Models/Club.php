@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ClubEnroll;
+use Carbon\Carbon;
 
 class Club extends Model
 {
@@ -99,14 +100,15 @@ class Club extends Model
         return $str;
     }
 
-    public function count_enrolls()
+    public static function can_enroll()
     {
-        return $this->enrolls()->count();
-    }
-
-    public function count_enrolled()
-    {
-        return $this->enrolled()->count();
+        $today = Carbon::now();
+        return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
+            ->where('club_kinds.stop_enroll', false)
+            ->where('club_kinds.enrollDate', '<=', $today)
+            ->where('club_kinds.expireDate', '>=', $today)
+            ->where('clubs.stop_enroll', false)
+            ->get();
     }
 
     public function kind()
@@ -137,6 +139,16 @@ class Club extends Model
     public function current_enrolled()
     {
         return $this->enrolled()->where('year', ClubEnroll::current_year())->get();
+    }
+
+    public function count_enrolls()
+    {
+        return $this->current_enrolls()->count();
+    }
+
+    public function count_enrolled()
+    {
+        return $this->current_enrolled()->count();
     }
 
     public function students()

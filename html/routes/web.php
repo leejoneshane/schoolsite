@@ -71,8 +71,7 @@ Route::post('messager/send', 'App\Http\Controllers\MessagerController@send')->mi
 //student club routes...
 Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('/', 'App\Http\Controllers\ClubController@index')->name('clubs');
-    Route::get('enroll', 'App\Http\Controllers\ClubController@kindList');
-    Route::post('enroll', 'App\Http\Controllers\ClubController@kindList')->name('clubs.enroll');
+    Route::get('enroll', 'App\Http\Controllers\ClubController@clubEnroll');
     Route::get('kind', 'App\Http\Controllers\ClubController@kindList')->name('clubs.kinds');
     Route::get('kind/add', 'App\Http\Controllers\ClubController@kindAdd');
     Route::post('kind/add', 'App\Http\Controllers\ClubController@kindInsert')->name('clubs.addkind');

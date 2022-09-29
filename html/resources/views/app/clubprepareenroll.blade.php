@@ -1,0 +1,112 @@
+@extends('layouts.main')
+
+@section('content')
+<div class="text-slate-500 text-gray-500 text-zinc-500 text-neutral-500 text-stone-500 text-red-500 text-orange-500 text-amber-500 text-yellow-500 text-lime-500 text-green-500 text-emerald-500 text-teal-500 text-cyan-500 text-sky-500 text-blue-500 text-indigo-500 text-violet-500 text-purple-500 text-fuchsia-500 text-pink-500 text-rose-500"></div>
+<div class="text-2xl font-bold leading-normal pb-5">
+    學生社團報名
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs') }}">
+        <i class="fa-solid fa-calendar-plus"></i>返回上一頁
+    </a>
+</div>
+<table class="w-full py-4 text-left font-normal">
+    <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
+        <th scope="col" class="p-2">
+            營隊全名
+        </th>
+        <th scope="col" class="p-2">
+            指導老師
+        </th>
+        <th scope="col" class="p-2">
+            招生年級
+        </th>
+        <th scope="col" class="p-2">
+            上課時段
+        </th>
+        <th scope="col" class="p-2">
+            授課地點
+        </th>
+        <th scope="col" class="p-2">
+            招生人數
+        </th>
+        <th scope="col" class="p-2">
+            報名限制
+        </th>
+		<th scope="col" class="p-2">
+            已報名
+        </th>
+		<th scope="col" class="p-2">
+            管理
+        </th>
+    </tr>
+    @if ($clubs->isEmpty())
+    <tr>
+        <td colspan="9" class="p-2 text-3xl font-bold">查無可報名社團！</td>
+    </tr>
+    @endif
+    @foreach ($clubs as $club)
+    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+        <td class="p-2 {{ $kind->style }}">{{ $club->name }}</td>
+        <td class="p-2">{{ $club->teacher }}</td>
+        <td class="p-2">{{ $club->grade }}</td>
+        <td class="p-2">{{ $club->studytime }}</td>
+        <td class="p-2">{{ $club->location }}</td>
+        <td class="p-2">{{ $club->total }}</td>
+        <td class="p-2">{{ $club->maximum }}</td>
+        <td class="p-2">{{ $club->count_enrolls() }}</td>
+        <td class="p-2">
+            @if (in_array(substr($student->class_id, 0, 1), $club->for_grade))
+            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+                href="{{ route('clubs.addenroll', ['club_id' => $club->id]) }}">
+                我要報名
+            </a>
+            @endif
+        </td>
+    </tr>
+    @endforeach
+</table>
+@if ($student->enrolls->isNotEmpty())
+<table class="w-full py-4 text-left font-normal">
+    <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
+        <th scope="col" class="p-2">
+            營隊全名
+        </th>
+        <th scope="col" class="p-2">
+            上課時段
+        </th>
+        <th scope="col" class="p-2">
+            授課地點
+        </th>
+        <th scope="col" class="p-2">
+            報名者
+        </th>
+        <th scope="col" class="p-2">
+            錄取（或候補）
+        </th>
+		<th scope="col" class="p-2">
+            管理
+        </th>        
+    </tr>
+    @foreach ($student->enrolls as $enroll)
+    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+        <td class="p-2  {{ $enroll->club->kind->style }}">{{ $enroll->club->name }}</td>
+        <td class="p-2">{{ $enroll->club->studytime }}</td>
+        <td class="p-2">{{ $enroll->club->location }}</td>
+        <td class="p-2">{{ $enroll->parent }}</td>
+        <td class="p-2">{{ $enroll->accepted ? '<i class="fa-solid fa-check"></i>' : '' }}</td>
+        <td class="p-2">
+            @if (!$enroll->club->self_remove && empty($enroll->audited_at))
+            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+                href="{{ route('clubs.editenroll', ['id' => $enroll->id]) }}">
+                修改報名資訊
+            </a>
+            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+                href="{{ route('clubs.delenroll', ['id' => $enroll->id]) }}">
+                取消報名
+            </a>
+            @endif
+        </td>
+    </tr>
+    @endforeach
+</table>
+@endif
+@endsection

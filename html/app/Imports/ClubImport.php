@@ -4,12 +4,13 @@ namespace App\Imports;
 
 use App\Models\Club;
 use App\Models\Unit;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithUpserts;
 
-class ClubImport implements ToModel, WithHeadingRow, WithUpserts
+class ClubImport implements ToCollection, WithHeadingRow, WithUpserts
 {
     use Importable;
 
@@ -25,68 +26,75 @@ class ClubImport implements ToModel, WithHeadingRow, WithUpserts
         return 'name';
     }
 
-    public function model(array $rows)
+    public function collection(Collection $rows)
     {
-        if (!isset($rows['name']) || !isset($rows['short'])) {
-            return null;
-        }
-        $unit = Unit::findByName($rows['dep']);
-        $grades = [];
-        for ($i=0; $i<6; $i++) {
-            if (substr($rows['grade'], $i, 1) == '1') {
-                $grades[] = $i + 1;
+        foreach ($rows as $row) 
+        {
+            if (!isset($row['name']) || !isset($row['short'])) {
+                return null;
             }
-        }
-        if ($rows['week'] == '00000') {
-            $self_define = true;
-            $weekdays = null;
-        } else {
-            $self_define = false;
-            $weekdays = [];
-            for ($i=0; $i<5; $i++) {
-                if (substr($rows['week'], $i, 1) == '1') {
-                    $weekdays[] = $i + 1;
+            $unit = Unit::findByName($row['dep']);
+            $grades = [];
+            for ($i=0; $i<6; $i++) {
+                if (substr($row['grade'], $i, 1) == '1') {
+                    $grades[] = $i + 1;
                 }
             }
+            if ($row['week'] == '00000') {
+                $self_define = true;
+                $weekdays = null;
+            } else {
+                $self_define = false;
+                $weekdays = [];
+                for ($i=0; $i<5; $i++) {
+                    if (substr($row['week'], $i, 1) == '1') {
+                        $weekdays[] = $i + 1;
+                    }
+                }
+            }
+            $self_remove = false;
+            if (isset($row['remove']) && $row['remove'] == '1') {
+                $self_remove = true;
+            }
+            $has_lunch = false;
+            if (isset($row['lunch']) && $row['lunch'] == '1') {
+                $has_lunch = true;
+            }
+            $sdate = str_replace('/', '-', $row['sdate']);
+            $edate = str_replace('/', '-', $row['edate']);
+            if (strlen($row['stime']) > 5) {
+                $stime = substr($row['stime'], 0, 2).':'.substr($row['stime'], 3, 2);
+                $etime = substr($row['etime'], 0, 2).':'.substr($row['etime'], 3, 2);
+            } else {
+                $stime = substr($row['stime'], 0, 2).':'.substr($row['stime'], -2);
+                $etime = substr($row['etime'], 0, 2).':'.substr($row['etime'], -2);
+            }
+            Club::updateOrCreate(
+                [
+                    'name' => $row['name'],
+                ],
+                [
+                    'short_name' => $row['short'],
+                    'kind_id' => $this->kind,
+                    'unit_id' => $unit->id,
+                    'for_grade' => $grades,
+                    'weekdays' => $weekdays,
+                    'self_defined' => $self_define,
+                    'self_remove' => $self_remove,
+                    'has_lunch' => $has_lunch,
+                    'stop_enroll' => false,
+                    'startDate' => $sdate,
+                    'endDate' => $edate,
+                    'startTime' => $stime,
+                    'endTime' => $etime,
+                    'teacher' => $row['teacher'],
+                    'location' => $row['place'],
+                    'memo' => $row['memo'],
+                    'cash' => $row['cash'],
+                    'total' => $row['total'],
+                    'maximum' => $row['maxnum'],
+                ]
+            );
         }
-        $self_remove = false;
-        if (isset($rows['remove']) && $rows['remove'] == '1') {
-            $self_remove = true;
-        }
-        $has_lunch = false;
-        if (isset($rows['lunch']) && $rows['lunch'] == '1') {
-            $has_lunch = true;
-        }
-        $sdate = str_replace('/', '-', $rows['sdate']);
-        $edate = str_replace('/', '-', $rows['edate']);
-        if (strlen($rows['stime']) > 5) {
-            $stime = substr($rows['stime'], 0, 2).':'.substr($rows['stime'], 3, 2);
-            $etime = substr($rows['etime'], 0, 2).':'.substr($rows['etime'], 3, 2);
-        } else {
-            $stime = substr($rows['stime'], 0, 2).':'.substr($rows['stime'], -2);
-            $etime = substr($rows['etime'], 0, 2).':'.substr($rows['etime'], -2);
-        }
-        return new Club([
-            'name' => $rows['name'],
-            'short_name' => $rows['short'],
-            'kind_id' => $this->kind,
-            'unit_id' => $unit->id,
-            'for_grade' => $grades,
-            'weekdays' => $weekdays,
-            'self_defined' => $self_define,
-            'self_remove' => $self_remove,
-            'has_lunch' => $has_lunch,
-            'stop_enroll' => false,
-            'startDate' => $sdate,
-            'endDate' => $edate,
-            'startTime' => $stime,
-            'endTime' => $etime,
-            'teacher' => $rows['teacher'],
-            'location' => $rows['place'],
-            'memo' => $rows['memo'],
-            'cash' => $rows['cash'],
-            'total' => $rows['total'],
-            'maximum' => $rows['maxnum'],
-        ]);
     }
 }

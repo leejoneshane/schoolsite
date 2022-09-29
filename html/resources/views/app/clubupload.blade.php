@@ -95,7 +95,7 @@
     </div></p>
     <p><div class="p-3">
         <label for="excel" class="inline">請選擇上傳檔案！</label>
-        <input type="file" name="excel" accept="application/vnd.ms-excel,.pdf" class="inline file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" required>
+        <input type="file" name="excel" accept=".xls,.xlsx,.pdf" class="inline file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" required>
     </div></p>
     <p class="p-6">
         <div class="inline">

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class ClubKind extends Model
 {
@@ -43,6 +44,20 @@ class ClubKind extends Model
     public function clubs()
     {
         return $this->hasMany('App\Models\Club', 'kind_id');
+    }
+
+    public function enroll_clubs()
+    {
+        return $this->clubs()->where('stop_enroll', false)->get();
+    }
+
+    public static function can_enroll()
+    {
+        $today = Carbon::now();
+        return ClubKind::where('stop_enroll', false)
+            ->where('enrollDate', '<=', $today)
+            ->where('expireDate', '>=', $today)
+            ->get();
     }
 
 }
