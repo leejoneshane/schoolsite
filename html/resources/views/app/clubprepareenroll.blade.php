@@ -44,8 +44,8 @@
     </tr>
     @endif
     @foreach ($clubs as $club)
-    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
-        <td class="p-2 {{ $kind->style }}">{{ $club->name }}</td>
+    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $club->style }}">
+        <td class="p-2">{{ $club->name }}</td>
         <td class="p-2">{{ $club->teacher }}</td>
         <td class="p-2">{{ $club->grade }}</td>
         <td class="p-2">{{ $club->studytime }}</td>

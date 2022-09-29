@@ -104,6 +104,7 @@ class Club extends Model
     {
         $today = Carbon::now();
         return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
+            ->select('clubs.*', 'club_kinds.style')
             ->where('club_kinds.stop_enroll', false)
             ->where('club_kinds.enrollDate', '<=', $today)
             ->where('club_kinds.expireDate', '>=', $today)
