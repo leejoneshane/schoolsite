@@ -58,6 +58,7 @@ class Club extends Model
     protected $appends = [
 		'grade',
         'studytime',
+        'style',
     ];
 
     protected static $weekMap = [
@@ -100,6 +101,11 @@ class Club extends Model
         return $str;
     }
 
+    public function getStyleAttribute()
+    {
+        return $this->kind->style;
+    }
+
     public static function can_enroll()
     {
         $today = Carbon::now();
@@ -127,7 +133,7 @@ class Club extends Model
         return $this->hasMany('App\Models\ClubEnroll');
     }
 
-    public function enrolled()
+    public function accepted_enrolls()
     {
         return $this->hasMany('App\Models\ClubEnroll')->where('accepted', 1);
     }
@@ -137,9 +143,9 @@ class Club extends Model
         return $this->enrolls()->where('year', ClubEnroll::current_year())->get();
     }
 
-    public function current_enrolled()
+    public function current_accepted()
     {
-        return $this->enrolled()->where('year', ClubEnroll::current_year())->get();
+        return $this->accepted_enrolls()->where('year', ClubEnroll::current_year())->get();
     }
 
     public function count_enrolls()
@@ -147,7 +153,7 @@ class Club extends Model
         return $this->current_enrolls()->count();
     }
 
-    public function count_enrolled()
+    public function count_accepted()
     {
         return $this->current_enrolled()->count();
     }
@@ -177,7 +183,7 @@ class Club extends Model
         return $this->students()->wherePivot('year', $year)->get();
     }
 
-    public function enrolled_students($year)
+    public function accepted_students($year)
     {
         return $this->students()->wherePivot('year', $year)->wherePivot('accepted', 1)->get();
     }

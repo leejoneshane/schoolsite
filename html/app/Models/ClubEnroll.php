@@ -99,6 +99,42 @@ class ClubEnroll extends Model
         return $this->belongsTo('App\Models\Student', 'uuid');
     }
 
+    public static function current()
+    {
+        return ClubEnroll::where('year', CLubEnroll::current_year())->get();
+    }
+
+    public static function currentByClub($club_id)
+    {
+        return ClubEnroll::where('year', CLubEnroll::current_year())
+        ->where('club_id', $club_id)
+        ->get();
+    }
+
+    public static function currentByStudent($uuid)
+    {
+        return ClubEnroll::where('year', CLubEnroll::current_year())
+        ->where('uuid', $uuid)
+        ->get();
+    }
+
+    public static function findBy($uuid = null, $club_id = null, $year = null)
+    {
+        $query = ClubEnroll::query();
+        if ($uuid) {
+            $query = $query->where('uuid', $uuid);
+        }
+        if ($club_id) {
+            $query = $query->where('club_id', $club_id);
+        }
+        if ($year) {
+            $query = $query->where('year', $year);
+        } else {
+            $query = $query->where('year', CLubEnroll::current_year());
+        }
+        return $query->get();
+    }
+
     public function year_order()
     {
         return ClubEnroll::where('club_id', $this->club_id)->where('year', $this->year)->where('created_at', '<', $this->created_at)->count();

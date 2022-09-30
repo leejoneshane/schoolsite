@@ -31,10 +31,10 @@
         <th scope="col" class="p-2">
             報名限制
         </th>
-		<th scope="col" class="p-2">
+        <th scope="col" class="p-2">
             已報名
         </th>
-		<th scope="col" class="p-2">
+        <th scope="col" class="p-2">
             管理
         </th>
     </tr>
@@ -54,17 +54,33 @@
         <td class="p-2">{{ $club->maximum }}</td>
         <td class="p-2">{{ $club->count_enrolls() }}</td>
         <td class="p-2">
-            @if (in_array(substr($student->class_id, 0, 1), $club->for_grade))
+            @if ($enroll = $student->get_enroll($club->id))
+            已報名，順位為 {{ $enroll->year_order() }}
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
-                href="{{ route('clubs.addenroll', ['club_id' => $club->id]) }}">
-                我要報名
+                href="{{ route('clubs.editenroll', ['enroll_id' => $enroll->id]) }}">
+                修改報名資訊
             </a>
+                @if ($club->self_remove && empty($enroll->audited_at))
+                <a class="py-2 pr-6 text-red-300 hover:text-red-600"
+                    href="{{ route('clubs.delenroll', ['enroll_id' => $enroll->id]) }}">
+                    取消報名
+                </a>
+                @endif
+            @else
+                @if ($club->count_enrolls() <= $club->maximum)
+                <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+                    href="{{ route('clubs.addenroll', ['club_id' => $club->id]) }}">
+                    我要報名
+                </a>
+                @else
+                    名額已滿
+                @endif
             @endif
         </td>
     </tr>
     @endforeach
 </table>
-@if ($student->enrolls->isNotEmpty())
+@if ($student->current_enrolls()->isNotEmpty())
 <table class="w-full py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
         <th scope="col" class="p-2">
@@ -82,11 +98,11 @@
         <th scope="col" class="p-2">
             錄取（或候補）
         </th>
-		<th scope="col" class="p-2">
+        <th scope="col" class="p-2">
             管理
-        </th>        
+        </th>
     </tr>
-    @foreach ($student->enrolls as $enroll)
+    @foreach ($student->current_enrolls() as $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2  {{ $enroll->club->kind->style }}">{{ $enroll->club->name }}</td>
         <td class="p-2">{{ $enroll->club->studytime }}</td>
@@ -94,13 +110,13 @@
         <td class="p-2">{{ $enroll->parent }}</td>
         <td class="p-2">{{ $enroll->accepted ? '<i class="fa-solid fa-check"></i>' : '' }}</td>
         <td class="p-2">
-            @if (!$enroll->club->self_remove && empty($enroll->audited_at))
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
-                href="{{ route('clubs.editenroll', ['id' => $enroll->id]) }}">
+                href="{{ route('clubs.editenroll', ['enroll_id' => $enroll->id]) }}">
                 修改報名資訊
             </a>
+            @if (!$enroll->club->self_remove && empty($enroll->audited_at))
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
-                href="{{ route('clubs.delenroll', ['id' => $enroll->id]) }}">
+                href="{{ route('clubs.delenroll', ['enroll_id' => $enroll->id]) }}">
                 取消報名
             </a>
             @endif

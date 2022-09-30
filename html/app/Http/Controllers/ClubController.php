@@ -225,7 +225,7 @@ class ClubController extends Controller
         $title = $request->input('title');
         $found = Club::where('name', $title)->first();
         if ($found) {
-            return $this->clubList($kind_id)->with('error', '該營隊已經存在，無法再新增！');
+            return $this->clubList($kind_id)->with('error', '該課外社團已經存在，無法再新增！');
         }
         $grades = $request->input('grades');
         Club::create([
@@ -347,11 +347,55 @@ class ClubController extends Controller
 
     public function clubEnroll()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type != 'Student') return view('app.error', ['message' => '您不是學生，因此無法報名參加學生社團！']);
         $clubs = Club::can_enroll();
         $student = Student::find($user->uuid);
-        return view('app.clubprepareenroll', ['clubs' => $clubs, 'student' => $student]);
+        $grade = substr($student->class_id, 0, 1);
+        $filtered = $clubs->filter(function ($club) use ($grade) {
+            return in_array($grade, $club->for_grade);
+        });
+        return view('app.clubprepareenroll', ['clubs' => $filtered, 'student' => $student]);
+    }
+
+    public function clubEnrollAdd($club_id)
+    {
+        $user = Auth::user();
+        if ($user->user_type != 'Student') return view('app.error', ['message' => '您不是學生，因此無法報名參加學生社團！']);
+        $club = Club::find($club_id);
+        $student = Student::find($user->uuid);
+        return view('app.clubenroll', ['club' => $club, 'student' => $student]);
+    }
+
+    public function clubEnrollInsert(Request $request, $club_id)
+    {
+        $user = Auth::user();
+        $enroll = ClubEnroll::where('year', ClubEnroll::current_year())->where('uuid', $user->uuid);
+        if ($enroll) {
+            return $this->clubEnroll()->with('error', '您已經報名該社團，無法再次報名！');
+        }
+        $club = Club::find($club_id);
+        $enroll = ClubEnroll::create([
+            'uuid' => $user->uuid,
+            'club_id' => $club_id,
+            'need_lunch' => $request->input('lunch'),
+            'weekdays' => $request->input('weekdays'),
+            'identity' => $request->input('identity'),
+            'parent' => $request->input('parent'),
+            'email' => $request->input('email'),
+            'mobile' => $request->input('mobile'),
+        ]);
+        $order = $club->count_enrolls();
+        if ($club->kind->manual_auditin) {
+            return $this->clubEnroll()->with('success', '您已經完成報名手續，報名順位為'.$order.'因須進行資格審核，待錄取作業完成後，將另行公告通知！');
+        } else {
+            if ($order > $club->total)
+            $enroll->accepted = true;
+            $enroll->save();
+            if ($order > $club->total)
+            $message = '目前列為候補，若能遞補錄取將會另行通知！';
+            return $this->clubEnroll()->with('success', '您已經完成報名手續，報名順位為'.$order);
+        }
     }
 
 }

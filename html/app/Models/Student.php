@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Providers\TpeduServiceProvider as SSO;
 use Carbon\Carbon;
 use App\Models\Grade;
+use App\Models\ClubEnroll;
 
 class Student extends Model
 {
@@ -65,6 +66,27 @@ class Student extends Model
     public function enrolls()
     {
         return $this->hasMany('App\Models\ClubEnroll', 'uuid', 'uuid');
+    }
+
+    public function year_enrolls($year)
+    {
+        return $this->enrolls()->where('year', $year)->get();
+    }
+
+    public function current_enrolls()
+    {
+        return $this->enrolls()->where('year', CLubEnroll::current_year())->get();
+    }
+
+    public function get_enroll($club_id)
+    {
+        return ClubEnroll::findBy($this->uuid, $club_id);
+    }
+
+    public function has_enroll($club_id)
+    {
+        $rec = ClubEnroll::findBy($this->uuid, $club_id);
+        return ($rec) ? true : false;
     }
 
     public function sync()
