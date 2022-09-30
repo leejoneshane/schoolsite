@@ -132,7 +132,7 @@ class ClubEnroll extends Model
         } else {
             $query = $query->where('year', CLubEnroll::current_year());
         }
-        return $query->get();
+        return $query->first();
     }
 
     public function year_order()
