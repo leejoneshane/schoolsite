@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('email', 100);
             $table->string('parent');
             $table->string('mobile');
-            $table->boolean('accepted');
+            $table->boolean('accepted')->default(0);
             $table->timestamp('audited_at')->nullable();
             $table->timestamps();
         });

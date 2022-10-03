@@ -49,12 +49,14 @@ class ClubEnroll extends Model
 
     public function getWeekdayAttribute()
     {
-        sort($this->weekdays); 
-        $str = [];
-        foreach ($this->weekdays as $g) {
-            $str[] = self::$weekMap[$g];
+        if (!empty($this->weekdays)) {
+            $str = [];
+            foreach ($this->weekdays as $g) {
+                $str[] = self::$weekMap[$g];
+            }
+            return '每週'.implode('、', $str);    
         }
-        return '每週'.implode('、', $str);
+        return '';
     }
 
     /**

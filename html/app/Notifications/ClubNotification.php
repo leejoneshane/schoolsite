@@ -11,7 +11,7 @@ class ClubNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $message;
+    public $info = '';
 
     /**
      * Create a new notification instance.
@@ -20,7 +20,7 @@ class ClubNotification extends Notification implements ShouldQueue
      */
     public function __construct($message)
     {
-        $this->message = $message;
+        $this->info = $message;
     }
 
     /**
@@ -42,10 +42,11 @@ class ClubNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $club = $notifiable->club;
-        $student = $notifiable->student;
-        return (new MailMessage)->subject('國語實驗國民小學學生課外社團家長通知')
-            ->view('emails.club', ['club' => $club, 'student' => $student, 'message' => $this->message]);
+        $enroll = $notifiable; 
+        $club = $enroll->club;
+        $student = $enroll->student;
+        return (new MailMessage)->subject('國語實驗國民小學學生課外社團通知')
+            ->view('emails.club', ['enroll' => $enroll, 'club' => $club, 'student' => $student, 'info' => $this->info]);
     }
 
     /**
@@ -57,7 +58,7 @@ class ClubNotification extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'message' => $this->message,
+            'info' => $this->info,
         ];
     }
 }

@@ -13,14 +13,16 @@ class ClubEnrollNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    public $order;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($order)
     {
-        //
+        $this->order = $order;
     }
 
     /**
@@ -43,7 +45,7 @@ class ClubEnrollNotification extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)->subject('國語實驗國民小學學生課外社團報名回覆')
-            ->view('emails.clubenroll', ['enroll' => $notifiable]);
+            ->view('emails.clubenroll', ['enroll' => $notifiable, 'order' => $this->order]);
     }
 
     /**

@@ -66,9 +66,7 @@ class SyncCompletedNotification extends Notification implements ShouldQueue
             ->line("同步作業於 $start 開始進行，已經於 $end 順利完成！");
         if (!empty($this->logs)) {
             $mail->line('詳細記錄如下：');
-            foreach ($this->logs as $line) {
-                $mail->line($line);
-            }    
+            $mail->lines($this->logs);
         }
         return $mail;
     }

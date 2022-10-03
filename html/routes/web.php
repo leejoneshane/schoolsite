@@ -72,11 +72,11 @@ Route::post('messager/send', 'App\Http\Controllers\MessagerController@send')->mi
 Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('/', 'App\Http\Controllers\ClubController@index')->name('clubs');
     Route::get('enroll', 'App\Http\Controllers\ClubController@clubEnroll')->name('clubs.enroll');
-    Route::get('enroll/add/{club_id}', 'App\Http\Controllers\ClubController@clubEnroll');
-    Route::post('enroll/add/{club_id}', 'App\Http\Controllers\ClubController@clubEnroll')->name('clubs.addenroll');
-    Route::get('enroll/edit/{enroll_id}', 'App\Http\Controllers\ClubController@clubEnroll');
-    Route::post('enroll/edit/{enroll_id}', 'App\Http\Controllers\ClubController@clubEnroll')->name('clubs.editenroll');
-    Route::post('enroll/remove/{enroll_id}', 'App\Http\Controllers\ClubController@clubEnroll')->name('clubs.delenroll');
+    Route::get('enroll/add/{club_id}', 'App\Http\Controllers\ClubController@clubEnrollAdd');
+    Route::post('enroll/add/{club_id}', 'App\Http\Controllers\ClubController@clubEnrollInsert')->name('clubs.addenroll');
+    Route::get('enroll/edit/{enroll_id}', 'App\Http\Controllers\ClubController@clubEnrollEdit');
+    Route::post('enroll/edit/{enroll_id}', 'App\Http\Controllers\ClubController@clubEnrollUpdate')->name('clubs.editenroll');
+    Route::post('enroll/remove/{enroll_id}', 'App\Http\Controllers\ClubController@clubEnrollRemove')->name('clubs.delenroll');
     Route::get('kind', 'App\Http\Controllers\ClubController@kindList')->name('clubs.kinds');
     Route::get('kind/add', 'App\Http\Controllers\ClubController@kindAdd');
     Route::post('kind/add', 'App\Http\Controllers\ClubController@kindInsert')->name('clubs.addkind');
