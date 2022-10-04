@@ -355,13 +355,10 @@ class ClubController extends Controller
     {
         $user = Auth::user();
         if ($user->user_type != 'Student') return view('app.error', ['message' => '您不是學生，因此無法報名參加學生社團！']);
-        $clubs = Club::can_enroll();
         $student = Student::find($user->uuid);
         $grade = substr($student->class_id, 0, 1);
-        $filtered = $clubs->filter(function ($club) use ($grade) {
-            return in_array($grade, $club->for_grade);
-        });
-        return view('app.clubenroll', ['clubs' => $filtered, 'student' => $student]);
+        $clubs = Club::can_enroll($grade);
+        return view('app.clubenroll', ['clubs' => $clubs, 'student' => $student]);
     }
 
     public function clubEnrollAdd($club_id)
@@ -381,15 +378,31 @@ class ClubController extends Controller
             return $this->clubEnroll()->with('error', '您已經報名該社團，無法再次報名！');
         }
         $club = Club::find($club_id);
+        if ($club->kind->single) {
+            $student = Student::find($user->uuid);
+            $same_kind = $student->current_enrolls_for_kind($club->kind_id);
+            if (!empty($same_kind)) return $this->clubEnroll()->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
+        }
         $order = $club->count_enrolls() + 1;
         if ($order > $club->maximum) {
             return $this->clubEnroll()->with('error', '很抱歉，該學生社團已經額滿！');
         }
+        $enrolls = Student::find($user->uuid)->year_enrolls();
+        $weekdays = null;
+        if ($club->self_defined) {
+            $weekdays = $request->input('weekdays');
+        }
+        $conflict = false;
+        foreach ($enrolls as $en) {
+            $conflict = $en->conflict($club, $weekdays);
+            if ($conflict) break;
+        }
+        if ($conflict) return $this->clubEnroll()->with('error', '很抱歉，此社團與其他已報名的社團上課時段重疊，因此無法報名！');
         $enroll = ClubEnroll::create([
             'uuid' => $user->uuid,
             'club_id' => $club_id,
             'need_lunch' => $request->input('lunch') ?: 0,
-            'weekdays' => $request->input('weekdays'),
+            'weekdays' => $weekdays,
             'identity' => $request->input('identity'),
             'parent' => $request->input('parent'),
             'email' => $request->input('email'),
@@ -401,8 +414,9 @@ class ClubController extends Controller
         }
         $enroll->accepted = true;
         $enroll->save();
-        if ($order > $club->total) $message = '目前列為候補，若能遞補錄取將會另行通知！';
-        return $this->clubEnroll()->with('success', '您已經完成報名手續，報名順位為'.$order);
+        $message = '';
+        if ($order > $club->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        return $this->clubEnroll()->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
     }
 
     public function clubEnrollEdit($enroll_id)

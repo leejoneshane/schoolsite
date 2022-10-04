@@ -106,16 +106,27 @@ class Club extends Model
         return $this->kind->style;
     }
 
-    public static function can_enroll()
+    public static function can_enroll($grade = null)
     {
         $today = Carbon::now();
-        return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
+        if ($grade) {
+            return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
+            ->select('clubs.*', 'club_kinds.style')
+            ->where('club_kinds.stop_enroll', false)
+            ->where('club_kinds.enrollDate', '<=', $today)
+            ->where('club_kinds.expireDate', '>=', $today)
+            ->where('clubs.stop_enroll', false)
+            ->whereJsonContains('clubs.for_grade', $grade)
+            ->get();
+        } else {
+            return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->select('clubs.*', 'club_kinds.style')
             ->where('club_kinds.stop_enroll', false)
             ->where('club_kinds.enrollDate', '<=', $today)
             ->where('club_kinds.expireDate', '>=', $today)
             ->where('clubs.stop_enroll', false)
             ->get();
+        }
     }
 
     public function kind()

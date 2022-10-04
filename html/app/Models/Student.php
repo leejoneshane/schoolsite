@@ -68,14 +68,21 @@ class Student extends Model
         return $this->hasMany('App\Models\ClubEnroll', 'uuid', 'uuid');
     }
 
-    public function year_enrolls($year)
+    public function year_enrolls($year = null)
     {
-        return $this->enrolls()->where('year', $year)->get();
+        if ($year) {
+            return $this->enrolls()->where('year', $year)->get();
+        } else {
+            return $this->enrolls()->where('year', CLubEnroll::current_year())->get();
+        }
     }
 
-    public function current_enrolls()
+    public function current_enrolls_for_kind($kind_id)
     {
-        return $this->enrolls()->where('year', CLubEnroll::current_year())->get();
+        $filtered = $this->year_enrolls()->filter(function ($enroll) use ($kind_id) {
+            return $enroll->club->kind_id == $kind_id;
+        });
+        return $filtered;
     }
 
     public function get_enroll($club_id)

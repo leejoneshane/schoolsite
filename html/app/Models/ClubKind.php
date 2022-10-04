@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Club;
+use App\Models\ClubEnroll;
 use Carbon\Carbon;
 
 class ClubKind extends Model
@@ -44,6 +46,11 @@ class ClubKind extends Model
     public function clubs()
     {
         return $this->hasMany('App\Models\Club', 'kind_id');
+    }
+
+    public function enrolls()
+    {
+        return $this->hasManyThrough(ClubEnroll::class, Club::class, 'kind_id', 'club_id');
     }
 
     public function enroll_clubs()

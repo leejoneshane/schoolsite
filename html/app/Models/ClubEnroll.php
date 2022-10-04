@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Notifications\ClubNotification;
 use App\Notifications\ClubEnrollNotification;
 use App\Notifications\ClubEnrolledNotification;
+use Carbon\CarbonPeriod;
 
 class ClubEnroll extends Model
 {
@@ -96,6 +97,11 @@ class ClubEnroll extends Model
         return $this->belongsTo('App\Models\Club', 'club_id');
     }
 
+    public function kind()
+    {
+        return $this->club->kind;
+    }
+
     public function student()
     {
         return $this->belongsTo('App\Models\Student', 'uuid');
@@ -104,20 +110,6 @@ class ClubEnroll extends Model
     public static function current()
     {
         return ClubEnroll::where('year', CLubEnroll::current_year())->get();
-    }
-
-    public static function currentByClub($club_id)
-    {
-        return ClubEnroll::where('year', CLubEnroll::current_year())
-        ->where('club_id', $club_id)
-        ->get();
-    }
-
-    public static function currentByStudent($uuid)
-    {
-        return ClubEnroll::where('year', CLubEnroll::current_year())
-        ->where('uuid', $uuid)
-        ->get();
     }
 
     public static function findBy($uuid = null, $club_id = null, $year = null)
@@ -149,12 +141,41 @@ class ClubEnroll extends Model
 
     public function sendClubEnrollNotification()
     {
-        $this->notify(new ClubEnrollNotification);
+        $order = $this->year_order() + 1;
+        $this->notify(new ClubEnrollNotification($order));
     }
 
     public function sendClubEnrolledNotification()
     {
         $this->notify(new ClubEnrolledNotification);
+    }
+
+    public function conflict($club, $weekdays = null)
+    {
+        $old = $this->club;
+        $date_period_old = new CarbonPeriod($old->startDate, $old->endDate);
+        $date_period_new = new CarbonPeriod($club->startDate, $club->endDate);
+        if ($date_period_old->overlaps($date_period_new)) {
+            if ($old->self_defined) {
+                $weekdays_old = $this->weekdays;
+            } else {
+                $weekdays_old = $old->weekdays;
+            }
+            if ($weekdays) {
+                $weekdays_new = $weekdays;
+            } else {
+                $weekdays_new = $club->weekdays;
+            }
+            $overlap = array_intersect($weekdays_new, $weekdays_old);
+            if (!empty($overlap)) {
+                $time_period_old = new CarbonPeriod($old->startTime, $old->endTime);
+                $time_period_new = new CarbonPeriod($club->startTime, $club->endTime);
+                if ($time_period_old->overlaps($time_period_new)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

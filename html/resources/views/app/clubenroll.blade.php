@@ -71,7 +71,7 @@
     @endforeach
 </table>
 <div class="block w-full h-12"></div>
-@if ($student->current_enrolls()->isNotEmpty())
+@if ($student->year_enrolls()->isNotEmpty())
 <table class="w-full py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
         <th scope="col" class="p-2">
@@ -96,7 +96,7 @@
             管理
         </th>
     </tr>
-    @foreach ($student->current_enrolls() as $enroll)
+    @foreach ($student->year_enrolls() as $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2  {{ $enroll->club->style }}">{{ $enroll->club->name }}</td>
         <td class="p-2">{{ $enroll->parent }}</td>
