@@ -60,12 +60,19 @@
                 href="{{ route('students.edit', ['uuid' => $s->uuid]) }}">
                 <i class="fa-solid fa-user-pen"></i>
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600"
-                href="{{ route('students.remove', ['uuid' => $s->uuid]) }}">    
+            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="#"
+                onclick="
+                    const myform = document.getElementById('remove');
+                    myform.action = '{{ route('students.remove', ['uuid' => $t->uuid]) }}';
+                    myform.submit();
+            ">
                 <i class="fa-solid fa-trash"></i>
             </a>
         </td>
     </tr>
     @endforeach
+    <form class="hidden" id="remove" action="" method="POST">
+        @csrf
+    </form>
 </table>
 @endsection

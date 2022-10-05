@@ -64,8 +64,12 @@
                 href="{{ route('clubs.editkind', ['kid' => $k->id]) }}">
                 <i class="fa-solid fa-pen"></i>
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600"
-                href="{{ route('clubs.removekind', ['kid' => $k->id]) }}">    
+            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="#"
+                onclick="
+                    const myform = document.getElementById('remove');
+                    myform.action = '{{ route('clubs.removekind', ['kid' => $k->id]) }}';
+                    myform.submit();
+            ">    
                 <i class="fa-solid fa-trash"></i>
             </a>
             <a class="py-2 pr-6 text-red-300 hover:text-red-600"
@@ -79,5 +83,8 @@
         </td>
     </tr>
     @endforeach
+    <form class="hidden" id="remove" action="" method="POST">
+        @csrf
+    </form>
 </table>
 @endsection

@@ -86,20 +86,31 @@
                 href="{{ route('clubs.edit', ['club_id' => $club->id]) }}" title="編輯">
                 <i class="fa-solid fa-pen"></i>
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600"
-                href="{{ route('clubs.remove', ['club_id' => $club->id]) }}" title="刪除">
+            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="#" title="刪除"
+                onclick="
+                    const myform = document.getElementById('remove');
+                    myform.action = '{{ route('clubs.remove', ['club_id' => $club->id]) }}';
+                    myform.submit();
+            ">
                 <i class="fa-solid fa-trash"></i>
             </a>
             <a class="py-2 pr-6 text-gray-500 hover:text-black"
                 href="{{ route('clubs.mail', ['club_id' => $club->id]) }}" title="通知">
                 <i class="fa-regular fa-envelope"></i>
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600"
-                href="{{ route('clubs.prune', ['club_id' => $club->id]) }}" title="重新報名">
+            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="#" title="重新報名"
+                onclick="
+                    const myform = document.getElementById('remove');
+                    myform.action = '{{ route('clubs.prune', ['club_id' => $club->id]) }}';
+                    myform.submit();
+            ">
                 <i class="fa-solid fa-recycle"></i>
             </a>
         </td>
     </tr>
     @endforeach
+    <form class="hidden" id="remove" action="" method="POST">
+        @csrf
+    </form>
 </table>
 @endsection

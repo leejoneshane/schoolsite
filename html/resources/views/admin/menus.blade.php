@@ -99,8 +99,12 @@
             </td>
             @endif
             <td class="p-2">
-                <a class="py-2 pr-6 text-red-300 hover:text-red-600"
-                    href="{{ route('menus.remove', ['menu' => $i->id]) }}">
+                <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="#"
+                    onclick="
+                        const myform = document.getElementById('remove');
+                        myform.action = '{{ route('menus.remove', ['menu' => $i->id]) }}';
+                        myform.submit();
+                ">
                     <i class="fa-solid fa-trash"></i>
                 </a>
             </td>
@@ -112,5 +116,8 @@
             修改
         </button>
     </div>
+</form>
+<form class="hidden" id="remove" action="" method="POST">
+    @csrf
 </form>
 @endsection

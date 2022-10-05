@@ -41,11 +41,19 @@
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" href="{{ route('permission.edit', ['id' => $p->id]) }}">
                 <i class="fa-solid fa-pen-to-square"></i>
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="{{ route('permission.remove', ['id' => $p->id]) }}">    
+            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="#"
+                onclick="
+                    const myform = document.getElementById('remove');
+                    myform.action = '{{ route('permission.remove', ['id' => $p->id]) }}';
+                    myform.submit();
+            ">
                 <i class="fa-solid fa-trash"></i>
             </a>
         </td>
     </tr>
     @endforeach
+    <form class="hidden" id="remove" action="" method="POST">
+        @csrf
+    </form>
 </table>
 @endsection

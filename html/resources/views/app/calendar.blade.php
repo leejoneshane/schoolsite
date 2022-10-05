@@ -62,13 +62,20 @@
         </a>
         @endif
         @if ($deleteable[$event->id])
-        <a class="py-2 pl-6 text-blue-300 hover:text-blue-600"
-            href="{{ route('calendar.removeEvent', ['event' => $event->id]) }}">
+        <a class="py-2 pl-6 text-blue-300 hover:text-blue-600" href="#"
+            onclick="
+                const myform = document.getElementById('remove');
+                myform.action = '{{ route('calendar.removeEvent', ['event' => $event->id]) }}';
+                myform.submit();
+        ">
             <i class="fa-solid fa-trash"></i>
         </a>
         @endif
         </td>
     </tr>
     @endforeach
+    <form class="hidden" id="remove" action="" method="POST">
+        @csrf
+    </form>
 </table>
 @endsection

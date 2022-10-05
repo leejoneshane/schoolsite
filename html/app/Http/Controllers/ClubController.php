@@ -27,6 +27,10 @@ class ClubController extends Controller
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
+        $enroll = ClubEnroll::first();
+        $club = $enroll->club;
+        $student = $enroll->student;
+        return view('emails.club', ['enroll' => $enroll, 'club' => $club, 'student' => $student, 'info' => $club->memo]);
         return view('app.club', ['manager' => ($user->is_admin || $manager)]);
     }
 
@@ -436,7 +440,7 @@ class ClubController extends Controller
     {
         $user = Auth::user();
         $enroll = ClubEnroll::find($enroll_id);
-        if ($enroll) {
+        if (!$enroll) {
             return $this->clubEnroll()->with('error', '您要修改的報名紀錄，已經不存在！');
         }
         if ($enroll->uuid != $user->uuid) {
