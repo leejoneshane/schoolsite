@@ -50,47 +50,47 @@ class ClubExport implements FromCollection, WithHeadings, WithColumnFormatting, 
         ];
     }
 
-    public function map($club)
+    public function map($row): array
     {
-        $unit = $club->unit->name;
+        $unit = $row->unit->name;
         $grades = [0,0,0,0,0,0];
         for ($i=0; $i<6; $i++) {
-            if (in_array($i + 1, $club->for_grade)) {
+            if (in_array($i + 1, $row->for_grade)) {
                 $grades[$i] = 1;
             }
         }
         $grade = implode('', $grades);
-        if ($club->self_defined) {
+        if ($row->self_defined) {
             $week = '00000';
         } else {
             $weekdays = [0,0,0,0,0];
             for ($i=0; $i<5; $i++) {
-                if (in_array($i + 1, $club->weekdays)) {
+                if (in_array($i + 1, $row->weekdays)) {
                     $weekdays[$i] = 1;
                 }
             }
             $week = implode('', $weekdays);
         }
         $lunch = 0;
-        if ($club->has_lunch) $lunch = 1;
+        if ($row->has_lunch) $lunch = 1;
         $remove = 0;
-        if ($club->self_remove) $remove = 1;
+        if ($row->self_remove) $remove = 1;
         return [
             $unit,
-            $club->name,
-            $club->short_name,
+            $row->name,
+            $row->short_name,
             $grade,
             $week,
-            $club->startDate->format('Y-m-d'),
-            $club->endDate->format('Y-m-d'),
-            $club->startTime,
-            $club->endTime,
-            $club->teacher,
-            $club->location,
-            $club->cash,
-            $club->total,
-            $club->maximum,
-            $club->memo,
+            $row->startDate->format('Y-m-d'),
+            $row->endDate->format('Y-m-d'),
+            $row->startTime,
+            $row->endTime,
+            $row->teacher,
+            $row->location,
+            $row->cash,
+            $row->total,
+            $row->maximum,
+            $row->memo,
             $lunch,
             $remove,
         ];

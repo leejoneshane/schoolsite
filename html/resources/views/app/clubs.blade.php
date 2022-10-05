@@ -16,7 +16,7 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.export', ['kid' => $kind->id]) }}">
         <i class="fa-solid fa-file-export"></i>匯出成Excel
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.addkind') }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.repeat', ['kid' => $kind->id]) }}">
         <i class="fa-solid fa-check-double"></i>重複報名清冊
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.addkind') }}">

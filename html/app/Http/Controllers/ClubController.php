@@ -191,17 +191,45 @@ class ClubController extends Controller
 
     public function clubImport(Request $request, $kid = null)
     {
-        $kid = $request->input('kind');
-        $importer = new ClubImport($kid);
-        $importer->import($request->file('excel'));
-        return $this->clubList($kid)->with('success', '課外社團已經匯入完成！');
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $kid = $request->input('kind');
+            $importer = new ClubImport($kid);
+            $importer->import($request->file('excel'));
+            return $this->clubList($kid)->with('success', '課外社團已經匯入完成！');
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
     }
 
     public function clubExport($kid)
     {
-        $filename = ClubKind::find($kid)->name;
-        $exporter = new ClubExport($kid);
-        return $exporter->download("$filename.xlsx");;
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $filename = ClubKind::find($kid)->name;
+            $exporter = new ClubExport($kid);
+            return $exporter->download("$filename.xlsx");
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
+    }
+
+    public function clubRepetition($kid)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $uuids = ClubEnroll::repetition();
+            $students = [];
+            foreach ($uuids as $uuid) {
+                $students[] = Student::find($uuid);
+            }
+            return view('app.clubrepetition', ['kind' => $kid, 'students' => $students]);
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
     }
 
     public function clubAdd($kid = null)

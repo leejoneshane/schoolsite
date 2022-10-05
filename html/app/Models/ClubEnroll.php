@@ -112,6 +112,15 @@ class ClubEnroll extends Model
         return ClubEnroll::where('year', CLubEnroll::current_year())->get();
     }
 
+    public static function repetition()
+    {
+        return ClubEnroll::select('uuid')
+            ->where('year', CLubEnroll::current_year())
+            ->groupBy('uuid')
+            ->havingRaw('count(*) > ?', [1])
+            ->get();
+    }
+
     public static function findBy($uuid = null, $club_id = null, $year = null)
     {
         $query = ClubEnroll::query();
@@ -131,7 +140,10 @@ class ClubEnroll extends Model
 
     public function year_order()
     {
-        return ClubEnroll::where('club_id', $this->club_id)->where('year', $this->year)->where('created_at', '<', $this->created_at)->count();
+        return ClubEnroll::where('club_id', $this->club_id)
+            ->where('year', $this->year)
+            ->where('created_at', '<', $this->created_at)
+            ->count();
     }
 
     public function sendClubNotification($message)

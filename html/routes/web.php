@@ -96,6 +96,7 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('import/{kid?}', 'App\Http\Controllers\ClubController@clubUpload');
     Route::post('import/{kid?}', 'App\Http\Controllers\ClubController@clubImport')->name('clubs.import');
     Route::get('export/{kid}', 'App\Http\Controllers\ClubController@clubExport')->name('clubs.export');
+    Route::get('repeat/{kid}', 'App\Http\Controllers\ClubController@clubRepetition')->name('clubs.repeat');
     Route::get('list/{kid?}', 'App\Http\Controllers\ClubController@clubList')->name('clubs.admin');
     Route::get('list/enroll/{kid}/{club_id}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
 });
