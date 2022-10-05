@@ -113,20 +113,39 @@ class Club extends Model
             return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->select('clubs.*', 'club_kinds.style')
             ->where('club_kinds.stop_enroll', false)
-            ->where('club_kinds.enrollDate', '<=', $today)
-            ->where('club_kinds.expireDate', '>=', $today)
+            ->whereDate('club_kinds.enrollDate', '<=', $today)
+            ->whereDate('club_kinds.expireDate', '>=', $today)
             ->where('clubs.stop_enroll', false)
             ->whereJsonContains('clubs.for_grade', $grade)
+            ->orderBy('clubs.kind_id')
             ->get();
         } else {
             return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->select('clubs.*', 'club_kinds.style')
             ->where('club_kinds.stop_enroll', false)
-            ->where('club_kinds.enrollDate', '<=', $today)
-            ->where('club_kinds.expireDate', '>=', $today)
+            ->whereDate('club_kinds.enrollDate', '<=', $today)
+            ->whereDate('club_kinds.expireDate', '>=', $today)
             ->where('clubs.stop_enroll', false)
+            ->orderBy('clubs.kind_id')
             ->get();
         }
+    }
+
+    public static function cash_enroll()
+    {
+        if (date('m') > 7) {
+            $min = date('Y').'-8-1';
+            $max = (date('Y') + 1).'-7-31';
+        } else {
+            $min = (date('Y') - 1).'-8-1';
+            $max = date('Y').'-7-31';
+        }
+        return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
+        ->select('clubs.*', 'club_kinds.style')
+        ->whereDate('club_kinds.enrollDate', '>=', $min)
+        ->whereDate('club_kinds.expireDate', '<=', $max)
+        ->orderBy('clubs.kind_id')
+        ->get();
     }
 
     public function kind()

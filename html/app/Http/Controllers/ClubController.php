@@ -19,6 +19,7 @@ use App\Notifications\ClubEnrollNotification;
 use App\Notifications\ClubEnrolledNotification;
 use App\Imports\ClubImport;
 use App\Exports\ClubExport;
+use App\Exports\ClubCashExport;
 
 class ClubController extends Controller
 {
@@ -227,6 +228,19 @@ class ClubController extends Controller
                 $students[] = Student::find($uuid);
             }
             return view('app.clubrepetition', ['kind' => $kid, 'students' => $students]);
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
+    }
+
+    public function clubCashExport()
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $filename = '學生社團收費統計表';
+            $exporter = new ClubCashExport();
+            return $exporter->download("$filename.xlsx");
         } else {
             return view('app.error', ['message' => '您沒有權限使用此功能！']);
         }

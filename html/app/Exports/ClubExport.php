@@ -3,7 +3,6 @@
 namespace App\Exports;
 
 use App\Models\Club;
-use App\Models\Unit;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\Exportable;
