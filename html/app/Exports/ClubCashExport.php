@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use Carbon\Carbon;
 use App\Models\Club;
 use App\Models\ClubEnroll;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
@@ -34,6 +35,7 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
             if (!$old) { //first
                 $old = $enroll->uuid;
                 $record->student = $enroll->student;
+                $record->clubs = [];
                 $record->clubs[$enroll->club->id] = $enroll->club->cash;
             } elseif ($old != $enroll->uuid) { //prev
                 $total = 0;
@@ -45,6 +47,7 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
                 $old = $enroll->uuid;
                 $record = new \stdClass;
                 $record->student = $enroll->student;
+                $record->clubs = [];
                 $record->clubs[$enroll->club->id] = $enroll->club->cash;
             } else {
                 $record->clubs[$enroll->club->id] = $enroll->club->cash;
@@ -58,15 +61,23 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
         $record->total = $total;
         $collection[] = $record;
 
+        $total = 0;
         $append = new \stdClass;
         $append->student = null;
+        $append->clubs = [];
         foreach ($collection as $c) {
             foreach ($c->clubs as $id => $cash) {
-                $append->clubs[$id] += $cash;
+                $total += $cash;
+                if (!isset($append->clubs[$id])) {
+                    $append->clubs[$id] = $cash;
+                } else {
+                    $append->clubs[$id] += $cash;
+                }
             }
         }
+        $append->total = $total;
         $collection[] = $append;
-        return $collection;
+        return collect($collection);
     }
 
     public function headings(): array
@@ -82,17 +93,18 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
         foreach ($this->clubs as $club) {
             $headings[] = $club->short_name;
         }
+        $headings[] = '小計';
         return $headings;
     }
 
     public function map($row): array
     {
         if (is_null($row->student)) {
-            $map = [ '', '', '', '', '', '' ];
+            $map = [ '總計', '', '', '', '', '' ];
         } else {
             $grade = substr($row->student->class_id, 0, 1);
             $myclass = substr($row->student->class_id, -2);
-            $birthdate = $row->student->birthdate;
+            $birthdate = Carbon::createFromDate($row->student->birthdate);
             $m = $birthdate->format('m');
             $d = $birthdate->format('d');
             $map = [
@@ -140,6 +152,12 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
                 $asc2 = 65;
             }
         }
+        if ($asc1 < 65) {
+            $key = chr($asc2);
+        } else {
+            $key = chr($asc1).chr($asc2);
+        }
+        $formats[$key] = NumberFormat::FORMAT_NUMBER;
         return $formats;
     }
 

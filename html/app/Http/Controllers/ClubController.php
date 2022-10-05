@@ -28,10 +28,6 @@ class ClubController extends Controller
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
-        $enroll = ClubEnroll::first();
-        $club = $enroll->club;
-        $student = $enroll->student;
-        return view('emails.club', ['enroll' => $enroll, 'club' => $club, 'student' => $student, 'info' => $club->memo]);
         return view('app.club', ['manager' => ($user->is_admin || $manager)]);
     }
 
