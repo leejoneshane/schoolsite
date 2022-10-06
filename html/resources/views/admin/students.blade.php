@@ -63,7 +63,7 @@
             <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="#"
                 onclick="
                     const myform = document.getElementById('remove');
-                    myform.action = '{{ route('students.remove', ['uuid' => $t->uuid]) }}';
+                    myform.action = '{{ route('students.remove', ['uuid' => $s->uuid]) }}';
                     myform.submit();
             ">
                 <i class="fa-solid fa-trash"></i>

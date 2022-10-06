@@ -5,7 +5,7 @@
 <div class="text-2xl font-bold leading-normal pb-5">
     社團分類
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs') }}">
-        <i class="fa-solid fa-calendar-plus"></i>返回上一頁
+        <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.addkind') }}">
         <i class="fa-solid fa-circle-plus"></i>新增社團分類

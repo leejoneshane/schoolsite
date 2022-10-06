@@ -11,6 +11,7 @@ use App\Models\Club;
 use App\Models\ClubKind;
 use App\Models\ClubEnroll;
 use App\Models\Unit;
+use App\Models\Classroom;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Notification;
@@ -20,6 +21,8 @@ use App\Notifications\ClubEnrolledNotification;
 use App\Imports\ClubImport;
 use App\Exports\ClubExport;
 use App\Exports\ClubCashExport;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\IOFactory;
 
 class ClubController extends Controller
 {
@@ -229,7 +232,7 @@ class ClubController extends Controller
         }
     }
 
-    public function clubCashExport()
+    public function clubExportCash()
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
@@ -237,6 +240,61 @@ class ClubController extends Controller
             $filename = '學生社團收費統計表';
             $exporter = new ClubCashExport();
             return $exporter->download("$filename.xlsx");
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
+    }
+
+    public function clubClassroom($kid, $class_id = null)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $classes = Classroom::orderBy('id')->get();
+            if (!$class_id) $class_id = $classes->first()->id;
+            $enrolls = ClubEnroll::currentByClass($class_id)->groupBy('uuid');
+            return view('app.clubclassroom', ['kind_id' => $kid, 'class_id' => $class_id, 'classes' => $classes, 'enrolls' => $enrolls]);
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
+    }
+
+    public function clubExportClass($kid, $class_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $filename = Classroom::find($class_id)->name.'學生社團錄取名冊';
+            $enrolls = ClubEnroll::currentByClass($class_id)->groupBy('uuid');
+            $phpWord = new PhpWord();
+            $phpWord->setDefaultFontSize(11);
+            $section = $phpWord->addSection(['pageNumberingStart' => 1]);
+            $section->addHeader()->addText($filename);
+            $footer = $section->addFooter();
+            $footer->addText(config('app.name'));
+            $footer->addPreserveText('第 {PAGE} 頁/共 {NUMPAGES} 頁');
+            $section->addText($filename, ['bold' => true, 'color' => '33FF33', 'size' => 18], ['alignment' => 'center', 'lineHeight' => 1.5]);
+            $table = $section->addTable(['borderColor' => 'd0d0d0']);
+            $table->addRow('auto', ['bgColor' => 'f0f0f0', 'tblHeader' => true]);
+            $table->addCell()->addText('座號', ['bold' => true]);
+            $table->addCell()->addText('姓名', ['bold' => true]);
+            $table->addCell()->addText('社團全名', ['bold' => true]);
+            $table->addCell()->addText('上課時間', ['bold' => true]);
+            $table->addCell()->addText('授課地點', ['bold' => true]);
+            foreach ($enrolls as $student) {
+                $span = count($student);
+                foreach ($student as $key => $enroll) {
+                    $table->addRow();
+                    if ($key === array_key_first($student)) {
+                        $table->addCell('auto', ['vMerge' => 'restart', 'valign' => 'center'])->addText($enroll->student->seat);
+                    } else {
+                        $table->addCell('auto', ['vMerge' => 'continue', 'valign' => 'center'])->addText($enroll->student->seat);
+                    }
+                }
+            }
+            $objWriter = IOFactory::createWriter($phpWord, 'Word2007');
+            $objWriter->save("$filename.docx");
+            return response()->download(public_path("$filename.docx"));
         } else {
             return view('app.error', ['message' => '您沒有權限使用此功能！']);
         }

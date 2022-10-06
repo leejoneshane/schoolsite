@@ -5,7 +5,7 @@
 <div class="text-2xl font-bold leading-normal pb-5">
     學生社團報名
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enroll') }}">
-        <i class="fa-solid fa-calendar-plus"></i>返回上一頁
+        <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
 <table class="w-full py-4 text-left font-normal">

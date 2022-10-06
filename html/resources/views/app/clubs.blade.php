@@ -5,7 +5,7 @@
 <div class="text-2xl font-bold leading-normal pb-5">
     社團一覽表
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs') }}">
-        <i class="fa-solid fa-calendar-plus"></i>返回上一頁
+        <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.add', ['kid' => $kind->id]) }}">
         <i class="fa-solid fa-circle-plus"></i>新增課外社團
@@ -22,7 +22,7 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.cash') }}">
         <i class="fa-solid fa-sack-dollar"></i>收費統計表
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.addkind') }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.classroom', ['kid' => $kind->id]) }}">
         <i class="fa-solid fa-address-book"></i>各班錄取名冊
     </a>
 </div>

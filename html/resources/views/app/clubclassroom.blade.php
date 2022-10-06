@@ -5,13 +5,16 @@
 <div class="text-2xl font-bold leading-normal pb-5">
     各班錄取名冊
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $kind_id]) }}">
-        <i class="fa-solid fa-calendar-plus"></i>返回上一頁
+        <i class="fa-solid fa-eject"></i>返回上一頁
+    </a>
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportclass', ['kid' => $kind_id, 'class_id' => $class_id]) }}">
+        <i class="fa-solid fa-calendar-plus"></i>匯出成DOCX
     </a>
 </div>
 <select id="classroom" class="block w-full py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="
     var class_id = this.value;
-    window.location.replace('{{ route('clubs.report', ['kid' => $kind_id]) }}' + '/' + class_id);
+    window.location.replace('{{ route('clubs.classroom', ['kid' => $kind_id]) }}' + '/' + class_id);
     ">
     @foreach ($classes as $class)
     <option value="{{ $class->id }}"{{ ($class->id == $class_id) ? ' selected' : '' }}>{{ $class->name }}</option>
@@ -35,14 +38,26 @@
             授課地點
         </th>
     </tr>
-    @foreach ($enrolls as $enroll)
+    @if ($enrolls->isEmpty())
+    <tr>
+        <td colspan="8" class="text-xl font-bold">目前查無已錄取的學生！</td>
+    </tr>
+    @endif
+    @foreach ($enrolls as $students)
+        @php
+            $count = count($students);
+        @endphp
+        @foreach ($students as $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
-        <td class="p-2">{{ $enroll->student->seat }}</td>
-        <td class="p-2">{{ $enroll->student->realname }}</td>
-        <td class="p-2  {{ $enroll->club->style }}">{{ $enroll->club->name }}</td>
+        @if ($loop->first)
+        <td rowspan="{{ $count }}" class="p-2">{{ $enroll->student->seat }}</td>
+        <td rowspan="{{ $count }}" class="p-2">{{ $enroll->student->realname }}</td>
+        @endif
+        <td class="p-2 {{ $enroll->club->style }}">{{ $enroll->club->name }}</td>
         <td class="p-2">{{ $enroll->studytime }}</td>
         <td class="p-2">{{ $enroll->club->location }}</td>
     </tr>
+        @endforeach
     @endforeach
 </table>
 @endsection

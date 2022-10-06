@@ -5,7 +5,7 @@
 <div class="text-2xl font-bold leading-normal pb-5">
     學生社團報名
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs') }}">
-        <i class="fa-solid fa-calendar-plus"></i>返回上一頁
+        <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
 <table class="w-full py-4 text-left font-normal">
@@ -98,7 +98,7 @@
     </tr>
     @foreach ($student->year_enrolls() as $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
-        <td class="p-2  {{ $enroll->club->style }}">{{ $enroll->club->name }}</td>
+        <td class="p-2 {{ $enroll->club->style }}">{{ $enroll->club->name }}</td>
         <td class="p-2">{{ $enroll->parent }}</td>
         <td class="p-2">{{ $enroll->email }}</td>
         <td class="p-2">{{ $enroll->mobile }}</td>

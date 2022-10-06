@@ -44,6 +44,18 @@ class ClubEnroll extends Model
         'audited_at',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'need_lunch' => 'boolean',
+        'weekdays' => 'array',
+        'accepted' => 'boolean',
+        'audited_at' => 'datetime:Y-m-d H:i:s',
+    ];
+
     protected $appends = [
 		'studytime',
     ];
@@ -70,18 +82,6 @@ class ClubEnroll extends Model
         $str .= $this->club->endTime;
         return $str;
     }
-
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'need_lunch' => 'boolean',
-        'weekdays' => 'array',
-        'accepted' => 'boolean',
-        'audited_at' => 'datetime:Y-m-d H:i:s',
-    ];
 
     public static function boot()
     {
@@ -121,6 +121,17 @@ class ClubEnroll extends Model
     public static function current()
     {
         return ClubEnroll::where('year', CLubEnroll::current_year())->get();
+    }
+
+    public static function currentByClass($class_id)
+    {
+        return ClubEnroll::leftJoin('students', 'students_clubs.uuid', '=', 'students.uuid')
+            ->select('students_clubs.*')
+            ->where('students_clubs.accepted', true)
+            ->where('students_clubs.year', CLubEnroll::current_year())
+            ->where('students.class_id', $class_id)
+            ->orderBy('students.seat')
+            ->get();
     }
 
     public static function repetition()
