@@ -45,7 +45,7 @@
     @endif
     @foreach ($enrolls as $students)
         @php
-            $count = count($students);
+            $count = $students->count();
         @endphp
         @foreach ($students as $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
