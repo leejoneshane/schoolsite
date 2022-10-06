@@ -45,19 +45,30 @@ class ClubEnroll extends Model
     ];
 
     protected $appends = [
-		'weekday',
+		'studytime',
     ];
 
-    public function getWeekdayAttribute()
+    public function getStudytimeAttribute()
     {
-        if (!empty($this->weekdays)) {
-            $str = [];
-            foreach ($this->weekdays as $g) {
-                $str[] = self::$weekMap[$g];
+        $str ='';
+        $str .= substr($this->club->startDate, 0, 10);
+        $str .= '～';
+        $str .= substr($this->club->endDate, 0, 10);
+        $str .= ' 每週';
+        if ($this->club->self_defined) {
+            foreach ($this->weekdays as $d) {
+                $str .= self::$weekMap[$d];
             }
-            return '每週'.implode('、', $str);    
+        } else {
+            foreach ($this->club->weekdays as $d) {
+                $str .= self::$weekMap[$d];
+            }
         }
-        return '';
+        $str .= ' ';
+        $str .= $this->club->startTime;
+        $str .= '～';
+        $str .= $this->club->endTime;
+        return $str;
     }
 
     /**

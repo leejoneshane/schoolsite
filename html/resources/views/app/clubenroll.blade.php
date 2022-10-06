@@ -78,7 +78,7 @@
             營隊全名
         </th>
         <th scope="col" class="p-2">
-            報名者
+            聯絡人
         </th>
         <th scope="col" class="p-2">
             聯絡信箱

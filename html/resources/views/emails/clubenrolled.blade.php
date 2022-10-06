@@ -127,6 +127,7 @@
             <div class="text-gray-300 text-sm" role="alert">
                 這是系統自動寄發的電子郵件，請勿直接回覆！若您並未報名，請忽略此信件！
             </div>
+            <p class="mt-4 text-sm text-gray-500">© {{ config('app.name') }}. All rights reserved.</p>
         </div>
     </div>
 </body>

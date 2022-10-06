@@ -19,7 +19,7 @@
                 <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
                     {{ $info }}
                 </div>
-                <p class="mt-4 text-sm text-gray-500">© 國語實小E化服務網. All rights reserved.</p>
+                <p class="mt-4 text-sm text-gray-500">© {{ config('app.name') }}. All rights reserved.</p>
             </div>
         </div>
     </div>
