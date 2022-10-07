@@ -264,8 +264,8 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $filename = Classroom::find($class_id)->name.'學生社團錄取名冊';
-            (new ClubClassExport($class_id))->toFile($filename);
-            return response()->download(public_path("$filename.docx"));
+            $exporter = new ClubClassExport($class_id);
+            return $exporter->download($filename);
         } else {
             return view('app.error', ['message' => '您沒有權限使用此功能！']);
         }
@@ -533,6 +533,19 @@ class ClubController extends Controller
         }
         ClubEnroll::destroy($enroll_id);
         return $this->clubEnroll()->with('success', '已為您取消報名！');
+    }
+
+    public function enrollList($kid, $club_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $club = Club::find($club_id);
+            $enrolls = $club->current_enrolls();
+            return view('app.clubenrolls', ['kind' => $kid, 'club' => $club, 'enrolls' => $enrolls]);
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
     }
 
 }

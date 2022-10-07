@@ -101,7 +101,7 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('classroom/{kid}/{class_id?}', 'App\Http\Controllers\ClubController@clubClassroom')->name('clubs.classroom');
     Route::get('classroom/{kid}/export/{class_id}', 'App\Http\Controllers\ClubController@clubExportClass')->name('clubs.exportclass');
     Route::get('list/{kid?}', 'App\Http\Controllers\ClubController@clubList')->name('clubs.admin');
-    Route::get('list/enroll/{kid}/{club_id}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
+    Route::get('list/{kid}/enroll/{club_id}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
 });
 
 // Administrator Interface Routes...
