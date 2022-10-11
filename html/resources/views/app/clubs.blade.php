@@ -19,9 +19,6 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.repeat', ['kid' => $kind->id]) }}">
         <i class="fa-solid fa-check-double"></i>重複報名清冊
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.cash') }}">
-        <i class="fa-solid fa-sack-dollar"></i>收費統計表
-    </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.classroom', ['kid' => $kind->id]) }}">
         <i class="fa-solid fa-address-book"></i>各班錄取名冊
     </a>
@@ -73,7 +70,7 @@
     </tr>
     @foreach ($clubs as $club)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
-        <td class="p-2"><a href="{{ route('clubs.enrolls', ['kid' => $kind->id, 'club_id' => $club->id]) }}" class="{{ $kind->style }}">{{ $club->name }}</a></td>
+        <td class="p-2"><a href="{{ route('clubs.enrolls', ['club_id' => $club->id]) }}" class="{{ $kind->style }}">{{ $club->name }}</a></td>
         <td class="p-2">{{ $club->teacher }}</td>
         <td class="p-2">{{ $club->grade }}</td>
         <td class="p-2">{{ $club->studytime }}</td>
@@ -98,7 +95,7 @@
                 href="{{ route('clubs.mail', ['club_id' => $club->id]) }}" title="通知">
                 <i class="fa-regular fa-envelope"></i>
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="#" title="重新報名"
+            <a class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" href="#" title="重新報名"
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('clubs.prune', ['club_id' => $club->id]) }}';

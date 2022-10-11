@@ -30,7 +30,8 @@ class ClubController extends Controller
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
-        return view('app.club', ['manager' => ($user->is_admin || $manager)]);
+        $cash = $user->hasPermission('club.cash');
+        return view('app.club', ['manager' => ($user->is_admin || $manager), 'cash_reporter' => ($user->is_admin || $cash)]);
     }
 
     public function kindList()
@@ -432,7 +433,20 @@ class ClubController extends Controller
         return view('app.clubenroll', ['clubs' => $clubs, 'student' => $student]);
     }
 
-    public function clubEnrollAdd($club_id)
+    public function enrollList($club_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $club = Club::find($club_id);
+            $enrolls = $club->current_enrolls();
+            return view('app.clubenrolls', ['club' => $club, 'enrolls' => $enrolls]);
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
+    }
+
+    public function enrollAdd($club_id)
     {
         $user = Auth::user();
         if ($user->user_type != 'Student') return view('app.error', ['message' => '您不是學生，因此無法報名參加學生社團！']);
@@ -441,7 +455,7 @@ class ClubController extends Controller
         return view('app.clubaddenroll', ['club' => $club, 'student' => $student]);
     }
 
-    public function clubEnrollInsert(Request $request, $club_id)
+    public function enrollInsert(Request $request, $club_id)
     {
         $user = Auth::user();
         $enroll = ClubEnroll::findBy($user->uuid, $club_id);
@@ -490,7 +504,7 @@ class ClubController extends Controller
         return $this->clubEnroll()->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
     }
 
-    public function clubEnrollEdit($enroll_id)
+    public function enrollEdit($enroll_id)
     {
         $user = Auth::user();
         if ($user->user_type != 'Student') {
@@ -503,7 +517,7 @@ class ClubController extends Controller
         return view('app.clubeditenroll', ['club' => $enroll->club, 'enroll' => $enroll]);
     }
 
-    public function clubEnrollUpdate(Request $request, $enroll_id)
+    public function enrollUpdate(Request $request, $enroll_id)
     {
         $user = Auth::user();
         $enroll = ClubEnroll::find($enroll_id);
@@ -524,7 +538,7 @@ class ClubController extends Controller
         return $this->clubEnroll()->with('success', '報名資訊已更新！');
     }
 
-    public function clubEnrollRemove($enroll_id)
+    public function enrollRemove($enroll_id)
     {
         $user = Auth::user();
         $enroll = ClubEnroll::find($enroll_id);
@@ -532,17 +546,30 @@ class ClubController extends Controller
             return view('app.error', ['message' => '這不是您的報名紀錄，因此無法修改！']);
         }
         ClubEnroll::destroy($enroll_id);
-        return $this->clubEnroll()->with('success', '已為您取消報名！');
+        return response()->back()->with('success', '已為您取消報名！');
     }
 
-    public function enrollList($kid, $club_id)
+    public function enrollValid($enroll_id)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
-            $club = Club::find($club_id);
-            $enrolls = $club->current_enrolls();
-            return view('app.clubenrolls', ['kind' => $kid, 'club' => $club, 'enrolls' => $enrolls]);
+            $enroll = ClubEnroll::find($enroll_id);
+            $enroll->update(['accepted' => true]);
+            return $this->enrollList($enroll->club_id);
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
+    }
+
+    public function enrollDeny($enroll_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $enroll = ClubEnroll::find($enroll_id);
+            $enroll->update(['accepted' => false]);
+            return $this->enrollList($enroll->club_id);
         } else {
             return view('app.error', ['message' => '您沒有權限使用此功能！']);
         }

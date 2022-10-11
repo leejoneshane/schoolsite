@@ -16,6 +16,11 @@
         <i class="fa-solid fa-people-roof"></i>社團管理
     </a>
     @endif
+	@if ($cash_reporter)
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.cash') }}">
+        <i class="fa-solid fa-sack-dollar"></i>收費統計表
+    </a>
+	@endif
 </div>
 <ol class="ml-4 list-decimal">
     <li class="mb-4 leading-6 text-green-600">

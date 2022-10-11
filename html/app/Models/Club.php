@@ -160,12 +160,12 @@ class Club extends Model
 
     public function enrolls()
     {
-        return $this->hasMany('App\Models\ClubEnroll');
+        return $this->hasMany('App\Models\ClubEnroll')->orderBy('created_at');
     }
 
     public function accepted_enrolls()
     {
-        return $this->hasMany('App\Models\ClubEnroll')->where('accepted', 1);
+        return $this->hasMany('App\Models\ClubEnroll')->where('accepted', 1)->orderBy('created_at');
     }
 
     public function current_enrolls()

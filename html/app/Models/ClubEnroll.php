@@ -57,8 +57,36 @@ class ClubEnroll extends Model
     ];
 
     protected $appends = [
-		'studytime',
+        'mark',
+        'weekday',
+        'studytime',
     ];
+
+    public function getMarkAttribute()
+    {
+        if ($this->identity == 1) {
+            return '安心就學';
+        }
+        if ($this->identity == 2) {
+            return '身心障礙';
+        }
+        return '一般學生';
+    }
+
+    public function getWeekdayAttribute()
+    {
+        $str = '每週';
+        if ($this->club->self_defined) {
+            foreach ($this->weekdays as $d) {
+                $str .= self::$weekMap[$d];
+            }
+        } else {
+            foreach ($this->club->weekdays as $d) {
+                $str .= self::$weekMap[$d];
+            }
+        }
+        return $str;
+    }
 
     public function getStudytimeAttribute()
     {
