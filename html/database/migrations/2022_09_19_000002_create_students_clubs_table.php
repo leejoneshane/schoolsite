@@ -21,9 +21,9 @@ return new class extends Migration
             $table->integer('need_lunch')->default(0);
             $table->json('weekdays')->nullable();
             $table->integer('identity')->default(0);
-            $table->string('email', 100);
-            $table->string('parent');
-            $table->string('mobile');
+            $table->string('email', 100)->nullable();
+            $table->string('parent')->nullable();
+            $table->string('mobile')->nullable();
             $table->boolean('accepted')->default(0);
             $table->timestamp('audited_at')->nullable();
             $table->timestamps();

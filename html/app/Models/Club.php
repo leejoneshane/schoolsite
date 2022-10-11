@@ -168,24 +168,32 @@ class Club extends Model
         return $this->hasMany('App\Models\ClubEnroll')->where('accepted', 1)->orderBy('created_at');
     }
 
-    public function current_enrolls()
+    public function year_enrolls($year = null)
     {
-        return $this->enrolls()->where('year', ClubEnroll::current_year())->get();
+        if ($year) {
+            return $this->enrolls()->where('year', $year)->get();
+        } else {
+            return $this->enrolls()->where('year', ClubEnroll::current_year())->get();
+        }
     }
 
-    public function current_accepted()
+    public function year_accepted($year = null)
     {
-        return $this->accepted_enrolls()->where('year', ClubEnroll::current_year())->get();
+        if ($year) {
+            return $this->accepted_enrolls()->where('year', $year)->get();
+        } else {
+            return $this->accepted_enrolls()->where('year', ClubEnroll::current_year())->get();
+        }
     }
 
     public function count_enrolls()
     {
-        return $this->current_enrolls()->count();
+        return $this->year_enrolls()->count();
     }
 
     public function count_accepted()
     {
-        return $this->current_enrolled()->count();
+        return $this->year_accepted()->count();
     }
 
     public function students()

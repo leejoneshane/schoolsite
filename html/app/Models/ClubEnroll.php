@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use App\Notifications\ClubNotification;
 use App\Notifications\ClubEnrollNotification;
 use App\Notifications\ClubEnrolledNotification;
@@ -186,6 +187,13 @@ class ClubEnroll extends Model
             $query = $query->where('year', CLubEnroll::current_year());
         }
         return $query->first();
+    }
+
+    public static function years()
+    {
+        return DB::table('students_clubs')->selectRaw('DISTINCT(year)')->get()->transform(function ($item) {
+            return $item->year;
+        })->toArray();
     }
 
     public function year_order()

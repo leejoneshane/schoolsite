@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('gn');
             $table->string('realname');
             $table->string('class_id');
-            $table->string('seat');
+            $table->integer('seat');
             $table->date('birthdate')->nullable();
             $table->integer('gender');
             $table->string('email')->nullable();

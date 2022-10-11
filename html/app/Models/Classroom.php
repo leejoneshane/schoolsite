@@ -45,12 +45,12 @@ class Classroom extends Model
 
     public function students()
     {
-        return $this->hasMany('App\Models\Student', 'class_id');
+        return $this->hasMany('App\Models\Student', 'class_id')->orderBy('seat');
     }
 
     public function teachers()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'assigment', 'class_id', 'uuid');
+        return $this->belongsToMany('App\Models\Teacher', 'assigment', 'class_id', 'uuid')->orderBy('realname');
     }
 
     public function subjects()

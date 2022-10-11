@@ -74,6 +74,8 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('enroll', 'App\Http\Controllers\ClubController@clubEnroll')->name('clubs.enroll');
     Route::get('enroll/add/{club_id}', 'App\Http\Controllers\ClubController@enrollAdd');
     Route::post('enroll/add/{club_id}', 'App\Http\Controllers\ClubController@enrollInsert')->name('clubs.addenroll');
+    Route::get('enroll/append/{club_id}/{class?}', 'App\Http\Controllers\ClubController@enrollAppend');
+    Route::post('enroll/append/{club_id}/{class?}', 'App\Http\Controllers\ClubController@enrollInsertAppend')->name('clubs.appendenroll');
     Route::get('enroll/edit/{enroll_id}', 'App\Http\Controllers\ClubController@enrollEdit');
     Route::post('enroll/edit/{enroll_id}', 'App\Http\Controllers\ClubController@enrollUpdate')->name('clubs.editenroll');
     Route::post('enroll/remove/{enroll_id}', 'App\Http\Controllers\ClubController@enrollRemove')->name('clubs.delenroll');
@@ -103,7 +105,7 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('classroom/{kid}/{class_id?}', 'App\Http\Controllers\ClubController@clubClassroom')->name('clubs.classroom');
     Route::get('classroom/{kid}/export/{class_id}', 'App\Http\Controllers\ClubController@clubExportClass')->name('clubs.exportclass');
     Route::get('list/{kid?}', 'App\Http\Controllers\ClubController@clubList')->name('clubs.admin');
-    Route::get('list/enroll/{club_id}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
+    Route::get('list/enroll/{club_id}/{year?}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
 });
 
 // Administrator Interface Routes...
