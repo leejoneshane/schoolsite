@@ -165,7 +165,7 @@ class Club extends Model
 
     public function accepted_enrolls()
     {
-        return $this->hasMany('App\Models\ClubEnroll')->where('accepted', 1)->orderBy('created_at');
+        return $this->hasMany('App\Models\ClubEnroll')->where('accepted', true)->orderBy('created_at');
     }
 
     public function year_enrolls($year = null)

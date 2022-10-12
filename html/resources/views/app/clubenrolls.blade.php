@@ -16,7 +16,7 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.importold', ['club_id' => $club->id]) }}">
         <i class="fa-solid fa-file-import"></i>匯入舊生
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind_id]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.notify', ['club_id' => $club->id]) }}">
         <i class="fa-regular fa-envelope"></i>寄送錄取通知
     </a>
     <div class="inline text-sm py-2 pl-6 rounded"><i class="fa-solid fa-download"></i>下載

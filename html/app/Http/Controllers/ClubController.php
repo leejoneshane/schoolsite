@@ -404,7 +404,7 @@ class ClubController extends Controller
         if (!empty($enroll_ids)) {
             $enrolls = ClubEnroll::whereIn('id', $enroll_ids)->whereNotNull('email')->get();
             Notification::sendNow($enrolls, new ClubNotification($request->input('message')));
-            return $this->clubList($kind_id)->with('success', '已安排於背景進行郵寄作業，郵件將會為您陸續寄出！');    
+            return $this->clubList($kind_id)->with('success', '已安排於背景進行郵寄作業，郵件將會為您陸續寄出！');
         }
         return $this->clubList($kind_id)->with('message', '因為沒有寄送對象，已經取消郵寄作業！');
     }
@@ -702,7 +702,6 @@ class ClubController extends Controller
                 'uuid' => $student->uuid,
                 'club_id' => $club_id,
             ]);
-            Notification::sendNow($enroll, new ClubEnrollNotification($order));
             if ($club->kind->manual_auditin) {
                 $message .= $class_id.$seat.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
             }
@@ -754,6 +753,22 @@ class ClubController extends Controller
             }
         }
         return $this->enrollList($club_id)->with('success', '匯入完成！');
+    }
+
+    public function enrollNotify($club_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $club = Club::find($club_id);
+            $enrolled = $club->year_accepted()->filter(function ($enroll) {
+                return !is_null($enroll->email);
+            });
+            Notification::send($enrolled, new ClubEnrolledNotification());
+            return back()->with('success', '已安排於背景進行錄取通知郵寄作業，郵件將會為您陸續寄出！');
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
     }
 
 }
