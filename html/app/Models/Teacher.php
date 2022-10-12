@@ -28,6 +28,7 @@ class Teacher extends Model
         'uuid',
         'idno',
         'account',
+        'id',
         'sn',
         'gn',
         'realname',
@@ -47,9 +48,24 @@ class Teacher extends Model
     ];
 
     protected $appends = [
-		'mainunit',
+        'mainunit',
         'unit',
     ];
+
+    public static function findById($id) //全誼系統代號
+    {
+        return Student::where('id', $id)->first();
+    }
+
+    public static function findByIdno($idno) //身分證字號
+    {
+        return Student::where('idno', $idno)->first();
+    }
+
+    public static function findByClass($class_id) //任教年班
+    {
+        return Student::where('tutor_class', $class_id)->first();
+    }
 
     public function user()
     {
@@ -57,19 +73,19 @@ class Teacher extends Model
     }
 
     public function gmails()
-	{
-    	return $this->morphMany('App\Models\Gsuite', 'owner');
-	}
+    {
+        return $this->morphMany('App\Models\Gsuite', 'owner');
+    }
 
     public function tutor_classroom()
-	{
-    	return $this->belongsTo('App\Models\Classroom', 'tutor_class');
-	}
+    {
+        return $this->belongsTo('App\Models\Classroom', 'tutor_class');
+    }
 
     public function units()
-	{
-    	return $this->belongsToMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id');
-	}
+    {
+        return $this->belongsToMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id');
+    }
 
     public function union()
     {
@@ -98,7 +114,7 @@ class Teacher extends Model
         $upper = array_unique($upper);
         return $upper;
     }
-    
+
     public function getMainunitAttribute()
     {
         $unit = Unit::find($this->unit_id);
@@ -116,26 +132,25 @@ class Teacher extends Model
     }
 
     public function roles()
-	{
-    	return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id');
-	}
-
+    {
+        return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id');
+    }
 
     public function assignment()
-	{
+    {
         $assignment = DB::table('assignment')->where('uuid', $this->uuid)->get();
-    	return $assignment;
-	}
+        return $assignment;
+    }
 
     public function subjects()
-	{
-    	return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id');
-	}
-    
+    {
+        return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id');
+    }
+
     public function classrooms()
-	{
-    	return $this->hasMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id');
-	}
+    {
+        return $this->hasMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id');
+    }
 
     public function sync()
     {
@@ -145,8 +160,9 @@ class Teacher extends Model
     }
 
     public function expired()
-	{
+    {
         $expire = new Carbon($this->updated_at);
-    	return Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'));
-	}
+        return Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'));
+    }
+
 }

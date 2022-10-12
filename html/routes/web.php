@@ -74,11 +74,15 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('enroll', 'App\Http\Controllers\ClubController@clubEnroll')->name('clubs.enroll');
     Route::get('enroll/add/{club_id}', 'App\Http\Controllers\ClubController@enrollAdd');
     Route::post('enroll/add/{club_id}', 'App\Http\Controllers\ClubController@enrollInsert')->name('clubs.addenroll');
-    Route::get('enroll/append/{club_id}/{class?}', 'App\Http\Controllers\ClubController@enrollAppend');
-    Route::post('enroll/append/{club_id}/{class?}', 'App\Http\Controllers\ClubController@enrollInsertAppend')->name('clubs.appendenroll');
     Route::get('enroll/edit/{enroll_id}', 'App\Http\Controllers\ClubController@enrollEdit');
     Route::post('enroll/edit/{enroll_id}', 'App\Http\Controllers\ClubController@enrollUpdate')->name('clubs.editenroll');
     Route::post('enroll/remove/{enroll_id}', 'App\Http\Controllers\ClubController@enrollRemove')->name('clubs.delenroll');
+    Route::get('enroll/append/{club_id}/{class?}', 'App\Http\Controllers\ClubController@enrollAppend');
+    Route::post('enroll/append/{club_id}/{class?}', 'App\Http\Controllers\ClubController@enrollInsertAppend')->name('clubs.appendenroll');
+    Route::get('enroll/fast/{club_id}', 'App\Http\Controllers\ClubController@enrollFastAppend');
+    Route::post('enroll/fast/{club_id}', 'App\Http\Controllers\ClubController@enrollInsertFast')->name('clubs.fastappend');
+    Route::get('enroll/import/{club_id}', 'App\Http\Controllers\ClubController@enrollImport');
+    Route::post('enroll/import/{club_id}', 'App\Http\Controllers\ClubController@enrollImportOld')->name('clubs.importold');
     Route::post('enroll/valid/{enroll_id}', 'App\Http\Controllers\ClubController@enrollValid')->name('clubs.valid');
     Route::post('enroll/deny/{enroll_id}', 'App\Http\Controllers\ClubController@enrollDeny')->name('clubs.deny');
     Route::get('kind', 'App\Http\Controllers\ClubController@kindList')->name('clubs.kinds');

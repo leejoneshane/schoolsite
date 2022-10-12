@@ -6,13 +6,14 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind_id]) }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
+    @if ($current == $year)
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.appendenroll', ['club_id' => $club->id]) }}">
         <i class="fa-solid fa-circle-plus"></i>新增報名資訊
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind_id]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.fastappend', ['club_id' => $club->id]) }}">
         <i class="fa-solid fa-truck-fast"></i>快速輸入
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind_id]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.importold', ['club_id' => $club->id]) }}">
         <i class="fa-solid fa-file-import"></i>匯入舊生
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind_id]) }}">
@@ -29,6 +30,7 @@
             點名表
         </a>
     </div>
+    @endif
 </div>
 <table class="w-full py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
@@ -75,7 +77,7 @@
         　　2. 錄取作業不會自動郵寄通知，待錄取作業完成後，請透過上方連結統一寄發錄取通知。<br>
     </p>
 </div>
-請選擇學年度：
+<label for="years">請選擇學年度：</label>
 <select id="years" class="inline w-24 py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="
     var year = this.value;
@@ -157,6 +159,7 @@
             <span class="text-sm">{{ $enroll->mark }}</span>
         </td>
         <td class="p-2">
+        @if ($current == $year)
         @if ($enroll->accepted)
             <a class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" href="#" 
                 onclick="
@@ -184,6 +187,7 @@
             ">
                 <i class="fa-solid fa-trash"></i>
             </a>
+        @endif
         </td>
     </tr>
     @endforeach

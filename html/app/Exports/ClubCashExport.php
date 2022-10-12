@@ -25,7 +25,7 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
 
     public function collection()
     {
-        $enrolls = ClubEnroll::current()->sortBy(function ($enroll) {
+        $enrolls = ClubEnroll::current_accepted()->sortBy(function ($enroll) {
             return $enroll->student->id;
         });
         $collection = [];

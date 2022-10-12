@@ -200,14 +200,14 @@ class TpeduServiceProvider extends ServiceProvider
 		}
 	}
 
-	public function fetch_user($uuid, $only = false, $pwd = false)
+	public function fetch_user($uuid, $only = false, $pwd = false, $year = null)
 	{
 		if ($only) {
-			$temp = Student::find($uuid);
+			$temp = Student::withTrashed()->find($uuid);
 			if ($temp) {
 				if (!$temp->expired()) return false;
 			} else {
-				$temp = Teacher::find($uuid);
+				$temp = Teacher::withTrashed()->find($uuid);
 				if ($temp) {
 					$expire = new Carbon($temp->updated_at);
 					if (!$temp->expired()) return false;
@@ -236,11 +236,12 @@ class TpeduServiceProvider extends ServiceProvider
 			$birth = date('Y-m-d', strtotime($user->birthDate));
 			$stu = ($user->employeeType == '學生') ? true : false; 
 			if ($stu) {
-				$emp = Student::firstOrNew(['uuid' => $uuid]);
+				if ($year && substr($user->employeeNumber, 0, 3) != $year) return false;
+				$emp = Student::withTrashed()->firstOrNew(['uuid' => $uuid]);
 				$emp->class_id = $user->tpClass;
 				$emp->seat = $user->tpSeat;
 			} else {
-				$emp = Teacher::firstOrNew(['uuid' => $uuid]);
+				$emp = Teacher::withTrashed()->firstOrNew(['uuid' => $uuid]);
 				$m_dept_id = '';
 				$m_dept_name = '';
 				$m_role_id = '';
@@ -390,6 +391,7 @@ class TpeduServiceProvider extends ServiceProvider
 				}
 			}
 			$emp->save();
+			if ($emp->trashed()) $emp->restore();
 			return true;
 		}
 		return false;
@@ -535,12 +537,13 @@ class TpeduServiceProvider extends ServiceProvider
 		$detail_log[] = '開始同步全校學生資料！';
 		$classes = Classroom::all();
         foreach ($classes as $cls) {
+			$year = $this->seme['year'] - $cls->grade_id - 1;
 			$uuids = $this->api('students_of_class', ['class' => $cls->id]);
 			if ($uuids && is_array($uuids)) {
 				foreach ($uuids as $uuid) {
-					$this->fetch_user($uuid, $only, $password);
+					$result = $this->fetch_user($uuid, $only, $password, $year);
 					$s = Student::find($uuid);
-					$detail_log[] = '學生'.$s->idno.' '.$s->realname.'已同步完成！';
+					if ($result && $s) $detail_log[] = '學生'.$s->idno.' '.$s->realname.'已同步完成！';
 				}
 			}
 			if ($remove) {
@@ -558,14 +561,15 @@ class TpeduServiceProvider extends ServiceProvider
 	function sync_students_for_grade($grade, $only = false, $password = false, $remove = true)
 	{
 		$detail_log[] = '開始同步'.$grade.'年級學生資料！';
+		$year = $this->seme['year'] - $grade - 1;
 		$classes = Grade::find($grade)->classrooms;
         foreach ($classes as $cls) {
 			$uuids = $this->api('students_of_class', ['class' => $cls->id]);
 			if ($uuids && is_array($uuids)) {
 				foreach ($uuids as $uuid) {
-					$this->fetch_user($uuid, $only, $password);
+					$result = $this->fetch_user($uuid, $only, $password, $year);
 					$s = Student::find($uuid);
-					$detail_log[] = '學生'.$s->idno.' '.$s->realname.'已同步完成！';
+					if ($result && $s) $detail_log[] = '學生'.$s->idno.' '.$s->realname.'已同步完成！';
 				}
 			}
 			if ($remove) {
@@ -583,12 +587,14 @@ class TpeduServiceProvider extends ServiceProvider
 	function sync_students_for_class($class_id, $only = false, $password = false, $remove = true)
 	{
 		$detail_log[] = '開始同步'.$class_id.'班級學生資料！';
+		$grade = substr($class_id, 0, 1);
+        $year = $this->seme['year'] - $grade - 1;
 		$uuids = $this->api('students_of_class', ['class' => $class_id]);
 		if ($uuids && is_array($uuids)) {
 			foreach ($uuids as $uuid) {
-				$this->fetch_user($uuid, $only, $password);
+				$result = $this->fetch_user($uuid, $only, $password, $year);
 				$s = Student::find($uuid);
-				$detail_log[] = '學生'.$s->idno.' '.$s->realname.'已同步完成！';
+				if ($result && $s) $detail_log[] = '學生'.$s->idno.' '.$s->realname.'已同步完成！';
 			}
 		}
 		if ($remove) {
@@ -599,6 +605,7 @@ class TpeduServiceProvider extends ServiceProvider
 				$l->delete();
 			}	
 		}
+		return $detail_log;
 	}
 
 }

@@ -28,6 +28,7 @@ class Student extends Model
         'uuid',
         'idno',
         'account',
+        'id',
         'sn',
         'gn',
         'realname',
@@ -42,7 +43,22 @@ class Student extends Model
         'www',
         'character',
     ];
-    
+
+    public static function findById($id) //學號
+    {
+        return Student::where('id', $id)->first();
+    }
+
+    public static function findByIdno($idno) //身分證字號
+    {
+        return Student::where('idno', $idno)->first();
+    }
+
+    public static function findByStdno($class_id, $seat) //年班座號
+    {
+        return Student::where('class_id', $class_id)->where('seat', $seat)->first();
+    }
+
     public function user()
     {
         return $this->hasOne('App\Models\User', 'uuid', 'uuid')->withDefault();
@@ -52,7 +68,7 @@ class Student extends Model
 	{
         return $this->morphMany('App\Models\Gsuite', 'owner');
 	}
-    
+
     public function grade()
     {
         return Grade::find(substr($this->class_id, 0, 1));

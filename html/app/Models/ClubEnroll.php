@@ -152,6 +152,11 @@ class ClubEnroll extends Model
         return ClubEnroll::where('year', CLubEnroll::current_year())->get();
     }
 
+    public static function current_accepted()
+    {
+        return ClubEnroll::where('year', CLubEnroll::current_year())->where('accepted', true)->get();
+    }
+
     public static function currentByClass($class_id)
     {
         return ClubEnroll::leftJoin('students', 'students_clubs.uuid', '=', 'students.uuid')
