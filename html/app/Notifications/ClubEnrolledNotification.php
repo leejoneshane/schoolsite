@@ -45,7 +45,7 @@ class ClubEnrolledNotification extends Notification implements ShouldQueue
         $club = $notifiable->club;
         $student = $notifiable->student;
         return (new MailMessage)->subject('國語實驗國民小學學生課外社團錄取通知')
-            ->view('emails.clubenrolled', ['enrolled' => $notifiable]);
+            ->view('emails.clubenrolled', ['enroll' => $notifiable]);
     }
 
     /**

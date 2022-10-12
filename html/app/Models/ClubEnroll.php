@@ -61,6 +61,7 @@ class ClubEnroll extends Model
         'mark',
         'weekday',
         'studytime',
+        'lunch',
     ];
 
     public function getMarkAttribute()
@@ -110,6 +111,18 @@ class ClubEnroll extends Model
         $str .= '～';
         $str .= $this->club->endTime;
         return $str;
+    }
+
+    public function getLunchAttribute()
+    {
+        switch ($this->need_lunch) {
+            case 1:
+                return '葷食';
+                break;
+            case 2:
+                return '素食';
+        }
+        return '自理';
     }
 
     public static function boot()

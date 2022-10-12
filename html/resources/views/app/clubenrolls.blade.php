@@ -21,7 +21,7 @@
     </a>
     <div class="inline text-sm py-2 pl-6 rounded"><i class="fa-solid fa-download"></i>下載
         <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind_id]) }}">
-            錄取名冊
+            通訊錄
         </a>、
         <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind_id]) }}">
             時間序列表
