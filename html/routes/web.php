@@ -87,6 +87,8 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('enroll/export/{club_id}', 'App\Http\Controllers\ClubController@enrollExport')->name('clubs.exportenrolled');
     Route::post('enroll/valid/{enroll_id}', 'App\Http\Controllers\ClubController@enrollValid')->name('clubs.valid');
     Route::post('enroll/deny/{enroll_id}', 'App\Http\Controllers\ClubController@enrollDeny')->name('clubs.deny');
+    Route::get('time/{club_id}', 'App\Http\Controllers\ClubController@enrollExportTime')->name('clubs.exporttimeseq');
+    Route::get('roll/{club_id}', 'App\Http\Controllers\ClubController@enrollExportRoll')->name('clubs.exportroll');
     Route::get('kind', 'App\Http\Controllers\ClubController@kindList')->name('clubs.kinds');
     Route::get('kind/add', 'App\Http\Controllers\ClubController@kindAdd');
     Route::post('kind/add', 'App\Http\Controllers\ClubController@kindInsert')->name('clubs.addkind');

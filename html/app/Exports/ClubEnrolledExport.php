@@ -3,7 +3,6 @@
 namespace App\Exports;
 
 use App\Models\Club;
-use App\Models\ClubEnroll;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\Shared\Converter;

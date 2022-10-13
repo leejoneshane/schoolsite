@@ -77,7 +77,7 @@ class ClubEnroll extends Model
 
     public function getWeekdayAttribute()
     {
-        $str = '每週';
+        $str = '週';
         if ($this->club->self_defined) {
             foreach ($this->weekdays as $d) {
                 $str .= self::$weekMap[$d];
@@ -96,7 +96,7 @@ class ClubEnroll extends Model
         $str .= substr($this->club->startDate, 0, 10);
         $str .= '～';
         $str .= substr($this->club->endDate, 0, 10);
-        $str .= ' 每週';
+        $str .= ' 週';
         if ($this->club->self_defined) {
             foreach ($this->weekdays as $d) {
                 $str .= self::$weekMap[$d];

@@ -12,8 +12,6 @@ use App\Models\ClubKind;
 use App\Models\ClubEnroll;
 use App\Models\Unit;
 use App\Models\Classroom;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\ClubNotification;
 use App\Notifications\ClubEnrollNotification;
@@ -23,6 +21,8 @@ use App\Exports\ClubExport;
 use App\Exports\ClubCashExport;
 use App\Exports\ClubClassExport;
 use App\Exports\ClubEnrolledExport;
+use App\Exports\ClubRollExport;
+use App\Exports\ClubTimeExport;
 
 class ClubController extends Controller
 {
@@ -446,15 +446,14 @@ class ClubController extends Controller
     public function enrollInsert(Request $request, $club_id)
     {
         $user = Auth::user();
-        $enroll = ClubEnroll::findBy($user->uuid, $club_id);
-        if ($enroll) {
+        $student = Student::find($user->uuid);
+        if ($student->has_enroll($club_id)) {
             return $this->clubEnroll()->with('error', '您已經報名該社團，無法再次報名！');
         }
         $club = Club::find($club_id);
         if ($club->kind->single) {
-            $student = Student::find($user->uuid);
             $same_kind = $student->current_enrolls_for_kind($club->kind_id);
-            if (!empty($same_kind)) return $this->clubEnroll()->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
+            if ($same_kind->isNotEmpty()) return $this->clubEnroll()->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
         }
         $order = $club->count_enrolls() + 1;
         if ($order > $club->maximum) {
@@ -607,15 +606,14 @@ class ClubController extends Controller
     public function enrollInsertAppend(Request $request, $club_id, $class = null)
     {
         $uuid = $request->input('student');
-        $enroll = ClubEnroll::findBy($uuid, $club_id);
-        if ($enroll) {
+        $student = Student::find($uuid);
+        if ($student->has_enroll($club_id)) {
             return $this->enrollList($club_id)->with('error', '該生已經報名此社團，無法再次報名！');
         }
         $club = Club::find($club_id);
         if ($club->kind->single) {
-            $student = Student::find($uuid);
             $same_kind = $student->current_enrolls_for_kind($club->kind_id);
-            if (!empty($same_kind)) return $this->clubEnroll()->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
+            if ($same_kind->isNotEmpty()) return $this->clubEnroll()->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
         }
         $order = $club->count_enrolls() + 1;
         if ($order > $club->maximum) {
@@ -674,19 +672,22 @@ class ClubController extends Controller
             $class_id = substr($stdno, 0, 3);
             $seat = (integer) substr($stdno, -2);
             $student = Student::findByStdno($class_id, $seat);
-            if ($seat < 10) $seat = '0'.$seat;
-            $enroll = ClubEnroll::findBy($student->uuid, $club_id);
-            if ($enroll) {
-                $message .= $class_id.$seat.$student->realname.'已經報名此社團，無法再次報名！';
+            if ($student->has_enroll($club_id)) {
+                $message .= $stdno.$student->realname.'已經報名此社團，無法再次報名！';
+                continue;
             }
             $club = Club::find($club_id);
             if ($club->kind->single) {
                 $same_kind = $student->current_enrolls_for_kind($club->kind_id);
-                $message .= $class_id.$seat.$student->realname.'報名失敗，'.$club->kind->name.'只允許報名參加一個社團！';
+                if ($same_kind->isNotEmpty()) {
+                    $message .= $stdno.$student->realname.'報名失敗，'.$club->kind->name.'只允許報名參加一個社團！';
+                    continue;
+                }
             }
             $order = $club->count_enrolls() + 1;
             if ($order > $club->maximum) {
-                $message .= $class_id.$seat.$student->realname.'因該社團已經額滿，無法報名！';
+                $message .= $stdno.$student->realname.'因該社團已經額滿，無法報名！';
+                continue;
             }
             $enrolls = $student->year_enrolls();
             $weekdays = null;
@@ -698,20 +699,24 @@ class ClubController extends Controller
                 $conflict = $en->conflict($club, $weekdays);
                 if ($conflict) break;
             }
-            if ($conflict) $message .= $class_id.$seat.$student->realname.'，因上課時段重疊，因此無法報名！';
+            if ($conflict) {
+                $message .= $stdno.$student->realname.'，因上課時段重疊，因此無法報名！';
+                continue;
+            }
             $enroll = ClubEnroll::create([
                 'uuid' => $student->uuid,
                 'club_id' => $club_id,
             ]);
             if ($club->kind->manual_auditin) {
-                $message .= $class_id.$seat.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
+                $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
+                continue;
             }
             $enroll->accepted = true;
             $enroll->save();
             if ($order > $club->total) {
-                $message .= $class_id.$seat.$student->realname.'已經完成報名手續，報名順位為'.$order.'，目前列為候補！';
+                $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'，目前列為候補！';
             } else {
-                $message .= $class_id.$seat.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
+                $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
             }
         }
         return $this->enrollList($club_id)->with('success', $message);
@@ -779,6 +784,32 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             $filename = Club::find($club_id)->name.'錄取名冊';
             $exporter = new ClubEnrolledExport($club_id);
+            return $exporter->download($filename);
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
+    }
+
+    public function enrollExportRoll($club_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $filename = Club::find($club_id)->name.'點名表';
+            $exporter = new ClubRollExport($club_id);
+            return $exporter->download($filename);
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
+    }
+
+    public function enrollExportTime($club_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $filename = Club::find($club_id)->name.'點名表';
+            $exporter = new ClubTimeExport($club_id);
             return $exporter->download($filename);
         } else {
             return view('app.error', ['message' => '您沒有權限使用此功能！']);

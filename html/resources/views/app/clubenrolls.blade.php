@@ -23,10 +23,10 @@
         <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportenrolled', ['club_id' => $club->id]) }}">
             錄取名冊
         </a>、
-        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportenrolled', ['club_id' => $club->id]) }}">
+        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exporttimeseq', ['club_id' => $club->id]) }}">
             時間序列表
         </a>、
-        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportenrolled', ['club_id' => $club->id]) }}">
+        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportroll', ['club_id' => $club->id]) }}">
             點名表
         </a>
     </div>
