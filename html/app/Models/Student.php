@@ -44,6 +44,15 @@ class Student extends Model
         'character',
     ];
 
+    protected $appends = [
+        'stdno',
+    ];
+
+    public function getStdnoAttribute()
+    {
+        return $this->class_id . (($this->seat < 10) ? '0'.$this->seat : $this->seat);
+    }
+
     public static function findById($id) //學號
     {
         return Student::where('id', $id)->first();

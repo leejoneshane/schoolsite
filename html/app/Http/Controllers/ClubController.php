@@ -22,6 +22,7 @@ use App\Imports\ClubImport;
 use App\Exports\ClubExport;
 use App\Exports\ClubCashExport;
 use App\Exports\ClubClassExport;
+use App\Exports\ClubEnrolledExport;
 
 class ClubController extends Controller
 {
@@ -766,6 +767,19 @@ class ClubController extends Controller
             });
             Notification::send($enrolled, new ClubEnrolledNotification());
             return back()->with('success', '已安排於背景進行錄取通知郵寄作業，郵件將會為您陸續寄出！');
+        } else {
+            return view('app.error', ['message' => '您沒有權限使用此功能！']);
+        }
+    }
+
+    public function enrollExport($club_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $filename = Club::find($club_id)->name.'錄取名冊';
+            $exporter = new ClubEnrolledExport($club_id);
+            return $exporter->download($filename);
         } else {
             return view('app.error', ['message' => '您沒有權限使用此功能！']);
         }

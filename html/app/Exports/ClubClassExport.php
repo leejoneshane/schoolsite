@@ -36,7 +36,7 @@ class ClubClassExport
         $table->addCell(null, ['bgColor' => 'cccccc', 'valign' => 'center'])
             ->addText('上課時間', ['bold' => true], ['alignment' => 'center']);
         $table->addCell(Converter::cmToTwip(3), ['bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('授課地點', ['bold' => true, 'alignment' => 'center']);
+            ->addText('授課地點', ['bold' => true], ['alignment' => 'center']);
         foreach ($enrolls as $student) {
             $span = $student->count();
             foreach ($student as $key => $enroll) {

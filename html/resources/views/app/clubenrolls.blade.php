@@ -20,13 +20,13 @@
         <i class="fa-regular fa-envelope"></i>寄送錄取通知
     </a>
     <div class="inline text-sm py-2 pl-6 rounded"><i class="fa-solid fa-download"></i>下載
-        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind_id]) }}">
-            通訊錄
+        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportenrolled', ['club_id' => $club->id]) }}">
+            錄取名冊
         </a>、
-        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind_id]) }}">
+        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportenrolled', ['club_id' => $club->id]) }}">
             時間序列表
         </a>、
-        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind_id]) }}">
+        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportenrolled', ['club_id' => $club->id]) }}">
             點名表
         </a>
     </div>
