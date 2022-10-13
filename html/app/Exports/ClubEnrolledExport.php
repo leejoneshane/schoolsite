@@ -107,6 +107,9 @@ class ClubEnrolledExport
             case 'Word2007':
                 $filename = "$title.docx";
                 break;
+            case 'MsDoc':
+                $filename = "$title.doc";
+                break;
             case 'ODText':
                 $filename = "$title.odt";
                 break;
