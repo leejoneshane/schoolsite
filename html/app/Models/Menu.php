@@ -6,11 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Menu extends Model
 {
-
-	protected $table = 'menus';
+    protected $table = 'menus';
     public $incrementing = false;
     protected $keyType = 'string';
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -25,32 +24,44 @@ class Menu extends Model
     ];
 
     protected $appends = [
-		'link',
+        'top',
+        'link',
     ];
+
+    public function getTopAttribute()
+    {
+        $id = $this->id;
+        $parent = $this->parent;
+        while (!is_null($parent)) {
+            $id = $parent->id;
+            $parent = $parent->parent;
+        }
+        return $id;
+    }
 
     public function getLinkAttribute()
     {
         return (substr($this->url, 0, 6) == 'route.') ? route(substr($this->url, 6)) : $this->url;
     }
 
+    public function parent()
+    {
+        return $this->hasOne('App\Models\Menu','id','parent_id');
+    }
+
     public function childs()
     {
-        return $this->hasMany('App\Models\Menu','parent_id','id');
+        return $this->hasMany('App\Models\Menu','parent_id','id')->orderBy('weight');
     }
 
-    public static function top()
+    public static function topmenus()
     {
-        return Menu::with('childs')->where('id', '!=', 'admin')->whereNull('parent_id')->get();
+        return Menu::whereNull('parent_id')->orderBy('weight')->get();
     }
 
-    public static function parents()
+    public static function submenus()
     {
-        return Menu::whereNotIn('id', ['admin', 'database', 'website'])->where('url', '#')->get();
-    }
-
-    public static function subItems($menu)
-    {
-        return Menu::with('childs')->where('parent_id', $menu)->orderBy('weight')->get();
+        return Menu::where('url', '#')->orderBy('weight')->get();
     }
 
     public function render()

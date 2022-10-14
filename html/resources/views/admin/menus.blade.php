@@ -97,8 +97,8 @@
                 <input class="rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                     type="text" name="weights[{{ $i->id }}]" value="{{ $i->weight }}">
             </td>
-            @endif
             <td class="p-2">
+                @if ($menu->top != 'admin')
                 <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="#"
                     onclick="
                         const myform = document.getElementById('remove');
@@ -107,7 +107,9 @@
                 ">
                     <i class="fa-solid fa-trash"></i>
                 </a>
+                @endif
             </td>
+            @endif
         </tr>
         @endforeach
     </table>

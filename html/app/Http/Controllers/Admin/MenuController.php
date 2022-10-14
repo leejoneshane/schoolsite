@@ -25,21 +25,22 @@ class MenuController extends Controller
         $routeCollection = Route::getRoutes();
         foreach ($routeCollection as $value) {
             $name = $value->getName();
-            if (!empty($name)) $routename[] = $name;
+            if (!empty($name) && strpos($name, '.') === false) $routename[] = $name;
         }
-        $menus = Menu::parents();
+        $menus = Menu::submenus();
+        $instance = Menu::find($menu);
         if (!empty($menu)) {
-            $items = Menu::subItems($menu);
+            $items = $instance->childs;
         } else {
-            $items = Menu::top()->where('id', '!=', 'admin');;
+            $items = Menu::topmenus();
         }
         if ($message) {
             $key = array_key_first($message);
             $val = $message[$key];
-            return view('admin.menus', ['current' => $menu, 'menus' => $menus, 'items' => $items, 'routes' => $routename])
+            return view('admin.menus', ['current' => $menu, 'menu' => $instance, 'menus' => $menus, 'items' => $items, 'routes' => $routename])
                 ->with($key, $val);
         } else {
-            return view('admin.menus', ['current' => $menu, 'menus' => $menus, 'items' => $items, 'routes' => $routename]);
+            return view('admin.menus', ['current' => $menu, 'menu' => $instance, 'menus' => $menus, 'items' => $items, 'routes' => $routename]);
         }
     }
 
@@ -73,7 +74,7 @@ class MenuController extends Controller
         $routeCollection = Route::getRoutes();
         foreach ($routeCollection as $value) {
             $name = $value->getName();
-            if (!empty($name)) $routename[] = $name;
+            if (!empty($name) && strpos($name, '.') === false) $routename[] = $name;
         }
         return view('admin.menuadd', ['current' => $menu, 'routes' => $routename]);
     }
