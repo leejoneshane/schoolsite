@@ -159,18 +159,55 @@ class SchoolDataController extends Controller
         return $this->subjectList(['success' => '科目名稱已更新並儲存！']);
     }
 
-    public function teacherList(Request $request, $unit = '')
+    public function teacherList($search = '')
     {
-        $units = Unit::main();
-        if (empty($unit)) {
-            $unit_id = $units->first()->id;
-        } else {
-            $unit_id = $unit;
+        $unit_id = $idno = $realname = $email = '';
+        if (!empty($search)) {
+            $parameters = explode('&', $search);
+            foreach ($parameters as $p) {
+                list($key, $val) = explode('=', $p);
+                switch ($key) {
+                    case 'unit':
+                        $unit_id = $val;
+                        break;
+                    case 'idno':
+                        $idno = $val;
+                        break;
+                    case 'name':
+                        $realname = $val;
+                        break;
+                    case 'email':
+                        $email = $val;
+                        break;
+                }
+            }
         }
-        $unit = Unit::find($unit_id);
-        $keys = Unit::subkeys($unit->unit_no);
-        $teachers = Teacher::whereIn('unit_id', $keys)->orderBy('realname')->get();
-        return view('admin.teachers', ['current' => $unit_id, 'units' => $units, 'teachers' => $teachers]);
+        $units = Unit::main();
+        $query = Teacher::query();
+        if (!empty($idno) || !empty($realname) || !empty($email)) {
+            if (!empty($idno)) {
+                $query = $query->where('idno', 'like', '%'.$idno.'%');
+            }
+            if (!empty($realname)) {
+                $query = $query->where('realname', 'like', '%'.$realname.'%');
+            }
+            if (!empty($email)) {
+                $query = $query->where('email', 'like', '%'.$email.'%');
+            }
+        } elseif (!empty($unit_id)) {
+            $unit = Unit::find($unit_id);
+            $keys = Unit::subkeys($unit->unit_no);
+            $query = Teacher::whereIn('unit_id', $keys);
+        } else {
+            $unit_id = $units->first()->id;
+            $unit = Unit::find($unit_id);
+            $keys = Unit::subkeys($unit->unit_no);
+            $query = Teacher::whereIn('unit_id', $keys);
+        }
+        $teachers = $query->orderBy('realname')->get()->sortBy(function ($t) {
+            return $t->mainunit->id;
+        });
+        return view('admin.teachers', ['current' => $unit_id, 'idno' => $idno, 'realname' => $realname, 'email' => $email, 'units' => $units, 'teachers' => $teachers]);
     }
 
     public function teacherEdit(Request $request, $uuid)
@@ -184,7 +221,7 @@ class SchoolDataController extends Controller
         $assignment = DB::table('assignment')->where('uuid', $uuid)->get();
         return view('admin.teacheredit', ['referer' => $referer, 'teacher' => $teacher, 'units' => $units, 'roles' => $roles, 'assignment' => $assignment, 'classes' => $classes, 'subjects' => $subjects]);
     }
-    
+
     public function teacherUpdate(Request $request, $uuid)
     {
         $teacher = Teacher::find($uuid);
@@ -214,7 +251,7 @@ class SchoolDataController extends Controller
                 } else {
                     DB::table('job_title')->where('uuid', $uuid)->where('role_id', $old->id)->delete();
                 }
-            }    
+            }
         }
         if (!empty($new_roles)) {
             foreach ($new_roles as $role) {
@@ -281,16 +318,49 @@ class SchoolDataController extends Controller
         return redirect(urldecode($referer))->with('success', '離職教師已經標註為移除！');
     }
 
-    public function studentList(Request $request, $myclass = '')
+    public function studentList($search = '')
     {
-        $classes = Classroom::all();
-        if (empty($myclass)) {
-            $class_id = $classes->first()->id;
-        } else {
-            $class_id = $myclass;
+        $class_id = $idno = $realname = $email = '';
+        if (!empty($search)) {
+            $parameters = explode('&', $search);
+            foreach ($parameters as $p) {
+                list($key, $val) = explode('=', $p);
+                switch ($key) {
+                    case 'class':
+                        $class_id = $val;
+                        break;
+                    case 'idno':
+                        $idno = $val;
+                        break;
+                    case 'name':
+                        $realname = $val;
+                        break;
+                    case 'email':
+                        $email = $val;
+                        break;
+                }
+            }
         }
-        $students = Student::where('class_id', $class_id)->orderByRaw('cast(seat as unsigned)')->get();
-        return view('admin.students', ['current' => $class_id, 'classes' => $classes, 'students' => $students]);
+        $classes = Classroom::all();
+        $query = Student::query();
+        if (!empty($idno) || !empty($realname) || !empty($email)) {
+            if (!empty($idno)) {
+                $query = $query->where('idno', 'like', '%'.$idno.'%');
+            }
+            if (!empty($realname)) {
+                $query = $query->where('realname', 'like', '%'.$realname.'%');
+            }
+            if (!empty($email)) {
+                $query = $query->where('email', 'like', '%'.$email.'%');
+            }
+        } elseif (!empty($class_id)) {
+            $query = $query->where('class_id', $class_id);
+        } else {
+            $class_id = $classes->first()->id;
+            $query = $query->where('class_id', $class_id);
+        }
+        $students = $query->orderByRaw('class_id, cast(seat as unsigned)')->get();
+        return view('admin.students', ['current' => $class_id, 'idno' => $idno, 'realname' => $realname, 'email' => $email, 'classes' => $classes, 'students' => $students]);
     }
 
     public function studentEdit(Request $request, $uuid)

@@ -135,11 +135,11 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('database/classes', 'App\Http\Controllers\Admin\SchoolDataController@classUpdate')->name('classes');
     Route::get('database/subjects', 'App\Http\Controllers\Admin\SchoolDataController@subjectList');
     Route::post('database/subjects', 'App\Http\Controllers\Admin\SchoolDataController@subjectUpdate')->name('subjects');
-    Route::get('database/teachers/{unit?}', 'App\Http\Controllers\Admin\SchoolDataController@teacherList')->name('teachers');
+    Route::get('database/teachers/{search?}', 'App\Http\Controllers\Admin\SchoolDataController@teacherList')->name('teachers');
     Route::get('database/teachers/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@teacherEdit');
     Route::post('database/teachers/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@teacherUpdate')->name('teachers.edit');
     Route::post('database/teachers/{uuid}/remove', 'App\Http\Controllers\Admin\SchoolDataController@teacherRemove')->name('teachers.remove');
-    Route::get('database/students/{myclass?}', 'App\Http\Controllers\Admin\SchoolDataController@studentList')->name('students');
+    Route::get('database/students/{search?}', 'App\Http\Controllers\Admin\SchoolDataController@studentList')->name('students');
     Route::get('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@studentEdit');
     Route::post('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@studentUpdate')->name('students.edit');
     Route::post('database/students/{uuid}/remove', 'App\Http\Controllers\Admin\SchoolDataController@studentRemove')->name('students.remove');
