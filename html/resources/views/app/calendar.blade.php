@@ -22,7 +22,7 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.download') }}">
         <i class="fa-solid fa-cloud-arrow-down"></i>下載日曆
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="#" onclick="
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="void()" onclick="
         navigator.clipboard.writeText('{{ $calendar->url() }}').then(
             result => alert('行事曆分享連結已經複製到剪貼簿！請在 Google 日曆左側選單選取「新增其它日曆」->「加入日曆網址」，然後貼上連結就完成了！')
         );
@@ -62,7 +62,7 @@
         </a>
         @endif
         @if ($deleteable[$event->id])
-        <a class="py-2 pl-6 text-blue-300 hover:text-blue-600" href="#"
+        <a class="py-2 pl-6 text-blue-300 hover:text-blue-600" href="void()"
             onclick="
                 const myform = document.getElementById('remove');
                 myform.action = '{{ route('calendar.removeEvent', ['event' => $event->id]) }}';

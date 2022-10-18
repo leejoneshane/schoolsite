@@ -6,13 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\IcalendarGenerator\Components\Event;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use App\Models\Subscribeable;
 use App\Models\IcsCalendar;
 use App\Providers\GcalendarServiceProvider as GCAL;
 
 class IcsEvent extends Model
 {
+    use Subscribeable;
 
     protected $table = 'ics_events';
+    protected $template = 'emails.newsletter';
+
     protected static $monthMap = [
         1 => '一',
         2 => '二',
@@ -71,12 +75,7 @@ class IcsEvent extends Model
         });
     }
 
-    public static function template()
-    {
-        return 'emails.newsletter';
-    }
-
-    public static function newsletter()
+    public function newsletter()
     {
         $year = date('Y') - 1911;
         $month = date('n');

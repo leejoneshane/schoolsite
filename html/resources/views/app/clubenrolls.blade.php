@@ -161,7 +161,7 @@
         <td class="p-2">
         @if ($current == $year)
         @if ($enroll->accepted)
-            <a class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" href="#" 
+            <a class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" href="void()" 
                 onclick="
                 const myform = document.getElementById('remove');
                 myform.action = '{{ route('clubs.deny', ['enroll_id' => $enroll->id]) }}';
@@ -170,7 +170,7 @@
                 除名
             </a>
         @else
-            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" href="#" 
+            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" href="void()" 
                 onclick="
                 const myform = document.getElementById('remove');
                 myform.action = '{{ route('clubs.valid', ['enroll_id' => $enroll->id]) }}';

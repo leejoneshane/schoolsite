@@ -121,6 +121,15 @@ class AdminController extends Controller
                     'weight' => 20,
                 ]);
             }
+            if (!Menu::find('newsletter')) {
+                Menu::create([
+                    'id' => 'newsletter',
+                    'parent_id' => 'website',
+                    'caption' => '電子報管理',
+                    'url' => 'route.news',
+                    'weight' => 30,
+                ]);
+            }
         }
     }
 

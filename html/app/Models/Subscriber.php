@@ -4,9 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
-use App\Events\SubscriberCreated;
-use App\Events\SubscriberDeleted;
 use App\Notifications\SubscriberVerifyEmail;
+use Illuminate\Support\Facades\DB;
 
 class Subscriber extends Model
 {
@@ -19,19 +18,28 @@ class Subscriber extends Model
         'email',
     ];
 
-    public function news()
-    {
-        return $this->belongsToMany('App\Models\News', 'news_subscribers', 'subscriber_id', 'news_id')->as('subscription')->withTimestamps();
-    }
+    protected $appends = [
+        'verified',
+    ];
 
     /**
      * Determine if the user has verified their email address.
      *
      * @return bool
      */
-    public function hasVerifiedEmail()
+    public function getVerifiedAttribute()
     {
         return ! is_null($this->email_verified_at);
+    }
+
+    public static function findByEmail($email)
+    {
+        return Subscriber::where('email', $email)->first();
+    }
+
+    public function news()
+    {
+        return $this->belongsToMany('App\Models\News', 'news_subscribers', 'subscriber_id', 'news_id')->as('subscription')->withTimestamps();
     }
 
     /**
@@ -65,4 +73,25 @@ class Subscriber extends Model
     {
         return $this->email;
     }
+
+    public function subscription($news_id)
+    {
+        $rec = DB::table('news_subscribers')->where('news_id', $news_id)->where('subscriber_id', $this->id)->first();
+        if ($rec) {
+            return false;
+        } else {
+            return DB::table('news_subscribers')->insert([
+                'news_id' => $news_id,
+                'subscriber_id' => $this->id,
+                'updated_at' => date('Y-m-d H:i:s'),
+                'created_at' => date('Y-m-d H:i:s'),
+            ]);
+        }
+    }
+
+    public function cancel($news_id)
+    {
+        return DB::table('news_subscribers')->where('news_id', $news_id)->where('subscriber_id', $this->id)->delete();
+    }
+
 }

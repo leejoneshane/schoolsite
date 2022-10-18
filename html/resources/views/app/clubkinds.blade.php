@@ -64,7 +64,7 @@
                 href="{{ route('clubs.editkind', ['kid' => $k->id]) }}">
                 <i class="fa-solid fa-pen"></i>
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="#"
+            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="void()" 
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('clubs.removekind', ['kid' => $k->id]) }}';

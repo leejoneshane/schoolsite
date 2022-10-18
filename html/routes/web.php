@@ -148,7 +148,7 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('website/menus/{menu?}', 'App\Http\Controllers\Admin\MenuController@update')->name('menus');
     Route::get('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\MenuController@add');
     Route::post('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\MenuController@insert')->name('menus.add');
-    Route::post('website/menus/remove/{menu}', 'App\Http\Controllers\Admin\MenuController@remove')->name('menus.remove');
+    Route::post('website/menus/{menu}/remove', 'App\Http\Controllers\Admin\MenuController@remove')->name('menus.remove');
     Route::get('website/permission', 'App\Http\Controllers\Admin\PermitController@index')->name('permission');
     Route::get('website/permission/add', 'App\Http\Controllers\Admin\PermitController@add');
     Route::post('website/permission/add', 'App\Http\Controllers\Admin\PermitController@insert')->name('permission.add');
@@ -157,5 +157,17 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('website/permission/{id}/remove', 'App\Http\Controllers\Admin\PermitController@remove')->name('permission.remove');
     Route::get('website/permission/{id}/grant', 'App\Http\Controllers\Admin\PermitController@grantList');
     Route::post('website/permission/{id}/grant', 'App\Http\Controllers\Admin\PermitController@grantUpdate')->name('permission.grant');
+    Route::get('website/news', 'App\Http\Controllers\Admin\NewsController@index')->name('news');
+    Route::get('website/news/add', 'App\Http\Controllers\Admin\NewsController@add');
+    Route::post('website/news/add', 'App\Http\Controllers\Admin\NewsController@insert')->name('news.add');
+    Route::get('website/news/{news}/edit', 'App\Http\Controllers\Admin\NewsController@edit');
+    Route::post('website/news/{news}/edit', 'App\Http\Controllers\Admin\NewsController@update')->name('news.edit');
+    Route::post('website/news/{news}/remove', 'App\Http\Controllers\Admin\NewsController@remove')->name('news.remove');
+    Route::get('website/news/{news}/subscribers', 'App\Http\Controllers\Admin\NewsController@subscribers')->name('subscribers');
+    Route::get('website/news/{news}/subscribers/add', 'App\Http\Controllers\Admin\NewsController@addSub');
+    Route::post('website/news/{news}/subscribers/add', 'App\Http\Controllers\Admin\NewsController@insertSub')->name('subscriber.add');
+    Route::get('website/news/{news}/subscribers/{id}/edit', 'App\Http\Controllers\Admin\NewsController@editSub');
+    Route::post('website/news/{news}/subscribers/{id}/edit', 'App\Http\Controllers\Admin\NewsController@updateSub')->name('subscriber.edit');
+    Route::post('website/news/{news}/subscribers/{id}/remove', 'App\Http\Controllers\Admin\NewsController@removeSub')->name('subscriber.remove');
 });
 

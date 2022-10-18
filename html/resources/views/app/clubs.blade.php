@@ -86,7 +86,7 @@
                 href="{{ route('clubs.edit', ['club_id' => $club->id]) }}" title="編輯">
                 <i class="fa-solid fa-pen"></i>
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="#" title="刪除"
+            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="void()" title="刪除"
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('clubs.remove', ['club_id' => $club->id]) }}';
@@ -98,7 +98,7 @@
                 href="{{ route('clubs.mail', ['club_id' => $club->id]) }}" title="通知">
                 <i class="fa-regular fa-envelope"></i>
             </a>
-            <a class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" href="#" title="重新報名"
+            <a class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" href="void()" title="重新報名"
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('clubs.prune', ['club_id' => $club->id]) }}';

@@ -17,7 +17,7 @@ class SubscriberController extends Controller
         if (!$subscriber) {
             Subscriber::create([
                 'email' => $request->input('email'),
-            ]);    
+            ]);
         }
 
         if ($subscriber) {
@@ -28,7 +28,7 @@ class SubscriberController extends Controller
         }
 
         if (config('subscribers.verify')) {
-            if (! $subscriber->hasVerifiedEmail()) {
+            if (! $subscriber->verified) {
                 $subscriber->sendEmailVerificationNotification();
                 return redirect()->route('home')
                     ->with('success', '電子報：'.$news->name.'的驗證信已經寄送到您的電子郵件信箱，請收信並進行驗證！');
@@ -47,7 +47,7 @@ class SubscriberController extends Controller
             DB::table('news_subscribers')->where('news_id', $id)->where('subscriber_id', $subscriber->id)->delete();
         }
         if (empty($subscriber->news)) {
-            $subscriber->delete();    
+            $subscriber->delete();
         }
         return redirect()->route('home')
             ->with('success', '您已經取消訂閱電子報：'.$news->name.'!');
@@ -64,7 +64,7 @@ class SubscriberController extends Controller
             return redirect()->route('home')->with('error', '您的電子郵件信箱驗證失敗！');
         }
 
-        if ($subscriber->hasVerifiedEmail()) {
+        if ($subscriber->verified) {
             return redirect()->route('home')->with('success', '您先前已經是電子報訂戶，無需再次驗證！');
         }
 
