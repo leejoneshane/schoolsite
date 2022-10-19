@@ -111,9 +111,15 @@ class NewsController extends Controller
 
     public function updateSub(Request $request, $news, $id)
     {
+        $sub = Subscriber::find($id);
         $email = $request->input('email');
-        Subscriber::find($id)->update([ 'email' => $email]);
-        return $this->subscribers($news)->with('success', '訂閱戶電子郵件更新完成！');
+        $old = $sub->email;
+        if ($email != $old) {
+            $sub->update([ 'email' => $email]);
+            $sub->sendEmailVerificationNotification();
+            return $this->subscribers($news)->with('success', '訂閱戶電子郵件更新完成！');
+        }
+        return $this->subscribers($news)->with('error', '訂閱戶電子郵件與原有郵件地址相同！');
     }
 
     public function removeSub($news, $id)
