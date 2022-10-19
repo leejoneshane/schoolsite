@@ -105,7 +105,7 @@ class ClubController extends Controller
         return view('app.clubkind', ['kinds' => $kinds])->with('success', '社團類別已經修改完成！');
     }
 
-    public function kindRemove(Request $request, $kid)
+    public function kindRemove($kid)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
@@ -136,7 +136,7 @@ class ClubController extends Controller
         }
     }
 
-    public function kindDown(Request $request, $kid)
+    public function kindDown($kid)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
@@ -280,7 +280,7 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             if ($user->user_type == 'Teacher') {
                 $teacher = Teacher::find($user->uuid);
-                $unit = $teacher->mainunit->id;    
+                $unit = $teacher->mainunit->id;
             } else {
                 $unit = 0;
             }
