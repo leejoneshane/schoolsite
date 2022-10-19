@@ -44,13 +44,9 @@ class SubscriberVerifyEmail extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $verificationUrl = $this->verificationUrl($notifiable);
-
         $mail = new MailMessage();
-
         $mail->subject(config('subscribers.mail.verify.subject'));
         $mail->greeting(config('subscribers.mail.verify.greeting'));
-
-        $news = News::find($this->news_id);
         if (!empty(config('subscribers.mail.verify.content'))) {
             foreach (config('subscribers.mail.verify.content') as $value) {
                 $mail->line($value);
@@ -58,9 +54,7 @@ class SubscriberVerifyEmail extends Notification implements ShouldQueue
         } else {
             $mail->line('請點擊下方的按鈕，以便驗證您的電子郵件信箱。');
         }
-
         $mail->action(config('subscribers.mail.verify.action'), $verificationUrl);
-
         if (!empty(config('subscribers.mail.verify.footer'))) {
             foreach (config('subscribers.mail.verify.footer') as $value) {
                 $mail->line($value);
@@ -94,7 +88,7 @@ class SubscriberVerifyEmail extends Notification implements ShouldQueue
     protected function verificationUrl($notifiable)
     {
         return URL::temporarySignedRoute(
-            'subscribers.verify',
+            'verify',
             Carbon::now()->addMinutes(config('subscribers.mail.verify.expiration')),
             [
                 'id' => $notifiable->getKey(),

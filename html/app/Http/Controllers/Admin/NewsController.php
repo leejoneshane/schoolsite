@@ -88,14 +88,9 @@ class NewsController extends Controller
 
     public function subscribers($news)
     {
-        $subscribers = News::find($news)->subscribers;
-        return view('admin.subscribers', ['subscribers' => $subscribers]);
-    }
-
-    public function addSub($news)
-    {
         $news = News::find($news);
-        return view('admin.subscriberadd', ['news' => $news]);
+        $subscribers = $news->subscribers;
+        return view('admin.subscribers', ['news' => $news, 'subscribers' => $subscribers]);
     }
 
     public function insertSub(Request $request, $news)
@@ -106,17 +101,12 @@ class NewsController extends Controller
             $sub = Subscriber::create([
                 'email' => $email,
             ]);
+        }
+        if (!($sub->verified)) {
             $sub->sendEmailVerificationNotification();
         }
         $sub->subscription($news);
         return $this->subscribers($news)->with('success', '訂閱戶新增完成！');
-    }
-
-    public function editSub($news, $id)
-    {
-        $news = News::find($news);
-        $sub = Subscriber::find($id);
-        return view('admin.subscriberedit', ['news' => $news, 'subscriber' => $sub]);
     }
 
     public function updateSub(Request $request, $news, $id)

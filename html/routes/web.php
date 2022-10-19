@@ -48,9 +48,9 @@ Route::get('email/verify/{id}/{hash}', 'App\Http\Controllers\Auth\VerificationCo
 Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@resend')->name('verification.resend');
 
 // news letter routes...
-Route::post('news/{id}/subscriber', 'SubscriberController@store')->name('store');
-Route::get('news/{id}/delete', 'SubscriberController@delete')->name('delete');
-Route::get('news/verify/{id}/{hash}', 'SubscriberController@verify')->name('verify');
+Route::post('news/{news}/subscriber', 'App\Http\Controllers\SubscriberController@store')->name('subscriber.store');
+Route::get('news/{news}/delete', 'App\Http\Controllers\SubscriberController@delete')->name('subscriber.delete');
+Route::get('news/{id}/verify/{hash}', 'App\Http\Controllers\SubscriberController@verify')->name('subscriber.verify');
 
 // calendar Routes...
 Route::get('calendar', 'App\Http\Controllers\CalendarController@calendar')->name('calendar');
@@ -164,9 +164,7 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('website/news/{news}/edit', 'App\Http\Controllers\Admin\NewsController@update')->name('news.edit');
     Route::post('website/news/{news}/remove', 'App\Http\Controllers\Admin\NewsController@remove')->name('news.remove');
     Route::get('website/news/{news}/subscribers', 'App\Http\Controllers\Admin\NewsController@subscribers')->name('subscribers');
-    Route::get('website/news/{news}/subscribers/add', 'App\Http\Controllers\Admin\NewsController@addSub');
     Route::post('website/news/{news}/subscribers/add', 'App\Http\Controllers\Admin\NewsController@insertSub')->name('subscriber.add');
-    Route::get('website/news/{news}/subscribers/{id}/edit', 'App\Http\Controllers\Admin\NewsController@editSub');
     Route::post('website/news/{news}/subscribers/{id}/edit', 'App\Http\Controllers\Admin\NewsController@updateSub')->name('subscriber.edit');
     Route::post('website/news/{news}/subscribers/{id}/remove', 'App\Http\Controllers\Admin\NewsController@removeSub')->name('subscriber.remove');
 });
