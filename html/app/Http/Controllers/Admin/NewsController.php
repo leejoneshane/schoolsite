@@ -147,7 +147,7 @@ class NewsController extends Controller
                 $modelList = array_merge($modelList, $this->getAllModels($path, $result));
             } else {
                 $content = file_get_contents($filename);
-                if (preg_match('/use Subscribeable;/', $content)) {
+                if (preg_match('/implements Subscribeable/', $content)) {
                     $modelList[] = $this->convert_path($filename);
                 }
             }

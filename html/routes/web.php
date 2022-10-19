@@ -116,6 +116,11 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('list/enroll/{club_id}/{year?}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
 });
 
+//regular meeting routes...
+Route::group(['prefix' => 'meeting', 'middleware' => [ 'teacher' ] ], function () {
+    Route::get('/', 'App\Http\Controllers\MeetingController@index')->name('meeting');
+});
+
 // Administrator Interface Routes...
 Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');

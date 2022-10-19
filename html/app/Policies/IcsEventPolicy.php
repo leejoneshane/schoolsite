@@ -4,6 +4,7 @@ namespace App\Policies;
  
 use App\Models\IcsEvent;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Auth\Access\HandlesAuthorization;
  
@@ -39,8 +40,9 @@ class IcsEventPolicy
     public function create(User $user)
     {
         if ($user->user_type == 'Teacher') {
-            if ($user->profile['role_id'] == 'C02' ||
-                $user->profile['role_id'] == 'C03') {
+            $role = Role::find($user->profile['role_id']);
+            if ( $role->role_no == 'C02' ||
+                $role->role_no == 'C03') {
                 return true;
             }
         }
@@ -51,9 +53,10 @@ class IcsEventPolicy
     public function update(User $user, IcsEvent $event)
     {
         if ($user->user_type == 'Teacher') {
+            $role = Role::find($user->profile['role_id']);
             if (substr($event->unit_id, 0, 3) == substr($user->profile['unit_id'], 0, 3) && (
-                $user->profile['role_id'] == 'C02' ||
-                $user->profile['role_id'] == 'C03')) {
+                $role->role_no == 'C02' ||
+                $role->role_no == 'C03')) {
                 return true;
             }
         }
@@ -64,8 +67,9 @@ class IcsEventPolicy
     public function delete(User $user, IcsEvent $event)
     {
         if ($user->user_type == 'Teacher') {
+            $role = Role::find($user->profile['role_id']);
             if ($event->unit_id == substr($user->profile['unit_id'], 0, 3) &&
-                $user->profile['role_id'] == 'C02') {
+                $role->role_no == 'C02') {
                 return true;
             }
         }

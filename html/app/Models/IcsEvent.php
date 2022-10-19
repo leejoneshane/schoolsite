@@ -6,16 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 use Spatie\IcalendarGenerator\Components\Event;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
-use App\Models\Subscribeable;
+use App\Interfaces\Subscribeable;
 use App\Models\IcsCalendar;
 use App\Providers\GcalendarServiceProvider as GCAL;
 
-class IcsEvent extends Model
+class IcsEvent extends Model implements Subscribeable
 {
-    use Subscribeable;
 
     protected $table = 'ics_events';
-    protected $template = 'emails.newsletter';
+    protected $template = 'emails.calendar';
 
     protected static $monthMap = [
         1 => '一',

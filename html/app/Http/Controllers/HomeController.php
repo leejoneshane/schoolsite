@@ -31,6 +31,15 @@ class HomeController extends Controller
                 'weight' => 10,
             ]);
         }
+        if (!Menu::find('meeting')) {
+            Menu::create([
+                'id' => 'meeting',
+                'parent_id' => 'main',
+                'caption' => '網路朝會',
+                'url' => 'route.meeting',
+                'weight' => 10,
+            ]);
+        }
     }
 
     public function index()

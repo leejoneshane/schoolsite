@@ -41,7 +41,7 @@ class SendNewsLetters implements ShouldQueue
         foreach ($news as $new) {
             $subscribers = $new->verified;
             $data_model = new $new->model;
-            $view = $data_model->template;
+            $view = ($data_model)::template;
             $content = $data_model->newsletter();
             Notification::sendNow($subscribers, new NewsLetter($new->name, $view, $content));
         }

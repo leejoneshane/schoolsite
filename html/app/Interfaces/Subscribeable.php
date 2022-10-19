@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Interfaces;
 
-trait Subscribeable
+interface Subscribeable
 {
     /**
      * Set the blade template for the news letter.
@@ -15,9 +15,5 @@ trait Subscribeable
      * @param  string|null  $connection
      * @return Array
      */
-    public function newsletter()
-    {
-        return [];
-    }
-
+    public function newsletter();
 }
