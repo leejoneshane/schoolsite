@@ -3,21 +3,87 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 use App\Models\Meeting;
 use App\Models\Teacher;
-use App\Models\Role;
+use Carbon\Carbon;
 
 class MeetingController extends Controller
 {
 
-    public function index()
+    public function index($date = null)
     {
-        $meets = Meeting::inTime(date('Y-m-d'));
+        if ($date) {
+            $dt = Carbon::createFromFormat('Y-m-d', $date);
+        } else {
+            $dt = Carbon::today();
+        }
+        $meets = Meeting::inTime($dt);
         $user = Auth::user();
         $teacher = Teacher::find($user->uuid);
-        $role = Role::find($teacher->role_id);
-        $create = ($role->role_no == 'C02' || $user->is_admin);
-        return view('app.meetings', ['create' => $create, 'unit' => $teacher->unit_id, 'meets' => $meets]);
+        $create = ($teacher->role->role_no == 'C02' || $user->is_admin);
+        return view('app.meetings', ['date' => $dt->toDateString(), 'create' => $create, 'unit' => $teacher->unit_id, 'meets' => $meets]);
+    }
+
+    public function add()
+    {
+        $user = Auth::user();
+        $teacher = Teacher::find($user->uuid);
+        return view('app.meetingadd', ['teacher' => $teacher]);
+    }
+
+    public function insert(Request $request)
+    {
+        $user = Auth::user();
+        $teacher = Teacher::find($user->uuid);
+        Meeting::create([
+            'unit_id' => $teacher->mainunit->id,
+            'role' => $teacher->role->name,
+            'reporter' => $teacher->realname,
+            'words' => $request->input('words'),
+            'inside' => ($request->input('open') == 'yes') ? false : true,
+            'expired_at' => ($request->input('enddate')) ?: null,
+        ]);
+        return $this->index()->with('success', '業務報告已為您張貼！');
+    }
+
+    public function edit($id)
+    {
+        $user = Auth::user();
+        $teacher = Teacher::find($user->uuid);
+        $meet = Meeting::find($id);
+        if (!$meet) return $this->index()->with('error', '找不到業務報告，因此無法修改內容！');
+        return view('app.meetingedit', ['teacher' => $teacher, 'meet' => $meet]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $user = Auth::user();
+        $teacher = Teacher::find($user->uuid);
+        $meet = Meeting::find($id);
+        if (!$meet) return $this->index()->with('error', '找不到業務報告，因此無法修改內容！');
+        if ($request->input('switch') == 'yes') {
+            $meet->update([
+                'role' => $teacher->role->name,
+                'reporter' => $teacher->realname,
+                'words' => $request->input('words'),
+                'inside' => ($request->input('open') == 'yes') ? false : true,
+                'expired_at' => ($request->input('enddate')) ?: null,
+            ]);
+        } else {
+            $meet->update([
+                'words' => $request->input('words'),
+                'inside' => ($request->input('open') == 'yes') ? false : true,
+                'expired_at' => ($request->input('enddate')) ?: null,
+            ]);
+        }
+        return $this->index()->with('success', '業務報告內容已為您更新！');
+    }
+
+    public function remove($id)
+    {
+        Meeting::destroy($id);
+        return $this->index()->with('success', '業務報告已經移除！');
     }
 
 }

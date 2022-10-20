@@ -117,8 +117,13 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
 });
 
 //regular meeting routes...
-Route::group(['prefix' => 'meeting', 'middleware' => [ 'teacher' ] ], function () {
-    Route::get('/', 'App\Http\Controllers\MeetingController@index')->name('meeting');
+Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth', 'teacher' ] ], function () {
+    Route::get('list/{date?}', 'App\Http\Controllers\MeetingController@index')->name('meeting');
+    Route::get('add', 'App\Http\Controllers\MeetingController@add');
+    Route::post('add', 'App\Http\Controllers\MeetingController@insert')->name('meeting.add');
+    Route::get('edit/{id}', 'App\Http\Controllers\MeetingController@edit');
+    Route::post('edit/{id}', 'App\Http\Controllers\MeetingController@update')->name('meeting.edit');
+    Route::post('remove/{id}', 'App\Http\Controllers\MeetingController@remove')->name('meeting.remove');
 });
 
 // Administrator Interface Routes...

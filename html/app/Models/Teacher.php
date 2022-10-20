@@ -50,6 +50,7 @@ class Teacher extends Model
     protected $appends = [
         'mainunit',
         'unit',
+        'role',
     ];
 
     public static function findById($id) //全誼系統代號
@@ -129,6 +130,11 @@ class Teacher extends Model
     public function getUnitAttribute()
     {
         return Unit::find($this->unit_id);
+    }
+
+    public function getRoleAttribute()
+    {
+        return Role::find($this->role_id);
     }
 
     public function roles()
