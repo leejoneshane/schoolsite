@@ -22,8 +22,8 @@ class MenuController extends Controller
     public function index($menu = '', $message = null)
     {
         $routename = [];
-        $routeCollection = Route::getRoutes();
-        foreach ($routeCollection as $value) {
+        $routeCollection = Route::getRoutes()->getRoutesByMethod();
+        foreach ($routeCollection['GET'] as $value) {
             $name = $value->getName();
             if (!empty($name) && strpos($name, '.') === false) $routename[] = $name;
         }
@@ -71,8 +71,8 @@ class MenuController extends Controller
     public function add($menu = '')
     {
         $routename = [];
-        $routeCollection = Route::getRoutes();
-        foreach ($routeCollection as $value) {
+        $routeCollection = Route::getRoutes()->getRoutesByMethod();
+        foreach ($routeCollection['GET'] as $value) {
             $name = $value->getName();
             if (!empty($name) && strpos($name, '.') === false) $routename[] = $name;
         }

@@ -7,7 +7,7 @@ interface Subscribeable
     /**
      * Set the blade template for the news letter.
      */
-    protected $template = '';
+    const template = '';
 
     /**
      * collect the contents for blade template.

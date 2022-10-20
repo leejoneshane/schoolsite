@@ -8,8 +8,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<script src="https://cdn.ckeditor.com/ckeditor5/35.2.1/classic/ckeditor.js"></script>
-<script src="https://cdn.ckeditor.com/ckeditor5/35.2.1/classic/translations/zh.js"></script>
+<script src="/build/ckeditor.js"></script>
 <div class="p-2 w-full text-white bg-blue-700 font-semibold text-lg">
     {{ $meet->role . $meet->reporter }}：{{ date('Y-m-d') . $meet->unit->name }}業務報告
 </div>
@@ -44,7 +43,54 @@
 <script>
     ClassicEditor
         .create( document.querySelector( '#editor' ), {
-            language: 'zh'
+            toolbar: {
+                items: [
+                    'heading',
+                    '|',
+                    'fontColor',
+                    'fontBackgroundColor',
+                    'fontSize',
+                    'bold',
+                    'italic',
+                    'underline',
+                    'link',
+                    'bulletedList',
+                    'numberedList',
+                    '|',
+                    'alignment',
+                    'outdent',
+                    'indent',
+                    '|',
+                    'findAndReplace',
+                    'removeFormat',
+                    'sourceEditing',
+                    '|',
+                    'imageUpload',
+                    'blockQuote',
+                    'insertTable',
+                    'mediaEmbed',
+                    'undo',
+                    'redo'
+                ]
+            },
+            language: 'zh',
+            image: {
+                toolbar: [
+                    'imageTextAlternative',
+                    'imageStyle:inline',
+                    'imageStyle:block',
+                    'imageStyle:side'
+                ]
+            },
+            table: {
+                contentToolbar: [
+                    'tableColumn',
+                    'tableRow',
+                    'mergeTableCells',
+                    'tableCellProperties',
+                    'tableProperties'
+                ]
+            }
         } )
         .catch( error => {
             console.error( error );

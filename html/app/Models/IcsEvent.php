@@ -14,7 +14,7 @@ class IcsEvent extends Model implements Subscribeable
 {
 
     protected $table = 'ics_events';
-    protected $template = 'emails.calendar';
+    const template = 'emails.calendar';
 
     protected static $monthMap = [
         1 => '一',
