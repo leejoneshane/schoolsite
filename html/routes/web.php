@@ -117,7 +117,7 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
 });
 
 //regular meeting routes...
-Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth', 'teacher' ] ], function () {
+Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth'] ], function () {
     Route::get('list/{date?}', 'App\Http\Controllers\MeetingController@index')->name('meeting');
     Route::get('add', 'App\Http\Controllers\MeetingController@add');
     Route::post('add', 'App\Http\Controllers\MeetingController@insert')->name('meeting.add');
