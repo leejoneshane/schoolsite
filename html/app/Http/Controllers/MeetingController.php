@@ -93,4 +93,17 @@ class MeetingController extends Controller
         return $this->index()->with('success', '業務報告已經移除！');
     }
 
+    public function storeImage(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $originName = $request->file('upload')->getClientOriginalName();
+            $fileName = pathinfo($originName, PATHINFO_FILENAME);
+            $extension = $request->file('upload')->getClientOriginalExtension();
+            $fileName = $fileName . '_' . time() . '.' . $extension;
+            $request->file('upload')->move(public_path('meeting'), $fileName);
+            $url = asset('meeting/' . $fileName);
+            return response()->json(['fileName' => $fileName, 'uploaded'=> 1, 'url' => $url]);
+        }
+    }
+
 }

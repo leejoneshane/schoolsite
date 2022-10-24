@@ -31,11 +31,11 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
         $collection = [];
         $old = '';
         $record = new \stdClass;
+        $record->clubs = [];
         foreach ($enrolls as $enroll) {
             if (!$old) { //first
                 $old = $enroll->uuid;
                 $record->student = $enroll->student;
-                $record->clubs = [];
                 $record->clubs[$enroll->club->id] = $enroll->club->cash;
             } elseif ($old != $enroll->uuid) { //prev
                 $total = 0;
@@ -46,8 +46,8 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
                 $collection[] = $record;
                 $old = $enroll->uuid;
                 $record = new \stdClass;
-                $record->student = $enroll->student;
                 $record->clubs = [];
+                $record->student = $enroll->student;
                 $record->clubs[$enroll->club->id] = $enroll->club->cash;
             } else {
                 $record->clubs[$enroll->club->id] = $enroll->club->cash;
@@ -99,7 +99,7 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
 
     public function map($row): array
     {
-        if (is_null($row->student)) {
+        if (!isset($row->student) || is_null($row->student)) {
             $map = [ '總計', '', '', '', '', '' ];
         } else {
             $grade = substr($row->student->class_id, 0, 1);

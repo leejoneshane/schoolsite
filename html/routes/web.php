@@ -124,6 +124,7 @@ Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth'] ], function () {
     Route::get('edit/{id}', 'App\Http\Controllers\MeetingController@edit');
     Route::post('edit/{id}', 'App\Http\Controllers\MeetingController@update')->name('meeting.edit');
     Route::post('remove/{id}', 'App\Http\Controllers\MeetingController@remove')->name('meeting.remove');
+    Route::post('image-upload', 'App\Http\Controllers\MeetingController@storeImage')->name('meeting.imageupload');
 });
 
 // Administrator Interface Routes...
