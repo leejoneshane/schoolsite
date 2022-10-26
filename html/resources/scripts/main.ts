@@ -11,10 +11,7 @@ declare global {
 }
 
 window.axios = axios;
-
 window.Pusher = Pusher;
-window.Pusher.key = import.meta.env.VITE_PUSHER_APP_KEY;
-
 window.Echo =  new Echo({
     broadcaster: 'pusher',
     key: import.meta.env.VITE_PUSHER_APP_KEY,
