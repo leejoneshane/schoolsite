@@ -20,7 +20,7 @@
         @yield('content')
     </div>
     <div id="messager" class="fixed z-10 top-0 left-0 h-screen w-full flex flex-col-reverse place-items-end">
-        <div id="template" class="hidden flex float-right items-center p-4 max-w-xs text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+        <div id="template" class="hidden flex items-center p-4 max-w-xs text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
             <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200"></div>
             <div class="ml-3 text-sm font-normal"></div>
             <button type="button" class="ml-auto -mx-1.5 -my-1.5 text-xl bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-8 w-8 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#template" aria-label="Close">
