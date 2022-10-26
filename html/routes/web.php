@@ -66,6 +66,7 @@ Route::get('calendar/download', 'App\Http\Controllers\CalendarController@student
 Route::get('calendar/import', 'App\Http\Controllers\CalendarController@student')->name('calendar.import');
 
 //intime messager routes...
+Route::get('messager/list/online', 'App\Http\Controllers\MessagerController@list')->middleware('auth')->name('messager.list');
 Route::post('messager/send', 'App\Http\Controllers\MessagerController@send')->middleware('auth')->name('messager.send');
 
 //student club routes...
