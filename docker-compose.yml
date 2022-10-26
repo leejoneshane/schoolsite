@@ -56,6 +56,12 @@ services:
       YAHOO_CLIENT_SECRET: secret
       LINE_CLIENT_ID: google
       LINE_CLIENT_SECRET: secret
+      VITE_PUSHER_APP_ID: eschool
+      VITE_PUSHER_APP_SECRET: meps_eschool_websocket
+      VITE_PUSHER_APP_KEY: ksVxXGNhb3j9XCGZRUUMNdsMfriRHknB21aAvP51
+      VITE_PUSHER_HOST: ws.meps.tp.edu.tw
+      VITE_PUSHER_PORT: 443
+      VITE_PUSHER_SCHEME: https
     volumes:
       - ./html/:/var/www/html
     networks:
@@ -109,6 +115,17 @@ services:
       PMA_HOST: mysql
     ports:
       - 8080:80
+    networks:
+      - backend
+
+  soketi:
+    image: quay.io/soketi/soketi
+    environment:
+      SOKETI_DEBUG: 1
+      SOKETI_METRICS_SERVER_PORT: 9601
+    ports:
+      - 6001:6001
+      - 9601:9601
     networks:
       - backend
 

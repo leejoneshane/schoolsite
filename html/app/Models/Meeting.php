@@ -70,7 +70,7 @@ class Meeting extends Model implements Subscribeable
         } else {
             $dt = $date->toDateString();
         }
-        return IcsEvent::where('inside', false)
+        return Meeting::where('inside', false)
             ->whereDate('created_at', '<=', $dt)
             ->whereDate('expired_at', '>=', $dt)
             ->orderBy('unit_id')
