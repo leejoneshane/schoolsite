@@ -16,28 +16,32 @@
             if (uid) {
                 var me = {{ auth()->user()->id }};
                 var tell = prompt('您要告訴對方什麼？');
-                window.axios.post('{{ route('messager.send') }}', {
-                    from: me,
-                    to: uid,
-                    message: tell,
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json;charset=utf-8',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                });
+                if (tell) {
+                    window.axios.post('{{ route('messager.send') }}', {
+                        from: me,
+                        to: uid,
+                        message: tell,
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    });
+                }
             }
             @if ($broadcast)
             if (!uid) {
                 var tell = prompt('要廣播什麼訊息？');
-                window.axios.post('{{ route('messager.broadcast') }}', {
-                    message: tell,
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json;charset=utf-8',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                });
+                if (tell) {
+                    window.axios.post('{{ route('messager.broadcast') }}', {
+                        message: tell,
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    });
+                }
             }
             @endif
         ">
