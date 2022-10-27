@@ -15,10 +15,12 @@ class Messager extends Component
      */
     public function render()
     {
-        $user = User::find(Auth::user()->id);
-        $manager = $user->hasPermission('messager.broadcast');
-        if ($user->is_admin || $manager) {
-            return view('components.messager', ['broadcast' => true]);
+        if (Auth::user()) {
+            $user = User::find(Auth::user()->id);
+            $manager = $user->hasPermission('messager.broadcast');
+            if ($user->is_admin || $manager) {
+                return view('components.messager', ['broadcast' => true]);
+            }
         } else {
             return view('components.messager', ['broadcast' => false]);
         }

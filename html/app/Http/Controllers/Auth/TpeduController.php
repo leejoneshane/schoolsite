@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Auth\Events\Registered;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -20,7 +21,7 @@ class TpeduController extends Controller
     {
         if (is_null($this->sso)) {
             $this->sso = new TpeduServiceProvider;
-		}
+        }
     }
 
     public function redirect(Request $request)
@@ -81,6 +82,7 @@ class TpeduController extends Controller
                             $user->save();
                         }
                         Auth::login($user);
+                        event(new Registered($user));
                         return redirect()->route('home');
                     } else {
                         return redirect()->route('login')->with('error', "您的帳號並非隸屬於本校，因此無法登入！");
