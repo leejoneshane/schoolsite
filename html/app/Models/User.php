@@ -38,7 +38,7 @@ class User extends Authenticatable
     ];
 
     protected $appends = [
-		'profile',
+        'profile',
     ];
 
     /**
@@ -56,15 +56,15 @@ class User extends Authenticatable
         return User::where('is_admin', true)->get();
     }
 
-	public function socialite_accounts()
-	{
-    	return $this->hasMany('App\Models\SocialiteAccount', 'uuid', 'uuid');
-	}
+    public function socialite_accounts()
+    {
+        return $this->hasMany('App\Models\SocialiteAccount', 'uuid', 'uuid');
+    }
 
     public function permissions()
-	{
-    	return $this->belongsToMany('App\Models\Permissions', 'user_permission', 'uuid', 'perm_id');
-	}
+    {
+        return $this->belongsToMany('App\Models\Permissions', 'user_permission', 'uuid', 'perm_id');
+    }
 
     public function getProfileAttribute()
     {
@@ -75,7 +75,7 @@ class User extends Authenticatable
             return Student::find($this->uuid)->getAttributes();
         }
         return [
-            'realname' => '網站管理員',
+            'realname' => '管理員',
         ];
     }
 

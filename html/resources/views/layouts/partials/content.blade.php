@@ -19,6 +19,9 @@
         </div>
         @yield('content')
     </div>
+    <audio id="received">
+        <source src="{{ asset('sound/notify.mp3') }}" type="audio/mpeg">
+    </audio>
     <div id="messager" class="fixed z-10 right-0 bottom-0 flex flex-col-reverse place-items-end">
         <div id="template" class="hidden flex items-center p-4 max-w-xs text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
             <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200"></div>
@@ -53,6 +56,7 @@
             popup.appendChild(btn);
             let parent = document.getElementById('messager');
             parent.appendChild(popup);
+            document.getElementById('received').play();
             new window.Dismiss(popup, { triggerEl: btn });
         });
     @auth
@@ -78,6 +82,7 @@
             popup.appendChild(btn);
             let parent = document.getElementById('messager');
             parent.appendChild(popup);
+            document.getElementById('received').play();
             new window.Dismiss(popup, { triggerEl: btn });
         });
     @endauth
@@ -104,6 +109,7 @@
             popup.appendChild(btn);
             let parent = document.getElementById('messager');
             parent.appendChild(popup);
+            document.getElementById('received').play();
             new window.Dismiss(popup, { triggerEl: btn });
         });
     @endadmin
