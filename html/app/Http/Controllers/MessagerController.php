@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Events\PrivateMessage;
+use App\Events\PublicMessage;
 
 class MessagerController extends Controller
 {
@@ -16,6 +17,12 @@ class MessagerController extends Controller
         $to = $request->input('to');
         $message = $request->input('message');
         broadcast(new PrivateMessage($from, $to, $message));
+    }
+
+    public function broadcast(Request $request)
+    {
+        $message = $request->input('message');
+        broadcast(new PublicMessage($message));
     }
 
     public function list()

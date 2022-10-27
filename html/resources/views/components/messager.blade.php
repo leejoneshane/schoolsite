@@ -1,9 +1,13 @@
 @auth
 <div class="px-3">
-    <label for="user_id" class="inline">傳訊息給：</label>
+    <label for="user_id" class="inline text-teal-200">傳訊息給：</label>
     <select class="w-28 inline-block mt-2 lg:mt-0 px-4 lg:px-2 py-1 leading-none border rounded border-white hover:border-transparent"
         id="user_id" name="user_id">
+        @if ($broadcast)
+        <option value="">－廣播－</option>
+        @else
         <option value="">－請選擇－</option>
+        @endif
     </select>
     <div class="inline">
         <button class="text-white bg-blue-500 hover:bg-blue-700 focus:outline-none rounded-full text-sm px-2 py-1 text-center mr-2"
@@ -23,6 +27,19 @@
                     }
                 });
             }
+            @if ($broadcast)
+            if (!uid) {
+                var tell = prompt('要廣播什麼訊息？');
+                window.axios.post('{{ route('messager.broadcast') }}', {
+                    message: tell,
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+            }
+            @endif
         ">
             傳送
         </button>
