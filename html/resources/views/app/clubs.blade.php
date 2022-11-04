@@ -82,7 +82,7 @@
         <td class="p-2">{{ $club->maximum }}</td>
         <td class="p-2">{{ $club->count_enrolls() }}</td>
         <td class="p-2">
-            @if (Auth::user()->profile['mainunit']->id == $club->unit_id)
+            @if (Auth::user()->is_admin ||  Auth::user()->profile['mainunit']->id == $club->unit_id)
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('clubs.edit', ['club_id' => $club->id]) }}" title="編輯">
                 <i class="fa-solid fa-pen"></i>

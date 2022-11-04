@@ -26,7 +26,7 @@
         <th></th>
     </tr>
     @foreach ($permission as $p)
-    <tr class="odd:bg-white even:bg-gray-100 hover:bg-green-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 dark:hover:bg-green-600"
+    <tr class="cursor-pointer odd:bg-white even:bg-gray-100 hover:bg-green-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 dark:hover:bg-green-600"
         onclick="window.location.replace('{{ route('permission.grant', ['id' => $p->id]) }}');">
         <td class="p-2 sm:w-auto w-24">
             {{ $p->group }}

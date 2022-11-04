@@ -85,24 +85,22 @@
 </div>
 <form id="upload" action="{{ route('clubs.import') }}" method="POST" enctype="multipart/form-data">
     @csrf
-    <p><div class="p-3">
-        <label for="kind" class="inline">匯入到哪個類別？</label>
+    <div class="p-3">
+        <label for="kind">匯入到哪個類別？</label>
         <select name="kind" class="inline w-48 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
             @foreach ($kinds as $k)
             <option value="{{ $k->id }}"{{ ($kind == $k->id) ? ' selected' : '' }}>{{ $k->name }}</option>
         @endforeach
         </select>
-    </div></p>
-    <p><div class="p-3">
-        <label for="excel" class="inline">請選擇上傳檔案！</label>
-        <input type="file" name="excel" accept=".xls,.xlsx,.pdf" class="inline file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" required>
-    </div></p>
-    <p class="p-6">
-        <div class="inline">
-            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                匯入
-            </button>
-        </div>    
-    </p>
+    </div>
+    <div class="p-3">
+        <span class="sr-only">請選擇上傳檔案！</span>
+        <input type="file" name="excel" accept=".xls,.xlsx,.pdf" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" required>
+    </div>
+    <div class="p-3">
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+            匯入
+        </button>
+    </div>
 </form>
 @endsection

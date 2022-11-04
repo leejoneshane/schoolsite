@@ -319,9 +319,9 @@ class ClubController extends Controller
             'teacher' => $request->input('teacher'),
             'location' => $request->input('location'),
             'memo' => $request->input('memo'),
-            'cash' => $request->input('cash'),
-            'total' => $request->input('total'),
-            'maximum' => $request->input('limit'),
+            'cash' => $request->input('cash') ?: 0,
+            'total' => $request->input('total') ?: 0,
+            'maximum' => $request->input('limit') ?: 0,
         ]);
         return $this->clubList($kind_id)->with('success', '課外社團已經新增完成！');
     }
@@ -363,9 +363,9 @@ class ClubController extends Controller
             'teacher' => $request->input('teacher'),
             'location' => $request->input('location'),
             'memo' => $request->input('memo'),
-            'cash' => $request->input('cash'),
-            'total' => $request->input('total'),
-            'maximum' => $request->input('limit'),
+            'cash' => $request->input('cash') ?: 0,
+            'total' => $request->input('total') ?: 0,
+            'maximum' => $request->input('limit') ?: 0,
         ]);
         return $this->clubList($kind_id)->with('success', '課外社團已經修改完成！');
     }
@@ -551,7 +551,13 @@ class ClubController extends Controller
             $club = Club::find($club_id);
             $current = ClubEnroll::current_year();
             $years = ClubEnroll::years();
-            if (!$year) $year = $years[0];
+            if (!$year) {
+                if (!empty($years)) {
+                    $year = $years[0];
+                } else {
+                    $year = $current;
+                }
+            }
             $enrolls = $club->year_enrolls();
             return view('app.clubenrolls', ['club' => $club, 'current' => $current, 'year' => $year, 'years' => $years, 'enrolls' => $enrolls]);
         } else {
@@ -666,8 +672,10 @@ class ClubController extends Controller
     public function enrollInsertFast(Request $request, $club_id)
     {
         $message = '';
-        $students = $request->input('stdno');
+        $list = str_replace('\r\n', ' ', $request->input('stdno'));
+        $students = explode(' ', $list);
         foreach ($students as $stdno) {
+            $stdno = trim($stdno);
             if (strlen($stdno) != 5) continue;
             $class_id = substr($stdno, 0, 3);
             $seat = (integer) substr($stdno, -2);

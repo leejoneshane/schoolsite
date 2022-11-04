@@ -51,6 +51,7 @@
         注意事項：<br>
         　　1. 以快速輸入方式報名，將會直接錄取！<br>
         　　2. 所有缺省欄位,例如：聯絡方式、午餐選項、自選上課日、身份註記...等，必須由學生或家長登入系統後，自行使用「修改報名資訊」填寫。<br>
+        　　3. 若要輸入多位學生，請用空白隔開。例如：30301 30421。<br>
     </p>
 </div>
 <div class="flex flex-col gap-3 justify-center items-center">
@@ -59,14 +60,8 @@
             @csrf
             <p class="p-6">
                 <label for="stdno" class="block text-3xl font-bold">請輸入報名學生的班級座號：</label>
-                <input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><br>            
-                <input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><br>
-                <input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><br>            
-                <input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><br>
-                <input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><br>            
-                <input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><br>
-                <input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><br>            
-                <input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><input name="stdno[]" type="text" /><br>
+                <textarea class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                    name="stdno" rows="5" cols="180"></textarea>
             </p>
             <p class="p-6">
                 <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
