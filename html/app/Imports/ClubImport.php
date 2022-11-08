@@ -8,9 +8,8 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithUpserts;
 
-class ClubImport implements ToCollection, WithHeadingRow, WithUpserts
+class ClubImport implements ToCollection, WithHeadingRow
 {
     use Importable;
 
@@ -21,15 +20,9 @@ class ClubImport implements ToCollection, WithHeadingRow, WithUpserts
         $this->kind = $kind;
     }
 
-    public function uniqueBy()
-    {
-        return 'name';
-    }
-
     public function collection(Collection $rows)
     {
-        foreach ($rows as $row) 
-        {
+        foreach ($rows as $row) {
             if (!isset($row['name']) || !isset($row['short'])) {
                 return null;
             }

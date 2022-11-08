@@ -31,10 +31,10 @@ class Menu extends Model
     public function getTopAttribute()
     {
         $id = $this->id;
-        $parent = $this->parent;
-        while (!is_null($parent)) {
-            $id = $parent->id;
-            $parent = $parent->parent;
+        $parents = $this->parents;
+        while (!is_null($parents)) {
+            $id = $parents->id;
+            $parents = $parents->parents;
         }
         return $id;
     }
@@ -44,14 +44,14 @@ class Menu extends Model
         return (substr($this->url, 0, 6) == 'route.') ? route(substr($this->url, 6)) : $this->url;
     }
 
-    public function parent()
+    public function parents()
     {
-        return $this->hasOne('App\Models\Menu','id','parent_id');
+        return $this->hasOne('App\Models\Menu', 'id', 'parent_id');
     }
 
     public function childs()
     {
-        return $this->hasMany('App\Models\Menu','parent_id','id')->orderBy('weight');
+        return $this->hasMany('App\Models\Menu', 'parent_id', 'id')->orderBy('weight');
     }
 
     public static function topmenus()
@@ -80,7 +80,7 @@ class Menu extends Model
             }
             $html .= '</li>';
         }
-        $html .= '</ul>';        
+        $html .= '</ul>';
         return $html;
     }
 }

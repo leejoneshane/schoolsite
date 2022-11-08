@@ -13,7 +13,7 @@ class Teacher extends Model
 {
 
     use SoftDeletes;
-    
+
 	protected $table = 'teachers';
 	protected $primaryKey = 'uuid';
     public $incrementing = false;
@@ -55,17 +55,17 @@ class Teacher extends Model
 
     public static function findById($id) //全誼系統代號
     {
-        return Student::where('id', $id)->first();
+        return Teacher::where('id', $id)->first();
     }
 
     public static function findByIdno($idno) //身分證字號
     {
-        return Student::where('idno', $idno)->first();
+        return Teacher::where('idno', $idno)->first();
     }
 
     public static function findByClass($class_id) //任教年班
     {
-        return Student::where('tutor_class', $class_id)->first();
+        return Teacher::where('tutor_class', $class_id)->first();
     }
 
     public function user()
@@ -144,8 +144,7 @@ class Teacher extends Model
 
     public function assignment()
     {
-        $assignment = DB::table('assignment')->where('uuid', $this->uuid)->get();
-        return $assignment;
+        return DB::table('assignment')->where('uuid', $this->uuid)->get();
     }
 
     public function subjects()
@@ -155,7 +154,12 @@ class Teacher extends Model
 
     public function classrooms()
     {
-        return $this->hasMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id');
+        return $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id');
+    }
+
+    public function seniority()
+    {
+        return DB::table('seniority')->where('uuid', $this->uuid)->get();
     }
 
     public function sync()
