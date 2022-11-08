@@ -8,14 +8,15 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Providers\TpeduServiceProvider as SSO;
 use Illuminate\Support\Facades\DB;
 use App\Models\Unit;
+use App\Models\Seniority;
 
 class Teacher extends Model
 {
 
     use SoftDeletes;
 
-	protected $table = 'teachers';
-	protected $primaryKey = 'uuid';
+    protected $table = 'teachers';
+    protected $primaryKey = 'uuid';
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -51,7 +52,37 @@ class Teacher extends Model
         'mainunit',
         'unit',
         'role',
+        'tutor',
     ];
+
+    public function getMainunitAttribute()
+    {
+        $unit = Unit::find($this->unit_id);
+        if (!$unit) return null;
+        if ($unit->is_main()) {
+            return $unit;
+        } else {
+            return $unit->uplevel();
+        }
+    }
+
+    public function getUnitAttribute()
+    {
+        return Unit::find($this->unit_id);
+    }
+
+    public function getRoleAttribute()
+    {
+        return Role::find($this->role_id);
+    }
+
+    public function getTutorAttribute()
+    {
+        if ($this->tutor_class) {
+            return Classroom::find($this->tutor_class)->name;
+        }
+        return false;
+    }
 
     public static function findById($id) //全誼系統代號
     {
@@ -116,27 +147,6 @@ class Teacher extends Model
         return $upper;
     }
 
-    public function getMainunitAttribute()
-    {
-        $unit = Unit::find($this->unit_id);
-        if (!$unit) return null;
-        if ($unit->is_main()) {
-            return $unit;
-        } else {
-            return $unit->uplevel();
-        }
-    }
-
-    public function getUnitAttribute()
-    {
-        return Unit::find($this->unit_id);
-    }
-
-    public function getRoleAttribute()
-    {
-        return Role::find($this->role_id);
-    }
-
     public function roles()
     {
         return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id');
@@ -159,7 +169,7 @@ class Teacher extends Model
 
     public function seniority()
     {
-        return DB::table('seniority')->where('uuid', $this->uuid)->get();
+        return $this->hasOne('App\Models\Seniority', 'uuid', 'uuid')->where('year', Seniority::current_year());
     }
 
     public function sync()

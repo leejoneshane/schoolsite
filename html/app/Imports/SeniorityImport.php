@@ -4,8 +4,8 @@ namespace App\Imports;
 
 use App\Models\Classroom;
 use App\Models\Teacher;
+use App\Models\Seniority;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\WithStartRow;
@@ -22,11 +22,6 @@ class SeniorityImport implements ToCollection, WithStartRow
 
     public function collection(Collection $rows)
     {
-        if (date('m') > 7) {
-        	$year = date('Y') - 1911;
-    	} else {
-        	$year = date('Y') - 1912;
-    	}
         foreach ($rows as $row) {
             $job = $row[1];
             $name = $row[2];
@@ -45,10 +40,9 @@ class SeniorityImport implements ToCollection, WithStartRow
                 }
             }
             if (!$uuid) $uuid = $another;
-            DB::table('seniority')->updateOrInsert([
+            Seniority::updateOrCreate([
                 'uuid' => $uuid,
             ],[
-                'year' => $year,
                 'school_year' => $row[3],
                 'school_month' => $row[4] ?: 0,
                 'school_score' => $row[5],

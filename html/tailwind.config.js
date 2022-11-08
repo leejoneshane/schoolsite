@@ -7,6 +7,7 @@ module.exports = {
         './resources/**/*.ts',
         './resources/**/*.vue',
         "./node_modules/flowbite/**/*.js",
+        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
     ],
     theme: {
         screens: {

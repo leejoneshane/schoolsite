@@ -128,6 +128,11 @@ Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth'] ], function () {
     Route::post('image-upload', 'App\Http\Controllers\MeetingController@storeImage')->name('meeting.imageupload');
 });
 
+//seniority routes...
+Route::group(['prefix' => 'seniority', 'middleware' => [ 'auth'] ], function () {
+    Route::get('list/{year?}', 'App\Http\Controllers\SeniorityController@index')->name('seniority');
+});
+
 // Administrator Interface Routes...
 Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
