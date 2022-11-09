@@ -131,6 +131,9 @@ Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth'] ], function () {
 //seniority routes...
 Route::group(['prefix' => 'seniority', 'middleware' => [ 'auth'] ], function () {
     Route::get('list/{year?}', 'App\Http\Controllers\SeniorityController@index')->name('seniority');
+    Route::get('import', 'App\Http\Controllers\SeniorityController@upload');
+    Route::post('import', 'App\Http\Controllers\SeniorityController@import')->name('seniority.import');
+    Route::get('import', 'App\Http\Controllers\SeniorityController@export')->name('seniority.export');
 });
 
 // Administrator Interface Routes...

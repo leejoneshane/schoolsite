@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Seniority extends Model
 {
@@ -19,7 +20,7 @@ class Seniority extends Model
      */
     protected $fillable = [
         'uuid',
-        'year',
+        'syear',
         'school_year',
         'school_month',
         'school_score',
@@ -46,8 +47,8 @@ class Seniority extends Model
     {
         parent::boot();
         self::creating(function($model) {
-            if (empty($model->year)) {
-                $model->year = self::current_year();
+            if (empty($model->syear)) {
+                $model->syear = self::current_year();
             }
         });
     }
@@ -84,7 +85,9 @@ class Seniority extends Model
 
     public static function years()
     {
-        return Seniority::select(['year'])->distinct()->get()->toArray();
+        return DB::table('seniority')->select(['syear'])->distinct()->get()->map(function ($item) {
+            return $item->syear;
+        })->toArray();
     }
 
     public function teacher()
