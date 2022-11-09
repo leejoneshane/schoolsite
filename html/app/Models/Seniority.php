@@ -21,6 +21,7 @@ class Seniority extends Model
     protected $fillable = [
         'uuid',
         'syear',
+        'no',
         'school_year',
         'school_month',
         'school_score',
@@ -43,6 +44,15 @@ class Seniority extends Model
         'newscore',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'ok' => 'boolean',
+    ];
+
     public static function boot()
     {
         parent::boot();
@@ -55,7 +65,7 @@ class Seniority extends Model
 
     public function getYearsAttribute()
     {
-        return ($this->school_year * 12 + $this->teach_year * 12 + $this->school_month + $this->teach_month) / 12;
+        return round(($this->school_year * 12 + $this->teach_year * 12 + $this->school_month + $this->teach_month) / 12, 2);
     }
 
     public function getScoreAttribute()
@@ -65,7 +75,7 @@ class Seniority extends Model
 
     public function getNewyearsAttribute()
     {
-        return ($this->new_school_year * 12 + $this->new_teach_year * 12 + $this->new_school_month + $this->new_teach_month) / 12;
+        return round(($this->new_school_year * 12 + $this->new_teach_year * 12 + $this->new_school_month + $this->new_teach_month) / 12, 2);
     }
 
     public function getNewscoreAttribute()
@@ -90,9 +100,20 @@ class Seniority extends Model
         })->toArray();
     }
 
+    public static function current()
+    {
+        return Seniority::where('syear', Seniority::current_year())->orderBy('no')->get();
+    }
+
     public function teacher()
     {
         return $this->hasOne('App\Models\Teacher', 'uuid', 'uuid');
+    }
+
+    public function checked()
+    {
+        $this->ok = true;
+        $this->save();
     }
 
 }

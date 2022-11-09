@@ -60,15 +60,15 @@ return [
         |
         */
         'properties'             => [
-            'creator'        => '',
-            'lastModifiedBy' => '',
+            'creator'        => env('APP_NAME'),
+            'lastModifiedBy' => date('Y-m-d'),
             'title'          => '',
             'description'    => '',
             'subject'        => '',
             'keywords'       => '',
             'category'       => '',
             'manager'        => '',
-            'company'        => '',
+            'company'        => '臺北市國語實驗國民小學',
         ],
     ],
 

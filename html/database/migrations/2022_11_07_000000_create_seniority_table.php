@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('seniority', function (Blueprint $table) {
             $table->uuid('uuid')->index();
             $table->integer('syear');
+            $table->integer('no');
             $table->integer('school_year');
             $table->integer('school_month');
             $table->float('school_score');

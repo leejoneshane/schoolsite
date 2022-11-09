@@ -169,7 +169,7 @@ class Teacher extends Model
 
     public function seniority()
     {
-        return $this->hasOne('App\Models\Seniority', 'uuid', 'uuid')->where('year', Seniority::current_year());
+        return $this->hasOne('App\Models\Seniority', 'uuid', 'uuid')->where('syear', Seniority::current_year());
     }
 
     public function sync()

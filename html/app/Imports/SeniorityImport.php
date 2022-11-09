@@ -44,6 +44,7 @@ class SeniorityImport implements ToCollection, WithStartRow
                 Seniority::updateOrCreate([
                     'uuid' => $uuid,
                 ],[
+                    'no' => $row[0],
                     'school_year' => $row[3],
                     'school_month' => $row[4] ?: 0,
                     'school_score' => ($row[3] * 12 + $row[4]) / 12 * 0.7,
