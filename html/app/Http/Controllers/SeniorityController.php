@@ -45,13 +45,15 @@ class SeniorityController extends Controller
         return $this->index()->with('success', '教職員年資已經匯入完成！');
     }
 
-    public function export()
+    public function export($year = null)
     {
         if (Auth::user()->user_type == 'Student') {
             return view('home')->with('error', '您沒有權限使用此功能！');
         }
-        $filename = Seniority::current_year() . '學年度教師教學年資統計';
-        return (new SeniorityExport())->download("$filename.xlsx");
+        $current = Seniority::current_year();
+        if (!$year) $year = $current;
+        $filename = $year . '學年度教師教學年資統計';
+        return (new SeniorityExport($year))->download("$filename.xlsx");
     }
 
     public function edit()

@@ -8,10 +8,10 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seniority.import') }}">
         <i class="fa-solid fa-file-import"></i>匯入年資 Excel
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seniority.export') }}">
+    @endif
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seniority.export', ['year' => $year]) }}">
         <i class="fa-solid fa-file-export"></i>匯出總表
     </a>
-    @endif
 </div>
 <label for="years">請選擇學年度：</label>
 <select id="years" class="inline w-24 py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"

@@ -14,16 +14,23 @@ class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatt
 {
     use Exportable;
 
+    public $year;
+
+    public function __construct($year)
+    {
+        $this->year = $year;
+    }
+
     public function collection()
     {
-        return Seniority::current();
+        return Seniority::where('syear', $this->year)->orderBy('no')->get();
     }
 
     public function headings(): array
     {
         return [
             [
-                '臺北市國語實驗國民小學'.Seniority::current_year().'學年度教師教學年資統計  '.date('Y-m-d').'匯出',
+                '臺北市國語實驗國民小學'.$this->year.'學年度教師教學年資統計  '.date('Y-m-d').'匯出',
             ],[
                 '編號', '職別', '姓名', '在校年', '在校月', '在校積分', '校外年', '校外月', '校外積分', '教學年資', '總積分', '備註',
             ]

@@ -133,7 +133,7 @@ Route::group(['prefix' => 'seniority', 'middleware' => [ 'auth'] ], function () 
     Route::get('list/{year?}', 'App\Http\Controllers\SeniorityController@index')->name('seniority');
     Route::get('import', 'App\Http\Controllers\SeniorityController@upload');
     Route::post('import', 'App\Http\Controllers\SeniorityController@import')->name('seniority.import');
-    Route::get('export', 'App\Http\Controllers\SeniorityController@export')->name('seniority.export');
+    Route::get('export/{year?}', 'App\Http\Controllers\SeniorityController@export')->name('seniority.export');
     Route::get('edit/{uuid}', 'App\Http\Controllers\SeniorityController@edit')->name('seniority.edit');
 });
 
