@@ -25,79 +25,44 @@ class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatt
             [
                 '臺北市國語實驗國民小學'.Seniority::current_year().'學年度教師教學年資統計  '.date('Y-m-d').'匯出',
             ],[
-                '編號', '職別', '姓名', '在校年資', '校外年資', '備註',
-            ],[
-                '年', '月', '積分', '年', '月', '積分',
+                '編號', '職別', '姓名', '在校年', '在校月', '在校積分', '校外年', '校外月', '校外積分', '教學年資', '總積分', '備註',
             ]
         ];
     }
 
     public function map($row): array
     {
-        $unit = $row->unit->name;
-        $grades = [0,0,0,0,0,0];
-        for ($i=0; $i<6; $i++) {
-            if (in_array($i + 1, $row->for_grade)) {
-                $grades[$i] = 1;
-            }
-        }
-        $grade = implode('', $grades);
-        if ($row->self_defined) {
-            $week = '00000';
-        } else {
-            $weekdays = [0,0,0,0,0];
-            for ($i=0; $i<5; $i++) {
-                if (in_array($i + 1, $row->weekdays)) {
-                    $weekdays[$i] = 1;
-                }
-            }
-            $week = implode('', $weekdays);
-        }
-        $lunch = 0;
-        if ($row->has_lunch) $lunch = 1;
-        $remove = 0;
-        if ($row->self_remove) $remove = 1;
         return [
-            $unit,
-            $row->name,
-            $row->short_name,
-            $grade,
-            $week,
-            $row->startDate->format('Y-m-d'),
-            $row->endDate->format('Y-m-d'),
-            $row->startTime,
-            $row->endTime,
-            $row->teacher,
-            $row->location,
-            $row->cash,
-            $row->total,
-            $row->maximum,
-            $row->memo,
-            $lunch,
-            $remove,
+            $row->no,
+            ($row->teacher->tutor) ?: $row->teacher->role_name,
+            $row->teacher->realname,
+            ($row->new_school_year) ?: $row->school_year,
+            ($row->new_school_month) ?: $row->school_month,
+            ($row->new_school_score) ?: $row->school_score,
+            ($row->new_teach_year) ?: $row->teach_year,
+            ($row->new_teach_month) ?: $row->teach_month,
+            ($row->new_teach_score) ?: $row->teach_score,
+            ($row->newyears > 0) ? $row->newyears : $row->years,
+            ($row->newscore > 0) ? $row->newscore : $row->score,
+            '',
         ];
     }
 
     public function columnFormats(): array
     {
         return [
-            'A' => NumberFormat::FORMAT_TEXT,
+            'A' => NumberFormat::FORMAT_NUMBER,
             'B' => NumberFormat::FORMAT_TEXT,
             'C' => NumberFormat::FORMAT_TEXT,
-            'D' => NumberFormat::FORMAT_TEXT,
-            'E' => NumberFormat::FORMAT_TEXT,
-            'F' => NumberFormat::FORMAT_TEXT,
-            'G' => NumberFormat::FORMAT_TEXT,
-            'H' => NumberFormat::FORMAT_TEXT,
-            'I' => NumberFormat::FORMAT_TEXT,
-            'J' => NumberFormat::FORMAT_TEXT,
-            'K' => NumberFormat::FORMAT_TEXT,
-            'L' => NumberFormat::FORMAT_NUMBER,
-            'M' => NumberFormat::FORMAT_NUMBER,
-            'N' => NumberFormat::FORMAT_NUMBER,
-            'O' => NumberFormat::FORMAT_TEXT,
-            'P' => NumberFormat::FORMAT_NUMBER,
-            'Q' => NumberFormat::FORMAT_NUMBER,
+            'D' => NumberFormat::FORMAT_NUMBER,
+            'E' => NumberFormat::FORMAT_NUMBER,
+            'F' => NumberFormat::FORMAT_NUMBER_00,
+            'G' => NumberFormat::FORMAT_NUMBER,
+            'H' => NumberFormat::FORMAT_NUMBER,
+            'I' => NumberFormat::FORMAT_NUMBER_00,
+            'J' => NumberFormat::FORMAT_NUMBER_00,
+            'K' => NumberFormat::FORMAT_NUMBER_00,
+            'L' => NumberFormat::FORMAT_TEXT,
         ];
     }
 
