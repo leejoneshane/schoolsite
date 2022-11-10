@@ -21,12 +21,7 @@
     @endif
 </div>
 <table class="w-full py-4 text-left font-normal">
-    @if ($meets->isEmpty())
-    <tr class="text-white bg-blue-700 font-semibold text-lg">
-        <th class="p-2 w-full text-center">本日朝會尚未舉行, 請稍候片刻......</th>
-    </tr>
-    @else
-    @foreach ($meets as $meet)
+    @forelse ($meets as $meet)
     <tr class="text-white bg-blue-700 font-semibold text-lg">
         <th class="p-2 w-full">
             {{ $meet->role . $meet->reporter }}：{{ $meet->created_at . $meet->unit->name }}業務報告
@@ -48,7 +43,11 @@
     <tr class="bg-white">
         <td class="p-2">{{ $meet->words }}</td>
     </tr>
-    @endforeach
+    @empty
+    <tr class="text-white bg-blue-700 font-semibold text-lg">
+        <th class="p-2 w-full text-center">本日朝會尚未舉行, 請稍候片刻......</th>
+    </tr>
+    @endforelse
     @endif
     <form class="hidden" id="remove" action="" method="POST">
         @csrf

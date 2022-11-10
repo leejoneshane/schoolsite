@@ -38,12 +38,7 @@
             授課地點
         </th>
     </tr>
-    @if ($enrolls->isEmpty())
-    <tr>
-        <td colspan="8" class="text-xl font-bold">目前查無已錄取的學生！</td>
-    </tr>
-    @endif
-    @foreach ($enrolls as $students)
+    @forelse ($enrolls as $students)
         @php
             $count = $students->count();
         @endphp
@@ -58,6 +53,10 @@
         <td class="p-2">{{ $enroll->club->location }}</td>
     </tr>
         @endforeach
-    @endforeach
+    @empty
+    <tr>
+        <td colspan="8" class="text-xl font-bold">目前查無已錄取的學生！</td>
+    </tr>
+    @endforelse
 </table>
 @endsection

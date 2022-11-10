@@ -38,12 +38,7 @@
             管理
         </th>
     </tr>
-    @if ($clubs->isEmpty())
-    <tr>
-        <td colspan="9" class="p-2 text-3xl font-bold">查無可報名社團！</td>
-    </tr>
-    @endif
-    @foreach ($clubs as $club)
+    @forelse ($clubs as $club)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $club->style }}">
         <td class="p-2">{{ $club->name }}</td>
         <td class="p-2">{{ $club->teacher }}</td>
@@ -68,7 +63,11 @@
             @endif
         </td>
     </tr>
-    @endforeach
+    @empty
+    <tr>
+        <td colspan="9" class="p-2 text-3xl font-bold">查無可報名社團！</td>
+    </tr>
+    @endforelse
 </table>
 <div class="block w-full h-12"></div>
 @if ($student->year_enrolls()->isNotEmpty())

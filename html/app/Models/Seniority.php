@@ -4,12 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Traits\HasCompositePrimaryKey;
 
 class Seniority extends Model
 {
 
+    use HasCompositePrimaryKey;
+    
     protected $table = 'seniority';
-    protected $primaryKey = 'uuid';
+    protected $primaryKey = ['uuid', 'syear'];
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -83,6 +86,11 @@ class Seniority extends Model
         return $this->new_school_score + $this->new_teach_score;
     }
 
+    public static function findBy($uuid, $syear)
+    {
+        return Seniority::where('uuid', $uuid)->where('syear', $syear)->first();
+    }
+
     public static function current_year()
     {
         if (date('m') > 7) {
@@ -108,12 +116,6 @@ class Seniority extends Model
     public function teacher()
     {
         return $this->hasOne('App\Models\Teacher', 'uuid', 'uuid');
-    }
-
-    public function checked()
-    {
-        $this->ok = true;
-        $this->save();
     }
 
 }

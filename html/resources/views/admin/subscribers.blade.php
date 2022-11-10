@@ -38,12 +38,7 @@
             管理
         </th>
     </tr>
-    @if ($subscribers->isEmpty())
-    <tr>
-        <td colspan="8" class="text-xl font-bold">目前還沒有人訂閱！</td>
-    </tr>
-    @endif  
-    @foreach ($subscribers as $email)
+    @forelse ($subscribers as $email)
     @if ($email->verified)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">
@@ -98,9 +93,13 @@
                 </a>
             </td>
         </tr>
-        </form>
+    </form>
     @endif
-    @endforeach
+    @empty
+    <tr>
+        <td colspan="8" class="text-xl font-bold">目前還沒有人訂閱！</td>
+    </tr>
+    @endforelse
 </table>
 <form class="hidden" id="remove" action="" method="POST">
     @csrf

@@ -96,13 +96,13 @@
         <td class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newyears }}</td>
         <td class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newscore }}</td>
         <td class="p-2">
-            @if ($year == $current && (Auth::user()->is_admin ||  Auth::user()->uuid == $seniority->uuid))
-            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+            @if ((Auth::user()->is_admin ||  Auth::user()->uuid == $seniority->uuid))
+            <a id="edit{{ $loop->iteration }}" class="py-2 pr-6 text-blue-300 hover:text-blue-600{{ ($seniority->ok ? ' hidden' : '') }}"
                 href="{{ route('seniority.edit', ['uuid' => $seniority->uuid]) }}" title="編輯">
                 <i class="fa-solid fa-pen"></i>
             </a>
             <label for="ok" class="inline-flex relative items-center cursor-pointer">
-                <input type="checkbox" id="ok" name="ok" value="yes" class="sr-only peer"{{ $seniority->ok ? ' checked' : '' }}>
+                <input type="checkbox" id="ok" name="{{ $seniority->uuid }}" value="yes" class="sr-only peer"{{ $seniority->ok ? ' checked' : '' }} onclick="checkit(this, 'edit{{ $loop->iteration }}')">
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span class="ml-3 text-gray-900 dark:text-gray-300">正確無誤</span>
             </label>
@@ -116,4 +116,32 @@
     @endforelse
 </table>
 {{ $teachers->links('pagination::tailwind') }}
+<script>
+    function checkit(box, target) {
+        btn = document.getElementById(target);
+        if (box.checked) {
+            btn.classList.add('hidden');
+            window.axios.post('{{ route('seniority.confirm') }}', {
+                uuid: box.name,
+                year: {{ $year }},
+            }, {
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+        } else {
+            btn.classList.remove('hidden');
+            window.axios.post('{{ route('seniority.cancel') }}', {
+                uuid: box.name,
+                year: {{ $year }},
+            }, {
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+        }
+    }
+</script>
 @endsection

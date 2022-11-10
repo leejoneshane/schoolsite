@@ -73,12 +73,7 @@
                     已錄取
                 </th>
             </tr>
-            @if ($enrolls->isEmpty())
-            <tr>
-                <td colspan="7" class="text-xl font-bold">目前還沒有人報名！</td>
-            </tr>
-            @endif
-            @foreach ($enrolls as $order => $enroll)
+            @forelse ($enrolls as $order => $enroll)
             <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
                 <td class="p-2">
                     <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
@@ -105,7 +100,11 @@
                     @endif
                 </td>
             </tr>
-            @endforeach
+            @empty
+            <tr>
+                <td colspan="7" class="text-xl font-bold">目前還沒有人報名！</td>
+            </tr>
+            @endforelse
         </table>
     </div></p>
     <p><div class="p-3">

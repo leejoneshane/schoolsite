@@ -35,12 +35,7 @@
             錄取（或候補）
         </th>
     </tr>
-@if (empty($students))
-    <tr>
-        <td colspan="8" class="text-xl font-bold">目前查無重複報名的學生！</td>
-    </tr>
-@else
-    @foreach ($students as $student)
+    @forelse ($students as $student)
         @foreach ($student->year_enrolls() as $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         @if($loop->first)
@@ -65,7 +60,10 @@
         </td>
     </tr>
         @endforeach
-    @endforeach
-@endif
+    @empty
+    <tr>
+        <td colspan="8" class="text-xl font-bold">目前查無重複報名的學生！</td>
+    </tr>
+    @endforelse
 </table>
 @endsection

@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('seniority', function (Blueprint $table) {
-            $table->uuid('uuid')->index();
+            $table->uuid('uuid');
             $table->integer('syear');
             $table->integer('no');
             $table->integer('school_year');
@@ -31,6 +31,7 @@ return new class extends Migration
             $table->integer('new_teach_month')->nullable();
             $table->float('new_teach_score')->nullable();
             $table->timestamps();
+            $table->unique(['uuid', 'syear']);
         });
     }
 

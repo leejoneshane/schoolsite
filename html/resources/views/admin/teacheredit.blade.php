@@ -72,13 +72,11 @@
             $characters = [];
             if (!empty($teacher->character)) $characters = explode(',', $teacher->character);    
         @endphp
-        @if (!empty($characters))
         @foreach ($characters as $cht)
         <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="text" name="character[]" value="{{ $cht }}">
         <button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_character(this);"><i class="fa-solid fa-circle-minus"></i></button>
         @endforeach
-        @endif
         <button id="ncharacter" type="button" class="py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="add_character()"><i class="fa-solid fa-circle-plus"></i>
         </button>

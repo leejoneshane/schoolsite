@@ -122,12 +122,7 @@
             管理
         </th>
     </tr>
-    @if ($enrolls->isEmpty())
-    <tr>
-        <td colspan="8" class="text-xl font-bold">目前還沒有人報名！</td>
-    </tr>
-    @endif
-    @foreach ($enrolls as $order => $enroll)
+    @forelse ($enrolls as $order => $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">
             <span class="text-sm">{{ $order + 1 }}</span>
@@ -190,7 +185,11 @@
         @endif
         </td>
     </tr>
-    @endforeach
+    @empty
+    <tr>
+        <td colspan="8" class="text-xl font-bold">目前還沒有人報名！</td>
+    </tr>
+    @endforelse
 </table>
 <form class="hidden" id="remove" action="" method="POST">
     @csrf

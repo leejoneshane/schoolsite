@@ -56,6 +56,30 @@ class SeniorityController extends Controller
         return (new SeniorityExport($year))->download("$filename.xlsx");
     }
 
+    public function confirm(Request $request)
+    {
+        if (Auth::user()->user_type == 'Student') {
+            return view('home')->with('error', '您沒有權限使用此功能！');
+        }
+        $uuid = $request->input('uuid');
+        $year = $request->input('year') ?: Seniority::current_year();
+        $score = Seniority::findBy($uuid, $year);
+        $score->ok = true;
+        $score->save();
+    }
+
+    public function cancel(Request $request)
+    {
+        if (Auth::user()->user_type == 'Student') {
+            return view('home')->with('error', '您沒有權限使用此功能！');
+        }
+        $uuid = $request->input('uuid');
+        $year = $request->input('year') ?: Seniority::current_year();
+        $score = Seniority::findBy($uuid, $year);
+        $score->ok = false;
+        $score->save();
+    }
+
     public function edit()
     {
         if (Auth::user()->user_type == 'Student') {
