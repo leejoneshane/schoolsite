@@ -45,7 +45,7 @@ class SyncToGoogle implements ShouldQueue
     public function handle()
     {
         $google = new GsuiteServiceProvider;
-        $start_time = Carbon::now()->format('Y-m-d H:m:s l');
+        $start_time = Carbon::now()->format('Y-m-d H:m:s');
         if ($this->leave == 'onduty') {
             if ($this->target == 'teachers') {
                 $logs = $google->sync_teachers($this->password);
@@ -58,7 +58,7 @@ class SyncToGoogle implements ShouldQueue
         } else {
             $logs = $google->deal_graduate($this->leave, $this->target);
         }
-        $end_time = Carbon::now()->format('Y-m-d H:m:s l');
+        $end_time = Carbon::now()->format('Y-m-d H:m:s');
         $admins = User::admins();
         Notification::sendNow($admins, new SyncCompletedNotification('SyncToGoogle', $start_time, $end_time, $logs));
         broadcast(new AdminMessage("Gsuite 同步作業於 $start_time 開始進行，已經於 $end_time 順利完成！"));

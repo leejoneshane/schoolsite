@@ -332,8 +332,7 @@ class ADServiceProvider extends ServiceProvider
                                 unset($groups[$k]);
                             }
                             $ad_group = $this->get_group($g);
-                            $info = $ad_group['info'];
-                            if ($info) {
+                            if (isset($ad_group['info'])) {
                                 unset($groups[$k]);
                             }
                         }	

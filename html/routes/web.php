@@ -136,7 +136,7 @@ Route::group(['prefix' => 'seniority', 'middleware' => [ 'auth'] ], function () 
     Route::get('export/{year?}', 'App\Http\Controllers\SeniorityController@export')->name('seniority.export');
     Route::post('confirm', 'App\Http\Controllers\SeniorityController@confirm')->name('seniority.confirm');
     Route::post('cancel', 'App\Http\Controllers\SeniorityController@cancel')->name('seniority.cancel');
-    Route::get('edit/{uuid}', 'App\Http\Controllers\SeniorityController@edit')->name('seniority.edit');
+    Route::post('update', 'App\Http\Controllers\SeniorityController@update')->name('seniority.update');
 });
 
 // Administrator Interface Routes...

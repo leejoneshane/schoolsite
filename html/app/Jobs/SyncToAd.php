@@ -43,9 +43,9 @@ class SyncToAD implements ShouldQueue
     public function handle()
     {
         $ad = new ADServiceProvider;
-        $start_time = Carbon::now()->format('Y-m-d H:m:s l');
+        $start_time = Carbon::now()->format('Y-m-d H:m:s');
         $logs = $ad->sync_teachers($this->password, $this->leave);
-        $end_time = Carbon::now()->format('Y-m-d H:m:s l');
+        $end_time = Carbon::now()->format('Y-m-d H:m:s');
         $admins = User::admins();
         Notification::sendNow($admins, new SyncCompletedNotification('SyncToAD', $start_time, $end_time, $logs));
         broadcast(new AdminMessage("AD 同步作業於 $start_time 開始進行，已經於 $end_time 順利完成！"));

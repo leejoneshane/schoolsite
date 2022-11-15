@@ -58,33 +58,43 @@ class SeniorityController extends Controller
 
     public function confirm(Request $request)
     {
-        if (Auth::user()->user_type == 'Student') {
-            return view('home')->with('error', '您沒有權限使用此功能！');
-        }
         $uuid = $request->input('uuid');
         $year = $request->input('year') ?: Seniority::current_year();
         $score = Seniority::findBy($uuid, $year);
         $score->ok = true;
         $score->save();
+        return response()->json($score);
     }
 
     public function cancel(Request $request)
     {
-        if (Auth::user()->user_type == 'Student') {
-            return view('home')->with('error', '您沒有權限使用此功能！');
-        }
         $uuid = $request->input('uuid');
         $year = $request->input('year') ?: Seniority::current_year();
         $score = Seniority::findBy($uuid, $year);
         $score->ok = false;
         $score->save();
+        return response()->json($score);
     }
 
-    public function edit()
+    public function update(Request $request)
     {
-        if (Auth::user()->user_type == 'Student') {
-            return view('home')->with('error', '您沒有權限使用此功能！');
-        }
+        $uuid = $request->input('uuid');
+        $year = $request->input('year') ?: Seniority::current_year();
+        $score = Seniority::findBy($uuid, $year);
+        $nsy = $request->input('new_school_year');
+        $nsm = $request->input('new_school_month');
+        $nss = round(($nsy * 12 + $nsm) / 12 * 0.7, 2); 
+        $nty = $request->input('new_teach_year');
+        $ntm = $request->input('new_teach_month');
+        $nts = round(($nty * 12 + $ntm) / 12 * 0.3, 2); 
+        $score->new_school_year = $nsy;
+        $score->new_school_month = $nsm;
+        $score->new_school_score = $nss;
+        $score->new_teach_year = $nty;
+        $score->new_teach_month = $ntm;
+        $score->new_teach_score = $nts;
+        $score->save();
+        return response()->json($score);
     }
 
 }

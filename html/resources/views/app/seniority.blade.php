@@ -89,24 +89,34 @@
         <td class="text-right text-green-700 dark:text-green-300">{{ $seniority->teach_month }}</td>
         <td class="text-center text-green-700 dark:text-green-300">{{ $seniority->years }}</td>
         <td class="text-center text-green-700 dark:text-green-300">{{ $seniority->score }}</td>
-        <td class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_school_year }}</td>
-        <td class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_school_month }}</td>
-        <td class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_teach_year }}</td>
-        <td class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_teach_month }}</td>
-        <td class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newyears }}</td>
-        <td class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newscore }}</td>
+        <td id="nsy{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_school_year }}</td>
+        <td id="nsm{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_school_month }}</td>
+        <td id="nty{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_teach_year }}</td>
+        <td id="ntm{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_teach_month }}</td>
+        <td id="ny{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newyears }}</td>
+        <td id="ns{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newscore }}</td>
         <td class="p-2">
-            @if ((Auth::user()->is_admin ||  Auth::user()->uuid == $seniority->uuid))
-            <a id="edit{{ $loop->iteration }}" class="py-2 pr-6 text-blue-300 hover:text-blue-600{{ ($seniority->ok ? ' hidden' : '') }}"
-                href="{{ route('seniority.edit', ['uuid' => $seniority->uuid]) }}" title="編輯">
+        @if ((Auth::user()->is_admin ||  Auth::user()->uuid == $seniority->uuid))
+            @if ($seniority->ok)
+            <button class="py-2 pr-6 text-blue-500">
+                <i class="fa-solid fa-check"></i>
+            </button>
+            @else
+            <button id="edit{{ $loop->iteration }}" class="py-2 pr-6 text-blue-300 hover:text-blue-600{{ ($seniority->ok ? ' hidden' : '') }}"
+                title="編輯" onclick="edit('{{ $loop->iteration }}')">
                 <i class="fa-solid fa-pen"></i>
-            </a>
-            <label for="ok" class="inline-flex relative items-center cursor-pointer">
-                <input type="checkbox" id="ok" name="{{ $seniority->uuid }}" value="yes" class="sr-only peer"{{ $seniority->ok ? ' checked' : '' }} onclick="checkit(this, 'edit{{ $loop->iteration }}')">
+            </button>
+            <button id="save{{ $loop->iteration }}" class="hidden py-2 pr-6 text-blue-300 hover:text-blue-600{{ ($seniority->ok ? ' hidden' : '') }}"
+                title="儲存" onclick="save('{{ $loop->iteration }}')">
+                <i class="fa-solid fa-floppy-disk"></i>
+            </button>
+            <label for="ok{{ $loop->iteration }}" class="inline-flex relative items-center cursor-pointer">
+                <input type="checkbox" id="ok{{ $loop->iteration }}" name="{{ $seniority->uuid }}" value="yes" class="sr-only peer"{{ $seniority->ok ? ' checked' : '' }} onclick="checkit('{{ $loop->iteration }}')">
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span class="ml-3 text-gray-900 dark:text-gray-300">正確無誤</span>
             </label>
             @endif
+        @endif
         </td>
     </tr>
     @empty
@@ -117,10 +127,28 @@
 </table>
 {{ $teachers->links('pagination::tailwind') }}
 <script>
-    function checkit(box, target) {
-        btn = document.getElementById(target);
+    var input = false;
+    function checkit(target) {
+        box = document.getElementById('ok' + target);
+        btn1 = document.getElementById('edit' + target);
+        btn2 = document.getElementById('save' + target);
+        nsy = document.getElementById('nsy' + target);
+        nsm = document.getElementById('nsm' + target);
+        nty = document.getElementById('nty' + target);
+        ntm = document.getElementById('ntm' + target);
+        ny = document.getElementById('ny' + target);
+        ns = document.getElementById('ns' + target);
         if (box.checked) {
-            btn.classList.add('hidden');
+            btn1.classList.add('hidden');
+            btn2.classList.add('hidden');
+            if (input) {
+                nsy.innerHTML = '';
+                nsm.innerHTML = '';
+                nty.innerHTML = '';
+                ntm.innerHTML = '';
+                ny.innerHTML = '0';
+                ns.innerHTML = '0';
+            }
             window.axios.post('{{ route('seniority.confirm') }}', {
                 uuid: box.name,
                 year: {{ $year }},
@@ -131,7 +159,8 @@
                 }
             });
         } else {
-            btn.classList.remove('hidden');
+            btn1.classList.remove('hidden');
+            btn2.classList.add('hidden');
             window.axios.post('{{ route('seniority.cancel') }}', {
                 uuid: box.name,
                 year: {{ $year }},
@@ -142,6 +171,93 @@
                 }
             });
         }
+    }
+
+    function edit(target) {
+        input = true;
+        box = document.getElementById('ok' + target);
+        btn1 = document.getElementById('edit' + target);
+        btn2 = document.getElementById('save' + target);
+        nsy = document.getElementById('nsy' + target);
+        nsm = document.getElementById('nsm' + target);
+        nty = document.getElementById('nty' + target);
+        ntm = document.getElementById('ntm' + target);
+        ny = document.getElementById('ny' + target);
+        ns = document.getElementById('ns' + target);
+        nsy_value = nsy.innerText;
+        nsy.innerHTML = '';
+        const elem_nsy = document.createElement('input');
+        elem_nsy.classList.add('w-16','border','border-gray-300','focus:border-blue-700','focus:ring-1','focus:ring-blue-700','focus:outline-none','active:outline-none','dark:border-gray-400','dark:focus:border-blue-600','bg-opacity-100','text-black','dark:text-gray-200');
+        elem_nsy.type = 'text';
+        elem_nsy.name = 'new_school_year';
+        elem_nsy.value = nsy_value;
+        nsy.appendChild(elem_nsy);
+        nsm_value = nsm.innerText;
+        nsm.innerHTML = '';
+        const elem_nsm = document.createElement('input');
+        elem_nsm.classList.add('w-16','border','border-gray-300','focus:border-blue-700','focus:ring-1','focus:ring-blue-700','focus:outline-none','active:outline-none','dark:border-gray-400','dark:focus:border-blue-600','bg-opacity-100','text-black','dark:text-gray-200');
+        elem_nsm.type = 'text';
+        elem_nsm.name = 'new_school_month';
+        elem_nsm.value = nsm_value;
+        nsm.appendChild(elem_nsm);
+        nty_value = nty.innerText;
+        nty.innerHTML = '';
+        const elem_nty = document.createElement('input');
+        elem_nty.classList.add('w-16','border','border-gray-300','focus:border-blue-700','focus:ring-1','focus:ring-blue-700','focus:outline-none','active:outline-none','dark:border-gray-400','dark:focus:border-blue-600','bg-opacity-100','text-black','dark:text-gray-200');
+        elem_nty.type = 'text';
+        elem_nty.name = 'new_teach_year';
+        elem_nty.value = nty_value;
+        nty.appendChild(elem_nty);
+        ntm_value = ntm.innerText;
+        ntm.innerHTML = '';
+        const elem_ntm = document.createElement('input');
+        elem_ntm.classList.add('w-16','border','border-gray-300','focus:border-blue-700','focus:ring-1','focus:ring-blue-700','focus:outline-none','active:outline-none','dark:border-gray-400','dark:focus:border-blue-600','bg-opacity-100','text-black','dark:text-gray-200');
+        elem_ntm.type = 'text';
+        elem_ntm.name = 'new_teach_month';
+        elem_ntm.value = ntm_value;
+        ntm.appendChild(elem_ntm);
+        btn1.classList.add('hidden');
+        btn2.classList.remove('hidden');
+    }
+
+    function save(target) {
+        input = false;
+        box = document.getElementById('ok' + target);
+        btn1 = document.getElementById('edit' + target);
+        btn2 = document.getElementById('save' + target);
+        nsy = document.getElementById('nsy' + target);
+        nsm = document.getElementById('nsm' + target);
+        nty = document.getElementById('nty' + target);
+        ntm = document.getElementById('ntm' + target);
+        ny = document.getElementById('ny' + target);
+        ns = document.getElementById('ns' + target);
+        nsy_value = nsy.firstChild.value;
+        nsm_value = nsm.firstChild.value;
+        nty_value = nty.firstChild.value;
+        ntm_value = ntm.firstChild.value;
+        window.axios.post('{{ route('seniority.update') }}', {
+            uuid: box.name,
+            year: {{ $year }},
+            new_school_year: nsy_value,
+            new_school_month: nsm_value,
+            new_teach_year: nty_value,
+            new_teach_month: ntm_value,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then(function (response) {
+            var seniority = response.data;
+            nsy.innerHTML = seniority.new_school_year;
+            nsm.innerHTML = seniority.new_school_month;
+            nty.innerHTML = seniority.new_teach_year;
+            ntm.innerHTML = seniority.new_teach_month;
+            ny.innerHTML = seniority.newyears;
+            ns.innerHTML = seniority.newscore;
+        });
+        btn1.classList.remove('hidden');
+        btn2.classList.add('hidden');
     }
 </script>
 @endsection

@@ -4,17 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\Traits\HasCompositePrimaryKey;
 
 class Seniority extends Model
 {
 
-    use HasCompositePrimaryKey;
-    
     protected $table = 'seniority';
-    protected $primaryKey = ['uuid', 'syear'];
-    public $incrementing = false;
-    protected $keyType = 'string';
 
     /**
      * The attributes that are mass assignable.
@@ -54,6 +48,18 @@ class Seniority extends Model
      */
     protected $casts = [
         'ok' => 'boolean',
+        'school_year' => 'integer',
+        'school_month' => 'integer',
+        'school_score' => 'float',
+        'teach_year' => 'integer',
+        'teach_month' => 'integer',
+        'teach_score' => 'float',
+        'new_school_year' => 'integer',
+        'new_school_month' => 'integer',
+        'new_school_score' => 'float',
+        'new_teach_year' => 'integer',
+        'new_teach_month' => 'integer',
+        'new_teach_score' => 'float',
     ];
 
     public static function boot()

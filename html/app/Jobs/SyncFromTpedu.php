@@ -57,7 +57,7 @@ class SyncFromTpedu implements ShouldQueue
     public function handle()
     {
         $sso = new TpeduServiceProvider;
-        $start_time = Carbon::now()->format('Y-m-d H:m:s l');
+        $start_time = Carbon::now()->format('Y-m-d H:m:s');
         $logs[] = $sso->sync_units($this->only_expired, $this->sync_units);
         $logs[] = $sso->sync_roles($this->only_expired, $this->sync_units);
         $logs[] = $sso->sync_subjects($this->only_expired, $this->sync_subjects);
@@ -81,7 +81,7 @@ class SyncFromTpedu implements ShouldQueue
                   }        
             }
         }
-        $end_time = Carbon::now()->format('Y-m-d H:m:s l');
+        $end_time = Carbon::now()->format('Y-m-d H:m:s');
         $admins = User::admins();
         Notification::sendNow($admins, new SyncCompletedNotification('SyncFromTpedu', $start_time, $end_time, $detail_log));
         broadcast(new AdminMessage("資料庫同步作業於 $start_time 開始進行，已經於 $end_time 順利完成！"));

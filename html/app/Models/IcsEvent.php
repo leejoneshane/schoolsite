@@ -81,7 +81,7 @@ class IcsEvent extends Model implements Subscribeable
         $twmonth = self::$monthMap[$month];
         $event_list = [];
         $min = 1;
-        $max = (new Carbon('last day of this month'))->day();
+        $max = (new Carbon('last day of this month'))->day;
         for ($day = $min; $day <= $max; $day++) {
             $obj = new \stdClass;
             $sd = new Carbon($year.'-'.$month.'-'.$day);
