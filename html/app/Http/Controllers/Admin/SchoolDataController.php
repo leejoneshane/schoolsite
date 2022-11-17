@@ -9,6 +9,7 @@ use App\Models\Unit;
 use App\Models\Role;
 use App\Models\Grade;
 use App\Models\Classroom;
+use App\Models\Domain;
 use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\Student;
@@ -143,6 +144,45 @@ class SchoolDataController extends Controller
         return view('admin.classes', ['grades' => $grades, 'classes' => $classes, 'teachers' => $teachers])->with('success', '班級資料已更新並儲存！');
     }
 
+    public function domainList($message = null)
+    {
+        $domains = Domain::all();
+        if ($message) {
+            $key = array_key_first($message);
+            $val = $message[$key];
+            return view('admin.domains', ['domains' => $domains])->with($key, $val);
+        } else {
+            return view('admin.domains', ['domains' => $domains]);
+        }
+    }
+
+    public function domainUpdate(Request $request)
+    {
+        $domains = $request->input('domains');
+        foreach ($domains as $id => $name) {
+            $dom = Domain::find($id);
+            $dom->name = $name;
+            $dom->save();
+        }
+        return $this->domainList(['success' => '領域名稱已更新並儲存！']);
+    }
+
+    public function domainAdd()
+    {
+        return view('admin.domainadd');
+    }
+
+    public function domainInsert(Request $request)
+    {
+        $input = $request->only(['domain_name']);
+        if ($input) {
+            Domain::create([
+                'name' => $input['domain_name'],
+            ]);
+        }
+        return $this->domainList(['success' => '教學領域已經新增完成！']);
+    }
+
     public function subjectList($message = null)
     {
         $subjects = Subject::all();
@@ -223,10 +263,11 @@ class SchoolDataController extends Controller
         $units = Unit::orderBy('unit_no')->get();
         $roles = Role::orderBy('role_no')->get();
         $classes = Classroom::all();
+        $domains = Domain::all();
         $subjects = Subject::all();
         $teacher = Teacher::with('roles')->with('units')->find($uuid);
         $assignment = DB::table('assignment')->where('year', $this->year)->where('uuid', $uuid)->get();
-        return view('admin.teacheredit', ['referer' => $referer, 'teacher' => $teacher, 'units' => $units, 'roles' => $roles, 'assignment' => $assignment, 'classes' => $classes, 'subjects' => $subjects]);
+        return view('admin.teacheredit', ['referer' => $referer, 'teacher' => $teacher, 'units' => $units, 'roles' => $roles, 'assignment' => $assignment, 'classes' => $classes, 'domains' => $domains, 'subjects' => $subjects]);
     }
 
     public function teacherUpdate(Request $request, $uuid)
@@ -272,6 +313,15 @@ class SchoolDataController extends Controller
             }
         }
         $new_classes = $request->input('classes');
+        DB::table('belongs')->where('year', $this->year)->where('uuid', $uuid)->delete();
+        $new_domain = $request->input('domain');
+        if ($new_domain) {
+            DB::table('belongs')->insert([
+                'year' => $this->year,
+                'uuid' => $uuid,
+                'domain_id' => $new_domain,
+            ]);
+        }
         $new_subjects = $request->input('subjects');
         $old_assign = $teacher->assignment();
         foreach ($old_assign as $old) {
@@ -319,7 +369,7 @@ class SchoolDataController extends Controller
         $teacher->save();
         return redirect(urldecode($request->input('referer')))->with('success', '教師資訊已經更新完成！');
     }
-    
+
     public function teacherRemove(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');

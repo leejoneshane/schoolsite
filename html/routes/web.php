@@ -164,6 +164,10 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('database/units/role/add', 'App\Http\Controllers\Admin\SchoolDataController@roleInsert')->name('roles.add');
     Route::get('database/classes', 'App\Http\Controllers\Admin\SchoolDataController@classList');
     Route::post('database/classes', 'App\Http\Controllers\Admin\SchoolDataController@classUpdate')->name('classes');
+    Route::get('database/domains', 'App\Http\Controllers\Admin\SchoolDataController@domainList');
+    Route::post('database/domains', 'App\Http\Controllers\Admin\SchoolDataController@domainUpdate')->name('domains');
+    Route::get('database/domains/add', 'App\Http\Controllers\Admin\SchoolDataController@domainAdd');
+    Route::post('database/domains/add', 'App\Http\Controllers\Admin\SchoolDataController@domainInsert')->name('domains.add');
     Route::get('database/subjects', 'App\Http\Controllers\Admin\SchoolDataController@subjectList');
     Route::post('database/subjects', 'App\Http\Controllers\Admin\SchoolDataController@subjectUpdate')->name('subjects');
     Route::get('database/teachers/{search?}', 'App\Http\Controllers\Admin\SchoolDataController@teacherList')->name('teachers');

@@ -166,6 +166,11 @@ class Teacher extends Model
         return DB::table('assignment')->where('year', Teacher::current_year())->where('uuid', $this->uuid)->get();
     }
 
+    public function domain()
+    {
+        return $this->belongsTo('App\Models\Domain', 'belongs', 'uuid', 'domain_id')->where('year', Teacher::current_year());
+    }
+
     public function subjects()
     {
         return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id')->where('year', Teacher::current_year());

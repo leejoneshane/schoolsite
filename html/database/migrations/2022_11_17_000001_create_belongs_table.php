@@ -19,7 +19,7 @@ return new class extends Migration
             $table->uuid('uuid');
             $table->integer('domain_id');
             $table->timestamps();
-            $table->unique(['year', 'uuid', 'domain_id']);
+            $table->unique(['year', 'uuid']);
         });
     }
 
