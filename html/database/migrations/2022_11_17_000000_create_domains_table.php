@@ -13,13 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('job_title', function (Blueprint $table) {
+        Schema::create('domains', function (Blueprint $table) {
             $table->id();
-            $table->integer('year');
-            $table->uuid('uuid')->index();
-            $table->string('unit_id')->index();
-            $table->string('role_id')->index();
-            $table->unique(['year', 'uuid', 'unit_id', 'role_id']);
+            $table->string('name');
+            $table->timestamps();
         });
     }
 
@@ -30,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('job_title');
+        Schema::dropIfExists('domains');
     }
 };

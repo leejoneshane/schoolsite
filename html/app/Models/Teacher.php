@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Providers\TpeduServiceProvider as SSO;
 use Illuminate\Support\Facades\DB;
 use App\Models\Unit;
-use App\Models\Seniority;
 
 class Teacher extends Model
 {
@@ -84,6 +83,16 @@ class Teacher extends Model
         return false;
     }
 
+    public static function current_year()
+    {
+        if (date('m') > 7) {
+            $year = date('Y') - 1911;
+        } else {
+            $year = date('Y') - 1912;
+        }
+        return $year;
+    }
+
     public static function findById($id) //全誼系統代號
     {
         return Teacher::where('id', $id)->first();
@@ -116,7 +125,7 @@ class Teacher extends Model
 
     public function units()
     {
-        return $this->belongsToMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id');
+        return $this->belongsToMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id')->where('year', Teacher::current_year());
     }
 
     public function union()
@@ -149,27 +158,27 @@ class Teacher extends Model
 
     public function roles()
     {
-        return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id');
+        return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id')->where('year', Teacher::current_year());
     }
 
     public function assignment()
     {
-        return DB::table('assignment')->where('uuid', $this->uuid)->get();
+        return DB::table('assignment')->where('year', Teacher::current_year())->where('uuid', $this->uuid)->get();
     }
 
     public function subjects()
     {
-        return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id');
+        return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id')->where('year', Teacher::current_year());
     }
 
     public function classrooms()
     {
-        return $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id');
+        return $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id')->where('year', Teacher::current_year());
     }
 
     public function seniority()
     {
-        return $this->hasOne('App\Models\Seniority', 'uuid', 'uuid')->where('syear', Seniority::current_year());
+        return $this->hasOne('App\Models\Seniority', 'uuid', 'uuid')->where('syear', Teacher::current_year());
     }
 
     public function sync()

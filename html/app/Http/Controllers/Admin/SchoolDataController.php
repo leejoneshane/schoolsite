@@ -15,6 +15,8 @@ use App\Models\Student;
 
 class SchoolDataController extends Controller
 {
+    public $year;
+
     /**
      * Create a new controller instance.
      *
@@ -22,7 +24,12 @@ class SchoolDataController extends Controller
      */
     public function __construct()
     {
-        //
+        if (date('m') > 7) {
+            $year = date('Y') - 1911;
+        } else {
+            $year = date('Y') - 1912;
+        }
+        $this->year = $year;
     }
 
     public function unitList()
@@ -218,7 +225,7 @@ class SchoolDataController extends Controller
         $classes = Classroom::all();
         $subjects = Subject::all();
         $teacher = Teacher::with('roles')->with('units')->find($uuid);
-        $assignment = DB::table('assignment')->where('uuid', $uuid)->get();
+        $assignment = DB::table('assignment')->where('year', $this->year)->where('uuid', $uuid)->get();
         return view('admin.teacheredit', ['referer' => $referer, 'teacher' => $teacher, 'units' => $units, 'roles' => $roles, 'assignment' => $assignment, 'classes' => $classes, 'subjects' => $subjects]);
     }
 
@@ -249,14 +256,15 @@ class SchoolDataController extends Controller
                 if ($pos !== false) {
                     unset($new_roles[$pos]);
                 } else {
-                    DB::table('job_title')->where('uuid', $uuid)->where('role_id', $old->id)->delete();
+                    DB::table('job_title')->where('year', $this->year)->where('uuid', $uuid)->where('role_id', $old->id)->delete();
                 }
             }
         }
         if (!empty($new_roles)) {
             foreach ($new_roles as $role) {
                 $new = Role::find($role);
-                DB::table('job_title')->Insert([
+                DB::table('job_title')->insertOrIgnore([
+                    'year' => $this->year,
                     'uuid' => $uuid,
                     'unit_id' => $new->unit_id,
                     'role_id' => $new->id,
@@ -281,7 +289,8 @@ class SchoolDataController extends Controller
         }
         if (!empty($new_classes)) {
             for ($i=0; $i<count($new_classes); $i++) {
-                DB::table('assignment')->Insert([
+                DB::table('assignment')->insertOrIgnore([
+                    'year' => $this->year,
                     'uuid' => $uuid,
                     'class_id' => $new_classes[$i],
                     'subject_id' => $new_subjects[$i],

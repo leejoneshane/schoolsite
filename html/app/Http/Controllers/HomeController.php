@@ -67,6 +67,15 @@ class HomeController extends Controller
                 'weight' => 20,
             ]);
         }
+        if (!Menu::find('organize')) {
+            Menu::create([
+                'id' => 'organize',
+                'parent_id' => 'affairs',
+                'caption' => '職編系統',
+                'url' => 'route.organize',
+                'weight' => 30,
+            ]);
+        }
     }
 
     public function index()

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Role extends Model
 {
 
-	protected $table = 'roles';
+    protected $table = 'roles';
 
     /**
      * The attributes that are mass assignable.
@@ -20,9 +20,20 @@ class Role extends Model
         'name',
     ];
 
-    public static function findByNo($role_no)
+    public static function current_year()
     {
-        return Role::where('role_no', $role_no)->first();
+        if (date('m') > 7) {
+            $year = date('Y') - 1911;
+        } else {
+            $year = date('Y') - 1912;
+        }
+        return $year;
+    }
+
+    public static function filter($role_no)
+    {
+        //return Role::where('role_no', $role_no)->get();
+        return Role::select('roles.*', 'LEFT(`units.unit_no`, 3) as top')->join('units', 'units.id', '=', 'roles.unit_id')->where('role_no', $role_no)->orderBy('top')->get();
     }
 
     public static function findByName($name)
@@ -37,7 +48,7 @@ class Role extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'job_title', 'role_id', 'uuid');
+        return $this->belongsToMany('App\Models\Teacher', 'job_title', 'role_id', 'uuid')->where('year', Role::current_year());
     }
 
 }

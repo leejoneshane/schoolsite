@@ -152,7 +152,7 @@ class TpeduServiceProvider extends ServiceProvider
                 if ($user->employee_type == '學生') {
                     return Student::find($user->uuid);
                 } else {
-                    return Teacher::find($user->uuid);					
+                    return Teacher::find($user->uuid);
                 }
             } else {
                 $this->error = $response->getBody();
@@ -212,7 +212,7 @@ class TpeduServiceProvider extends ServiceProvider
                     $expire = new Carbon($temp->updated_at);
                     if (!$temp->expired()) return false;
                 }
-            }	
+            }
         }
         $o = config('services.tpedu.school');
         $user = $this->api('one_user', ['uuid' => $uuid]);
@@ -246,7 +246,6 @@ class TpeduServiceProvider extends ServiceProvider
                 $m_dept_name = '';
                 $m_role_id = '';
                 $m_role_name = '';
-                DB::table('job_title')->where('uuid', $uuid)->delete();
                 if (isset($user->ou) && isset($user->title)) {
                     $keywords = explode(',', config('services.tpedu.base_unit'));
                     if (is_array($user->department->{$o})) {
@@ -308,7 +307,8 @@ class TpeduServiceProvider extends ServiceProvider
                                 $m_role_id = $role->id;
                                 $m_role_name = $role_name;
                             }
-                            DB::table('job_title')->insert([
+                            DB::table('job_title')->insertOrIgnore([
+                                'year' => $this->seme['year'],
                                 'uuid' => $uuid,
                                 'unit_id' => $dept->id,
                                 'role_id' => $role->id,
@@ -329,7 +329,8 @@ class TpeduServiceProvider extends ServiceProvider
                         }
                         $m_role_id = $role->id;
                         $m_role_name = $role_name;
-                        DB::table('job_title')->insert([
+                        DB::table('job_title')->insertOrIgnore([
+                            'year' => $this->seme['year'],
                             'uuid' => $uuid,
                             'unit_id' => $dept->id,
                             'role_id' => $role->id,
@@ -341,12 +342,12 @@ class TpeduServiceProvider extends ServiceProvider
                 if (!empty($user->tpTutorClass)) {
                     $emp->tutor_class = $user->tpTutorClass;
                 }
-                DB::table('assignment')->where('uuid', $uuid)->delete();
                 if (isset($user->tpTeachClass)) {
                     foreach ($user->tpTeachClass as $assign_pair) {
                         $a = explode(',', $assign_pair);
                         $s = Subject::where('name', mb_substr($a[2], 4))->first();
-                        DB::table('assignment')->insert([
+                        DB::table('assignment')->insertOrIgnore([
+                            'year' => $this->seme['year'],
                             'uuid' => $uuid,
                             'class_id' => $a[1],
                             'subject_id' => $s->id,
@@ -527,7 +528,7 @@ class TpeduServiceProvider extends ServiceProvider
                 $detail_log[] = '離職教師'.$l->idno.' '.$l->realname.'已刪除！';
                 User::destroy($l->uuid);
                 $l->delete();
-            }	
+            }
         }
         return $detail_log;
     }
@@ -552,7 +553,7 @@ class TpeduServiceProvider extends ServiceProvider
                     $detail_log[] = '轉學或畢業學生'.$l->idno.' '.$l->realname.'已刪除！';
                     User::destroy($l->uuid);
                     $l->delete();
-                }	
+                }
             }
         }
         return $detail_log;
@@ -578,7 +579,7 @@ class TpeduServiceProvider extends ServiceProvider
                     $detail_log[] = '轉學或畢業學生'.$l->idno.' '.$l->realname.'已刪除！';
                     User::destroy($l->uuid);
                     $l->delete();
-                }	
+                }
             }
         }
         return $detail_log;
@@ -603,7 +604,7 @@ class TpeduServiceProvider extends ServiceProvider
                 $detail_log[] = '轉學或畢業學生'.$l->idno.' '.$l->realname.'已刪除！';
                 User::destroy($l->uuid);
                 $l->delete();
-            }	
+            }
         }
         return $detail_log;
     }

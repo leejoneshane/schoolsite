@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::table('users', function (Blueprint $table) {
             $table->after('id', function (Blueprint $table) {
                 $table->uuid('uuid')->unique();
-                $table->string('user_type');
+                $table->enum('user_type', ['Admin', 'Teacher', 'Student']);
             });
             $table->boolean('is_admin')->default(0);
         });

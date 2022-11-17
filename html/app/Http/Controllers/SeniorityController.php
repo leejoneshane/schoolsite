@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Imports\SeniorityImport;
 use App\Exports\SeniorityExport;
 use App\Models\Seniority;
-use App\Models\Teacher;
 
 class SeniorityController extends Controller
 {

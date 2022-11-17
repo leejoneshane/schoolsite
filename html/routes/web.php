@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', 'App\Http\Controllers\HomeController@index')->name('home');
 
-// Login Routes...
+// 登入
 Route::get('login', 'App\Http\Controllers\Auth\LoginController@showLoginForm')->middleware('firsttime')->name('login');
 Route::post('login', 'App\Http\Controllers\Auth\LoginController@login');
 Route::get('login/tpedu', 'App\Http\Controllers\Auth\TpeduController@redirect');
@@ -25,34 +25,34 @@ Route::get('login/{provider}/callback', 'App\Http\Controllers\Auth\SocialiteCont
 Route::get('socialite', 'App\Http\Controllers\Auth\SocialiteController@socialite')->middleware('auth')->name('social');
 Route::post('socialite/remove', 'App\Http\Controllers\Auth\SocialiteController@removeSocialite')->middleware('auth')->name('social.remove');
 
-// Logout Routes...
+// 登出
 Route::post('logout', 'App\Http\Controllers\Auth\LoginController@logout')->name('logout');
 
-// Registration Routes...
+// 註冊管理員
 Route::get('register', 'App\Http\Controllers\Auth\RegisterController@showRegistrationForm')->middleware('nouser')->name('register');
 Route::post('register', 'App\Http\Controllers\Auth\RegisterController@register')->middleware('nouser');
 
-// Password Reset Routes...
+// 重設密碼
 Route::get('password/reset', 'App\Http\Controllers\Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
 Route::post('password/email', 'App\Http\Controllers\Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 Route::get('password/reset/{token}', 'App\Http\Controllers\Auth\ResetPasswordController@showResetForm')->name('password.reset');
 Route::post('password/reset', 'App\Http\Controllers\Auth\ResetPasswordController@reset')->name('password.update');
 
-// Password Confirmation Routes...
+// 密碼驗證
 Route::get('password/confirm', 'App\Http\Controllers\Auth\ConfirmPasswordController@showConfirmForm')->name('password.confirm');
 Route::post('password/confirm', 'App\Http\Controllers\Auth\ConfirmPasswordController@confirm');
 
-// Email Verification Routes...
+// 郵件地址驗證
 Route::get('email/verify', 'App\Http\Controllers\Auth\VerificationController@show')->name('verification.notice');
 Route::get('email/verify/{id}/{hash}', 'App\Http\Controllers\Auth\VerificationController@verify')->name('verification.verify');
 Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@resend')->name('verification.resend');
 
-// news letter routes...
+// 電子報訂閱
 Route::post('news/{news}/subscriber', 'App\Http\Controllers\SubscriberController@store')->name('subscriber.store');
 Route::get('news/{news}/delete', 'App\Http\Controllers\SubscriberController@delete')->name('subscriber.delete');
 Route::get('news/{id}/verify/{hash}', 'App\Http\Controllers\SubscriberController@verify')->name('subscriber.verify');
 
-// calendar Routes...
+// 行事曆
 Route::get('calendar', 'App\Http\Controllers\CalendarController@calendar')->name('calendar');
 Route::get('calendar/event/add', 'App\Http\Controllers\CalendarController@eventAdd')->middleware('auth');
 Route::post('calendar/event/add', 'App\Http\Controllers\CalendarController@eventInsert')->middleware('auth')->name('calendar.addEvent');
@@ -65,11 +65,12 @@ Route::get('calendar/student', 'App\Http\Controllers\CalendarController@student'
 Route::get('calendar/download', 'App\Http\Controllers\CalendarController@student')->name('calendar.download');
 Route::get('calendar/import', 'App\Http\Controllers\CalendarController@student')->name('calendar.import');
 
-//intime messager routes...
+// 即時推播
 Route::get('messager/list/online', 'App\Http\Controllers\MessagerController@list')->middleware('auth')->name('messager.list');
 Route::post('messager/send', 'App\Http\Controllers\MessagerController@send')->middleware('auth')->name('messager.send');
+Route::post('messager/broadcast', 'App\Http\Controllers\MessagerController@broadcast')->middleware('auth')->name('messager.broadcast');
 
-//student club routes...
+// 學生課外社團
 Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('/', 'App\Http\Controllers\ClubController@index')->name('clubs');
     Route::get('enroll', 'App\Http\Controllers\ClubController@clubEnroll')->name('clubs.enroll');
@@ -117,7 +118,7 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('list/enroll/{club_id}/{year?}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
 });
 
-//regular meeting routes...
+// 網路朝會
 Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth'] ], function () {
     Route::get('list/{date?}', 'App\Http\Controllers\MeetingController@index')->name('meeting');
     Route::get('add', 'App\Http\Controllers\MeetingController@add');
@@ -128,7 +129,7 @@ Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth'] ], function () {
     Route::post('image-upload', 'App\Http\Controllers\MeetingController@storeImage')->name('meeting.imageupload');
 });
 
-//seniority routes...
+// 年資統計
 Route::group(['prefix' => 'seniority', 'middleware' => [ 'auth'] ], function () {
     Route::get('list/{year?}', 'App\Http\Controllers\SeniorityController@index')->name('seniority');
     Route::get('import', 'App\Http\Controllers\SeniorityController@upload');
@@ -139,15 +140,22 @@ Route::group(['prefix' => 'seniority', 'middleware' => [ 'auth'] ], function () 
     Route::post('update', 'App\Http\Controllers\SeniorityController@update')->name('seniority.update');
 });
 
-// Administrator Interface Routes...
+// 職務編排
+Route::group(['prefix' => 'organize', 'middleware' => [ 'auth'] ], function () {
+    Route::get('/', 'App\Http\Controllers\OrganizeController@index')->name('organize');
+});
+
+// 管理後台
 Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
+// 快取資料庫同步作業
     Route::get('database/sync', 'App\Http\Controllers\Admin\SyncController@syncFromTpedu');
     Route::post('database/sync', 'App\Http\Controllers\Admin\SyncController@startSyncFromTpedu')->name('sync');
     Route::get('database/sync/ad', 'App\Http\Controllers\Admin\SyncController@syncToAD');
     Route::post('database/sync/ad', 'App\Http\Controllers\Admin\SyncController@startSyncToAD')->name('syncAD');
     Route::get('database/sync/google', 'App\Http\Controllers\Admin\SyncController@syncToGsuite');
     Route::post('database/sync/google', 'App\Http\Controllers\Admin\SyncController@startSyncToGsuite')->name('syncGsuite');
+// 單一身份驗證資料管理
     Route::get('database/units', 'App\Http\Controllers\Admin\SchoolDataController@unitList');
     Route::post('database/units', 'App\Http\Controllers\Admin\SchoolDataController@unitUpdate')->name('units');
     Route::get('database/units/add', 'App\Http\Controllers\Admin\SchoolDataController@unitAdd');
@@ -166,12 +174,13 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::get('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@studentEdit');
     Route::post('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@studentUpdate')->name('students.edit');
     Route::post('database/students/{uuid}/remove', 'App\Http\Controllers\Admin\SchoolDataController@studentRemove')->name('students.remove');
-
+// 選單管理
     Route::get('website/menus/{menu?}', 'App\Http\Controllers\Admin\MenuController@index');
     Route::post('website/menus/{menu?}', 'App\Http\Controllers\Admin\MenuController@update')->name('menus');
     Route::get('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\MenuController@add');
     Route::post('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\MenuController@insert')->name('menus.add');
     Route::post('website/menus/{menu}/remove', 'App\Http\Controllers\Admin\MenuController@remove')->name('menus.remove');
+// 權限管理
     Route::get('website/permission', 'App\Http\Controllers\Admin\PermitController@index')->name('permission');
     Route::get('website/permission/add', 'App\Http\Controllers\Admin\PermitController@add');
     Route::post('website/permission/add', 'App\Http\Controllers\Admin\PermitController@insert')->name('permission.add');
@@ -180,6 +189,7 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('website/permission/{id}/remove', 'App\Http\Controllers\Admin\PermitController@remove')->name('permission.remove');
     Route::get('website/permission/{id}/grant', 'App\Http\Controllers\Admin\PermitController@grantList');
     Route::post('website/permission/{id}/grant', 'App\Http\Controllers\Admin\PermitController@grantUpdate')->name('permission.grant');
+// 電子報管理    
     Route::get('website/news', 'App\Http\Controllers\Admin\NewsController@index')->name('news');
     Route::get('website/news/add', 'App\Http\Controllers\Admin\NewsController@add');
     Route::post('website/news/add', 'App\Http\Controllers\Admin\NewsController@insert')->name('news.add');

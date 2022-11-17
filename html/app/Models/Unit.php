@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Unit extends Model
 {
 
-	protected $table = 'units';
+    protected $table = 'units';
 
     /**
      * The attributes that are mass assignable.
@@ -18,6 +18,16 @@ class Unit extends Model
         'unit_no',
         'name',
     ];
+
+    public static function current_year()
+    {
+        if (date('m') > 7) {
+            $year = date('Y') - 1911;
+        } else {
+            $year = date('Y') - 1912;
+        }
+        return $year;
+    }
 
     public static function findByNo($unit_no)
     {
@@ -53,14 +63,14 @@ class Unit extends Model
                 foreach ($all_subs as $sub) {
                     $keys[] = $sub->id;
                 }
-            }    
+            }
         } else {
             $subs = Unit::sub($main);
             if ($subs) {
                 foreach ($subs as $sub) {
                     $keys[] = $sub->id;
                 }
-            }    
+            }
         }
         return $keys;
     }
@@ -83,7 +93,7 @@ class Unit extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'job_title', 'unit_id', 'uuid');
+        return $this->belongsToMany('App\Models\Teacher', 'job_title', 'unit_id', 'uuid')->where('year', Unit::current_year());
     }
 
 }
