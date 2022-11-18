@@ -265,7 +265,7 @@ class SchoolDataController extends Controller
         $classes = Classroom::all();
         $domains = Domain::all();
         $subjects = Subject::all();
-        $teacher = Teacher::with('roles')->with('units')->with('domain')->find($uuid);
+        $teacher = Teacher::with('roles')->with('units')->find($uuid);
         $assignment = DB::table('assignment')->where('year', $this->year)->where('uuid', $uuid)->get();
         return view('admin.teacheredit', ['referer' => $referer, 'teacher' => $teacher, 'units' => $units, 'roles' => $roles, 'assignment' => $assignment, 'classes' => $classes, 'domains' => $domains, 'subjects' => $subjects]);
     }

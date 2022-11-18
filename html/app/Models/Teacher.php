@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Providers\TpeduServiceProvider as SSO;
 use Illuminate\Support\Facades\DB;
 use App\Models\Unit;
+use App\Models\Role;
+use App\Models\Domain;
+use App\Models\Classroom;
 
 class Teacher extends Model
 {
@@ -52,6 +55,7 @@ class Teacher extends Model
         'unit',
         'role',
         'tutor',
+        'domain',
     ];
 
     public function getMainunitAttribute()
@@ -79,6 +83,15 @@ class Teacher extends Model
     {
         if ($this->tutor_class) {
             return Classroom::find($this->tutor_class)->name;
+        }
+        return false;
+    }
+
+    public function getDomainAttribute()
+    {
+        $domain = DB::table('belongs')->where('uuid', $this->uuid)->where('year', Teacher::current_year())->first();
+        if ($domain && $domain->id) {
+            return Domain::find($domain->id);
         }
         return false;
     }
@@ -166,7 +179,7 @@ class Teacher extends Model
         return DB::table('assignment')->where('year', Teacher::current_year())->where('uuid', $this->uuid)->get();
     }
 
-    public function domain()
+    public function domains()
     {
         return $this->belongsToMany('App\Models\Domain', 'belongs', 'uuid', 'domain_id')->wherePivot('year', Teacher::current_year());
     }
