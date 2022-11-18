@@ -158,7 +158,7 @@ class Teacher extends Model
 
     public function roles()
     {
-        return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id')->where('year', Teacher::current_year());
+        return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id')->wherePivot('year', Teacher::current_year());
     }
 
     public function assignment()
@@ -168,17 +168,17 @@ class Teacher extends Model
 
     public function domain()
     {
-        return $this->belongsTo('App\Models\Domain', 'belongs', 'uuid', 'domain_id')->where('year', Teacher::current_year());
+        return $this->belongsToMany('App\Models\Domain', 'belongs', 'uuid', 'domain_id')->wherePivot('year', Teacher::current_year());
     }
 
     public function subjects()
     {
-        return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id')->where('year', Teacher::current_year());
+        return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id')->wherePivot('year', Teacher::current_year());
     }
 
     public function classrooms()
     {
-        return $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id')->where('year', Teacher::current_year());
+        return $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id')->wherePivot('year', Teacher::current_year());
     }
 
     public function seniority()
