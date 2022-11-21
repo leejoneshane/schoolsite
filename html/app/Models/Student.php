@@ -98,7 +98,7 @@ class Student extends Model
         if ($year) {
             return $this->enrolls()->where('year', $year)->get();
         } else {
-            return $this->enrolls()->where('year', CLubEnroll::current_year())->get();
+            return $this->enrolls()->where('year', current_year())->get();
         }
     }
 
@@ -123,7 +123,7 @@ class Student extends Model
 
     public function sync()
     {
-        $sso = new SSO();
+        $sso = new SSO;
         $sso->fetch_user($this->uuid);
         $this->fresh();
     }

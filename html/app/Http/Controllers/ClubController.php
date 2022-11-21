@@ -416,7 +416,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            ClubEnroll::where('club_id', $club_id)->where('year', ClubEnroll::current_year())->delete();
+            ClubEnroll::where('club_id', $club_id)->where('year', current_year())->delete();
             $kind_id = $club->kind_id;
             return $this->clubList($kind_id)->with('success', '已經移除此課外社團的所有報名資訊！');
         } else {
@@ -549,7 +549,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            $current = ClubEnroll::current_year();
+            $current = current_year();
             $years = ClubEnroll::years();
             if (!$year) {
                 if (!empty($years)) {
@@ -736,7 +736,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            $current = ClubEnroll::current_year();
+            $current = current_year();
             $years = ClubEnroll::years();
             $key = array_search($current, $years);
             if ($key !== false) unset($years[$key]);

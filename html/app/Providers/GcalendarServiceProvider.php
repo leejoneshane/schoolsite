@@ -39,6 +39,7 @@ class GcalendarServiceProvider extends ServiceProvider
             Log::error('google calendar:' . $e->getMessage());
         }
     }
+
     public function list_calendars()
     {
         try {
@@ -56,7 +57,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function get_calendar($calendarId)
     {
         try {
@@ -66,7 +67,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function delete_calendar($calendarId)
     {
         try {
@@ -77,7 +78,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function create_calendar($description)
     {
         $cObj = new \Google_Service_Calendar_Calendar();
@@ -91,7 +92,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function update_calendar($calendarId, $description)
     {
         $cObj = $this->get_calendar($calendarId);
@@ -104,7 +105,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function prune_events($calendarId)
     {
         try {
@@ -115,16 +116,16 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function list_events($calendarId, $opt_param = null)
     {
         if (empty($calendarId)) {
             $calendarId = 'primary';
         }
         if (empty($opt_param)) {
-            $mydate = $this->current_seme();
-            $opt_param['timeMin'] = $mydate['min'];
-            $opt_param['timeMax'] = $mydate['max'];
+            $mydate = current_between_date();
+            $opt_param['timeMin'] = $mydate->min;
+            $opt_param['timeMax'] = $mydate->max;
             $opt_param['singleEvents'] = true;
             $opt_param['orderBy'] = 'startTime';
         }
@@ -136,7 +137,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function get_event($calendarId, $eventId)
     {
         try {
@@ -146,7 +147,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function move_event($calendarId, $eventId, $target)
     {
         try {
@@ -156,7 +157,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function delete_event($calendarId, $eventId)
     {
         try {
@@ -167,7 +168,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function create_event($calendarId, \Google_Service_Calendar_Event $event)
     {
         try {
@@ -177,7 +178,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function import_event($calendarId, \Google_Service_Calendar_Event $event)
     {
         try {
@@ -187,7 +188,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function update_event($calendarId, $eventId, \Google_Service_Calendar_Event $event)
     {
         try {
@@ -198,7 +199,7 @@ class GcalendarServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function sync_event(IcsEvent $ics)
     {
         $calendar_id = $ics->calendar_id;
@@ -251,36 +252,8 @@ class GcalendarServiceProvider extends ServiceProvider
                 $ics->save();
             }
         }
-    
-        return $event;
-    }
 
-    public static function current_seme()
-    {
-        if (date('m') > 7) {
-            $syear = date('Y');
-            $eyear = $syear + 1;
-            $gyear = $syear - 1911;
-            $seme = 1;
-            $min = "$syear-08-01T00:00:00+08:00";
-            $max = "$eyear-01-31T00:00:00+08:00";
-        } elseif (date('m') < 2) {
-            $eyear = date('Y');
-            $syear = $eyear - 1;
-            $gyear = $syear - 1911;
-            $seme = 1;
-            $min = "$syear-08-01T00:00:00+08:00";
-            $max = "$eyear-01-31T00:00:00+08:00";
-        } else {
-            $syear = date('Y');
-            $eyear = $syear;
-            $gyear = $syear - 1912;
-            $seme = 2;
-            $min = "$syear-02-01T00:00:00+08:00";
-            $max = "$eyear-07-31T00:00:00+08:00";
-        }
-    
-        return ['min' => $min, 'max' => $max, 'syear' => $syear, 'eyear' => $eyear, 'gyear' => $gyear, 'seme' => $seme];
+        return $event;
     }
 
 }

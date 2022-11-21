@@ -16,7 +16,7 @@ class SeniorityController extends Controller
         if (Auth::user()->user_type == 'Student') {
             return view('home')->with('error', '您沒有權限使用此功能！');
         }
-        $current = Seniority::current_year();
+        $current = current_year();
         if (!$year) $year = $current;
         $years = Seniority::years();
         if (!in_array($current, $years)) $years[] = $current;
@@ -30,7 +30,7 @@ class SeniorityController extends Controller
         if (Auth::user()->user_type == 'Student') {
             return view('home')->with('error', '您沒有權限使用此功能！');
         }
-        $current = Seniority::current_year();
+        $current = current_year();
         return view('app.seniorityupload', ['current' => $current]);
     }
 
@@ -49,7 +49,7 @@ class SeniorityController extends Controller
         if (Auth::user()->user_type == 'Student') {
             return view('home')->with('error', '您沒有權限使用此功能！');
         }
-        $current = Seniority::current_year();
+        $current = current_year();
         if (!$year) $year = $current;
         $filename = $year . '學年度教師教學年資統計';
         return (new SeniorityExport($year))->download("$filename.xlsx");
@@ -58,7 +58,7 @@ class SeniorityController extends Controller
     public function confirm(Request $request)
     {
         $uuid = $request->input('uuid');
-        $year = $request->input('year') ?: Seniority::current_year();
+        $year = $request->input('year') ?: current_year();
         $score = Seniority::findBy($uuid, $year);
         $score->ok = true;
         $score->save();
@@ -68,7 +68,7 @@ class SeniorityController extends Controller
     public function cancel(Request $request)
     {
         $uuid = $request->input('uuid');
-        $year = $request->input('year') ?: Seniority::current_year();
+        $year = $request->input('year') ?: current_year();
         $score = Seniority::findBy($uuid, $year);
         $score->ok = false;
         $score->save();
@@ -78,7 +78,7 @@ class SeniorityController extends Controller
     public function update(Request $request)
     {
         $uuid = $request->input('uuid');
-        $year = $request->input('year') ?: Seniority::current_year();
+        $year = $request->input('year') ?: current_year();
         $score = Seniority::findBy($uuid, $year);
         $nsy = $request->input('new_school_year');
         $nsm = $request->input('new_school_month');

@@ -34,8 +34,8 @@
     <label for="current">顯示哪一天的事件:</label>
     <input class="w-36" type="date" id="current" name="current"
         value="{{ $current }}"
-        min="{{ substr($seme['min'], 0, 10) }}"
-        max="{{ substr($seme['max'], 0, 10) }}"
+        min="{{ substr($seme->min, 0, 10) }}"
+        max="{{ substr($seme->max, 0, 10) }}"
         onchange="document.getElementById('select-date').submit();">
 </form>
 <table class="w-full text-sm text-left">

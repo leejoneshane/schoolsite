@@ -19,16 +19,6 @@ class Domain extends Model
         'name',
     ];
 
-    public static function current_year()
-    {
-        if (date('m') > 7) {
-            $year = date('Y') - 1911;
-        } else {
-            $year = date('Y') - 1912;
-        }
-        return $year;
-    }
-
     public function teachersByYear($year)
     {
         return $this->belongsToMany('App\Models\Teacher', 'belongs', 'domain_id', 'uuid')->where('year', $year)->get();
@@ -36,7 +26,7 @@ class Domain extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'belongs', 'domain_id', 'uuid')->where('year', Domain::current_year());
+        return $this->belongsToMany('App\Models\Teacher', 'belongs', 'domain_id', 'uuid')->where('year', current_year());
     }
 
 }

@@ -89,21 +89,11 @@ class Teacher extends Model
 
     public function getDomainAttribute()
     {
-        $domain = DB::table('belongs')->where('uuid', $this->uuid)->where('year', Teacher::current_year())->first();
+        $domain = DB::table('belongs')->where('uuid', $this->uuid)->where('year', current_year())->first();
         if ($domain && $domain->id) {
             return Domain::find($domain->id);
         }
         return false;
-    }
-
-    public static function current_year()
-    {
-        if (date('m') > 7) {
-            $year = date('Y') - 1911;
-        } else {
-            $year = date('Y') - 1912;
-        }
-        return $year;
     }
 
     public static function findById($id) //全誼系統代號
@@ -138,7 +128,7 @@ class Teacher extends Model
 
     public function units()
     {
-        return $this->belongsToMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id')->where('year', Teacher::current_year());
+        return $this->belongsToMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id')->where('year', current_year());
     }
 
     public function union()
@@ -171,37 +161,37 @@ class Teacher extends Model
 
     public function roles()
     {
-        return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id')->wherePivot('year', Teacher::current_year());
+        return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id')->wherePivot('year', current_year());
     }
 
     public function assignment()
     {
-        return DB::table('assignment')->where('year', Teacher::current_year())->where('uuid', $this->uuid)->get();
+        return DB::table('assignment')->where('year', current_year())->where('uuid', $this->uuid)->get();
     }
 
     public function domains()
     {
-        return $this->belongsToMany('App\Models\Domain', 'belongs', 'uuid', 'domain_id')->wherePivot('year', Teacher::current_year());
+        return $this->belongsToMany('App\Models\Domain', 'belongs', 'uuid', 'domain_id')->wherePivot('year', current_year());
     }
 
     public function subjects()
     {
-        return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id')->wherePivot('year', Teacher::current_year());
+        return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id')->wherePivot('year', current_year());
     }
 
     public function classrooms()
     {
-        return $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id')->wherePivot('year', Teacher::current_year());
+        return $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id')->wherePivot('year', current_year());
     }
 
     public function seniority()
     {
-        return $this->hasOne('App\Models\Seniority', 'uuid', 'uuid')->where('syear', Teacher::current_year());
+        return $this->hasOne('App\Models\Seniority', 'uuid', 'uuid')->where('syear', current_year());
     }
 
     public function sync()
     {
-        $sso = new SSO();
+        $sso = new SSO;
         $sso->fetch_user($this->uuid);
         $this->fresh();
     }

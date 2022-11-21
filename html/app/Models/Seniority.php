@@ -67,7 +67,7 @@ class Seniority extends Model
         parent::boot();
         self::creating(function($model) {
             if (empty($model->syear)) {
-                $model->syear = self::current_year();
+                $model->syear = current_year();
             }
         });
     }
@@ -97,16 +97,6 @@ class Seniority extends Model
         return Seniority::where('uuid', $uuid)->where('syear', $syear)->first();
     }
 
-    public static function current_year()
-    {
-        if (date('m') > 7) {
-            $year = date('Y') - 1911;
-        } else {
-            $year = date('Y') - 1912;
-        }
-        return $year;
-    }
-
     public static function years()
     {
         return DB::table('seniority')->select(['syear'])->distinct()->get()->map(function ($item) {
@@ -116,7 +106,7 @@ class Seniority extends Model
 
     public static function current()
     {
-        return Seniority::where('syear', Seniority::current_year())->orderBy('no')->get();
+        return Seniority::where('syear', current_year())->orderBy('no')->get();
     }
 
     public function teacher()

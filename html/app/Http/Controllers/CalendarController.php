@@ -54,7 +54,7 @@ class CalendarController extends Controller
     {
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
-        $seme = GCAL::current_seme();
+        $seme = current_between_date();
         $create = false;
         $edit = [];
         $delete = [];
@@ -86,7 +86,7 @@ class CalendarController extends Controller
     {
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
-        $seme = GCAL::current_seme();
+        $seme = current_between_date();
         $calendars = IcsCalendar::all();
         $user = $request->user();
         $units = [];
@@ -134,7 +134,7 @@ class CalendarController extends Controller
         $event = IcsEvent::find($event_id);
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
-        $seme = GCAL::current_seme();
+        $seme = current_between_date();
         $calendars = IcsCalendar::all();
         $user = $request->user();
         $units = [];
@@ -186,14 +186,11 @@ class CalendarController extends Controller
     {
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
-        $seme = GCAL::current_seme();
-        $calendar = IcsCalendar::forStudent();
         $event_list = [];
-        if ($seme['seme'] == 1) {
-            $year = [ $seme['syear'], $seme['eyear'] ];
+        $year = current_years();
+        if (current_seme() == 1) {
             $month = [ 8, 9, 10, 11, 12, 1 ];
         } else {
-            $year = [ $seme['syear'] ];
             $month = [ 2, 3, 4, 5, 6, 7 ];
         }
         foreach ($year as $y) {
@@ -243,14 +240,11 @@ class CalendarController extends Controller
     {
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
-        $seme = GCAL::current_seme();
-        $calendar = IcsCalendar::forStudent();
         $event_list = [];
-        if ($seme['seme'] == 1) {
-            $year = [ $seme['syear'], $seme['eyear'] ];
+        $year = current_years();
+        if (current_seme() == 1) {
             $month = [ 8, 9, 10, 11, 12, 1 ];
         } else {
-            $year = [ $seme['syear'] ];
             $month = [ 2, 3, 4, 5, 6, 7 ];
         }
         foreach ($year as $y) {
@@ -300,14 +294,11 @@ class CalendarController extends Controller
     {
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
-        $seme = GCAL::current_seme();
-        $calendar = IcsCalendar::forStudent();
         $event_list = [];
-        if ($seme['seme'] == 1) {
-            $year = [ $seme['syear'], $seme['eyear'] ];
+        $year = current_years();
+        if (current_seme() == 1) {
             $month = [ 8, 9, 10, 11, 12, 1 ];
         } else {
-            $year = [ $seme['syear'] ];
             $month = [ 2, 3, 4, 5, 6, 7 ];
         }
         foreach ($year as $y) {

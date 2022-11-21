@@ -130,20 +130,10 @@ class ClubEnroll extends Model
         parent::boot();
         self::creating(function($model) {
             if (empty($model->year)) {
-                $model->year = self::current_year();
+                $model->year = current_year();
             }
         });
     }
-
-    public static function current_year()
-	{
-    	if (date('m') > 7) {
-        	$year = date('Y') - 1911;
-    	} else {
-        	$year = date('Y') - 1912;
-    	}
-    	return $year;
-	}
 
     public function club()
     {
@@ -162,12 +152,12 @@ class ClubEnroll extends Model
 
     public static function current()
     {
-        return ClubEnroll::where('year', CLubEnroll::current_year())->get();
+        return ClubEnroll::where('year', current_year())->get();
     }
 
     public static function current_accepted()
     {
-        return ClubEnroll::where('year', CLubEnroll::current_year())->where('accepted', true)->get();
+        return ClubEnroll::where('year', current_year())->where('accepted', true)->get();
     }
 
     public static function currentByClass($class_id)
@@ -175,7 +165,7 @@ class ClubEnroll extends Model
         return ClubEnroll::leftJoin('students', 'students_clubs.uuid', '=', 'students.uuid')
             ->select('students_clubs.*')
             ->where('students_clubs.accepted', true)
-            ->where('students_clubs.year', CLubEnroll::current_year())
+            ->where('students_clubs.year', current_year())
             ->where('students.class_id', $class_id)
             ->orderBy('students.seat')
             ->get();
@@ -184,7 +174,7 @@ class ClubEnroll extends Model
     public static function repetition()
     {
         return ClubEnroll::select('uuid')
-            ->where('year', CLubEnroll::current_year())
+            ->where('year', current_year())
             ->groupBy('uuid')
             ->havingRaw('count(*) > ?', [1])
             ->get();
@@ -202,7 +192,7 @@ class ClubEnroll extends Model
         if ($year) {
             $query = $query->where('year', $year);
         } else {
-            $query = $query->where('year', CLubEnroll::current_year());
+            $query = $query->where('year', current_year());
         }
         return $query->first();
     }

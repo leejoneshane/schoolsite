@@ -173,7 +173,7 @@ class Club extends Model
         if ($year) {
             return $this->enrolls()->where('year', $year)->get();
         } else {
-            return $this->enrolls()->where('year', ClubEnroll::current_year())->get();
+            return $this->enrolls()->where('year', current_year())->get();
         }
     }
 
@@ -182,7 +182,7 @@ class Club extends Model
         if ($year) {
             return $this->accepted_enrolls()->where('year', $year)->get();
         } else {
-            return $this->accepted_enrolls()->where('year', ClubEnroll::current_year())->get();
+            return $this->accepted_enrolls()->where('year', current_year())->get();
         }
     }
 

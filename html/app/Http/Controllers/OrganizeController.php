@@ -17,7 +17,7 @@ class OrganizeController extends Controller
         if (Auth::user()->user_type == 'Student') {
             return view('home')->with('error', '您沒有權限使用此功能！');
         }
-        $current = Seniority::current_year();
+        $current = current_year();
         if (!$year) $year = $current;
         $years = Seniority::years();
         if (!in_array($current, $years)) $years[] = $current;

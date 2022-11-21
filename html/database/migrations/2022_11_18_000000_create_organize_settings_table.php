@@ -13,14 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('belongs', function (Blueprint $table) {
+        Schema::create('organize_settings', function (Blueprint $table) {
             $table->id();
-            $table->integer('year');
-            $table->uuid('uuid');
-            $table->integer('domain_id');
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
-            $table->unique(['year', 'uuid']);
+            $table->integer('syear');
+            $table->date('survey_at');
+            $table->date('first_stage');
+            $table->date('pause_at');
+            $table->date('second_stage');
+            $table->date('close_at');
         });
     }
 
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('belongs');
+        Schema::dropIfExists('organize_settings');
     }
 };

@@ -19,16 +19,6 @@ class Unit extends Model
         'name',
     ];
 
-    public static function current_year()
-    {
-        if (date('m') > 7) {
-            $year = date('Y') - 1911;
-        } else {
-            $year = date('Y') - 1912;
-        }
-        return $year;
-    }
-
     public static function findByNo($unit_no)
     {
         return Unit::where('unit_no', $unit_no)->first();
@@ -93,7 +83,7 @@ class Unit extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'job_title', 'unit_id', 'uuid')->where('year', Unit::current_year());
+        return $this->belongsToMany('App\Models\Teacher', 'job_title', 'unit_id', 'uuid')->where('year', current_year());
     }
 
 }

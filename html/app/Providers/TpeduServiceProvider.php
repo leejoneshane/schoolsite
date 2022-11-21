@@ -21,7 +21,6 @@ use App\Models\Student;
 class TpeduServiceProvider extends ServiceProvider
 {
 
-    private $seme = null;
     private $error = '';
     public $expires_in = '';
     public $access_token = '';
@@ -29,23 +28,7 @@ class TpeduServiceProvider extends ServiceProvider
 
     public function __construct()
     {
-        $this->seme = $this->current_seme();
-    }
-
-    public function current_seme()
-    {
-        if (date('m') > 7) {
-            $year = date('Y') - 1911;
-            $seme = 1;
-        } elseif (date('m') < 2) {
-            $year = date('Y') - 1912;
-            $seme = 1;
-        } else {
-            $year = date('Y') - 1912;
-            $seme = 2;
-        }
-
-        return ['year' => $year, 'seme' => $seme];
+        //
     }
 
     public function is_phone($str)
@@ -308,7 +291,7 @@ class TpeduServiceProvider extends ServiceProvider
                                 $m_role_name = $role_name;
                             }
                             DB::table('job_title')->insertOrIgnore([
-                                'year' => $this->seme['year'],
+                                'year' => current_year(),
                                 'uuid' => $uuid,
                                 'unit_id' => $dept->id,
                                 'role_id' => $role->id,
@@ -330,7 +313,7 @@ class TpeduServiceProvider extends ServiceProvider
                         $m_role_id = $role->id;
                         $m_role_name = $role_name;
                         DB::table('job_title')->insertOrIgnore([
-                            'year' => $this->seme['year'],
+                            'year' => current_year(),
                             'uuid' => $uuid,
                             'unit_id' => $dept->id,
                             'role_id' => $role->id,
@@ -347,7 +330,7 @@ class TpeduServiceProvider extends ServiceProvider
                         $a = explode(',', $assign_pair);
                         $s = Subject::where('name', mb_substr($a[2], 4))->first();
                         DB::table('assignment')->insertOrIgnore([
-                            'year' => $this->seme['year'],
+                            'year' => current_year(),
                             'uuid' => $uuid,
                             'class_id' => $a[1],
                             'subject_id' => $s->id,
@@ -538,7 +521,7 @@ class TpeduServiceProvider extends ServiceProvider
         $detail_log[] = '開始同步全校學生資料！';
         $classes = Classroom::all();
         foreach ($classes as $cls) {
-            $year = $this->seme['year'] - $cls->grade_id - 1;
+            $year = current_year() - $cls->grade_id - 1;
             $uuids = $this->api('students_of_class', ['class' => $cls->id]);
             if ($uuids && is_array($uuids)) {
                 foreach ($uuids as $uuid) {
@@ -562,7 +545,7 @@ class TpeduServiceProvider extends ServiceProvider
     function sync_students_for_grade($grade, $only = false, $password = false, $remove = true)
     {
         $detail_log[] = '開始同步'.$grade.'年級學生資料！';
-        $year = $this->seme['year'] - $grade - 1;
+        $year = current_year() - $grade - 1;
         $classes = Grade::find($grade)->classrooms;
         foreach ($classes as $cls) {
             $uuids = $this->api('students_of_class', ['class' => $cls->id]);
@@ -589,7 +572,7 @@ class TpeduServiceProvider extends ServiceProvider
     {
         $detail_log[] = '開始同步'.$class_id.'班級學生資料！';
         $grade = substr($class_id, 0, 1);
-        $year = $this->seme['year'] - $grade - 1;
+        $year = current_year() - $grade - 1;
         $uuids = $this->api('students_of_class', ['class' => $class_id]);
         if ($uuids && is_array($uuids)) {
             foreach ($uuids as $uuid) {

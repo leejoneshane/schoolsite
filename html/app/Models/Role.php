@@ -20,16 +20,6 @@ class Role extends Model
         'name',
     ];
 
-    public static function current_year()
-    {
-        if (date('m') > 7) {
-            $year = date('Y') - 1911;
-        } else {
-            $year = date('Y') - 1912;
-        }
-        return $year;
-    }
-
     public static function filter($role_no)
     {
         //return Role::where('role_no', $role_no)->get();
@@ -48,7 +38,7 @@ class Role extends Model
 
     public function teachers()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'job_title', 'role_id', 'uuid')->where('year', Role::current_year());
+        return $this->belongsToMany('App\Models\Teacher', 'job_title', 'role_id', 'uuid')->where('year', current_year());
     }
 
 }

@@ -13,14 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('belongs', function (Blueprint $table) {
+        Schema::create('organize_swap', function (Blueprint $table) {
             $table->id();
-            $table->integer('year');
+            $table->integer('syear');
             $table->uuid('uuid');
-            $table->integer('domain_id');
-            $table->timestamp('created_at')->useCurrent();
-            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
-            $table->unique(['year', 'uuid']);
+            $table->integer('vacancy_id');
+            $table->unique(['syear', 'uuid']);
         });
     }
 
@@ -31,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('belongs');
+        Schema::dropIfExists('organize_swap');
     }
 };
