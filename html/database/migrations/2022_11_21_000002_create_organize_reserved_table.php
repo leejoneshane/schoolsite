@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('organize_original', function (Blueprint $table) {
+        Schema::create('organize_reserved', function (Blueprint $table) {
             $table->id();
             $table->integer('syear');
             $table->uuid('uuid');
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('organize_original');
+        Schema::dropIfExists('organize_reserved');
     }
 };

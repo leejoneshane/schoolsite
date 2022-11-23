@@ -142,7 +142,12 @@ Route::group(['prefix' => 'seniority', 'middleware' => [ 'auth'] ], function () 
 
 // 職務編排
 Route::group(['prefix' => 'organize', 'middleware' => [ 'auth'] ], function () {
-    Route::get('/', 'App\Http\Controllers\OrganizeController@index')->name('organize');
+    Route::get('index/{year?}', 'App\Http\Controllers\OrganizeController@index')->name('organize');
+    Route::get('vacancy', 'App\Http\Controllers\OrganizeController@index')->name('organize.vacancy');
+    Route::get('setting', 'App\Http\Controllers\OrganizeController@index')->name('organize.setting');
+    Route::get('arrange', 'App\Http\Controllers\OrganizeController@index')->name('organize.arrange');
+    Route::get('list/vacancy/{year?}', 'App\Http\Controllers\OrganizeController@index')->name('organize.listvacancy');
+    Route::get('list/result/{year?}', 'App\Http\Controllers\OrganizeController@index')->name('organize.listresult');
 });
 
 // 管理後台

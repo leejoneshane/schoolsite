@@ -189,6 +189,11 @@ class Teacher extends Model
         return $this->hasOne('App\Models\Seniority', 'uuid', 'uuid')->where('syear', current_year());
     }
 
+    public function organize_survey()
+    {
+        return $this->hasOne('App\Models\OrganizeSurvey', 'uuid', 'uuid')->where('syear', current_year());
+    }
+
     public function sync()
     {
         $sso = new SSO;
