@@ -57,7 +57,7 @@ class GsuiteServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function get_orgunit($orgPath)
     {
         try {
@@ -67,7 +67,7 @@ class GsuiteServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function create_orgunit($orgPath, $orgName, $orgDescription)
     {
         $org_unit = new \Google_Service_Directory_OrgUnit();
@@ -81,7 +81,7 @@ class GsuiteServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function update_orgunit($orgPath, $orgName)
     {
         $org_unit = new \Google_Service_Directory_OrgUnit();
@@ -93,7 +93,7 @@ class GsuiteServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function delete_orgunit($orgPath)
     {
         try {
@@ -152,7 +152,7 @@ class GsuiteServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function get_user($userKey)
     {
         if (!strpos($userKey, '@')) {
@@ -165,7 +165,7 @@ class GsuiteServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function create_user(\Google_Service_Directory_User $userObj)
     {
         try {
@@ -175,7 +175,7 @@ class GsuiteServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function update_user($userKey, \Google_Service_Directory_User $userObj)
     {
         if (!strpos($userKey, '@')) {
@@ -203,7 +203,7 @@ class GsuiteServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function delete_user($userKey)
     {
         if (!strpos($userKey, '@')) {
@@ -216,7 +216,7 @@ class GsuiteServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function sync_user(Model $t, $userKey, $user = null, $recover = false)
     {
         if ($t instanceof Student) {
@@ -255,7 +255,7 @@ class GsuiteServiceProvider extends ServiceProvider
                 'owner_type' => 'App\\Models\\'.$user_type,
                 'userKey' => $userKey,
                 'primary' => true,
-            ]);		
+            ]);
         } else {
             $found = false;
             foreach ($gmails as $gmail) {
@@ -276,7 +276,7 @@ class GsuiteServiceProvider extends ServiceProvider
                     'owner_type' => 'App\\Models\\'.$user_type,
                     'userKey' => $userKey,
                     'primary' => true,
-                ]);	
+                ]);
             }
         }
         $sysid = new \Google_Service_Directory_UserExternalId();
@@ -356,7 +356,7 @@ class GsuiteServiceProvider extends ServiceProvider
             }
             $user->setPhones($phones);
         }
-    
+
         $gender = new \Google_Service_Directory_UserGender();
         if (!empty($t->gender)) {
             switch ($t->gender) {
@@ -410,9 +410,9 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         $found = false;
         $aliases = $this->list_aliases($userKey);
-        if ($aliases === false) return false;
+        if (!$aliases) return false;
         foreach ($aliases as $a) {
-            if ($a->getAlias() == $alias) {
+            if ($a['alias'] == $alias) {
                 $found = true;
                 break;
             }
@@ -426,7 +426,7 @@ class GsuiteServiceProvider extends ServiceProvider
             $userKey .= '@' . config('services.gsuite.domain');
         }
         try {
-            return $this->directory->users_aliases->listUsersAliases($userKey);
+            return $this->directory->users_aliases->listUsersAliases($userKey)->getAliases();
         } catch (\Google_Service_Exception $e) {
             Log::notice("google listUserAliases($userKey):" . $e->getMessage());
             return false;
@@ -448,7 +448,7 @@ class GsuiteServiceProvider extends ServiceProvider
             return false;
         }
     }
-    
+
     public function all_groups()
     {
         try {
@@ -595,7 +595,7 @@ class GsuiteServiceProvider extends ServiceProvider
                         if ($result) {
                             $user = $result[0];
                             $user_key = $user->getPrimaryEmail();
-                        }	
+                        }
                     }
                 }
                 if ($user) {
@@ -830,7 +830,7 @@ class GsuiteServiceProvider extends ServiceProvider
                                 if ($result) {
                                     $user = $result[0];
                                     $user_key = $user->getPrimaryEmail();
-                                }	
+                                }
                             }
                         }
                         if ($user) {
@@ -859,7 +859,7 @@ class GsuiteServiceProvider extends ServiceProvider
                                 $detail_log[] = '建立完成！';
                             } else {
                                 $detail_log[] = '別名建立失敗！';
-                            }	
+                            }
                         }
                         $myclass = Classroom::find($s->class_id);
                         $group_key = 'class-'.$s->class_id.'@'.$domain;
@@ -921,7 +921,7 @@ class GsuiteServiceProvider extends ServiceProvider
                         if ($result) {
                             $user = $result[0];
                             $user_key = $user->getPrimaryEmail();
-                        }	
+                        }
                     }
                 }
                 if ($user) {
@@ -950,7 +950,7 @@ class GsuiteServiceProvider extends ServiceProvider
                         $detail_log[] = '建立完成！';
                     } else {
                         $detail_log[] = '別名建立失敗！';
-                    }	
+                    }
                 }
                 $detail_log[] = "正在將使用者：$s->class $s->seat $s->realname 加入到 $myclass->name 群組裡....";
                 $members = $this->add_member($group_key, $user_key);

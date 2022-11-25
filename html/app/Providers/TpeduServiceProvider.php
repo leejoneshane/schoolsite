@@ -284,7 +284,7 @@ class TpeduServiceProvider extends ServiceProvider
                                     'role_no' => $a[2],
                                     'unit_id' => $dept->id,
                                     'name' => $role_name,
-                                ]);	
+                                ]);
                             }
                             if (!$ckf || empty($m_role_id)) {
                                 $m_role_id = $role->id;
@@ -521,7 +521,7 @@ class TpeduServiceProvider extends ServiceProvider
         $detail_log[] = '開始同步全校學生資料！';
         $classes = Classroom::all();
         foreach ($classes as $cls) {
-            $year = current_year() - $cls->grade_id - 1;
+            $year = current_year() - $cls->grade_id + 1;
             $uuids = $this->api('students_of_class', ['class' => $cls->id]);
             if ($uuids && is_array($uuids)) {
                 foreach ($uuids as $uuid) {
@@ -545,7 +545,7 @@ class TpeduServiceProvider extends ServiceProvider
     function sync_students_for_grade($grade, $only = false, $password = false, $remove = true)
     {
         $detail_log[] = '開始同步'.$grade.'年級學生資料！';
-        $year = current_year() - $grade - 1;
+        $year = current_year() - $grade + 1;
         $classes = Grade::find($grade)->classrooms;
         foreach ($classes as $cls) {
             $uuids = $this->api('students_of_class', ['class' => $cls->id]);
@@ -572,7 +572,7 @@ class TpeduServiceProvider extends ServiceProvider
     {
         $detail_log[] = '開始同步'.$class_id.'班級學生資料！';
         $grade = substr($class_id, 0, 1);
-        $year = current_year() - $grade - 1;
+        $year = current_year() - $grade + 1;
         $uuids = $this->api('students_of_class', ['class' => $class_id]);
         if ($uuids && is_array($uuids)) {
             foreach ($uuids as $uuid) {
