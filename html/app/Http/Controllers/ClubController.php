@@ -166,7 +166,7 @@ class ClubController extends Controller
                 $kind = ClubKind::first();
             }
             $kinds = ClubKind::orderBy('weight')->get();
-            $clubs = Club::orderBy('startDate', 'desc')->get();
+            $clubs = Club::where('kind_id', $kind->id)->orderBy('startDate', 'desc')->get();
             return view('app.clubs', ['kind' => $kind, 'kinds' => $kinds, 'clubs' => $clubs]);
         } else {
             return view('home')->with('error', '您沒有權限使用此功能！');
@@ -377,8 +377,12 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
             $kind_id = $club->kind_id;
-            $club->delete();
-            return $this->clubList($kind_id)->with('success', '課外社團已經移除完成！');
+            if ($club->enrolls) {
+                return $this->clubList($kind_id)->with('error', '課外社團已經錄取學生，因此無法移除！');
+            } else {
+                $club->delete();
+                return $this->clubList($kind_id)->with('success', '課外社團已經移除完成！');
+            }
         } else {
             return view('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -418,7 +422,7 @@ class ClubController extends Controller
             $club = Club::find($club_id);
             ClubEnroll::where('club_id', $club_id)->where('year', current_year())->delete();
             $kind_id = $club->kind_id;
-            return $this->clubList($kind_id)->with('success', '已經移除此課外社團的所有報名資訊！');
+            return $this->clubList($kind_id)->with('success', '已經移除此課外社團本年度報名資訊，可以重新開始報名！');
         } else {
             return view('home')->with('error', '您沒有權限使用此功能！');
         }

@@ -26,10 +26,11 @@
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
         請從下方選單挑選要瀏覽的社團類別。<br>
-	    點擊社團名稱可以管理社團報名資訊，點擊圖示「筆」可以編輯，點擊圖示「垃圾桶」刪除社團，點擊圖示「信封」寄信給報名的家長，點擊圖示「資源回收」將刪除本學年度所有報名資訊，以便重新報名。<br>
+        點擊社團名稱可以管理社團報名資訊，點擊圖示「筆」可以編輯，點擊圖示「垃圾桶」刪除社團，點擊圖示「信封」寄信給報名的家長，點擊圖示「資源回收」將刪除本學年度所有報名資訊，以便重新報名。<br>
     </p>
 </div>
-<select id="kinds" class="block w-full py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
+<label for="kinds">請選擇社團類別：</label>
+<select id="kinds" class="inline w-full p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="
     var kid = this.value;
     window.location.replace('{{ route('clubs.admin') }}' + '/' + kid);
@@ -61,52 +62,65 @@
         <th scope="col" class="p-2">
             報名限制
         </th>
-		<th scope="col" class="p-2">
+        <th scope="col" class="p-2">
             已報名
         </th>
-		<th scope="col" class="p-2">
+        <th scope="col" class="p-2">
             管理
         </th>
     </tr>
     @foreach ($clubs as $club)
-    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 cursor-pointer {{ $kind->style }}"
-        onclick="
+    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $kind->style }}">
+        <td class="p-2 cursor-pointer" onclick="
         window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
-    ">
-        <td class="p-2">{{ $club->name }}</td>
-        <td class="p-2">{{ $club->teacher }}</td>
-        <td class="p-2">{{ $club->grade }}</td>
-        <td class="p-2">{{ $club->studytime }}</td>
-        <td class="p-2">{{ $club->location }}</td>
-        <td class="p-2">{{ $club->total }}</td>
-        <td class="p-2">{{ $club->maximum }}</td>
-        <td class="p-2">{{ $club->count_enrolls() }}</td>
+        ">{{ $club->name }}</td>
+        <td class="p-2 cursor-pointer" onclick="
+        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
+        ">{{ $club->teacher }}</td>
+        <td class="p-2 cursor-pointer" onclick="
+        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
+        ">{{ $club->grade }}</td>
+        <td class="p-2 cursor-pointer" onclick="
+        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
+        ">{{ $club->studytime }}</td>
+        <td class="p-2 cursor-pointer" onclick="
+        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
+        ">{{ $club->location }}</td>
+        <td class="p-2 cursor-pointer" onclick="
+        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
+        ">{{ $club->total }}</td>
+        <td class="p-2 cursor-pointer" onclick="
+        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
+        ">{{ $club->maximum }}</td>
+        <td class="p-2 cursor-pointer" onclick="
+        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
+        ">{{ $club->count_enrolls() }}</td>
         <td class="p-2">
             @if (Auth::user()->is_admin ||  Auth::user()->profile['mainunit']->id == $club->unit_id)
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('clubs.edit', ['club_id' => $club->id]) }}" title="編輯">
                 <i class="fa-solid fa-pen"></i>
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="void()" title="刪除"
+            <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('clubs.remove', ['club_id' => $club->id]) }}';
                     myform.submit();
             ">
                 <i class="fa-solid fa-trash"></i>
-            </a>
+            </button>
             <a class="py-2 pr-6 text-gray-500 hover:text-black"
                 href="{{ route('clubs.mail', ['club_id' => $club->id]) }}" title="通知">
                 <i class="fa-regular fa-envelope"></i>
             </a>
-            <a class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" href="void()" title="重新報名"
+            <button class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" title="重新報名"
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('clubs.prune', ['club_id' => $club->id]) }}';
                     myform.submit();
             ">
                 <i class="fa-solid fa-recycle"></i>
-            </a>
+            </button>
             @endif
         </td>
     </tr>

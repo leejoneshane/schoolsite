@@ -11,7 +11,8 @@
         <i class="fa-solid fa-calendar-plus"></i>匯出成DOCX
     </a>
 </div>
-<select id="classroom" class="block w-full py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
+<label for="classroom">請選擇班級：</label>
+<select id="classroom" class="inline w-full p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="
     var class_id = this.value;
     window.location.replace('{{ route('clubs.classroom', ['kid' => $kind_id]) }}' + '/' + class_id);

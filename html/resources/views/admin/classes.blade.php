@@ -2,7 +2,8 @@
 
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">年級與班級</div>
-<select id="grades" class="block w-full py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
+<label for="grades">請選擇年級：</label>
+<select id="grades" class="inline w-24 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="
     var chosen = this.selectedIndex + 1;
     var myp = document.getElementById('class_list');
