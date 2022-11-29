@@ -48,7 +48,7 @@ class Unit extends Model
         }
         $keys = [];
         if (empty($main)) {
-            $all_subs = Unit::whereRaw('CHAR_LENGTH(unit_no) > 3 and LEFT(unit_no, 1) <> ?', ['Z'])->get();
+            $all_subs = Unit::whereRaw('CHAR_LENGTH(unit_no) > 3 and LEFT(unit_no, 1) <> ?', 'Z')->get();
             if ($all_subs) {
                 foreach ($all_subs as $sub) {
                     $keys[] = $sub->id;

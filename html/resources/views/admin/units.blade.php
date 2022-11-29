@@ -11,7 +11,7 @@
         </div>
         <form id="edit-unit" action="{{ route('units') }}" method="POST">
         @csrf
-            <table class="w-full text-sm text-left">
+            <table class="text-sm text-left">
                 @foreach ($units as $u)
                 <tr class="hover:bg-gray-200 dark:hover:bg-gray-600"
                     onmouseover="
@@ -26,11 +26,11 @@
                         }
                     ">
                     <td class="p-2">
-                        <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                        <input class="w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                             type="text" name="uid[{{ $u->id }}]" value="{{ $u->unit_no }}">
                     </td>
                     <td class="p-2">
-                        <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                        <input class="rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                             type="text" name="units[{{ $u->id }}]" value="{{ $u->name }}">
                     </td>
                 </tr>
@@ -59,12 +59,19 @@
                         <table class="w-full text-sm text-left">
                         @foreach ($u->roles as $r)
                             <tr>
-                                <td class="py-4 px-6">
-                                    <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                                <td class="py-2 px-6">
+                                    <input class="w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                                         type="text" name="rid[{{ $r->id }}]" value="{{ $r->role_no }}">
                                 </td>
-                                <td class="py-4 px-6">
-                                    <input class="w-full rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                                <td class="py-2 px-6">
+                                    <label for="organize[{{ $r->id }}]" class="inline-flex relative items-center cursor-pointer">
+                                    <input type="checkbox" id="organize[{{ $r->id }}]" name="organize[{{ $r->id }}]" value="yes" class="sr-only peer"{{ ($r->organize) ? ' checked' : '' }}>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                        納入職編
+                                    </label>
+                                </td>
+                                <td class="py-2 px-6">
+                                    <input class="rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                                         type="text" name="roles[{{ $r->id }}]" value="{{ $r->name }}">
                                 </td>
                             </tr>

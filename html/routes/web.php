@@ -143,7 +143,13 @@ Route::group(['prefix' => 'seniority', 'middleware' => [ 'auth'] ], function () 
 // 職務編排
 Route::group(['prefix' => 'organize', 'middleware' => [ 'auth'] ], function () {
     Route::get('index/{year?}', 'App\Http\Controllers\OrganizeController@index')->name('organize');
-    Route::get('vacancy', 'App\Http\Controllers\OrganizeController@index')->name('organize.vacancy');
+    Route::get('vacancy', 'App\Http\Controllers\OrganizeController@vacancy')->name('organize.vacancy');
+    Route::get('vacancy/reset', 'App\Http\Controllers\OrganizeController@reset')->name('organize.reset');
+    Route::post('vacancy/stage', 'App\Http\Controllers\OrganizeController@stage')->name('organize.stage');
+    Route::post('vacancy/special', 'App\Http\Controllers\OrganizeController@special')->name('organize.special');
+    Route::post('vacancy/shortfall', 'App\Http\Controllers\OrganizeController@shortfall')->name('organize.shortfall');
+    Route::post('vacancy/release', 'App\Http\Controllers\OrganizeController@release')->name('organize.release');
+    Route::post('vacancy/reserve', 'App\Http\Controllers\OrganizeController@reserve')->name('organize.reserve');
     Route::get('setting', 'App\Http\Controllers\OrganizeController@index')->name('organize.setting');
     Route::get('arrange', 'App\Http\Controllers\OrganizeController@index')->name('organize.arrange');
     Route::get('list/vacancy/{year?}', 'App\Http\Controllers\OrganizeController@index')->name('organize.listvacancy');

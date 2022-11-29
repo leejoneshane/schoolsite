@@ -8,8 +8,20 @@
         var unit_id = this.value;
         window.location.replace('{{ route('teachers') }}' + '/unit=' + unit_id);
 ">
+    <option value=""></option>
     @foreach ($units as $u)
-    <option value="{{ $u->id }}" {{ ($current == $u->id) ? 'selected' : '' }}>{{ $u->name }}</option>
+    <option value="{{ $u->id }}"{{ ($current == $u->id) ? ' selected' : '' }}>{{ $u->name }}</option>
+    @endforeach
+</select>
+<label for="domain" class="inline p-2">隸屬領域：</label>
+<select id="domain" class="inline rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+    onchange="
+        var domain_id = this.value;
+        window.location.replace('{{ route('teachers') }}' + '/domain=' + domain_id);
+">
+    <option value=""></option>
+    @foreach ($domains as $d)
+    <option value="{{ $d->id }}"{{ ($domain == $d->id) ? ' selected' : '' }}>{{ $d->name }}</option>
     @endforeach
 </select>
 <label for="idno" class="inline p-2">身份證字號：</label>

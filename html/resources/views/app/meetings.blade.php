@@ -45,7 +45,7 @@
     </tr>
     @empty
     <tr class="text-white bg-blue-700 font-semibold text-lg">
-        <th class="p-2 w-full text-center">本日朝會尚未舉行, 請稍候片刻......</th>
+        <th class="p-2 w-full text-center">本日朝會尚未舉行，請稍候片刻......</th>
     </tr>
     @endforelse
     <form class="hidden" id="remove" action="" method="POST">

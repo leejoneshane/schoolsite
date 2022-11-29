@@ -54,12 +54,14 @@ class SchoolDataController extends Controller
         }
         if ($request->has('roles')) {
             $roles = $request->input('roles');
+            $organize = $request->input('organize');
             $role_ids = $request->input('rid');
             foreach ($roles as $id => $name) {
                 $role = Role::find($id);
                 $role->role_no = $role_ids[$id];
                 $role->name = $name;
-                $role->save();    
+                $role->organize = (isset($organize[$id]) && $organize[$id] == 'yes') ? true : false;
+                $role->save();
             }
             $message = '職稱已更新並儲存！';
         }
@@ -92,12 +94,14 @@ class SchoolDataController extends Controller
 
     public function roleInsert(Request $request)
     {
-        $input = $request->only(['role_id', 'role_unit', 'role_name']);
+        $input = $request->only(['role_id', 'role_unit', 'organize', 'role_name']);
+        $organize = ($input['organize'] == 'yes') ? true : false;
         if ($input) {
             Role::create([
                 'role_no' => $input['role_id'],
                 'unit_id' => $input['role_unit'],
                 'name' => $input['role_name'],
+                'organize' => $organize,
             ]);
         }
         $units = Unit::with('roles')->orderBy('unit_no')->get();
@@ -208,7 +212,7 @@ class SchoolDataController extends Controller
 
     public function teacherList($search = '')
     {
-        $unit_id = $idno = $realname = $email = '';
+        $domain_id = $unit_id = $idno = $realname = $email = '';
         if (!empty($search)) {
             $parameters = explode('&', $search);
             foreach ($parameters as $p) {
@@ -216,6 +220,9 @@ class SchoolDataController extends Controller
                 switch ($key) {
                     case 'unit':
                         $unit_id = $val;
+                        break;
+                    case 'domain':
+                        $domain_id = $val;
                         break;
                     case 'idno':
                         $idno = $val;
@@ -230,6 +237,7 @@ class SchoolDataController extends Controller
             }
         }
         $units = Unit::main();
+        $domains = Domain::all();
         $query = Teacher::query();
         if (!empty($idno) || !empty($realname) || !empty($email)) {
             if (!empty($idno)) {
@@ -245,6 +253,8 @@ class SchoolDataController extends Controller
             $unit = Unit::find($unit_id);
             $keys = Unit::subkeys($unit->unit_no);
             $query = Teacher::whereIn('unit_id', $keys);
+        } elseif (!empty($domain_id)) {
+            $query = Teacher::leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.domain_id', $domain_id);
         } else {
             $unit_id = $units->first()->id;
             $unit = Unit::find($unit_id);
@@ -254,7 +264,7 @@ class SchoolDataController extends Controller
         $teachers = $query->orderBy('realname')->get()->sortBy(function ($t) {
             return $t->mainunit->id;
         });
-        return view('admin.teachers', ['current' => $unit_id, 'idno' => $idno, 'realname' => $realname, 'email' => $email, 'units' => $units, 'teachers' => $teachers]);
+        return view('admin.teachers', ['current' => $unit_id, 'domain' => $domain_id, 'idno' => $idno, 'realname' => $realname, 'email' => $email, 'units' => $units, 'domains' => $domains, 'teachers' => $teachers]);
     }
 
     public function teacherEdit(Request $request, $uuid)

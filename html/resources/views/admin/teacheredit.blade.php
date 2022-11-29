@@ -47,7 +47,7 @@
     </p>
     <p class="p-2"><label for="domain" class="inline">隸屬領域：</label>
         <select id="domain" name="domain" class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-        <option>無</option>
+        <option value="">無</option>
         @foreach ($domains as $dom)
             <option value="{{ $dom->id }}"{{ $teacher->domain && $teacher->domain->id == $dom->id  ? ' selected' : '' }}>{{ $dom->name }}</option>
         @endforeach

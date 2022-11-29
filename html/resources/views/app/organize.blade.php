@@ -6,20 +6,20 @@
     職務編排
     @if ($year == $current)
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('organize.vacancy') }}">
-        <i class="fa-solid fa-file-import"></i>職缺設定
+        <i class="fa-solid fa-chair"></i>職缺設定
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('organize.setting') }}">
-        <i class="fa-solid fa-file-import"></i>流程控制
+        <i class="fa-regular fa-calendar-days"></i>流程控制
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('organize.arrange') }}">
-        <i class="fa-solid fa-file-import"></i>職務編排
+        <i class="fa-solid fa-puzzle-piece"></i>職務編排
     </a>
     @endif
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('organize.listvacancy', ['year' => $year]) }}">
-        <i class="fa-solid fa-file-export"></i>職缺一覽表
+        <i class="fa-solid fa-square-poll-horizontal"></i>職缺一覽表
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('organize.listresult', ['year' => $year]) }}">
-        <i class="fa-solid fa-file-export"></i>職編結果一覽表
+        <i class="fa-solid fa-user-check"></i>職編結果一覽表
     </a>
 </div>
 <div class="w-full">

@@ -18,17 +18,41 @@ class Role extends Model
         'role_no',
         'unit_id',
         'name',
+        'organize',
     ];
-
-    public static function filter($role_no)
-    {
-        //return Role::where('role_no', $role_no)->get();
-        return Role::select('roles.*', 'LEFT(`units.unit_no`, 3) as top')->join('units', 'units.id', '=', 'roles.unit_id')->where('role_no', $role_no)->orderBy('top')->get();
-    }
 
     public static function findByName($name)
     {
         return Role::where('name', 'like', '%'.$name.'%')->first();
+    }
+
+    public static function filter($role_no)
+    {
+        return Role::selectRaw('roles.*, LEFT(units.unit_no, 3) as top')
+            ->join('units', 'units.id', '=', 'roles.unit_id')
+            ->where('role_no', $role_no)
+            ->orderBy('top')
+            ->get();
+    }
+
+    public static function director()
+    {
+        return Role::selectRaw('roles.*, LEFT(units.unit_no, 3) as top')
+            ->join('units', 'units.id', '=', 'roles.unit_id')
+            ->where('roles.organize', true)
+            ->where('roles.role_no', 'C02')
+            ->orderBy('top')
+            ->get();
+    }
+
+    public static function organize()
+    {
+        return Role::selectRaw('roles.*, LEFT(units.unit_no, 3) as top')
+            ->join('units', 'units.id', '=', 'roles.unit_id')
+            ->where('roles.organize', true)
+            ->where('roles.role_no', '!=', 'C02')
+            ->orderBy('top')
+            ->get();
     }
 
     public function unit()

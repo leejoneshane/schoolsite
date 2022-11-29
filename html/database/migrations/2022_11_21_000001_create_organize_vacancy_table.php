@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('syear');
             $table->enum('type', ['admin', 'tutor', 'domain']);
             $table->integer('role_id')->nullable();
-            $table->string('class_id')->nullable();
+            $table->string('grade_id')->nullable();
             $table->integer('domain_id')->nullable();
             $table->boolean('special')->default(0);
             $table->string('name');

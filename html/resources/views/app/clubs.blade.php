@@ -30,7 +30,7 @@
     </p>
 </div>
 <label for="kinds">請選擇社團類別：</label>
-<select id="kinds" class="inline w-full p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
+<select id="kinds" class="inline w-48 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="
     var kid = this.value;
     window.location.replace('{{ route('clubs.admin') }}' + '/' + kid);
