@@ -1,4 +1,4 @@
-<main class="col-span-10 mb-32">
+<main class="col-span-8 mb-32">
     <div class="m-5 relative bg-white dark:bg-gray-700 text-black dark:text-gray-200">
         <div>
             @if (isset($error))

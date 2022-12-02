@@ -34,19 +34,25 @@ function current_between_date() {
         $syear = date('Y');
         $eyear = $syear + 1;
         $min = "$syear-08-01T00:00:00+08:00";
+        $mindate = "$syear-08-01";
         $max = "$eyear-01-31T00:00:00+08:00";
+        $maxdate = "$eyear-01-31";
     } elseif (date('m') < 2) {
         $eyear = date('Y');
         $syear = $eyear - 1;
         $min = "$syear-08-01T00:00:00+08:00";
+        $mindate = "$syear-08-01";
         $max = "$eyear-01-31T00:00:00+08:00";
+        $maxdate = "$eyear-01-31";
     } else {
         $syear = date('Y');
         $min = "$syear-02-01T00:00:00+08:00";
+        $mindate = "$syear-02-01";
         $max = "$syear-07-31T00:00:00+08:00";
+        $maxdate = "$syear-07-31";
     }
 
-    return (object) array('min' => $min, 'max' => $max);
+    return (object) array('min' => $min, 'max' => $max, 'mindate' => $mindate, 'maxdate' => $maxdate);
 }
 
 function between_date($syear, $seme) {
@@ -54,12 +60,16 @@ function between_date($syear, $seme) {
         $syear = $syear + 1911;
         $eyear = $syear + 1;
         $min = "$syear-08-01T00:00:00+08:00";
+        $mindate = "$syear-08-01";
         $max = "$eyear-01-31T00:00:00+08:00";
+        $maxdate = "$eyear-01-31";
     } else {
         $syear = $syear + 1912;
         $min = "$syear-02-01T00:00:00+08:00";
+        $mindate = "$syear-02-01";
         $max = "$syear-07-31T00:00:00+08:00";
+        $maxdate = "$syear-07-31";
     }
 
-    return (object) array('min' => $min, 'max' => $max);
+    return (object) array('min' => $min, 'max' => $max, 'mindate' => $mindate, 'maxdate' => $maxdate);
 }

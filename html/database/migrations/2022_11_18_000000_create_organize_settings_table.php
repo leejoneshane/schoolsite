@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('organize_settings', function (Blueprint $table) {
             $table->id();
-            $table->integer('syear');
+            $table->integer('syear')->unique();
             $table->date('survey_at');
             $table->date('first_stage');
             $table->date('pause_at');

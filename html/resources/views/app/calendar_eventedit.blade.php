@@ -56,9 +56,9 @@
     <p><div class="p-3">
         <label class="inline">起迄日期：</label>
         <input class="inline w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" name="start_date" value="{{ $event->startDate->toDateString() }}" min="{{ substr($seme->min, 0, 10) }}" max="{{ substr($seme->max, 0, 10) }}">到
+            type="date" name="start_date" value="{{ $event->startDate->toDateString() }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}">到
         <input class="inline w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" name="end_date" value="{{ $event->endDate->toDateString() }}" min="{{ substr($seme->min, 0, 10) }}" max="{{ substr($seme->max, 0, 10) }}">
+            type="date" name="end_date" value="{{ $event->endDate->toDateString() }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}">
     </div></p>
     <p><div class="p-3">
         <label for="all_day" class="inline-flex relative items-center cursor-pointer">
@@ -101,7 +101,7 @@
             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                 新增
             </button>
-        </div>    
+        </div>
     </p>
 </form>
 @endsection

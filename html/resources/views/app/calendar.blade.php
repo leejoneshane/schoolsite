@@ -22,20 +22,20 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.download') }}">
         <i class="fa-solid fa-cloud-arrow-down"></i>下載日曆
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="void()" onclick="
+    <button class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" onclick="
         navigator.clipboard.writeText('{{ $calendar->url() }}').then(
             result => alert('行事曆分享連結已經複製到剪貼簿！請在 Google 日曆左側選單選取「新增其它日曆」->「加入日曆網址」，然後貼上連結就完成了！')
         );
     ">
         <i class="fa-solid fa-cloud-arrow-up"></i>取得日曆網址
-    </a>
+    </button>
 </div>
 <form id="select-date" action="{{ route('calendar') }}" method="GET">
     <label for="current">顯示哪一天的事件:</label>
     <input class="w-36" type="date" id="current" name="current"
         value="{{ $current }}"
-        min="{{ substr($seme->min, 0, 10) }}"
-        max="{{ substr($seme->max, 0, 10) }}"
+        min="{{ $seme->mindate }}"
+        max="{{ $seme->maxdate }}"
         onchange="document.getElementById('select-date').submit();">
 </form>
 <table class="w-full text-sm text-left">

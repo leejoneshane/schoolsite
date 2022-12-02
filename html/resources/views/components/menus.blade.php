@@ -4,7 +4,7 @@
     @if ($item->link == '#')
     <li class="text-white cursor-pointer select-none relative py-2 pl-3 pr-9" id="listbox-option-0" role="option">
     @else
-    <li class="text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-green-700" id="listbox-option-0" role="option">
+    <li class="text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-white hover:bg-opacity-25" id="listbox-option-0" role="option">
     @endif
     <div>
     @if ($item->link == '#')

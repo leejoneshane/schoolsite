@@ -40,24 +40,47 @@ class OrganizeController extends Controller
         return view('app.organize', ['current' => $current, 'year' => $year, 'years' => $years, 'flow' => $flow, 'reserved' => $reserved, 'teacher' => $teacher, 'stage1' => $stage1, 'stage2' => $stage2]);
     }
 
-    public function list($year = null)
+    public function survey(Request $request)
     {
-        $user = Auth::user();
-        if ($user->user_type == 'Student') {
+        $teacher = Teacher::find(Auth::user()->id);
+        $flow = OrganizeSettings::current();
+        if ($flow->onSurvey()) {
+            $age = date('Y') - substr($teacher->birthdate, 0, 4);
+            $exprience = $request->input('exp');
+        }
+        return $this->index()->with('success', '已為您儲存職務意願表，截止日前您仍然可以修改！');
+    }
+
+    public function setting()
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $seme = current_between_date();
+            $settings = OrganizeSettings::current();
+            return view('app.organize_setting', ['seme' => $seme, 'settings' => $settings]);
+        } else {
             return view('home')->with('error', '您沒有權限使用此功能！');
         }
-        $teacher = Teacher::find($user->uuid);
-        $reserve = DB::table('organize_reserved')->where('syear', current_year())->where('uuid', $user->uuid)->first();
-        $reserved = ($reserve) ? true : false;
-        $current = current_year();
-        if (!$year) $year = $current;
-        $years = OrganizeSettings::years();
-        if (!in_array($current, $years)) $years[] = $current;
-        rsort($years);
-        $flow = OrganizeSettings::where('syear', $year)->first();
-        $stage1 = OrganizeVacancy::current_stage(1);
-        $stage2 = OrganizeVacancy::current_stage(2);
-        return view('app.organize', ['current' => $current, 'year' => $year, 'years' => $years, 'flow' => $flow, 'reserved' => $reserved, 'teacher' => $teacher, 'stage1' => $stage1, 'stage2' => $stage2]);
+    }
+
+    public function saveSettings(Request $request)
+    {
+        $survey_at = $request->input('survey_at');
+        $first_stage = $request->input('first_stage');
+        $pause_at = $request->input('pause_at');
+        $second_stage = $request->input('second_stage');
+        $close_at = $request->input('close_at');
+        OrganizeSettings::UpdateOrCreate([
+            'syear' => current_year(),
+        ],[
+            'survey_at' => $survey_at,
+            'first_stage' => $first_stage,
+            'pause_at' => $pause_at,
+            'second_stage' => $second_stage,
+            'close_at' => $close_at,
+        ]);
+        return $this->setting()->with('success', '職務編排流程設定完成！');
     }
 
     public function vacancy()
@@ -261,6 +284,26 @@ class OrganizeController extends Controller
             'uuid' => $uuid,
         ]);
         return response()->json('success');
+    }
+
+    public function listVacancy($year = null)
+    {
+        $user = Auth::user();
+        if ($user->user_type == 'Student') {
+            return view('home')->with('error', '您沒有權限使用此功能！');
+        }
+        $current = current_year();
+        if (!$year) $year = $current;
+        $years = OrganizeSettings::years();
+        if (!in_array($current, $years)) $years[] = $current;
+        rsort($years);
+        $flow = OrganizeSettings::current();
+        if ($flow && $flow->onPeriod()) {
+            $vacancys = OrganizeVacancy::all();
+            return view('app.organize_listvacancy', ['current' => $current, 'year' => $year, 'years' => $years, 'vacancys' => $vacancys]);    
+        } else {
+            return $this->index()->with('error', '職務編排意願調查尚未開始或已經結束，因此無法瀏覽職缺一覽表！');
+        }
     }
 
 }

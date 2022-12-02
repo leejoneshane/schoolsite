@@ -10,6 +10,7 @@ class OrganizeSettings extends Model
 {
 
     protected $table = 'organize_settings';
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -56,38 +57,34 @@ class OrganizeSettings extends Model
         })->toArray();
     }
 
+    public function onPeriod()
+    {
+        return Carbon::now()->between($this->survey_at, $this->close_at);
+    }
+
     public function onSurvey()
     {
-        $startDate = Carbon::createFromFormat('Y-m-d', $this->survey_at);
-        $endDate = Carbon::createFromFormat('Y-m-d', $this->first_stage);
-        return Carbon::now()->between($startDate, $endDate);
+        return Carbon::now()->between($this->survey_at, $this->first_stage);
     }
 
     public function onFirstStage()
     {
-        $startDate = Carbon::createFromFormat('Y-m-d', $this->first_stage);
-        $endDate = Carbon::createFromFormat('Y-m-d', $this->pause_at);
-        return Carbon::now()->between($startDate, $endDate);
+        return Carbon::now()->between($this->first_stage, $this->pause_at);
     }
 
     public function onPause()
     {
-        $startDate = Carbon::createFromFormat('Y-m-d', $this->pause_at);
-        $endDate = Carbon::createFromFormat('Y-m-d', $this->second_stage);
-        return Carbon::now()->between($startDate, $endDate);
+        return Carbon::now()->between($this->pause_at, $this->second_stage);
     }
 
     public function onSecondStage()
     {
-        $startDate = Carbon::createFromFormat('Y-m-d', $this->second_stage);
-        $endDate = Carbon::createFromFormat('Y-m-d', $this->close_at);
-        return Carbon::now()->between($startDate, $endDate);
+        return Carbon::now()->between($this->second_stage, $this->close_at);
     }
 
     public function onFinish()
     {
-        $endDate = Carbon::createFromFormat('Y-m-d', $this->close_at);
-        return Carbon::now() > $endDate;
+        return Carbon::now() > $this->close_at;
     }
 
 }
