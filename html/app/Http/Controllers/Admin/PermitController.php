@@ -45,7 +45,7 @@ class PermitController extends Controller
             'permission' => $perm,
             'description' => $desc,
         ]);
-        return redirect()->route('permission')->index(['success' => '權限新增完成！']);
+        return redirect()->route('permission')->with('success', '權限新增完成！');
     }
 
     public function edit($id)
