@@ -43,7 +43,7 @@ class ClubController extends Controller
             $kinds = ClubKind::orderBy('weight')->get();
             return view('app.clubkind', ['kinds' => $kinds]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -54,7 +54,7 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             return view('app.clubaddkind');
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -84,7 +84,7 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             return view('app.clubeditkind', ['kind' => ClubKind::find($kid)]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -114,7 +114,7 @@ class ClubController extends Controller
             $kinds = ClubKind::orderBy('weight')->get();
             return view('app.clubkind', ['kinds' => $kinds])->with('success', '社團類別已經移除！');
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -130,9 +130,9 @@ class ClubController extends Controller
                 $kind->weight = $w - 1;
                 $kind->save();
             }
-            return $this->kindList();
+            return redirect()->route('clubs.kinds');
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -149,9 +149,9 @@ class ClubController extends Controller
                 $kind->weight = $w + 1;
                 $kind->save();
             }
-            return $this->kindList();
+            return redirect()->route('clubs.kinds');
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -169,7 +169,7 @@ class ClubController extends Controller
             $clubs = Club::where('kind_id', $kind->id)->orderBy('startDate', 'desc')->get();
             return view('app.clubs', ['kind' => $kind, 'kinds' => $kinds, 'clubs' => $clubs]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -186,7 +186,7 @@ class ClubController extends Controller
             $kinds = ClubKind::orderBy('weight')->get();
             return view('app.clubupload', ['kind' => $kind, 'kinds' => $kinds]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -198,9 +198,9 @@ class ClubController extends Controller
             $kid = $request->input('kind');
             $importer = new ClubImport($kid);
             $importer->import($request->file('excel'));
-            return $this->clubList($kid)->with('success', '課外社團已經匯入完成！');
+            return redirect()->route('clubs.admin', ['kid' => $kid])->with('success', '課外社團已經匯入完成！');
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -213,7 +213,7 @@ class ClubController extends Controller
             $exporter = new ClubExport($kid);
             return $exporter->download("$filename.xlsx");
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -229,7 +229,7 @@ class ClubController extends Controller
             }
             return view('app.clubrepetition', ['kind' => $kid, 'students' => $students]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -242,7 +242,7 @@ class ClubController extends Controller
             $exporter = new ClubCashExport();
             return $exporter->download("$filename.xlsx");
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -256,7 +256,7 @@ class ClubController extends Controller
             $enrolls = ClubEnroll::currentByClass($class_id)->groupBy('uuid');
             return view('app.clubclassroom', ['kind_id' => $kid, 'class_id' => $class_id, 'classes' => $classes, 'enrolls' => $enrolls]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -269,7 +269,7 @@ class ClubController extends Controller
             $exporter = new ClubClassExport($class_id);
             return $exporter->download($filename);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -288,7 +288,7 @@ class ClubController extends Controller
             $units = Unit::main();
             return view('app.clubadd', ['kind' => $kid, 'kinds' => $kinds, 'unit' => $unit, 'units' => $units]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -298,7 +298,7 @@ class ClubController extends Controller
         $title = $request->input('title');
         $found = Club::where('name', $title)->first();
         if ($found) {
-            return $this->clubList($kind_id)->with('error', '該課外社團已經存在，無法再新增！');
+            return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('error', '該課外社團已經存在，無法再新增！');
         }
         $grades = $request->input('grades');
         Club::create([
@@ -323,7 +323,7 @@ class ClubController extends Controller
             'total' => $request->input('total') ?: 0,
             'maximum' => $request->input('limit') ?: 0,
         ]);
-        return $this->clubList($kind_id)->with('success', '課外社團已經新增完成！');
+        return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經新增完成！');
     }
 
     public function clubEdit($club_id)
@@ -336,7 +336,7 @@ class ClubController extends Controller
             $units = Unit::main();
             return view('app.clubedit', ['kinds' => $kinds, 'units' => $units, 'club' => $club]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -367,7 +367,7 @@ class ClubController extends Controller
             'total' => $request->input('total') ?: 0,
             'maximum' => $request->input('limit') ?: 0,
         ]);
-        return $this->clubList($kind_id)->with('success', '課外社團已經修改完成！');
+        return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經修改完成！');
     }
 
     public function clubRemove($club_id)
@@ -378,13 +378,13 @@ class ClubController extends Controller
             $club = Club::find($club_id);
             $kind_id = $club->kind_id;
             if ($club->enrolls) {
-                return $this->clubList($kind_id)->with('error', '此課外社團已經錄取學生，因此無法移除！');
+                return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('error', '此課外社團已經錄取學生，因此無法移除！');
             } else {
                 $club->delete();
-                return $this->clubList($kind_id)->with('success', '課外社團已經移除完成！');
+                return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經移除完成！');
             }
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -397,7 +397,7 @@ class ClubController extends Controller
             $enrolls = $club->year_enrolls();
             return view('app.clubmail', ['club' => $club, 'enrolls' => $enrolls]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -409,9 +409,9 @@ class ClubController extends Controller
         if (!empty($enroll_ids)) {
             $enrolls = ClubEnroll::whereIn('id', $enroll_ids)->whereNotNull('email')->get();
             Notification::sendNow($enrolls, new ClubNotification($request->input('message')));
-            return $this->clubList($kind_id)->with('success', '已安排於背景進行郵寄作業，郵件將會為您陸續寄出！');
+            return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '已安排於背景進行郵寄作業，郵件將會為您陸續寄出！');
         }
-        return $this->clubList($kind_id)->with('message', '因為沒有寄送對象，已經取消郵寄作業！');
+        return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('message', '因為沒有寄送對象，已經取消郵寄作業！');
     }
 
     public function clubPrune($club_id)
@@ -422,16 +422,16 @@ class ClubController extends Controller
             $club = Club::find($club_id);
             ClubEnroll::where('club_id', $club_id)->where('year', current_year())->delete();
             $kind_id = $club->kind_id;
-            return $this->clubList($kind_id)->with('success', '已經移除此課外社團本年度報名資訊，可以重新開始報名！');
+            return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '已經移除此課外社團本年度報名資訊，可以重新開始報名！');
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
     public function clubEnroll()
     {
         $user = Auth::user();
-        if ($user->user_type != 'Student') return view('home')->with('error', '您不是學生，因此無法報名參加學生社團！');
+        if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法報名參加學生社團！');
         $student = Student::find($user->uuid);
         $grade = substr($student->class_id, 0, 1);
         $clubs = Club::can_enroll($grade);
@@ -441,7 +441,7 @@ class ClubController extends Controller
     public function enrollAdd($club_id)
     {
         $user = Auth::user();
-        if ($user->user_type != 'Student') return view('home')->with('error', '您不是學生，因此無法報名參加學生社團！');
+        if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法報名參加學生社團！');
         $club = Club::find($club_id);
         $student = Student::find($user->uuid);
         return view('app.clubaddenroll', ['club' => $club, 'student' => $student]);
@@ -452,16 +452,16 @@ class ClubController extends Controller
         $user = Auth::user();
         $student = Student::find($user->uuid);
         if ($student->has_enroll($club_id)) {
-            return $this->clubEnroll()->with('error', '您已經報名該社團，無法再次報名！');
+            return redirect()->route('clubs.enroll')->with('error', '您已經報名該社團，無法再次報名！');
         }
         $club = Club::find($club_id);
         if ($club->kind->single) {
             $same_kind = $student->current_enrolls_for_kind($club->kind_id);
-            if ($same_kind->isNotEmpty()) return $this->clubEnroll()->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
+            if ($same_kind->isNotEmpty()) return redirect()->route('clubs.enroll')->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
         }
         $order = $club->count_enrolls() + 1;
         if ($order > $club->maximum) {
-            return $this->clubEnroll()->with('error', '很抱歉，該學生社團已經額滿！');
+            return redirect()->route('clubs.enroll')->with('error', '很抱歉，該學生社團已經額滿！');
         }
         $enrolls = Student::find($user->uuid)->year_enrolls();
         $weekdays = null;
@@ -473,7 +473,7 @@ class ClubController extends Controller
             $conflict = $en->conflict($club, $weekdays);
             if ($conflict) break;
         }
-        if ($conflict) return $this->clubEnroll()->with('error', '很抱歉，此社團與其他已報名的社團上課時段重疊，因此無法報名！');
+        if ($conflict) return redirect()->route('clubs.enroll')->with('error', '很抱歉，此社團與其他已報名的社團上課時段重疊，因此無法報名！');
         $enroll = ClubEnroll::create([
             'uuid' => $user->uuid,
             'club_id' => $club_id,
@@ -486,24 +486,24 @@ class ClubController extends Controller
         ]);
         Notification::sendNow($enroll, new ClubEnrollNotification($order));
         if ($club->kind->manual_auditin) {
-            return $this->clubEnroll()->with('success', '您已經完成報名手續，報名順位為'.$order.'因須進行資格審核，待錄取作業完成後，將另行公告通知！');
+            return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.'因須進行資格審核，待錄取作業完成後，將另行公告通知！');
         }
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
         if ($order > $club->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
-        return $this->clubEnroll()->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
+        return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
     }
 
     public function enrollEdit($enroll_id)
     {
         $user = Auth::user();
         if ($user->user_type != 'Student') {
-            return view('home')->with('error', '您不是學生，因此無法修改報名資訊！');
+            return redirect()->route('home')->with('error', '您不是學生，因此無法修改報名資訊！');
         }
         $enroll = ClubEnroll::find($enroll_id);
         if ($enroll->uuid != $user->uuid) {
-            return view('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
+            return redirect()->route('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
         }
         return view('app.clubeditenroll', ['club' => $enroll->club, 'enroll' => $enroll]);
     }
@@ -513,10 +513,10 @@ class ClubController extends Controller
         $user = Auth::user();
         $enroll = ClubEnroll::find($enroll_id);
         if (!$enroll) {
-            return $this->clubEnroll()->with('error', '您要修改的報名紀錄，已經不存在！');
+            return redirect()->route('clubs.enroll')->with('error', '您要修改的報名紀錄，已經不存在！');
         }
         if ($enroll->uuid != $user->uuid) {
-            return view('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
+            return redirect()->route('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
         }
         $enroll->update([
             'need_lunch' => $request->input('lunch') ?: 0,
@@ -526,7 +526,7 @@ class ClubController extends Controller
             'email' => $request->input('email'),
             'mobile' => $request->input('mobile'),
         ]);
-        return $this->clubEnroll()->with('success', '報名資訊已更新！');
+        return redirect()->route('clubs.enroll')->with('success', '報名資訊已更新！');
     }
 
     public function enrollRemove($enroll_id)
@@ -539,7 +539,7 @@ class ClubController extends Controller
         } else {
             $enroll = ClubEnroll::find($enroll_id);
             if ($enroll && $enroll->uuid != $user->uuid) {
-                return view('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
+                return redirect()->route('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
             }
             ClubEnroll::destroy($enroll_id);
             return back()->with('success', '已為您取消報名！');
@@ -565,7 +565,7 @@ class ClubController extends Controller
             $enrolls = $club->year_enrolls();
             return view('app.clubenrolls', ['club' => $club, 'current' => $current, 'year' => $year, 'years' => $years, 'enrolls' => $enrolls]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -576,9 +576,9 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
             $enroll->update(['accepted' => true]);
-            return $this->enrollList($enroll->club_id);
+            return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -589,9 +589,9 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
             $enroll->update(['accepted' => false]);
-            return $this->enrollList($enroll->club_id);
+            return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -609,7 +609,7 @@ class ClubController extends Controller
             }
             return view('app.clubappendenroll', ['club' => $club, 'current' => $class, 'classes' => $classes, 'students' => $students]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -618,16 +618,16 @@ class ClubController extends Controller
         $uuid = $request->input('student');
         $student = Student::find($uuid);
         if ($student->has_enroll($club_id)) {
-            return $this->enrollList($club_id)->with('error', '該生已經報名此社團，無法再次報名！');
+            return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '該生已經報名此社團，無法再次報名！');
         }
         $club = Club::find($club_id);
         if ($club->kind->single) {
             $same_kind = $student->current_enrolls_for_kind($club->kind_id);
-            if ($same_kind->isNotEmpty()) return $this->clubEnroll()->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
+            if ($same_kind->isNotEmpty()) return redirect()->route('clubs.enroll')->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
         }
         $order = $club->count_enrolls() + 1;
         if ($order > $club->maximum) {
-            return $this->enrollList($club->id)->with('error', '很抱歉，該學生社團已經額滿！');
+            return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '很抱歉，該學生社團已經額滿！');
         }
         $enrolls = Student::find($uuid)->year_enrolls();
         $weekdays = null;
@@ -639,7 +639,7 @@ class ClubController extends Controller
             $conflict = $en->conflict($club, $weekdays);
             if ($conflict) break;
         }
-        if ($conflict) return $this->enrollList($club_id)->with('error', '很抱歉，此社團與其他已報名的社團上課時段重疊，因此無法報名！');
+        if ($conflict) return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '很抱歉，此社團與其他已報名的社團上課時段重疊，因此無法報名！');
         $enroll = ClubEnroll::create([
             'uuid' => $uuid,
             'club_id' => $club_id,
@@ -652,13 +652,13 @@ class ClubController extends Controller
         ]);
         Notification::sendNow($enroll, new ClubEnrollNotification($order));
         if ($club->kind->manual_auditin) {
-            return $this->enrollList($club_id)->with('success', '已經完成報名手續，該生報名順位為'.$order.'！');
+            return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '已經完成報名手續，該生報名順位為'.$order.'！');
         }
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
         if ($order > $club->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
-        return $this->enrollList($club_id)->with('success', '已經完成報名手續，該生報名順位為'.$order.$message);
+        return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '已經完成報名手續，該生報名順位為'.$order.$message);
     }
 
     public function enrollFastAppend($club_id)
@@ -669,7 +669,7 @@ class ClubController extends Controller
             $club = Club::find($club_id);
             return view('app.clubfastappend', ['club' => $club]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -731,7 +731,7 @@ class ClubController extends Controller
                 $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
             }
         }
-        return $this->enrollList($club_id)->with('success', $message);
+        return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', $message);
     }
 
     public function enrollImport($club_id)
@@ -746,7 +746,7 @@ class ClubController extends Controller
             if ($key !== false) unset($years[$key]);
             return view('app.clubimport', ['club' => $club, 'current' => $current, 'years' => $years]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -770,7 +770,7 @@ class ClubController extends Controller
                 ]);
             }
         }
-        return $this->enrollList($club_id)->with('success', '匯入完成！');
+        return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '匯入完成！');
     }
 
     public function enrollNotify($club_id)
@@ -785,7 +785,7 @@ class ClubController extends Controller
             Notification::send($enrolled, new ClubEnrolledNotification());
             return back()->with('success', '已安排於背景進行錄取通知郵寄作業，郵件將會為您陸續寄出！');
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -798,7 +798,7 @@ class ClubController extends Controller
             $exporter = new ClubEnrolledExport($club_id);
             return $exporter->download($filename);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -811,7 +811,7 @@ class ClubController extends Controller
             $exporter = new ClubRollExport($club_id);
             return $exporter->download($filename);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -824,7 +824,7 @@ class ClubController extends Controller
             $exporter = new ClubTimeExport($club_id);
             return $exporter->download($filename);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 

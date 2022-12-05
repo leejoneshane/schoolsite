@@ -53,6 +53,7 @@ class CalendarController extends Controller
     public function calendar(Request $request)
     {
         $today = $request->input('current');
+        if (!$today) $today = $request->old('current');
         if (!$today) $today = date('Y-m-d');
         $seme = current_between_date();
         $create = false;
@@ -126,7 +127,7 @@ class CalendarController extends Controller
             $event->endTime = $request->input('end_time');
         }
         $event->save();
-        return $this->calendar($request);
+        return redirect()->route('calendar')->withInput();
     }
 
     public function eventEdit(Request $request, $event_id)
@@ -173,13 +174,13 @@ class CalendarController extends Controller
             $event->endTime = $request->input('end_time');
         }
         $event->save();
-        return $this->calendar($request);
+        return redirect()->route('calendar')->withInput();
     }
 
     public function eventRemove(Request $request, $event_id)
     {
         IcsEvent::destroy($event_id);
-        return $this->calendar($request);
+        return redirect()->route('calendar')->withInput();
     }
 
     public function seme(Request $request)

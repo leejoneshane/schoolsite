@@ -20,7 +20,7 @@ class MeetingController extends Controller
         }
         $meets = Meeting::inTime($dt);
         $user = Auth::user();
-        if ($user->user_type != 'Teacher') return view('home')->with('error', '只有教職員才能連結此頁面！');
+        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = Teacher::find($user->uuid);
         $create = ($teacher->role->role_no == 'C02' || $user->is_admin);
         return view('app.meetings', ['date' => $dt->toDateString(), 'create' => $create, 'unit' => $teacher->unit_id, 'meets' => $meets]);
@@ -29,7 +29,7 @@ class MeetingController extends Controller
     public function add()
     {
         $user = Auth::user();
-        if ($user->user_type != 'Teacher') return view('home')->with('error', '只有教職員才能連結此頁面！');
+        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = Teacher::find($user->uuid);
         return view('app.meetingadd', ['teacher' => $teacher]);
     }
@@ -37,7 +37,7 @@ class MeetingController extends Controller
     public function insert(Request $request)
     {
         $user = Auth::user();
-        if ($user->user_type != 'Teacher') return view('home')->with('error', '只有教職員才能連結此頁面！');
+        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = Teacher::find($user->uuid);
         Meeting::create([
             'unit_id' => $teacher->mainunit->id,
@@ -47,26 +47,26 @@ class MeetingController extends Controller
             'inside' => $request->boolean('open'),
             'expired_at' => ($request->input('enddate')) ?: null,
         ]);
-        return $this->index()->with('success', '業務報告已為您張貼！');
+        return redirect()->route('meeting')->with('success', '業務報告已為您張貼！');
     }
 
     public function edit($id)
     {
         $user = Auth::user();
-        if ($user->user_type != 'Teacher') return view('home')->with('error', '只有教職員才能連結此頁面！');
+        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = Teacher::find($user->uuid);
         $meet = Meeting::find($id);
-        if (!$meet) return $this->index()->with('error', '找不到業務報告，因此無法修改內容！');
+        if (!$meet) return redirect()->route('meeting')->with('error', '找不到業務報告，因此無法修改內容！');
         return view('app.meetingedit', ['teacher' => $teacher, 'meet' => $meet]);
     }
 
     public function update(Request $request, $id)
     {
         $user = Auth::user();
-        if ($user->user_type != 'Teacher') return view('home')->with('error', '只有教職員才能連結此頁面！');
+        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = Teacher::find($user->uuid);
         $meet = Meeting::find($id);
-        if (!$meet) return $this->index()->with('error', '找不到業務報告，因此無法修改內容！');
+        if (!$meet) return redirect()->route('meeting')->with('error', '找不到業務報告，因此無法修改內容！');
         if ($request->boolean('switch')) {
             $meet->update([
                 'role' => $teacher->role->name,
@@ -82,15 +82,15 @@ class MeetingController extends Controller
                 'expired_at' => ($request->input('enddate')) ?: null,
             ]);
         }
-        return $this->index()->with('success', '業務報告內容已為您更新！');
+        return redirect()->route('meeting')->with('success', '業務報告內容已為您更新！');
     }
 
     public function remove($id)
     {
         $user = Auth::user();
-        if ($user->user_type != 'Teacher') return view('home')->with('error', '只有教職員才能連結此頁面！');
+        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         Meeting::destroy($id);
-        return $this->index()->with('success', '業務報告已經移除！');
+        return redirect()->route('meeting')->with('success', '業務報告已經移除！');
     }
 
     public function storeImage(Request $request)

@@ -24,7 +24,7 @@ class OrganizeController extends Controller
     {
         $user = Auth::user();
         if ($user->user_type == 'Student') {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $teacher = Teacher::find($user->uuid);
         $reserve = DB::table('organize_reserved')->where('syear', current_year())->where('uuid', $user->uuid)->first();
@@ -120,7 +120,7 @@ class OrganizeController extends Controller
             $settings = OrganizeSettings::current();
             return view('app.organize_setting', ['seme' => $seme, 'settings' => $settings]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -140,7 +140,7 @@ class OrganizeController extends Controller
             'second_stage' => $second_stage,
             'close_at' => $close_at,
         ]);
-        return $this->setting()->with('success', '職務編排流程設定完成！');
+        return redirect()->route('organize.setting')->with('success', '職務編排流程設定完成！');
     }
 
     public function vacancy()
@@ -156,7 +156,7 @@ class OrganizeController extends Controller
             $domains = OrganizeVacancy::current_type('domain');
             return view('app.organize_vacancy', ['admins' => $admins, 'tutors' => $tutors, 'domains' => $domains]);
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -173,7 +173,7 @@ class OrganizeController extends Controller
             $this->vacancy_init();
             return redirect()->route('organize.vacancy');
         } else {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
@@ -350,7 +350,7 @@ class OrganizeController extends Controller
     {
         $user = Auth::user();
         if ($user->user_type == 'Student') {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $current = current_year();
         if (!$year) $year = $current;
@@ -362,7 +362,7 @@ class OrganizeController extends Controller
             $vacancys = OrganizeVacancy::all();
             return view('app.organize_listvacancy', ['current' => $current, 'year' => $year, 'years' => $years, 'vacancys' => $vacancys]);    
         } else {
-            return $this->index()->with('error', '職務編排意願調查尚未開始或已經結束，因此無法瀏覽職缺一覽表！');
+            return redirect()->route('organize')->with('error', '職務編排意願調查尚未開始或已經結束，因此無法瀏覽職缺一覽表！');
         }
     }
 

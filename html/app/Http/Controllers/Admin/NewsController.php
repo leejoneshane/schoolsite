@@ -44,7 +44,7 @@ class NewsController extends Controller
             'model' => $model,
             'cron' => $cronjob,
         ]);
-        return $this->index()->with('success', '電子報新增完成！');
+        return redirect()->route('news')->with('success', '電子報新增完成！');
     }
 
     public function edit($news)
@@ -77,13 +77,13 @@ class NewsController extends Controller
             'model' => $model,
             'cron' => $cronjob,
         ]);
-        return $this->index()->with('success', '電子報更新完成！');
+        return redirect()->route('news')->with('success', '電子報更新完成！');
     }
 
     public function remove($news)
     {
         News::destroy($news);
-        return $this->index()->with('success', '電子報已經刪除！');
+        return redirect()->route('news')->with('success', '電子報已經刪除！');
     }
 
     public function subscribers($news)
@@ -106,7 +106,7 @@ class NewsController extends Controller
             $sub->sendEmailVerificationNotification();
         }
         $sub->subscription($news);
-        return $this->subscribers($news)->with('success', '訂閱戶新增完成！');
+        return redirect()->route('subscribers', ['news' => $news])->with('success', '訂閱戶新增完成！');
     }
 
     public function updateSub(Request $request, $news, $id)
@@ -117,16 +117,16 @@ class NewsController extends Controller
         if ($email != $old) {
             $sub->update([ 'email' => $email]);
             $sub->sendEmailVerificationNotification();
-            return $this->subscribers($news)->with('success', '訂閱戶電子郵件更新完成！');
+            return redirect()->route('subscribers', ['news' => $news])->with('success', '訂閱戶電子郵件更新完成！');
         }
-        return $this->subscribers($news)->with('error', '訂閱戶電子郵件與原有郵件地址相同！');
+        return redirect()->route('subscribers', ['news' => $news])->with('error', '訂閱戶電子郵件與原有郵件地址相同！');
     }
 
     public function removeSub($news, $id)
     {
         $sub = Subscriber::find($id);
         $sub->cancel($news);
-        return $this->subscribers($news)->with('success', '訂閱戶：'.$sub->email.' 已取消訂閱！');
+        return redirect()->route('subscribers', ['news' => $news])->with('success', '訂閱戶：'.$sub->email.' 已取消訂閱！');
     }
 
     public function getAllModels($base_folder = '', $sub_folder = "")

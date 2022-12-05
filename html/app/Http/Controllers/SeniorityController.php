@@ -14,7 +14,7 @@ class SeniorityController extends Controller
     public function index($year = null)
     {
         if (Auth::user()->user_type == 'Student') {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $current = current_year();
         if (!$year) $year = $current;
@@ -28,7 +28,7 @@ class SeniorityController extends Controller
     public function upload($kid = null)
     {
         if (Auth::user()->user_type == 'Student') {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $current = current_year();
         return view('app.seniorityupload', ['current' => $current]);
@@ -37,17 +37,17 @@ class SeniorityController extends Controller
     public function import(Request $request)
     {
         if (Auth::user()->user_type == 'Student') {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $importer = new SeniorityImport();
         $importer->import($request->file('excel'));
-        return $this->index()->with('success', '教職員年資已經匯入完成！');
+        return redirect()->route('seniority')->with('success', '教職員年資已經匯入完成！');
     }
 
     public function export($year = null)
     {
         if (Auth::user()->user_type == 'Student') {
-            return view('home')->with('error', '您沒有權限使用此功能！');
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $current = current_year();
         if (!$year) $year = $current;

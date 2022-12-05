@@ -19,7 +19,7 @@ class MenuController extends Controller
         //
     }
 
-    public function index($menu = '', $message = null)
+    public function index($menu = '')
     {
         $routename = [];
         $routeCollection = Route::getRoutes()->getRoutesByMethod();
@@ -34,14 +34,7 @@ class MenuController extends Controller
         } else {
             $items = Menu::topmenus();
         }
-        if ($message) {
-            $key = array_key_first($message);
-            $val = $message[$key];
-            return view('admin.menus', ['current' => $menu, 'menu' => $instance, 'menus' => $menus, 'items' => $items, 'routes' => $routename])
-                ->with($key, $val);
-        } else {
-            return view('admin.menus', ['current' => $menu, 'menu' => $instance, 'menus' => $menus, 'items' => $items, 'routes' => $routename]);
-        }
+        return view('admin.menus', ['current' => $menu, 'menu' => $instance, 'menus' => $menus, 'items' => $items, 'routes' => $routename]);
     }
 
     public function update(Request $request, $menu = '')
@@ -65,7 +58,7 @@ class MenuController extends Controller
             $m->id = $new;
             $m->save();
         }
-        return $this->index($menu, ['success' => '選單項目已經更新！']);
+        return redirect()->route('menus')->with('success', '選單項目已經更新！');
     }
 
     public function add($menu = '')
@@ -101,7 +94,7 @@ class MenuController extends Controller
                 'weight' => $weight,
             ]);
         }
-        return $this->index($menu, ['success' => '選單項目新增完成！']);
+        return redirect()->route('menus')->with('success', '選單項目新增完成！');
     }
 
     public function remove($menu)
@@ -114,7 +107,7 @@ class MenuController extends Controller
             ]);
         }
         $item->delete();
-        return $this->index($parent, ['success' => '選單項目已經刪除！']);
+        return redirect()->route('menus')->with('success', '選單項目已經刪除！');
     }
 
 }

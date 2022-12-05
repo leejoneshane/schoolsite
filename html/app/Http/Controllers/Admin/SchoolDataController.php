@@ -83,7 +83,7 @@ class SchoolDataController extends Controller
                 'name' => $input['unit_name'],
             ]);
         }
-        return $this->unitList()->with('success', '行政單位已新增完成！');
+        return redirect()->route('units')->with('success', '行政單位已新增完成！');
     }
 
     public function roleAdd()
@@ -144,16 +144,10 @@ class SchoolDataController extends Controller
         return view('admin.classes', ['grades' => $grades, 'classes' => $classes, 'teachers' => $teachers])->with('success', '班級資料已更新並儲存！');
     }
 
-    public function domainList($message = null)
+    public function domainList()
     {
         $domains = Domain::all();
-        if ($message) {
-            $key = array_key_first($message);
-            $val = $message[$key];
-            return view('admin.domains', ['domains' => $domains])->with($key, $val);
-        } else {
-            return view('admin.domains', ['domains' => $domains]);
-        }
+        return view('admin.domains', ['domains' => $domains]);
     }
 
     public function domainUpdate(Request $request)
@@ -164,7 +158,7 @@ class SchoolDataController extends Controller
             $dom->name = $name;
             $dom->save();
         }
-        return $this->domainList(['success' => '領域名稱已更新並儲存！']);
+        return redirect()->route('domains')->with('success', '領域名稱已更新並儲存！');
     }
 
     public function domainAdd()
@@ -180,19 +174,13 @@ class SchoolDataController extends Controller
                 'name' => $input['domain_name'],
             ]);
         }
-        return $this->domainList(['success' => '教學領域已經新增完成！']);
+        return redirect()->route('domains')->with('success', '教學領域已經新增完成！');
     }
 
-    public function subjectList($message = null)
+    public function subjectList()
     {
         $subjects = Subject::all();
-        if ($message) {
-            $key = array_key_first($message);
-            $val = $message[$key];
-            return view('admin.subjects', ['subjects' => $subjects])->with($key, $val);
-        } else {
-            return view('admin.subjects', ['subjects' => $subjects]);
-        }
+        return view('admin.subjects', ['subjects' => $subjects]);
     }
 
     public function subjectUpdate(Request $request)
@@ -203,7 +191,7 @@ class SchoolDataController extends Controller
             $subj->name = $name;
             $subj->save();
         }
-        return $this->subjectList(['success' => '科目名稱已更新並儲存！']);
+        return redirect()->route('subjects')->with('success', '科目名稱已更新並儲存！');
     }
 
     public function teacherList($search = '')

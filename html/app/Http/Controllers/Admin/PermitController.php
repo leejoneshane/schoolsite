@@ -20,16 +20,10 @@ class PermitController extends Controller
         //
     }
 
-    public function index($message = null)
+    public function index()
     {
         $perms = Permission::orderBy('group')->get();
-        if ($message) {
-            $key = array_key_first($message);
-            $val = $message[$key];
-            return view('admin.permission', ['permission' => $perms])->with($key, $val);
-        } else {
-            return view('admin.permission', ['permission' => $perms]);
-        }
+        return view('admin.permission', ['permission' => $perms]);
     }
 
     public function add()
@@ -51,7 +45,7 @@ class PermitController extends Controller
             'permission' => $perm,
             'description' => $desc,
         ]);
-        return $this->index(['success' => '權限新增完成！']);
+        return redirect()->route('permission')->index(['success' => '權限新增完成！']);
     }
 
     public function edit($id)
@@ -74,13 +68,13 @@ class PermitController extends Controller
             'permission' => $perm,
             'description' => $desc,
         ]);
-        return $this->index(['success' => '權限更新完成！']);
+        return redirect()->route('permission')->with('success', '權限更新完成！');
     }
 
     public function remove($id)
     {
         Permission::destroy($id);
-        return $this->index(['success' => '權限已經移除！']);
+        return redirect()->route('permission')->with('success', '權限已經移除！');
     }
 
     public function grantList($id)
