@@ -58,6 +58,15 @@ class Teacher extends Model
         'domain',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'birthdate' => 'datetime:Y-m-d',
+    ];
+
     public function getMainunitAttribute()
     {
         $unit = Unit::find($this->unit_id);

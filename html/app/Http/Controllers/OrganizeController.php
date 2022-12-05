@@ -40,9 +40,9 @@ class OrganizeController extends Controller
         return view('app.organize', ['current' => $current, 'year' => $year, 'years' => $years, 'flow' => $flow, 'reserved' => $reserved, 'teacher' => $teacher, 'stage1' => $stage1, 'stage2' => $stage2]);
     }
 
-    public function survey(Request $request)
+    public function survey(Request $request, $uuid)
     {
-        $teacher = Teacher::find(Auth::user()->uuid);
+        $teacher = Teacher::find($uuid);
         $flow = OrganizeSettings::current();
         if ($flow->onSurvey()) {
             $age = ($teacher->birthdate->format('md') > date("md")) ? date("Y") - $teacher->birthdate->format('Y') - 1 : date("Y") - $teacher->birthdate->format('Y');
@@ -55,7 +55,7 @@ class OrganizeController extends Controller
                 'edu_level' => $request->input('edu_level'),
                 'edu_school' => $request->input('edu_school'),
                 'edu_division' => $request->input('edu_division'),
-                'score' => $request->input('score'),
+                'score' => $request->input('total'),
             ]);
         }
         if ($flow->onFirstStage()) {
@@ -108,7 +108,7 @@ class OrganizeController extends Controller
                 ]);
             }
         }
-        return $this->index()->with('success', '已為您儲存職務意願表，截止日前您仍然可以修改！');
+        return redirect()->route('organize')->with('success', '已為您儲存職務意願表，截止日前您仍然可以修改！');
     }
 
     public function setting()

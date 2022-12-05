@@ -104,9 +104,8 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
         } else {
             $grade = substr($row->student->class_id, 0, 1);
             $myclass = substr($row->student->class_id, -2);
-            $birthdate = Carbon::createFromDate($row->student->birthdate);
-            $m = $birthdate->format('m');
-            $d = $birthdate->format('d');
+            $m = $row->student->birthdate->format('m');
+            $d = $row->student->birthdate->format('d');
             $map = [
                 $grade,
                 $myclass,

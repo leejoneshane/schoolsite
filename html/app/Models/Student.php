@@ -14,8 +14,8 @@ class Student extends Model
 
     use SoftDeletes;
     
-	protected $table = 'students';
-	protected $primaryKey = 'uuid';
+    protected $table = 'students';
+    protected $primaryKey = 'uuid';
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -48,6 +48,15 @@ class Student extends Model
         'stdno',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'birthdate' => 'datetime:Y-m-d',
+    ];
+
     public function getStdnoAttribute()
     {
         return $this->class_id . (($this->seat < 10) ? '0'.$this->seat : $this->seat);
@@ -74,9 +83,9 @@ class Student extends Model
     }
 
     public function gmails()
-	{
+    {
         return $this->morphMany('App\Models\Gsuite', 'owner');
-	}
+    }
 
     public function grade()
     {
@@ -129,9 +138,9 @@ class Student extends Model
     }
 
     public function expired()
-	{
+    {
         $expire = new Carbon($this->updated_at);
-    	return Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'));
-	}
+        return Carbon::today() > $expire->addDays(config('services.tpedu.expired_days'));
+    }
 
 }

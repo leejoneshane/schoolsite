@@ -56,6 +56,7 @@
 </div>
     @else
 <form action="{{ route('organize.survey', ['uuid' => $teacher->uuid]) }}" method="POST">
+    @csrf
     @if ($flow->onSurvey())
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">壹、基本資料</div>
     <div class="p-2">
@@ -86,7 +87,7 @@
             <input class="w-64" id="edu_school" name="edu_school" type="text" value="{{ $teacher->survey ? $teacher->survey->edu_school : (($teacher->last_survey) ? $teacher->last_survey->edu_school : '' ) }}" required>
         </label>
         <label for="edu_division" class="text-indigo-700 dark:text-indigo-200">畢業科系：
-            <input class="w-64" id="edu_division" name="edu_division" type="text" value="{{ $teacher->survey ? $teacher->survey->division : (($teacher->last_survey) ? $teacher->last_survey->division : '' ) }}" required>
+            <input class="w-64" id="edu_division" name="edu_division" type="text" value="{{ $teacher->survey ? $teacher->survey->edu_division : (($teacher->last_survey) ? $teacher->last_survey->edu_division : '' ) }}" required>
         </label>
     </div>
     <div class="p-2 text-orange-700 dark:text-orange-200">教學經歷，請填寫您在本校任職期間擔任各項職務的確切年份及累計年資。</div>

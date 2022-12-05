@@ -29,7 +29,7 @@
     </select>
     <label class="inline p-2">出生日期</label>
     <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-        type="text" name="birth" value="{{ $student->birthdate }}">
+        type="text" name="birth" value="{{ $student->birthdate->format('Y-m-d') }}">
     <p class="p-2"><label for="myclass" class="inline">就讀班級：</label>
     <select class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
         name="myclass">
