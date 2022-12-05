@@ -36,17 +36,77 @@ class OrganizeController extends Controller
         rsort($years);
         $flow = OrganizeSettings::where('syear', $year)->first();
         $stage1 = OrganizeVacancy::current_stage(1);
-        $stage2 = OrganizeVacancy::current_stage(1);
+        $stage2 = OrganizeVacancy::current_stage(2);
         return view('app.organize', ['current' => $current, 'year' => $year, 'years' => $years, 'flow' => $flow, 'reserved' => $reserved, 'teacher' => $teacher, 'stage1' => $stage1, 'stage2' => $stage2]);
     }
 
     public function survey(Request $request)
     {
-        $teacher = Teacher::find(Auth::user()->id);
+        $teacher = Teacher::find(Auth::user()->uuid);
         $flow = OrganizeSettings::current();
         if ($flow->onSurvey()) {
-            $age = date('Y') - substr($teacher->birthdate, 0, 4);
-            $exprience = $request->input('exp');
+            $age = ($teacher->birthdate->format('md') > date("md")) ? date("Y") - $teacher->birthdate->format('Y') - 1 : date("Y") - $teacher->birthdate->format('Y');
+            OrganizeSurvey::UpdateOrCreate([
+                'syear' => current_year(),
+                'uuid' => $teacher->uuid,
+            ],[
+                'age' => $age,
+                'exprience' => $request->input('exp'),
+                'edu_level' => $request->input('edu_level'),
+                'edu_school' => $request->input('edu_school'),
+                'edu_division' => $request->input('edu_division'),
+                'score' => $request->input('score'),
+            ]);
+        }
+        if ($flow->onFirstStage()) {
+            if ($request->has('special')) {
+                OrganizeSurvey::where('syear', current_year())
+                ->where('uuid', $teacher->uuid)
+                ->update([
+                    'admin1' => $request->input('admin1'),
+                    'admin2' => $request->input('admin2'),
+                    'admin3' => $request->input('admin3'),
+                    'special' => $request->input('special'),
+                ]);
+            } else {
+                OrganizeSurvey::where('syear', current_year())
+                ->where('uuid', $teacher->uuid)
+                ->update([
+                    'admin1' => $request->input('admin1'),
+                    'admin2' => $request->input('admin2'),
+                    'admin3' => $request->input('admin3'),
+                ]);
+            }
+        }
+        if ($flow->onSecondStage()) {
+            if ($request->has('special')) {
+                OrganizeSurvey::where('syear', current_year())
+                ->where('uuid', $teacher->uuid)
+                ->update([
+                    'special' => $request->input('special'),
+                    'teach1' => $request->input('teach1'),
+                    'teach2' => $request->input('teach1'),
+                    'teach3' => $request->input('teach1'),
+                    'teach4' => $request->input('teach1'),
+                    'teach5' => $request->input('teach1'),
+                    'teach6' => $request->input('teach1'),
+                    'grade' => $request->input('grade'),
+                    'overcome' => $request->input('overcome'),
+                ]);
+            } else {
+                OrganizeSurvey::where('syear', current_year())
+                ->where('uuid', $teacher->uuid)
+                ->update([
+                    'teach1' => $request->input('teach1'),
+                    'teach2' => $request->input('teach1'),
+                    'teach3' => $request->input('teach1'),
+                    'teach4' => $request->input('teach1'),
+                    'teach5' => $request->input('teach1'),
+                    'teach6' => $request->input('teach1'),
+                    'grade' => $request->input('grade'),
+                    'overcome' => $request->input('overcome'),
+                ]);
+            }
         }
         return $this->index()->with('success', '已為您儲存職務意願表，截止日前您仍然可以修改！');
     }
@@ -239,7 +299,7 @@ class OrganizeController extends Controller
     public function special(Request $request)
     {
         $vacancy_id = $request->input('vid');
-        $special = ($request->input('special') == 'yes') ? true : false;
+        $special = $request->boolean('special');
         $vacancy = OrganizeVacancy::find($vacancy_id);
         $vacancy->special = $special;
         $vacancy->save();

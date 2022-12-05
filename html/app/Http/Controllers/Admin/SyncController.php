@@ -29,13 +29,13 @@ class SyncController extends Controller
 
     public function startSyncFromTpedu(Request $request)
     {
-        $expire = ($request->input('expire') == 'yes') ? true : false;
+        $expire = $request->boolean('expire');
         $password = ($request->input('password') == 'sync') ? true : false;
-        $unit = ($request->input('sync_units') == 'yes') ? true : false;
-        $classroom = ($request->input('sync_classes') == 'yes') ? true : false;
-        $subject = ($request->input('sync_subjects') == 'yes') ? true : false;
-        $teacher = ($request->input('sync_teachers') == 'yes') ? true : false;
-        $student = ($request->input('sync_students') == 'yes') ? true : false;
+        $unit = $request->boolean('sync_units');
+        $classroom = $request->boolean('sync_classes');
+        $subject = $request->boolean('sync_subjects');
+        $teacher = $request->boolean('sync_teachers');
+        $student = $request->boolean('sync_students');
         $target = !empty($request->input('target')) ? $request->input('target') : false;
         $remove = ($request->input('leave') == 'remove') ? true : false;
         SyncFromTpedu::dispatch($expire, $password, $unit, $classroom, $subject, $teacher, $student, $target, $remove);

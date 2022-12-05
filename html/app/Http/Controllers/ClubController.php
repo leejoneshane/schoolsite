@@ -63,9 +63,9 @@ class ClubController extends Controller
         $max = ClubKind::max('weight') + 1;
         ClubKind::create([
             'name' => $request->input('title'),
-            'single' => ($request->input('single') == 'yes') ? true : false,
-            'stop_enroll' => ($request->input('stop') == 'yes') ? true : false,
-            'manual_auditing' => ($request->input('auditing') == 'yes') ? true : false,
+            'single' => $request->boolean('single'),
+            'stop_enroll' => $request->boolean('stop'),
+            'manual_auditing' => $request->boolean('auditing'),
             'enrollDate' => $request->input('enroll'),
             'expireDate' => $request->input('expire'),
             'workTime' => $request->input('work'),
@@ -92,9 +92,9 @@ class ClubController extends Controller
     {
         ClubKind::find($kid)->update([
             'name' => $request->input('title'),
-            'single' => ($request->input('single') == 'yes') ? true : false,
-            'stop_enroll' => ($request->input('stop') == 'yes') ? true : false,
-            'manual_auditing' => ($request->input('auditing') == 'yes') ? true : false,
+            'single' => $request->boolean('single'),
+            'stop_enroll' => $request->boolean('stop'),
+            'manual_auditing' => $request->boolean('auditing'),
             'enrollDate' => $request->input('enroll'),
             'expireDate' => $request->input('expire'),
             'workTime' => $request->input('work'),

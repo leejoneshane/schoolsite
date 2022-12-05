@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('admin1')->nullable();
             $table->string('admin2')->nullable();
             $table->string('admin3')->nullable();
-            $table->string('special')->nullable();
+            $table->json('special')->nullable();
             $table->string('teach1')->nullable();
             $table->string('teach2')->nullable();
             $table->string('teach3')->nullable();

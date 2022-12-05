@@ -44,7 +44,7 @@ class MeetingController extends Controller
             'role' => $teacher->role->name,
             'reporter' => $teacher->realname,
             'words' => $request->input('words'),
-            'inside' => ($request->input('open') == 'yes') ? false : true,
+            'inside' => $request->boolean('open'),
             'expired_at' => ($request->input('enddate')) ?: null,
         ]);
         return $this->index()->with('success', '業務報告已為您張貼！');
@@ -67,18 +67,18 @@ class MeetingController extends Controller
         $teacher = Teacher::find($user->uuid);
         $meet = Meeting::find($id);
         if (!$meet) return $this->index()->with('error', '找不到業務報告，因此無法修改內容！');
-        if ($request->input('switch') == 'yes') {
+        if ($request->boolean('switch')) {
             $meet->update([
                 'role' => $teacher->role->name,
                 'reporter' => $teacher->realname,
                 'words' => $request->input('words'),
-                'inside' => ($request->input('open') == 'yes') ? false : true,
+                'inside' => $request->boolean('open'),
                 'expired_at' => ($request->input('enddate')) ?: null,
             ]);
         } else {
             $meet->update([
                 'words' => $request->input('words'),
-                'inside' => ($request->input('open') == 'yes') ? false : true,
+                'inside' => $request->boolean('open'),
                 'expired_at' => ($request->input('enddate')) ?: null,
             ]);
         }

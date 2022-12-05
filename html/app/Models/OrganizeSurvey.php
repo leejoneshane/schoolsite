@@ -39,8 +39,8 @@ class OrganizeSurvey extends Model
         'assign',
     ];
 
-    protected $appends = [
-        'specials',
+    protected $casts = [
+        'special' => 'array',
     ];
 
     public static function boot()
@@ -51,11 +51,6 @@ class OrganizeSurvey extends Model
                 $model->syear = current_year();
             }
         });
-    }
-
-    public function getSpecialsAttribute()
-    {
-        return explode(',', $this->special);
     }
 
     public static function current()

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Teacher;
+use App\Models\OrganizeSurvey;
 
 class OrganizeVacancy extends Model
 {
@@ -99,6 +100,29 @@ class OrganizeVacancy extends Model
     public function assigned()
     {
         return $this->belongsToMany('App\Models\Teacher', 'organize_assign', 'vacancy_id', 'uuid')->where('syear', $this->syear)->get();
+    }
+
+    public function count_survey($field = null)
+    {
+        if ($this->special) {
+            return OrganizeSurvey::where('syear', current_year())
+                ->whereJsonContains('special', $this->id)
+                ->count();
+        } elseif (is_array($field)) {
+            return OrganizeSurvey::where('syear', current_year())->where(function ($query) use ($field) {
+                foreach ($field as $k => $f) {
+                    if ($k == 0) {
+                        $query->where($f, $this->id);    
+                    } else {
+                        $query->orWhere($f, $this->id);
+                    }
+                }
+            })->count();
+        } elseif ($field) {
+            return OrganizeSurvey::where('syear', current_year())
+                ->where($field, $this->id)
+                ->count();
+        }
     }
 
 }

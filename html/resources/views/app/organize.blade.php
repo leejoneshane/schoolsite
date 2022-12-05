@@ -60,7 +60,7 @@
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">壹、基本資料</div>
     <div class="p-2">
         <label for="exp" class="text-indigo-700 dark:text-indigo-200">教學經歷：
-            <textarea id="exp" name="exp" cols="120" rows="5">{{ ($teacher->survey) ? $teacher->survey->exprience : (($teacher->last_survey) ? $teacher->last_survey->exprience : '' ) }}</textarea>
+            <textarea id="exp" name="exp" cols="80" rows="5">{{ ($teacher->survey) ? $teacher->survey->exprience : (($teacher->last_survey) ? $teacher->last_survey->exprience : '' ) }}</textarea>
         </label>
     </div>
     <div class="p-2">
@@ -151,33 +151,27 @@
     <div class="p-2">職缺尚未設定，請洽教務處詢問！</div>
         @else
     <div class="p-2">
-        <select id="admins" class="hidden w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-            <option></option>
-            @foreach ($stage1->general as $v)
-            <option value="{{ $v->id }}">{{ $v->name }}</option>
-            @endforeach
-        </select>
-        <label for="admin1" class="text-indigo-700 dark:text-indigo-200">第一志願：
-            <select id="admin1" name="admin1" class="inline w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="admin1" class="pr-6 text-indigo-700 dark:text-indigo-200">第一志願：
+            <select id="admin1" name="admin1" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage1->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin1 == $v) ? ' selected' : '' }}>{{ $v->name }}</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin1 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin1') }}）</option>
                 @endforeach
             </select>
         </label>
-        <label for="admin2" class="text-indigo-700 dark:text-indigo-200">第二志願：
-            <select id="admin2" name="admin2" class="inline w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="admin2" class="pr-6 text-indigo-700 dark:text-indigo-200">第二志願：
+            <select id="admin2" name="admin2" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage1->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin2 == $v) ? ' selected' : '' }}>{{ $v->name }}</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin2 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin2') }}）</option>
                 @endforeach
             </select>
         </label>
-        <label for="admin3" class="text-indigo-700 dark:text-indigo-200">第三志願：
-            <select id="admin3" name="admin3" class="inline w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="admin3" class="pr-6 text-indigo-700 dark:text-indigo-200">第三志願：
+            <select id="admin3" name="admin3" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage1->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin3 == $v) ? ' selected' : '' }}>{{ $v->name }}</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin3 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin3') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -188,28 +182,23 @@
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">肆、特殊任務意願</div>
     <div class="p-2">
             @foreach ($stage1->special as $s)
-        <label for="specials[]" class="text-indigo-700 dark:text-indigo-200">
-            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($teacher->survey && in_array($s->id, $teacher->survey->specials)) ? ' checked' : '' }}>
-            {{ $s->name }}
+        <label for="specials[]" class="pr-6 text-indigo-700 dark:text-indigo-200">
+            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($teacher->survey && in_array($s->id, $teacher->survey->special)) ? ' checked' : '' }}>
+            {{ $s->name }}（{{ $s->count_survey() }}）
         </label>
             @endforeach
     </div>
     <div class="p-2 text-orange-700 dark:text-orange-200">括弧內為已表達意願的人數。</div>
         @endif
-    <div class="flex justify-center">
-        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-            填好了，請幫我提交
-        </button>
-    </div>
     @endif
     @if ($flow->onSecondStage())
         @if ($stage2->special->isNotEmpty())
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">肆、特殊任務意願</div>
     <div class="p-2">
             @foreach ($stage2->special as $s)
-        <label for="specials[]" class="text-indigo-700 dark:text-indigo-200">
-            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($teacher->survey && in_array($s->id, $teacher->survey->specials)) ? ' checked' : '' }}>
-            {{ $s->name }}
+        <label for="specials[]" class="pr-6 text-indigo-700 dark:text-indigo-200">
+            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($teacher->survey && in_array($s->id, $teacher->survey->special)) ? ' checked' : '' }}>
+            {{ $s->name }}（{{ $s->count_survey() }}）
         </label>
             @endforeach
     </div>
@@ -220,57 +209,51 @@
     <div class="p-2">職缺尚未設定，請洽教務處詢問！</div>
         @else
     <div class="p-2">
-        <select id="teachs" class="hidden w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-            <option></option>
-            @foreach ($stage2->general as $v)
-            <option value="{{ $v->id }}">{{ $v->name }}</option>
-            @endforeach
-        </select>
-        <label for="teach1" class="text-indigo-700 dark:text-indigo-200">第一志願：
-            <select id="teach1" name="teach1" class="inline w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="teach1" class="pr-6 text-indigo-700 dark:text-indigo-200">第一志願：
+            <select id="teach1" name="teach1" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach1 == $v) ? ' selected' : '' }}>{{ $v->name }}</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach1 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach1') }}）</option>
                 @endforeach
             </select>
         </label>
-        <label for="teach2" class="text-indigo-700 dark:text-indigo-200">第二志願：
-            <select id="teach2" name="teach2" class="inline w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="teach2" class="pr-6 text-indigo-700 dark:text-indigo-200">第二志願：
+            <select id="teach2" name="teach2" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach2 == $v) ? ' selected' : '' }}>{{ $v->name }}</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach2 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach2') }}）</option>
                 @endforeach
             </select>
         </label>
-        <label for="teach3" class="text-indigo-700 dark:text-indigo-200">第三志願：
-            <select id="teach3" name="teach3" class="inline w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="teach3" class="pr-6 text-indigo-700 dark:text-indigo-200">第三志願：
+            <select id="teach3" name="teach3" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach3 == $v) ? ' selected' : '' }}>{{ $v->name }}</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach3 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach3') }}）</option>
                 @endforeach
             </select>
         </label>
-        <label for="teach4" class="text-indigo-700 dark:text-indigo-200">第四志願：
-            <select id="teach4" name="teach4" class="inline w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="teach4" class="pr-6 text-indigo-700 dark:text-indigo-200">第四志願：
+            <select id="teach4" name="teach4" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach4 == $v) ? ' selected' : '' }}>{{ $v->name }}</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach4 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach4') }}）</option>
                 @endforeach
             </select>
         </label>
-        <label for="teach5" class="text-indigo-700 dark:text-indigo-200">第五志願：
-            <select id="teach5" name="teach5" class="inline w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="teach5" class="pr-6 text-indigo-700 dark:text-indigo-200">第五志願：
+            <select id="teach5" name="teach5" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach5 == $v) ? ' selected' : '' }}>{{ $v->name }}</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach5 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach5') }}）</option>
                 @endforeach
             </select>
         </label>
-        <label for="teach6" class="text-indigo-700 dark:text-indigo-200">第六志願：
-            <select id="teach6" name="teach6" class="inline w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="teach6" class="pr-6 text-indigo-700 dark:text-indigo-200">第六志願：
+            <select id="teach6" name="teach6" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach6 == $v) ? ' selected' : '' }}>{{ $v->name }}</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach6 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach6') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -279,26 +262,26 @@
         @endif
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">陸、無法如願以償時，希望任教年段</div>
     <div class="p-2">
-        <label for="grade" class="text-indigo-700 dark:text-indigo-200">
+        <label for="grade" class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="grade" type="radio" value="1"{{ ($teacher->survey && $teacher->survey->grade == 1) ? ' checked' : '' }}>
             低年級
         </label>
-        <label for="grade" class="text-indigo-700 dark:text-indigo-200">
+        <label for="grade" class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="grade" type="radio" value="2"{{ ($teacher->survey && $teacher->survey->grade == 2) ? ' checked' : '' }}>
             中年級
         </label>
-        <label for="grade" class="text-indigo-700 dark:text-indigo-200">
+        <label for="grade" class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="grade" type="radio" value="3"{{ ($teacher->survey && $teacher->survey->grade == 3) ? ' checked' : '' }}>
             高年級
         </label>
     </div>
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">柒、超鐘點意願</div>
     <div class="p-2">
-        <label for="overcome" class="text-indigo-700 dark:text-indigo-200">
+        <label for="overcome" class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="overcome" type="radio" value="1"{{ ($teacher->survey && $teacher->survey->overcome) ? ' checked' : '' }}>
             同意
         </label>
-        <label for="overcome" class="text-indigo-700 dark:text-indigo-200">
+        <label for="overcome" class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="overcome" type="radio" value="0"{{ ($teacher->survey && !($teacher->survey->overcome)) ? ' checked' : '' }}>
             無意願
         </label>
@@ -313,117 +296,111 @@
     @endif
 <script>
 window.onload = function () {
-    document.getElementById("highgrade").addEventListener("click", () => { 
-        total = document.getElementById('default').value;
-        if (this.checked) {
-            document.getElementById('total').value = total + 2.1;
-        } else {
-            document.getElementById('total').value = total;
-        }
-    });
-    document.getElementById("admin1").addEventListener("click", "seladmin");
-    document.getElementById("admin2").addEventListener("click", "seladmin");
-    document.getElementById("teach1").addEventListener("click", "selteach");
-    document.getElementById("teach2").addEventListener("click", "selteach");
-    document.getElementById("teach3").addEventListener("click", "selteach");
-    document.getElementById("teach4").addEventListener("click", "selteach");
-    document.getElementById("teach5").addEventListener("click", "selteach");
+    var elm = document.getElementById("highgrade");
+    if (elm) {
+        elm.addEventListener("click", () => { 
+            total = document.getElementById('default').value;
+            if (this.checked) {
+                document.getElementById('total').value = total + 2.1;
+            } else {
+                document.getElementById('total').value = total;
+            }
+        });
+    }
+    var elm = document.getElementById("admin1");
+    if (elm) {
+        elm.addEventListener("change", seladmin);
+    }
+    var elm = document.getElementById("admin2");
+    if (elm) {
+        elm.addEventListener("change", seladmin);
+    }
+    var elm = document.getElementById("teach1");
+    if (elm) {
+        elm.addEventListener("change", selteach);
+    }
+    var elm = document.getElementById("teach2");
+    if (elm) {
+        elm.addEventListener("change", selteach);
+    }
+    var elm = document.getElementById("teach3");
+    if (elm) {
+        elm.addEventListener("change", selteach);
+    }
+    var elm = document.getElementById("teach4");
+    if (elm) {
+        elm.addEventListener("change", selteach);
+    }
+    var elm = document.getElementById("teach5");
+    if (elm) {
+        elm.addEventListener("change", selteach);
+    }
 };
 
 function seladmin() {
-    var admins = document.getElementById("admins").children;
     var admin1 = document.getElementById("admin1");
     var admin2 = document.getElementById("admin2");
     var admin3 = document.getElementById("admin3");
-    for(var i=0; i<admins.length; i++){
+    for(var i=0; i<admin1.children.length; i++){
         child2 = admin2.children[i];
         child3 = admin3.children[i];
-        if (child2.value == admins[i].value) {
-            if (child2.value == admin1.value) {
-                admin2.removeChild(child2);
-            }
+        if (child2.value == admin1.value) {
+            child2.setAttribute("disabled", "");
+            if (admin2.value == child2.value) { admin2.value = ""; }
         } else {
-            if (child2.value != admin1.value) {
-                var node = admins[i].cloneNode();
-                admin2.insertBrfore(node, child2);
-            }
+            child2.removeAttribute("disabled");
         }
-        if (child3.value == admins[i].value) {
-            if (child3.value == admin1.value || child3.value == admin2.value) {
-                admin3.removeChild(child3);
-            }
+        if (child3.value == admin1.value || child3.value == admin2.value) {
+            child3.setAttribute("disabled", "");
+            if (admin3.value == child3.value) { admin3.value = ""; }
         } else {
-            if (child3.value != admin1.value && child3.value != admin2.value) {
-                var node = admins[i].cloneNode();
-                admin3.insertBrfore(node, child3);
-            }
+            child3.removeAttribute("disabled");
         }
     }
 }
 
 function selteach() {
-    var teachs = document.getElementById("teachs").children;
     var teach1 = document.getElementById("teach1");
     var teach2 = document.getElementById("teach2");
     var teach3 = document.getElementById("teach3");
     var teach4 = document.getElementById("teach4");
     var teach5 = document.getElementById("teach5");
     var teach6 = document.getElementById("teach6");
-    for(var i=0; i<teachs.length; i++){
+    for(var i=0; i<teach1.children.length; i++){
         child2 = teach2.children[i];
         child3 = teach3.children[i];
         child4 = teach4.children[i];
         child5 = teach5.children[i];
         child6 = teach6.children[i];
-        if (child2.value == teachs[i].value) {
-            if (child2.value == teach1.value) {
-                teach2.removeChild(child2);
-            }
+        if (child2.value == teach1.value) {
+            child2.setAttribute("disabled", "");
+            if (teach2.value == child2.value) { teach2.value = ""; }
         } else {
-            if (child2.value != teach1.value) {
-                var node = teachs[i].cloneNode();
-                teach2.insertBrfore(node, child2);
-            }
+            child2.removeAttribute("disabled");
         }
-        if (child3.value == teachs[i].value) {
-            if (child3.value == teach1.value || child3.value == teach2.value) {
-                teach3.removeChild(child3);
-            }
+        if (child3.value == teach1.value || child3.value == teach2.value) {
+            child3.setAttribute("disabled", "");
+            if (teach3.value == child3.value) { teach3.value = ""; }
         } else {
-            if (child3.value != teach1.value && child3.value != teach2.value) {
-                var node = teachs[i].cloneNode();
-                teach3.insertBrfore(node, child3);
-            }
+            child3.removeAttribute("disabled");
         }
-        if (child4.value == teachs[i].value) {
-            if (child4.value == teach1.value || child4.value == teach2.value || child4.value == teach3.value) {
-                teach4.removeChild(child4);
-            }
+        if (child4.value == teach1.value || child4.value == teach2.value || child4.value == teach3.value) {
+            child4.setAttribute("disabled", "");
+            if (teach4.value == child4.value) { teach4.value = ""; }
         } else {
-            if (child4.value != teach1.value && child4.value != teach2.value && child4.value != teach3.value) {
-                var node = teachs[i].cloneNode();
-                teach4.insertBrfore(node, child4);
-            }
+            child4.removeAttribute("disabled");
         }
-        if (child5.value == teachs[i].value) {
-            if (child5.value == teach1.value || child5.value == teach2.value || child5.value == teach3.value || child5.value == teach4.value) {
-                teach5.removeChild(child5);
-            }
+        if (child5.value == teach1.value || child5.value == teach2.value || child5.value == teach3.value || child5.value == teach4.value) {
+            child5.setAttribute("disabled", "");
+            if (teach5.value == child5.value) { teach5.value = ""; }
         } else {
-            if (child5.value != teach1.value && child5.value != teach2.value && child5.value != teach3.value && child5.value != teach4.value) {
-                var node = teachs[i].cloneNode();
-                teach5.insertBrfore(node, child5);
-            }
+            child5.removeAttribute("disabled");
         }
-        if (child6.value == teachs[i].value) {
-            if (child6.value == teach1.value || child6.value == teach2.value || child6.value == teach3.value || child6.value == teach4.value || child6.value == teach5.value) {
-                teach6.removeChild(child6);
-            }
+        if (child6.value == teach1.value || child6.value == teach2.value || child6.value == teach3.value || child6.value == teach4.value || child6.value == teach5.value) {
+            child6.setAttribute("disabled", "");
+            if (teach6.value == child6.value) { teach6.value = ""; }
         } else {
-            if (child6.value != teach1.value && child6.value != teach2.value && child6.value != teach3.value && child6.value != teach4.value && child6.value != teach5.value) {
-                var node = teachs[i].cloneNode();
-                teach6.insertBrfore(node, child6);
-            }
+            child6.removeAttribute("disabled");
         }
     }
 }

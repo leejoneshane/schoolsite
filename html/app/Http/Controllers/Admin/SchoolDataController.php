@@ -94,16 +94,12 @@ class SchoolDataController extends Controller
 
     public function roleInsert(Request $request)
     {
-        $input = $request->only(['role_id', 'role_unit', 'organize', 'role_name']);
-        $organize = ($input['organize'] == 'yes') ? true : false;
-        if ($input) {
-            Role::create([
-                'role_no' => $input['role_id'],
-                'unit_id' => $input['role_unit'],
-                'name' => $input['role_name'],
-                'organize' => $organize,
-            ]);
-        }
+        Role::create([
+            'role_no' => $request->input('role_id'),
+            'unit_id' => $request->input('role_unit'),
+            'name' => $request->input('role_name'),
+            'organize' => $request->boolean('organize'),
+        ]);
         $units = Unit::with('roles')->orderBy('unit_no')->get();
         return view('admin.roleadd', ['units' => $units])->with('success', '職務層級已新增完成！');
     }
