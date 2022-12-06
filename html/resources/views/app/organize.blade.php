@@ -156,7 +156,7 @@
             <select id="admin1" name="admin1" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage1->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin1 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin1') }}）</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin1 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin1') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -164,7 +164,7 @@
             <select id="admin2" name="admin2" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage1->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin2 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin2') }}）</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin2 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin2') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -172,7 +172,7 @@
             <select id="admin3" name="admin3" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage1->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin3 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin3') }}）</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin3 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin3') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -184,7 +184,7 @@
     <div class="p-2">
             @foreach ($stage1->special as $s)
         <label for="specials[]" class="pr-6 text-indigo-700 dark:text-indigo-200">
-            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($teacher->survey && in_array($s->id, $teacher->survey->special)) ? ' checked' : '' }}>
+            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($teacher->survey && $teacher->survey->special && in_array($s->id, $teacher->survey->special)) ? ' checked' : '' }}>
             {{ $s->name }}（{{ $s->count_survey() }}）
         </label>
             @endforeach
@@ -198,7 +198,7 @@
     <div class="p-2">
             @foreach ($stage2->special as $s)
         <label for="specials[]" class="pr-6 text-indigo-700 dark:text-indigo-200">
-            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($teacher->survey && in_array($s->id, $teacher->survey->special)) ? ' checked' : '' }}>
+            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($teacher->survey && $teacher->survey->special && in_array($s->id, $teacher->survey->special)) ? ' checked' : '' }}>
             {{ $s->name }}（{{ $s->count_survey() }}）
         </label>
             @endforeach
@@ -214,7 +214,7 @@
             <select id="teach1" name="teach1" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach1 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach1') }}）</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach1 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach1') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -222,7 +222,7 @@
             <select id="teach2" name="teach2" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach2 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach2') }}）</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach2 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach2') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -230,7 +230,7 @@
             <select id="teach3" name="teach3" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach3 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach3') }}）</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach3 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach3') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -238,7 +238,7 @@
             <select id="teach4" name="teach4" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach4 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach4') }}）</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach4 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach4') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -246,7 +246,7 @@
             <select id="teach5" name="teach5" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach5 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach5') }}）</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach5 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach5') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -254,7 +254,7 @@
             <select id="teach6" name="teach6" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach6 == $v) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach6') }}）</option>
+                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach6 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach6') }}）</option>
                 @endforeach
             </select>
         </label>

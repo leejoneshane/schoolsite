@@ -59,37 +59,30 @@ class OrganizeController extends Controller
             ]);
         }
         if ($flow->onFirstStage()) {
-            if ($request->has('special')) {
-                OrganizeSurvey::where('syear', current_year())
-                ->where('uuid', $teacher->uuid)
-                ->update([
-                    'admin1' => $request->input('admin1'),
-                    'admin2' => $request->input('admin2'),
-                    'admin3' => $request->input('admin3'),
-                    'special' => $request->input('special'),
-                ]);
-            } else {
-                OrganizeSurvey::where('syear', current_year())
-                ->where('uuid', $teacher->uuid)
-                ->update([
-                    'admin1' => $request->input('admin1'),
-                    'admin2' => $request->input('admin2'),
-                    'admin3' => $request->input('admin3'),
-                ]);
-            }
+            $specials = null;
+            if ($request->has('specials')) $specials = array_map('intval', $request->input('specials'));
+            OrganizeSurvey::where('syear', current_year())
+            ->where('uuid', $teacher->uuid)
+            ->update([
+                'admin1' => $request->input('admin1'),
+                'admin2' => $request->input('admin2'),
+                'admin3' => $request->input('admin3'),
+                'special' => $specials,
+            ]);
         }
         if ($flow->onSecondStage()) {
-            if ($request->has('special')) {
+            if ($request->has('specials')) {
+                $specials = array_map('intval', $request->input('specials'));
                 OrganizeSurvey::where('syear', current_year())
                 ->where('uuid', $teacher->uuid)
                 ->update([
-                    'special' => $request->input('special'),
+                    'special' => $specials,
                     'teach1' => $request->input('teach1'),
-                    'teach2' => $request->input('teach1'),
-                    'teach3' => $request->input('teach1'),
-                    'teach4' => $request->input('teach1'),
-                    'teach5' => $request->input('teach1'),
-                    'teach6' => $request->input('teach1'),
+                    'teach2' => $request->input('teach2'),
+                    'teach3' => $request->input('teach3'),
+                    'teach4' => $request->input('teach4'),
+                    'teach5' => $request->input('teach5'),
+                    'teach6' => $request->input('teach6'),
                     'grade' => $request->input('grade'),
                     'overcome' => $request->input('overcome'),
                 ]);
@@ -98,11 +91,11 @@ class OrganizeController extends Controller
                 ->where('uuid', $teacher->uuid)
                 ->update([
                     'teach1' => $request->input('teach1'),
-                    'teach2' => $request->input('teach1'),
-                    'teach3' => $request->input('teach1'),
-                    'teach4' => $request->input('teach1'),
-                    'teach5' => $request->input('teach1'),
-                    'teach6' => $request->input('teach1'),
+                    'teach2' => $request->input('teach2'),
+                    'teach3' => $request->input('teach3'),
+                    'teach4' => $request->input('teach4'),
+                    'teach5' => $request->input('teach5'),
+                    'teach6' => $request->input('teach6'),
                     'grade' => $request->input('grade'),
                     'overcome' => $request->input('overcome'),
                 ]);
