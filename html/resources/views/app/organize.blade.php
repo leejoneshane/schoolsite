@@ -61,33 +61,33 @@
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">壹、基本資料</div>
     <div class="p-2">
         <label for="exp" class="text-indigo-700 dark:text-indigo-200">教學經歷：
-            <textarea id="exp" name="exp" cols="80" rows="5">{{ ($teacher->survey) ? $teacher->survey->exprience : (($teacher->last_survey) ? $teacher->last_survey->exprience : '' ) }}</textarea>
+            <textarea id="exp" name="exp" cols="80" rows="5">{{ ($survey) ? $survey->exprience : (($teacher->last_survey) ? $teacher->last_survey->exprience : '' ) }}</textarea>
         </label>
     </div>
     <div class="p-2">
         <label for="edu_level" class="text-indigo-700 dark:text-indigo-200">最高學歷：
             <select name="edu_level">
-                <option value="0"{{ ($teacher->survey && $teacher->survey->edu_level == 0) ? ' selected' : '' }}>研究所畢業(博士)</option>
-                <option value="1"{{ ($teacher->survey && $teacher->survey->edu_level == 1) ? ' selected' : '' }}>研究所畢業(碩士)</option>
-                <option value="2"{{ ($teacher->survey && $teacher->survey->edu_level == 2) ? ' selected' : '' }}>研究所四十學分班結業</option>
-                <option value="3"{{ ($teacher->survey && $teacher->survey->edu_level == 3) ? ' selected' : '' }}>師大及教育學院畢業</option>
-                <option value="4"{{ ($teacher->survey && $teacher->survey->edu_level == 4) ? ' selected' : '' }}>大學院校教育院系畢業</option>
-                <option value="5"{{ ($teacher->survey && $teacher->survey->edu_level == 5) ? ' selected' : '' }}>大學院校一般系科畢業(有教育學分)</option>
-                <option value="6"{{ ($teacher->survey && $teacher->survey->edu_level == 6) ? ' selected' : '' }}>大學院校一般系科畢業(無修習教育學分)</option>
-                <option value="7"{{ ($teacher->survey && $teacher->survey->edu_level == 7) ? ' selected' : '' }}>師範專科畢業</option>
-                <option value="8"{{ ($teacher->survey && $teacher->survey->edu_level == 8) ? ' selected' : '' }}>其他專科畢業</option>
-                <option value="9"{{ ($teacher->survey && $teacher->survey->edu_level == 9) ? ' selected' : '' }}>師範學校畢業</option>
-                <option value="10"{{ ($teacher->survey && $teacher->survey->edu_level == 10) ? ' selected' : '' }}>軍事學校畢業</option>
-                <option value="11"{{ ($teacher->survey && $teacher->survey->edu_level == 11) ? ' selected' : '' }}>其他</option>
+                <option value="0"{{ ($survey && $survey->edu_level == 0) ? ' selected' : '' }}>研究所畢業(博士)</option>
+                <option value="1"{{ ($survey && $survey->edu_level == 1) ? ' selected' : '' }}>研究所畢業(碩士)</option>
+                <option value="2"{{ ($survey && $survey->edu_level == 2) ? ' selected' : '' }}>研究所四十學分班結業</option>
+                <option value="3"{{ ($survey && $survey->edu_level == 3) ? ' selected' : '' }}>師大及教育學院畢業</option>
+                <option value="4"{{ ($survey && $survey->edu_level == 4) ? ' selected' : '' }}>大學院校教育院系畢業</option>
+                <option value="5"{{ ($survey && $survey->edu_level == 5) ? ' selected' : '' }}>大學院校一般系科畢業(有教育學分)</option>
+                <option value="6"{{ ($survey && $survey->edu_level == 6) ? ' selected' : '' }}>大學院校一般系科畢業(無修習教育學分)</option>
+                <option value="7"{{ ($survey && $survey->edu_level == 7) ? ' selected' : '' }}>師範專科畢業</option>
+                <option value="8"{{ ($survey && $survey->edu_level == 8) ? ' selected' : '' }}>其他專科畢業</option>
+                <option value="9"{{ ($survey && $survey->edu_level == 9) ? ' selected' : '' }}>師範學校畢業</option>
+                <option value="10"{{ ($survey && $survey->edu_level == 10) ? ' selected' : '' }}>軍事學校畢業</option>
+                <option value="11"{{ ($survey && $survey->edu_level == 11) ? ' selected' : '' }}>其他</option>
             </select>
         </label>
     </div>
     <div class="p-2">
         <label for="edu_school" class="text-indigo-700 dark:text-indigo-200">畢業學校：
-            <input class="w-64" id="edu_school" name="edu_school" type="text" value="{{ $teacher->survey ? $teacher->survey->edu_school : (($teacher->last_survey) ? $teacher->last_survey->edu_school : '' ) }}" required>
+            <input class="w-64" id="edu_school" name="edu_school" type="text" value="{{ $survey ? $survey->edu_school : (($teacher->last_survey) ? $teacher->last_survey->edu_school : '' ) }}" required>
         </label>
         <label for="edu_division" class="text-indigo-700 dark:text-indigo-200">畢業科系：
-            <input class="w-64" id="edu_division" name="edu_division" type="text" value="{{ $teacher->survey ? $teacher->survey->edu_division : (($teacher->last_survey) ? $teacher->last_survey->edu_division : '' ) }}" required>
+            <input class="w-64" id="edu_division" name="edu_division" type="text" value="{{ $survey ? $survey->edu_division : (($teacher->last_survey) ? $teacher->last_survey->edu_division : '' ) }}" required>
         </label>
     </div>
     <div class="p-2 text-orange-700 dark:text-orange-200">教學經歷，請填寫您在本校任職期間擔任各項職務的確切年份及累計年資。</div>
@@ -156,7 +156,7 @@
             <select id="admin1" name="admin1" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage1->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin1 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin1') }}）</option>
+                <option value="{{ $v->id }}"{{ ($survey && $survey->admin1 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin1') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -164,7 +164,7 @@
             <select id="admin2" name="admin2" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage1->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin2 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin2') }}）</option>
+                <option value="{{ $v->id }}"{{ ($survey && $survey->admin2 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin2') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -172,7 +172,7 @@
             <select id="admin3" name="admin3" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage1->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->admin3 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin3') }}）</option>
+                <option value="{{ $v->id }}"{{ ($survey && $survey->admin3 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('admin3') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -184,7 +184,7 @@
     <div class="p-2">
             @foreach ($stage1->special as $s)
         <label for="specials[]" class="pr-6 text-indigo-700 dark:text-indigo-200">
-            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($teacher->survey && $teacher->survey->special && in_array($s->id, $teacher->survey->special)) ? ' checked' : '' }}>
+            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($survey && $survey->special && in_array($s->id, $survey->special)) ? ' checked' : '' }}>
             {{ $s->name }}（{{ $s->count_survey() }}）
         </label>
             @endforeach
@@ -198,7 +198,7 @@
     <div class="p-2">
             @foreach ($stage2->special as $s)
         <label for="specials[]" class="pr-6 text-indigo-700 dark:text-indigo-200">
-            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($teacher->survey && $teacher->survey->special && in_array($s->id, $teacher->survey->special)) ? ' checked' : '' }}>
+            <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($survey && $survey->special && in_array($s->id, $survey->special)) ? ' checked' : '' }}>
             {{ $s->name }}（{{ $s->count_survey() }}）
         </label>
             @endforeach
@@ -214,7 +214,7 @@
             <select id="teach1" name="teach1" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach1 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach1') }}）</option>
+                <option value="{{ $v->id }}"{{ ($survey && $survey->teach1 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach1') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -222,7 +222,7 @@
             <select id="teach2" name="teach2" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach2 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach2') }}）</option>
+                <option value="{{ $v->id }}"{{ ($survey && $survey->teach2 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach2') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -230,7 +230,7 @@
             <select id="teach3" name="teach3" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach3 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach3') }}）</option>
+                <option value="{{ $v->id }}"{{ ($survey && $survey->teach3 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach3') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -238,7 +238,7 @@
             <select id="teach4" name="teach4" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach4 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach4') }}）</option>
+                <option value="{{ $v->id }}"{{ ($survey && $survey->teach4 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach4') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -246,7 +246,7 @@
             <select id="teach5" name="teach5" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach5 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach5') }}）</option>
+                <option value="{{ $v->id }}"{{ ($survey && $survey->teach5 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach5') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -254,7 +254,7 @@
             <select id="teach6" name="teach6" class="inline w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                 <option></option>
                 @foreach ($stage2->general as $v)
-                <option value="{{ $v->id }}"{{ ($teacher->survey && $teacher->survey->teach6 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach6') }}）</option>
+                <option value="{{ $v->id }}"{{ ($survey && $survey->teach6 == $v->id) ? ' selected' : '' }}>{{ $v->name }}（{{ $v->count_survey('teach6') }}）</option>
                 @endforeach
             </select>
         </label>
@@ -264,26 +264,26 @@
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">陸、無缺額時，希望任教年段</div>
     <div class="p-2">
         <label for="grade" class="pr-6 text-indigo-700 dark:text-indigo-200">
-            <input name="grade" type="radio" value="1"{{ ($teacher->survey && $teacher->survey->grade == 1) ? ' checked' : '' }}>
+            <input name="grade" type="radio" value="1"{{ ($survey && $survey->grade == 1) ? ' checked' : '' }}>
             低年級
         </label>
         <label for="grade" class="pr-6 text-indigo-700 dark:text-indigo-200">
-            <input name="grade" type="radio" value="2"{{ ($teacher->survey && $teacher->survey->grade == 2) ? ' checked' : '' }}>
+            <input name="grade" type="radio" value="2"{{ ($survey && $survey->grade == 2) ? ' checked' : '' }}>
             中年級
         </label>
         <label for="grade" class="pr-6 text-indigo-700 dark:text-indigo-200">
-            <input name="grade" type="radio" value="3"{{ ($teacher->survey && $teacher->survey->grade == 3) ? ' checked' : '' }}>
+            <input name="grade" type="radio" value="3"{{ ($survey && $survey->grade == 3) ? ' checked' : '' }}>
             高年級
         </label>
     </div>
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">柒、超鐘點意願</div>
     <div class="p-2">
         <label for="overcome" class="pr-6 text-indigo-700 dark:text-indigo-200">
-            <input name="overcome" type="radio" value="1"{{ ($teacher->survey && $teacher->survey->overcome) ? ' checked' : '' }}>
+            <input name="overcome" type="radio" value="1"{{ ($survey && $survey->overcome) ? ' checked' : '' }}>
             同意
         </label>
         <label for="overcome" class="pr-6 text-indigo-700 dark:text-indigo-200">
-            <input name="overcome" type="radio" value="0"{{ ($teacher->survey && !($teacher->survey->overcome)) ? ' checked' : '' }}>
+            <input name="overcome" type="radio" value="0"{{ ($survey && !($survey->overcome)) ? ' checked' : '' }}>
             無意願
         </label>
     </div>

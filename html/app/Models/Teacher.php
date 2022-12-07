@@ -198,9 +198,10 @@ class Teacher extends Model
         return $this->hasOne('App\Models\Seniority', 'uuid', 'uuid')->where('syear', current_year());
     }
 
-    public function survey()
+    public function survey($year = null)
     {
-        return $this->hasOne('App\Models\OrganizeSurvey', 'uuid', 'uuid')->where('syear', current_year());
+        if (!$year) $year = current_year();
+        return $this->hasOne('App\Models\OrganizeSurvey', 'uuid', 'uuid')->where('syear', $year)->first();
     }
 
     public function last_survey()

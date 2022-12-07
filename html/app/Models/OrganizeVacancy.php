@@ -50,20 +50,23 @@ class OrganizeVacancy extends Model
         });
     }
 
-    public static function current()
+    public static function year($year = null)
     {
-        return OrganizeVacancy::where('syear', current_year())->get();
+        if (!$year) $year = current_year();
+        return OrganizeVacancy::where('syear', $year)->get();
     }
 
-    public static function current_type($type)
+    public static function year_type($type, $year = null)
     {
-        return OrganizeVacancy::where('syear', current_year())->where('type', $type)->get();
+        if (!$year) $year = current_year();
+        return OrganizeVacancy::where('syear', $year)->where('type', $type)->get();
     }
 
-    public static function current_stage($stage)
+    public static function year_stage($stage, $year = null)
     {
-        $general = OrganizeVacancy::where('syear', current_year())->where('stage', $stage)->where('special', false)->get();
-        $special = OrganizeVacancy::where('syear', current_year())->where('stage', $stage)->where('special', true)->get();
+        if (!$year) $year = current_year();
+        $general = OrganizeVacancy::where('syear', $year)->where('stage', $stage)->where('special', false)->get();
+        $special = OrganizeVacancy::where('syear', $year)->where('stage', $stage)->where('special', true)->get();
         return (object) array('general' => $general, 'special' => $special);
     }
 
@@ -105,11 +108,11 @@ class OrganizeVacancy extends Model
     public function count_survey($field = null)
     {
         if ($this->special) {
-            return OrganizeSurvey::where('syear', current_year())
+            return OrganizeSurvey::where('syear', $this->syear)
                 ->whereJsonContains('special', $this->id)
                 ->count();
         } elseif (is_array($field)) {
-            return OrganizeSurvey::where('syear', current_year())->where(function ($query) use ($field) {
+            return OrganizeSurvey::where('syear', $this->syear)->where(function ($query) use ($field) {
                 foreach ($field as $k => $f) {
                     if ($k == 0) {
                         $query->where($f, $this->id);    
@@ -119,7 +122,7 @@ class OrganizeVacancy extends Model
                 }
             })->count();
         } elseif ($field) {
-            return OrganizeSurvey::where('syear', current_year())
+            return OrganizeSurvey::where('syear', $this->syear)
                 ->where($field, $this->id)
                 ->count();
         }

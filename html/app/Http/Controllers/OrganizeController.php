@@ -27,6 +27,7 @@ class OrganizeController extends Controller
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $teacher = $user->profile;
+        $survey = $teacher->survey($year);
         $reserve = DB::table('organize_reserved')->where('syear', current_year())->where('uuid', $user->uuid)->first();
         $reserved = ($reserve) ? true : false;
         $current = current_year();
@@ -35,9 +36,9 @@ class OrganizeController extends Controller
         if (!in_array($current, $years)) $years[] = $current;
         rsort($years);
         $flow = OrganizeSettings::where('syear', $year)->first();
-        $stage1 = OrganizeVacancy::current_stage(1);
-        $stage2 = OrganizeVacancy::current_stage(2);
-        return view('app.organize', ['current' => $current, 'year' => $year, 'years' => $years, 'flow' => $flow, 'reserved' => $reserved, 'teacher' => $teacher, 'stage1' => $stage1, 'stage2' => $stage2]);
+        $stage1 = OrganizeVacancy::year_stage(1);
+        $stage2 = OrganizeVacancy::year_stage(2);
+        return view('app.organize', ['current' => $current, 'year' => $year, 'years' => $years, 'flow' => $flow, 'reserved' => $reserved, 'teacher' => $teacher, 'survey' => $survey, 'stage1' => $stage1, 'stage2' => $stage2]);
     }
 
     public function survey(Request $request, $uuid)
@@ -141,12 +142,12 @@ class OrganizeController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
-            if (OrganizeVacancy::current()->isEmpty()) {
+            if (OrganizeVacancy::year()->isEmpty()) {
                 $this->vacancy_init();
             }
-            $admins = OrganizeVacancy::current_type('admin');
-            $tutors = OrganizeVacancy::current_type('tutor');
-            $domains = OrganizeVacancy::current_type('domain');
+            $admins = OrganizeVacancy::year_type('admin');
+            $tutors = OrganizeVacancy::year_type('tutor');
+            $domains = OrganizeVacancy::year_type('domain');
             return view('app.organize_vacancy', ['admins' => $admins, 'tutors' => $tutors, 'domains' => $domains]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -387,7 +388,7 @@ class OrganizeController extends Controller
         $years = OrganizeSettings::years();
         if (!in_array($current, $years)) $years[] = $current;
         rsort($years);
-        $vacancys = OrganizeVacancy::where('syear', $year)->get();
+        $vacancys = OrganizeVacancy::year($year);
         return view('app.organize_listvacancy', ['current' => $current, 'year' => $year, 'years' => $years, 'vacancys' => $vacancys]);
     }
 
@@ -400,9 +401,14 @@ class OrganizeController extends Controller
         $current = current_year();
         if (!$year) $year = $current;
         $teacher = $user->profile;
-        $stage1 = OrganizeVacancy::current_stage(1);
-        $stage2 = OrganizeVacancy::current_stage(2);
-        return view('app.organize_listsurvey', ['year' => $year, 'teacher' => $teacher, 'stage1' => $stage1, 'stage2' => $stage2]);
+        $survey = $teacher->survey($year);
+        $stage1 = OrganizeVacancy::year_stage(1, $year);
+        $stage2 = OrganizeVacancy::year_stage(2, $year);
+        if (!$survey) {
+            return abort(404);
+        } else {
+            return view('app.organize_listsurvey', ['year' => $year, 'teacher' => $teacher, 'survey' => $survey, 'stage1' => $stage1, 'stage2' => $stage2]);
+        }
     }
 
     public function listResult($year = null)
@@ -416,7 +422,7 @@ class OrganizeController extends Controller
         $years = OrganizeSettings::years();
         if (!in_array($current, $years)) $years[] = $current;
         rsort($years);
-        $vacancys = OrganizeVacancy::where('syear', $year)->get();
+        $vacancys = OrganizeVacancy::year($year);
         return view('app.organize_listresult', ['current' => $current, 'year' => $year, 'years' => $years, 'vacancys' => $vacancys]);
     }
 
