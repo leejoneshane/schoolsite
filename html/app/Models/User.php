@@ -70,14 +70,12 @@ class User extends Authenticatable implements MustVerifyEmail
     public function getProfileAttribute()
     {
         if ($this->user_type == 'Teacher') {
-            return Teacher::find($this->uuid)->getAttributes();
+            return Teacher::find($this->uuid);
         }
         if ($this->user_type == 'Student') {
-            return Student::find($this->uuid)->getAttributes();
+            return Student::find($this->uuid);
         }
-        return [
-            'realname' => '管理員',
-        ];
+        return (object) array('realname' => '管理員');
     }
 
     public function givePermission($permission)

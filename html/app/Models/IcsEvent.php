@@ -41,7 +41,18 @@ class IcsEvent extends Model implements Subscribeable
     ];
 
     protected $fillable = [
-        'unit_id', 'all_day', 'important', 'startDate', 'endDate', 'startTime', 'endTime', 'summary', 'description', 'location', 'calendar_id', 'event_id',
+        'unit_id',
+        'all_day',
+        'important',
+        'startDate',
+        'endDate',
+        'startTime',
+        'endTime',
+        'summary',
+        'description',
+        'location',
+        'calendar_id',
+        'event_id',
     ];
 
     protected $casts = [

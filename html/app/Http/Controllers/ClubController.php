@@ -279,7 +279,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             if ($user->user_type == 'Teacher') {
-                $teacher = Teacher::find($user->uuid);
+                $teacher = $user->profile;
                 $unit = $teacher->mainunit->id;
             } else {
                 $unit = 0;

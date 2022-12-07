@@ -151,11 +151,13 @@ Route::group(['prefix' => 'organize', 'middleware' => [ 'auth'] ], function () {
     Route::post('vacancy/shortfall', 'App\Http\Controllers\OrganizeController@shortfall')->name('organize.shortfall');
     Route::post('vacancy/release', 'App\Http\Controllers\OrganizeController@release')->name('organize.release');
     Route::post('vacancy/reserve', 'App\Http\Controllers\OrganizeController@reserve')->name('organize.reserve');
+    Route::post('vacancy/release/all', 'App\Http\Controllers\OrganizeController@releaseAll')->name('organize.releaseall');
     Route::get('setting', 'App\Http\Controllers\OrganizeController@setting');
     Route::post('setting', 'App\Http\Controllers\OrganizeController@saveSettings')->name('organize.setting');
     Route::get('arrange', 'App\Http\Controllers\OrganizeController@index')->name('organize.arrange');
     Route::get('list/vacancy/{year?}', 'App\Http\Controllers\OrganizeController@listVacancy')->name('organize.listvacancy');
-    Route::get('list/result/{year?}', 'App\Http\Controllers\OrganizeController@index')->name('organize.listresult');
+    Route::get('list/survey/{uuid}/{year?}', 'App\Http\Controllers\OrganizeController@listSurvey')->name('organize.listsurvey');
+    Route::get('list/result/{year?}', 'App\Http\Controllers\OrganizeController@listResult')->name('organize.listresult');
 });
 
 // 管理後台

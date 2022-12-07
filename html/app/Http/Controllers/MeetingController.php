@@ -21,7 +21,7 @@ class MeetingController extends Controller
         $meets = Meeting::inTime($dt);
         $user = Auth::user();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
-        $teacher = Teacher::find($user->uuid);
+        $teacher = $user->profile;
         $create = ($teacher->role->role_no == 'C02' || $user->is_admin);
         return view('app.meetings', ['date' => $dt->toDateString(), 'create' => $create, 'unit' => $teacher->unit_id, 'meets' => $meets]);
     }
@@ -30,7 +30,7 @@ class MeetingController extends Controller
     {
         $user = Auth::user();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
-        $teacher = Teacher::find($user->uuid);
+        $teacher = $user->profile;
         return view('app.meetingadd', ['teacher' => $teacher]);
     }
 
@@ -38,7 +38,7 @@ class MeetingController extends Controller
     {
         $user = Auth::user();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
-        $teacher = Teacher::find($user->uuid);
+        $teacher = $user->profile;
         Meeting::create([
             'unit_id' => $teacher->mainunit->id,
             'role' => $teacher->role->name,
@@ -54,7 +54,7 @@ class MeetingController extends Controller
     {
         $user = Auth::user();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
-        $teacher = Teacher::find($user->uuid);
+        $teacher = $user->profile;
         $meet = Meeting::find($id);
         if (!$meet) return redirect()->route('meeting')->with('error', '找不到業務報告，因此無法修改內容！');
         return view('app.meetingedit', ['teacher' => $teacher, 'meet' => $meet]);
@@ -64,7 +64,7 @@ class MeetingController extends Controller
     {
         $user = Auth::user();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
-        $teacher = Teacher::find($user->uuid);
+        $teacher = $user->profile;
         $meet = Meeting::find($id);
         if (!$meet) return redirect()->route('meeting')->with('error', '找不到業務報告，因此無法修改內容！');
         if ($request->boolean('switch')) {

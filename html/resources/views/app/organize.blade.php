@@ -261,7 +261,7 @@
     </div>
     <div class="p-2 text-orange-700 dark:text-orange-200">請老師選擇級任3個意願、科任3個意願，依志願序選填，括弧內為已表達意願的人數。</div>
         @endif
-    <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">陸、無法如願以償時，希望任教年段</div>
+    <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">陸、無缺額時，希望任教年段</div>
     <div class="p-2">
         <label for="grade" class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="grade" type="radio" value="1"{{ ($teacher->survey && $teacher->survey->grade == 1) ? ' checked' : '' }}>

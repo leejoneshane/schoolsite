@@ -23,10 +23,10 @@ class OrganizeController extends Controller
     public function index($year = null)
     {
         $user = Auth::user();
-        if ($user->user_type == 'Student') {
+        if ($user->user_type != 'Teacher') {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
-        $teacher = Teacher::find($user->uuid);
+        $teacher = $user->profile;
         $reserve = DB::table('organize_reserved')->where('syear', current_year())->where('uuid', $user->uuid)->first();
         $reserved = ($reserve) ? true : false;
         $current = current_year();
@@ -226,12 +226,22 @@ class OrganizeController extends Controller
                 }
             }
         }
-        $grades = Grade::all();
+        $grades = Grade::whereIn('id', [1, 3, 5])->get();
         foreach ($grades as $a) {
-            $v = OrganizeVacancy::create([
+            $b = Grade::find($a->id + 1);
+            $v1 = OrganizeVacancy::create([
                 'type' => 'tutor',
                 'grade_id' => $a->id,
                 'name' => $a->name,
+                'stage' => 2,
+                'shortfall' => $a->classrooms->count(),
+                'filled' => 0,
+                'assigned' => 0,
+            ]);
+            $v2 = OrganizeVacancy::create([
+                'type' => 'tutor',
+                'grade_id' => $b->id,
+                'name' => $b->name,
                 'stage' => 2,
                 'shortfall' => $a->classrooms->count(),
                 'filled' => $a->classrooms->count(),
@@ -242,12 +252,20 @@ class OrganizeController extends Controller
                 DB::table('organize_original')->insert([
                     'syear' => current_year(),
                     'uuid' => $t->uuid,
-                    'vacancy_id' => $v->id,
+                    'vacancy_id' => $v2->id,
                 ]);
                 DB::table('organize_reserved')->insert([
                     'syear' => current_year(),
                     'uuid' => $t->uuid,
-                    'vacancy_id' => $v->id,
+                    'vacancy_id' => $v2->id,
+                ]);
+            }
+            foreach ($b->classrooms as $c) {
+                $t = $c->tutors->first();
+                DB::table('organize_original')->insert([
+                    'syear' => current_year(),
+                    'uuid' => $t->uuid,
+                    'vacancy_id' => $v1->id,
                 ]);
             }
         }
@@ -324,6 +342,25 @@ class OrganizeController extends Controller
         return response()->json('success');
     }
 
+    public function releaseAll(Request $request)
+    {
+        $vacancy_id = $request->input('vid');
+        $records = DB::table('organize_reserved')
+            ->where('syear', current_year())
+            ->where('vacancy_id', $vacancy_id)
+            ->count();
+        if ($records > 0) {
+            $vacancy = OrganizeVacancy::find($vacancy_id);
+            $vacancy->filled -= $records;
+            $vacancy->save();
+            DB::table('organize_reserved')
+                ->where('syear', current_year())
+                ->where('vacancy_id', $vacancy_id)
+                ->delete();    
+        }
+        return response()->json('success');
+    }
+
     public function reserve(Request $request)
     {
         $vacancy_id = $request->input('vid');
@@ -350,13 +387,37 @@ class OrganizeController extends Controller
         $years = OrganizeSettings::years();
         if (!in_array($current, $years)) $years[] = $current;
         rsort($years);
-        $flow = OrganizeSettings::current();
-        if ($flow && $flow->onPeriod()) {
-            $vacancys = OrganizeVacancy::all();
-            return view('app.organize_listvacancy', ['current' => $current, 'year' => $year, 'years' => $years, 'vacancys' => $vacancys]);    
-        } else {
-            return redirect()->route('organize')->with('error', '職務編排意願調查尚未開始或已經結束，因此無法瀏覽職缺一覽表！');
+        $vacancys = OrganizeVacancy::where('syear', $year)->get();
+        return view('app.organize_listvacancy', ['current' => $current, 'year' => $year, 'years' => $years, 'vacancys' => $vacancys]);
+    }
+
+    public function listSurvey($uuid, $year = null)
+    {
+        $user = Auth::user();
+        if ($user->user_type == 'Student') {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
+        $current = current_year();
+        if (!$year) $year = $current;
+        $teacher = $user->profile;
+        $stage1 = OrganizeVacancy::current_stage(1);
+        $stage2 = OrganizeVacancy::current_stage(2);
+        return view('app.organize_listsurvey', ['year' => $year, 'teacher' => $teacher, 'stage1' => $stage1, 'stage2' => $stage2]);
+    }
+
+    public function listResult($year = null)
+    {
+        $user = Auth::user();
+        if ($user->user_type == 'Student') {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+        $current = current_year();
+        if (!$year) $year = $current;
+        $years = OrganizeSettings::years();
+        if (!in_array($current, $years)) $years[] = $current;
+        rsort($years);
+        $vacancys = OrganizeVacancy::where('syear', $year)->get();
+        return view('app.organize_listresult', ['current' => $current, 'year' => $year, 'years' => $years, 'vacancys' => $vacancys]);
     }
 
 }

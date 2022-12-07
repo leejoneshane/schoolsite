@@ -31,13 +31,13 @@
         <th scope="col" class="w-32 p-2">
             職務
         </th>
-        <th scope="col" class="w-24 p-2">
+        <th scope="col" class="w-12 p-2">
             選填階段
         </th>
-        <th scope="col" class="w-24 p-2">
+        <th scope="col" class="w-12 p-2">
             特殊任務
         </th>
-        <th scope="col" class="w-24 p-2">
+        <th scope="col" class="w-12 p-2">
             員額編制
         </th>
         <th scope="col" class="p-2">
@@ -49,11 +49,9 @@
         <td class="p-2">
             {{ $v->name }}
         </td>
-        <td class="p-2">  
-            <select name="stage{{ $v->id }}" class="inline rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-                <option value="1"{{ ($v->stage == 1) ? ' selected' : '' }}>一</option>
-                <option value="2"{{ ($v->stage == 2) ? ' selected' : '' }}>二</option>
-            </select>
+        <td class="p-2">
+            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                type="text" name="stage{{ $v->id }}" value="{{ $v->stage }}" required>
         </td>
         <td class="p-2">
             <label for="special{{ $v->id }}" class="inline-flex relative items-center cursor-pointer">
@@ -77,10 +75,10 @@
                 保留
             </button>
             @endif
-            @if ($loop->iteration % 8 == 0)
-            <br>
-            @endif
             @endforeach
+            @if ($v->original()->count() > 1)
+            <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+            @endif
         </td>
     </tr>
     @endforeach
@@ -91,17 +89,17 @@
         <th scope="col" class="w-32 p-2">
             年級
         </th>
-        <th scope="col" class="w-24 p-2">
+        <th scope="col" class="w-12 p-2">
             選填階段
         </th>
-        <th scope="col" class="w-24 p-2">
+        <th scope="col" class="w-12 p-2">
             特殊任務
         </th>
-        <th scope="col" class="w-24 p-2">
+        <th scope="col" class="w-12 p-2">
             員額編制
         </th>
         <th scope="col" class="p-2">
-            任職人員
+            任職人員（系統已自動進行原班升級並將一、三、五年級導師開缺）
         </th>
     </tr>
     @foreach ($tutors as $v)
@@ -110,10 +108,8 @@
             {{ $v->name }}
         </td>
         <td class="p-2">
-            <select name="stage{{ $v->id }}" class="inline rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-                <option value="1"{{ ($v->stage == 1) ? ' selected' : '' }}>一</option>
-                <option value="2"{{ ($v->stage == 2) ? ' selected' : '' }}>二</option>
-            </select>
+            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                type="text" name="stage{{ $v->id }}" value="{{ $v->stage }}" required>
         </td>
         <td class="p-2">
             <label for="special{{ $v->id }}" class="inline-flex relative items-center cursor-pointer">
@@ -137,10 +133,10 @@
                 保留
             </button>
             @endif
-            @if ($loop->iteration % 8 == 0)
-            <br>
-            @endif
             @endforeach
+            @if ($v->original()->count() > 1)
+            <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+            @endif
         </td>
     </tr>
     @endforeach
@@ -151,13 +147,13 @@
         <th scope="col" class="w-32 p-2">
             領域
         </th>
-        <th scope="col" class="w-24 p-2">
+        <th scope="col" class="w-12 p-2">
             選填階段
         </th>
-        <th scope="col" class="w-24 p-2">
+        <th scope="col" class="w-12 p-2">
             特殊任務
         </th>
-        <th scope="col" class="w-24 p-2">
+        <th scope="col" class="w-12 p-2">
             員額編制
         </th>
         <th scope="col" class="p-2">
@@ -170,10 +166,8 @@
             {{ $v->name }}
         </td>
         <td class="p-2">
-            <select name="stage{{ $v->id }}" class="inline rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-                <option value="1"{{ ($v->stage == 1) ? ' selected' : '' }}>一</option>
-                <option value="2"{{ ($v->stage == 2) ? ' selected' : '' }}>二</option>
-            </select>
+            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                type="text" name="stage{{ $v->id }}" value="{{ $v->stage }}" required>
         </td>
         <td class="p-2">
             <label for="special{{ $v->id }}" class="inline-flex relative items-center cursor-pointer">
@@ -197,10 +191,10 @@
                 保留
             </button>
             @endif
-            @if ($loop->iteration % 8 == 0)
-            <br>
-            @endif
             @endforeach
+            @if ($v->original()->count() > 1)
+            <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+            @endif
         </td>
     </tr>
     @endforeach
@@ -222,6 +216,10 @@
         var elm = document.querySelectorAll("button");
         for (var i = 0; i < elm.length; i++) {
             elm[i].addEventListener("click", swap);
+        }
+        var elm = document.querySelectorAll("input[type=button]");
+        for (var i = 0; i < elm.length; i++) {
+            elm[i].addEventListener("click", all);
         }
     };
 
@@ -298,6 +296,22 @@
                 }
             });
         }
+    }
+    function all(event) {
+        var myvid = event.target.id.substr(3);
+        var elm = document.querySelectorAll("button[name='swap" + myvid + "']");
+        for (var i = 0; i < elm.length; i++) {
+            elm[i].value = 'reserve';
+            elm[i].innerText = '保留';
+        }
+        window.axios.post('{{ route('organize.releaseall') }}', {
+            vid: myvid,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        });
     }
 </script>
 @endsection
