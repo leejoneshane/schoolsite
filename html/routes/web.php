@@ -53,17 +53,19 @@ Route::get('news/{news}/delete', 'App\Http\Controllers\SubscriberController@dele
 Route::get('news/{id}/verify/{hash}', 'App\Http\Controllers\SubscriberController@verify')->name('subscriber.verify');
 
 // 行事曆
-Route::get('calendar', 'App\Http\Controllers\CalendarController@calendar')->name('calendar');
-Route::get('calendar/event/add', 'App\Http\Controllers\CalendarController@eventAdd')->middleware('auth');
-Route::post('calendar/event/add', 'App\Http\Controllers\CalendarController@eventInsert')->middleware('auth')->name('calendar.addEvent');
-Route::get('calendar/event/edit/{event}', 'App\Http\Controllers\CalendarController@eventEdit')->middleware('auth');
-Route::post('calendar/event/edit/{event}', 'App\Http\Controllers\CalendarController@eventUpdate')->middleware('auth')->name('calendar.editEvent');
-Route::post('calendar/event/remove/{event}', 'App\Http\Controllers\CalendarController@eventRemove')->middleware('auth')->name('calendar.removeEvent');
-Route::get('calendar/seme', 'App\Http\Controllers\CalendarController@seme')->name('calendar.seme');
-Route::get('calendar/training', 'App\Http\Controllers\CalendarController@training')->name('calendar.training');
-Route::get('calendar/student', 'App\Http\Controllers\CalendarController@student')->name('calendar.student');
-Route::get('calendar/download', 'App\Http\Controllers\CalendarController@student')->name('calendar.download');
-Route::get('calendar/import', 'App\Http\Controllers\CalendarController@student')->name('calendar.import');
+Route::group(['prefix' => 'calendar'], function () {
+    Route::get('/', 'App\Http\Controllers\CalendarController@calendar')->name('calendar');
+    Route::get('event/add', 'App\Http\Controllers\CalendarController@eventAdd')->middleware('auth');
+    Route::post('event/add', 'App\Http\Controllers\CalendarController@eventInsert')->middleware('auth')->name('calendar.addEvent');
+    Route::get('event/edit/{event}', 'App\Http\Controllers\CalendarController@eventEdit')->middleware('auth');
+    Route::post('event/edit/{event}', 'App\Http\Controllers\CalendarController@eventUpdate')->middleware('auth')->name('calendar.editEvent');
+    Route::post('event/remove/{event}', 'App\Http\Controllers\CalendarController@eventRemove')->middleware('auth')->name('calendar.removeEvent');
+    Route::get('seme', 'App\Http\Controllers\CalendarController@seme')->name('calendar.seme');
+    Route::get('training', 'App\Http\Controllers\CalendarController@training')->name('calendar.training');
+    Route::get('student', 'App\Http\Controllers\CalendarController@student')->name('calendar.student');
+    Route::get('download', 'App\Http\Controllers\CalendarController@student')->name('calendar.download');
+    Route::get('import', 'App\Http\Controllers\CalendarController@student')->name('calendar.import');
+});
 
 // 即時推播
 Route::get('messager/list/online', 'App\Http\Controllers\MessagerController@list')->middleware('auth')->name('messager.list');

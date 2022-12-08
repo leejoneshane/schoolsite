@@ -1,4 +1,6 @@
-<aside class="bg-teal-500 shadow-lg col-span-1">
-    <x-menus id="main" display="show"/>
-    <div class="mb-32"></div>
+<aside class="w-64 h-screen bg-teal-500" aria-label="Sidebar">
+    <div class="overflow-y-auto py-4 px-3">
+        <x-menus id="main" />
+        <div class="mb-32"></div>
+    </div>
 </aside>

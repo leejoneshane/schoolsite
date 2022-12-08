@@ -1,41 +1,39 @@
-@if ($items->count() > 0)
-<ul id="mc_{{ $menu->id }}" class="{{ $display }} z-10 mt-1 w-full h-auto rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm" tabindex="-1" role="listbox" aria-labelledby="listbox-label" aria-activedescendant="listbox-option-3">
-  @foreach ($items as $item)
-    @if ($item->link == '#')
-    <li class="text-white cursor-pointer select-none relative py-2 pl-3 pr-9" id="listbox-option-0" role="option">
-    @else
-    <li class="text-white cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-white hover:bg-opacity-25" id="listbox-option-0" role="option">
-    @endif
-    <div>
-    @if ($item->link == '#')
-      <span class="font-normal ml-3 block truncate" onclick="
-        element = document.getElementById('mc_{{ $item->id }}');
-        element.classList.toggle('hidden');
-        if (element.classList.contains('hidden')) {
-          var icon = document.getElementById('{{ $item->id }}_up');
-          icon.classList.remove('hidden');
-          var icon = document.getElementById('{{ $item->id }}_down');
-          icon.classList.add('hidden');
-        } else {
-          var icon = document.getElementById('{{ $item->id }}_up');
-          icon.classList.add('hidden');
-          var icon = document.getElementById('{{ $item->id }}_down');
-          icon.classList.remove('hidden');
+@if ($menu->childs->count() > 0)
+<ul class="space-y-2">
+    @foreach ($menu->childs->sortBy('weight') as $item)
+    <li>
+        @if ($item->link == '#')
+        <button type="button" class="flex items-center p-2 w-full text-base font-normal text-teal-200 rounded-lg transition duration-75 group hover:bg-white hover:bg-opacity-25" aria-controls="mc_{{ $item->id }}" data-collapse-toggle="mc_{{ $item->id }}">
+            <span class="flex-1 ml-3 text-left whitespace-nowrap" sidebar-toggle-item>{{ $item->caption }}</span>
+            <i sidebar-toggle-item class="fa-solid fa-angle-down"></i>
+        </button>
+        @php
+        $prefix = '';
+        if ($menu->id == 'admin') $prefix = 'admin/';
+        $subitems = $item->childs->sortBy('weight');
+        $show = false;
+        if (Request::is($prefix.$item->id.'/*')) $show = true;
+        foreach ($subitems as $subitem) {
+            if (Request::is($prefix.$subitem->id.'*')) $show = true;
         }
-      ">{{ $item->caption }}
-      <i id="{{ $item->id }}_up" class="pl-2 fa-solid fa-angle-up"></i>
-      <i id="{{ $item->id }}_down" class="hidden pl-2 fa-solid fa-angle-down"></i>
-      </span>
-      @if (Request::is($url.'/'.$item->id.'/*'))
-        <x-menus id="{{ $url }}/{{ $item->id }}" display="show"/>
-      @else
-        <x-menus id="{{ $url }}/{{ $item->id }}" display="hidden"/>
-      @endif
-    @else
-      <a class="font-normal ml-3 block truncate hover:font-semibold" href="{{ $item->link }}">{{ $item->caption }}</a>
-    @endif
-    </div>
-  </li>
-  @endforeach
+        @endphp
+        <ul id="mc_{{ $item->id }}" class="py-2 space-y-2{{ ($show) ? '' : ' hidden' }}">
+        @foreach ($subitems as $subitem)
+            <li>
+                <a class="flex items-center p-2 text-base font-normal text-teal-200 rounded-lg hover:bg-white hover:bg-opacity-25"
+                    href="{{ $subitem->link }}">
+                    <span class="ml-3">{{ $subitem->caption }}</span>
+                </a>
+            </li>
+        @endforeach
+        </ul>
+        @else
+        <a class="flex items-center p-2 text-base font-normal text-teal-200 rounded-lg hover:bg-white hover:bg-opacity-25"
+            href="{{ $item->link }}">
+            <span class="ml-3">{{ $item->caption }}</span>
+        </a>
+        @endif
+    </li>
+    @endforeach
 </ul>
 @endif

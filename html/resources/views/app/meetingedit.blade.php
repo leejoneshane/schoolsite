@@ -9,7 +9,7 @@
     </a>
 </div>
 <link rel="stylesheet" type="text/css" href="/css/ckeditor.css">
-<script src="/build/ckeditor.js"></script>
+<script src="/js/ckeditor.js"></script>
 <div class="p-2 w-full text-white bg-blue-700 font-semibold text-lg">
     {{ $meet->role . $meet->reporter }}：{{ date('Y-m-d') . $meet->unit->name }}業務報告
 </div>

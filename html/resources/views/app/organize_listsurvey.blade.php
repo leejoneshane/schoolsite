@@ -6,11 +6,12 @@
 <body class="h-screen">
 <div class="text-slate-500 text-gray-500 text-zinc-500 text-neutral-500 text-stone-500 text-red-500 text-orange-500 text-amber-500 text-yellow-500 text-lime-500 text-green-500 text-emerald-500 text-teal-500 text-cyan-500 text-sky-500 text-blue-500 text-indigo-500 text-violet-500 text-purple-500 text-fuchsia-500 text-pink-500 text-rose-500"></div>
 <div class="text-2xl font-bold leading-normal pb-5">
-    {{ $teacher->realname }}意願調查表
+    {{ $teacher->realname . $year }}學年度意願調查表
     <button class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600">
         <i class="fa-solid fa-xmark"></i>關閉視窗
     </button>
 </div>
+@if ($survey)
 <div class="p-2">
     <span class="text-indigo-700 dark:text-indigo-200">年齡：</span>
     {{ $survey->age }}
@@ -140,5 +141,6 @@
     無意願
     @endif
 </div>
+@endif
 </body>
 </html>
