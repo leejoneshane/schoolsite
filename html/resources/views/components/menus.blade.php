@@ -3,7 +3,7 @@
     @foreach ($menu->childs->sortBy('weight') as $item)
     <li>
         @if ($item->link == '#')
-        <button type="button" class="flex items-center p-2 w-full text-base font-normal text-teal-200 rounded-lg transition duration-75 group hover:bg-white hover:bg-opacity-25" aria-controls="mc_{{ $item->id }}" data-collapse-toggle="mc_{{ $item->id }}">
+        <button type="button" class="flex items-center p-2 w-full text-base font-semibold text-teal-200 rounded-lg transition duration-75 group hover:bg-white hover:bg-opacity-25" aria-controls="mc_{{ $item->id }}" data-collapse-toggle="mc_{{ $item->id }}">
             <span class="flex-1 ml-3 text-left whitespace-nowrap" sidebar-toggle-item>{{ $item->caption }}</span>
             <i sidebar-toggle-item class="fa-solid fa-angle-down"></i>
         </button>
