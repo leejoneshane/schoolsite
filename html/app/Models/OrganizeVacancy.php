@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use App\Models\Teacher;
 use App\Models\OrganizeSurvey;
 
@@ -70,6 +71,15 @@ class OrganizeVacancy extends Model
         return (object) array('general' => $general, 'special' => $special);
     }
 
+    public static function completeness()
+    {
+        $shortfall = OrganizeVacancy::where('syear', current_year())->sum('shortfall');
+        $reserved = DB::table('organize_reserved')->where('syear', current_year())->count();
+        $assigned = DB::table('organize_assign')->where('syear', current_year())->count();
+        $completeness = intval($assigned / ($shortfall - $reserved));
+        return (object) ['shortfall' => $shortfall, 'reserved' => $reserved, 'assigned' => $assigned, 'completeness' => $completeness];
+    }
+
     public function role()
     {
         return $this->belongsTo('App\Models\Role');
@@ -93,11 +103,6 @@ class OrganizeVacancy extends Model
     public function reserved()
     {
         return $this->belongsToMany('App\Models\Teacher', 'organize_reserved', 'vacancy_id', 'uuid')->where('syear', $this->syear)->get();
-    }
-
-    public function swaping()
-    {
-        return $this->belongsToMany('App\Models\Teacher', 'organize_swap', 'vacancy_id', 'uuid')->where('syear', $this->syear)->get();
     }
 
     public function assigned()

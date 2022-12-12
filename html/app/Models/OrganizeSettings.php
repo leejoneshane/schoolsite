@@ -57,6 +57,11 @@ class OrganizeSettings extends Model
         })->toArray();
     }
 
+    public function notStart()
+    {
+        return Carbon::now() < $this->survey_at;
+    }
+
     public function onPeriod()
     {
         return Carbon::now()->between($this->survey_at, $this->close_at);

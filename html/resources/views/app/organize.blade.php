@@ -3,7 +3,7 @@
 @section('content')
 <div class="text-slate-500 text-gray-500 text-zinc-500 text-neutral-500 text-stone-500 text-red-500 text-orange-500 text-amber-500 text-yellow-500 text-lime-500 text-green-500 text-emerald-500 text-teal-500 text-cyan-500 text-sky-500 text-blue-500 text-indigo-500 text-violet-500 text-purple-500 text-fuchsia-500 text-pink-500 text-rose-500"></div>
 <div class="text-2xl font-bold leading-normal pb-5">
-    職務編排
+    職務編排系統
     @if ($year == $current)
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('organize.vacancy') }}">
         <i class="fa-solid fa-chair"></i>職缺設定
@@ -33,13 +33,15 @@
         <option value="{{ $y }}"{{ ($y == $year) ? ' selected' : '' }}>{{ $y }}</option>
         @endforeach
     </select>
-    <span class="p-2">目前進度：
+    <span class="p-2">
         @if (!$flow)
         <span class="text-red-700">尚未設定時程，請洽教務處詢問！</span>
         @elseif (!$teacher->seniority)
         <span class="text-red-700">尚未統計年資，請洽教務處詢問！</span>
         @else
+        目前進度：
         <span class="text-green-700">
+        {{ ($flow->notStart()) ? '意願調查尚未開始！' : '' }}
         {{ ($flow->onSurvey()) ? '填寫學經歷資料、年資積分' : '' }}
         {{ ($flow->onFirstStage()) ? '行政與特殊任務意願調查（第一階段）' : '' }}
         {{ ($flow->onPause()) ? '第一階段意願調查已經結束，請等候第二階段意願調查！' : '' }}
