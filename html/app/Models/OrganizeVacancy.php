@@ -74,9 +74,9 @@ class OrganizeVacancy extends Model
     public static function completeness()
     {
         $shortfall = OrganizeVacancy::where('syear', current_year())->sum('shortfall');
-        $reserved = DB::table('organize_reserved')->where('syear', current_year())->count();
-        $assigned = DB::table('organize_assign')->where('syear', current_year())->count();
-        $completeness = intval($assigned / ($shortfall - $reserved));
+        $reserved = OrganizeVacancy::where('syear', current_year())->sum('filled');
+        $assigned = OrganizeVacancy::where('syear', current_year())->sum('assigned');
+        $completeness = intval($assigned / ($shortfall - $reserved) * 100);
         return (object) ['shortfall' => $shortfall, 'reserved' => $reserved, 'assigned' => $assigned, 'completeness' => $completeness];
     }
 

@@ -23,7 +23,7 @@ class OrganizeController extends Controller
     public function index($year = null)
     {
         $user = Auth::user();
-        if ($user->user_type == 'Student') {
+        if ($user->user_type != 'Teacher') {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $teacher = $user->profile;
@@ -382,17 +382,18 @@ class OrganizeController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('organize.manager');
         if ($user->is_admin || $manager) {
-            if (!$search) $search = 'first';
             $flow = OrganizeSettings::current();
+            if (($flow->onPause() || $flow->onFinish()) && !$search) $search = 'first';
+            if (!$search) $search = 'seven';
             $seniority = Seniority::current()->isEmpty() ? false : true;
             $completeness = OrganizeVacancy::completeness();
             $stage1 = OrganizeVacancy::year_stage(1);
             $stage2 = OrganizeVacancy::year_stage(2);
             $rest_teachers = OrganizeSurvey::where('syear', current_year())->whereNull('assign')->get();
             $teachers = [];
-            if ($flow->onFirstStage() || $search == 'seven') {
-                $query = OrganizeSurvey::where('syear', current_year());
+            if ($flow->onPause() || $search == 'seven') {
                 foreach ($stage1->general as $v) {
+                    $query = OrganizeSurvey::where('syear', current_year());
                     switch ($search) {
                         case 'first':
                             $query->where(function ($query) use ($v) {
@@ -424,26 +425,34 @@ class OrganizeController extends Controller
                         default:
                             $query->where('assign', $v->id);
                     }
-                    $teachers[$v->id] = $query->orderBy('score', 'desc')->ordderBy('age', 'desc')->get();
+                    $teachers[$v->id] = $query->orderBy('score', 'desc')->orderBy('age', 'desc')->get();
                 }
-                $query = OrganizeSurvey::where('syear', current_year());
                 foreach ($stage1->special as $v) {
-                    $query->where(function ($query) use ($v) {
-                        $query->where('assign', $v->id)->orWhereNull('assign');
-                    })->WhereJsonContains('special', $v->id);
-                    $teachers[$v->id] = $query->orderBy('score', 'desc')->ordderBy('age', 'desc')->get();
+                    $query = OrganizeSurvey::where('syear', current_year());
+                    if ($search == 'seven') {
+                        $query->where('assign', $v->id);
+                    } else {
+                        $query->where(function ($query) use ($v) {
+                            $query->where('assign', $v->id)->orWhereNull('assign');
+                        })->WhereJsonContains('special', $v->id);    
+                    }
+                    $teachers[$v->id] = $query->orderBy('score', 'desc')->orderBy('age', 'desc')->get();
                 }
             }
-            if ($flow->onSecondStage() || $search == 'seven') {
-                $query = OrganizeSurvey::where('syear', current_year());
+            if ($flow->onFinish() || $search == 'seven') {
                 foreach ($stage2->special as $v) {
-                    $query->where(function ($query) use ($v) {
-                        $query->where('assign', $v->id)->orWhereNull('assign');
-                    })->WhereJsonContains('special', $v->id);
+                    $query = OrganizeSurvey::where('syear', current_year());
+                    if ($search == 'seven') {
+                        $query->where('assign', $v->id);
+                    } else {
+                        $query->where(function ($query) use ($v) {
+                            $query->where('assign', $v->id)->orWhereNull('assign');
+                        })->WhereJsonContains('special', $v->id);    
+                    }
                     $teachers[$v->id] = $query->orderBy('score', 'desc')->ordderBy('age', 'desc')->get();
                 }
-                $query = OrganizeSurvey::where('syear', current_year());
                 foreach ($stage2->general as $v) {
+                    $query = OrganizeSurvey::where('syear', current_year());
                     switch ($search) {
                         case 'first':
                             $query->where(function ($query) use ($v) {
@@ -511,8 +520,8 @@ class OrganizeController extends Controller
                         default:
                             $query->where('assign', $v->id);
                     }
-                    $teachers[$v->id] = $query->orderBy('score', 'desc')->ordderBy('age', 'desc')->get();
-                }    
+                    $teachers[$v->id] = $query->orderBy('score', 'desc')->orderBy('age', 'desc')->get();
+                }
             }
             return view('app.organize_arrangement', ['display' => $search, 'flow' => $flow, 'seniority' => $seniority, 'completeness' => $completeness, 'stage1' => $stage1, 'stage2' => $stage2, 'teachers' => $teachers, 'rest_teachers' => $rest_teachers]);
         } else {
@@ -524,6 +533,10 @@ class OrganizeController extends Controller
     {
         $vacancy_id = $request->input('vid');
         $uuid = $request->input('uuid');
+        if (empty($uuid)) return response()->json('not found');
+        $survey = OrganizeSurvey::findByUUID($uuid);
+        $survey->assign = $vacancy_id;
+        $survey->save();
         $vacancy = OrganizeVacancy::find($vacancy_id);
         $vacancy->assigned += 1;
         $vacancy->save();
@@ -539,6 +552,10 @@ class OrganizeController extends Controller
     {
         $vacancy_id = $request->input('vid');
         $uuid = $request->input('uuid');
+        if (empty($uuid)) return response()->json('not found');
+        $survey = OrganizeSurvey::findByUUID($uuid);
+        $survey->assign = null;
+        $survey->save();
         $vacancy = OrganizeVacancy::find($vacancy_id);
         $vacancy->assigned -= 1;
         $vacancy->save();

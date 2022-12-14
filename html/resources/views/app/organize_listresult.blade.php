@@ -32,7 +32,7 @@
             員額編制
         </th>
         <th scope="col" class="p-2">
-            編排結果（<span class="text-green-500">綠色</span>為保留職缺人員，<span class="text-blue-500">藍色</span>為指派擔任職務人員）
+            編排結果（<span class="text-green-500">綠色</span>為保留職缺，<span class="text-blue-500">藍色</span>為意願編排結果）
         </th>
     </tr>
     @foreach ($vacancys as $v)

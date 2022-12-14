@@ -23,9 +23,9 @@ return new class extends Migration
             $table->boolean('special')->default(0);
             $table->string('name');
             $table->integer('stage');
-            $table->integer('shortfall');
-            $table->integer('filled');
-            $table->integer('assigned');
+            $table->integer('shortfall')->default(0);
+            $table->integer('filled')->default(0);
+            $table->integer('assigned')->default(0);
             $table->timestamps();
         });
     }

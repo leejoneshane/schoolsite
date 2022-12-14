@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Imports\SeniorityImport;
 use App\Exports\SeniorityExport;
 use App\Models\Seniority;
+use App\Models\User;
 
 class SeniorityController extends Controller
 {
@@ -27,32 +28,53 @@ class SeniorityController extends Controller
 
     public function upload($kid = null)
     {
-        if (Auth::user()->user_type == 'Student') {
+        $user = Auth::user();
+        if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
-        $current = current_year();
-        return view('app.seniorityupload', ['current' => $current]);
+        $user = User::find($user->id);
+        $manager = $user->hasPermission('organize.manager');
+        if ($user->is_admin || $manager) {
+            $current = current_year();
+            return view('app.seniorityupload', ['current' => $current]);
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
     }
 
     public function import(Request $request)
     {
-        if (Auth::user()->user_type == 'Student') {
+        $user = Auth::user();
+        if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
-        $importer = new SeniorityImport();
-        $importer->import($request->file('excel'));
-        return redirect()->route('seniority')->with('success', '教職員年資已經匯入完成！');
+        $user = User::find($user->id);
+        $manager = $user->hasPermission('organize.manager');
+        if ($user->is_admin || $manager) {
+            $importer = new SeniorityImport();
+            $importer->import($request->file('excel'));
+            return redirect()->route('seniority')->with('success', '教職員年資已經匯入完成！');
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
     }
 
     public function export($year = null)
     {
-        if (Auth::user()->user_type == 'Student') {
+        $user = Auth::user();
+        if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
-        $current = current_year();
-        if (!$year) $year = $current;
-        $filename = $year . '學年度教師教學年資統計';
-        return (new SeniorityExport($year))->download("$filename.xlsx");
+        $user = User::find($user->id);
+        $manager = $user->hasPermission('organize.manager');
+        if ($user->is_admin || $manager) {
+            $current = current_year();
+            if (!$year) $year = $current;
+            $filename = $year . '學年度教師教學年資統計';
+            return (new SeniorityExport($year))->download("$filename.xlsx");
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
     }
 
     public function confirm(Request $request)

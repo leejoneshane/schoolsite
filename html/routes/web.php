@@ -224,4 +224,3 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('website/news/{news}/subscribers/{id}/edit', 'App\Http\Controllers\Admin\NewsController@updateSub')->name('subscriber.edit');
     Route::post('website/news/{news}/subscribers/{id}/remove', 'App\Http\Controllers\Admin\NewsController@removeSub')->name('subscriber.remove');
 });
-

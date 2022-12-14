@@ -97,10 +97,11 @@ class PermitController extends Controller
     {
         $users = $request->input('teachers');
         $perm = Permission::find($id)->removeAll();
-        $log = '已經移除所有授權！';
         if (!empty($users)) {
             $perm->assignByUUID($users);
-            $log .= '並重新授權給指定人員！';
+            $log = '已經授權給指定人員！';
+        } else {
+            $log = '已經移除所有授權！';
         }
         return back()->with('success', $log);
     }
