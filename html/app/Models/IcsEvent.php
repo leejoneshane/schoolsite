@@ -40,6 +40,7 @@ class IcsEvent extends Model implements Subscribeable
         6 => '六',
     ];
 
+    //以下屬性可以批次寫入
     protected $fillable = [
         'unit_id',
         'all_day',
@@ -55,6 +56,7 @@ class IcsEvent extends Model implements Subscribeable
         'event_id',
     ];
 
+    //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'all_day' => 'boolean',
         'important' => 'boolean',
@@ -63,6 +65,7 @@ class IcsEvent extends Model implements Subscribeable
         'endDate' => 'datetime:Y-m-d',
     ];
 
+    //建立、更新、刪除行事曆事件時，同步到 Gsuite 中
     public static function boot()
     {
         parent::boot();
@@ -85,6 +88,7 @@ class IcsEvent extends Model implements Subscribeable
         });
     }
 
+    //取得要輸出到電子報的本月份行事曆內容
     public function newsletter()
     {
         $year = date('Y') - 1911;
@@ -127,6 +131,7 @@ class IcsEvent extends Model implements Subscribeable
         return ['year' => $year, 'month' => $twmonth, 'events' => $event_list];
     }
 
+    //篩選指定日期的所有行事曆事件，靜態函式
     public static function inTime($date)
     {
         if (is_string($date)) {
@@ -137,6 +142,7 @@ class IcsEvent extends Model implements Subscribeable
         return IcsEvent::with('unit')->whereDate('startDate', '<=', $dt)->whereDate('endDate', '>=', $dt)->get();
     }
 
+    //篩選指定日期的所有學生行事曆事件，靜態函式
     public static function inTimeForStudent($date)
     {
         if (is_string($date)) {
@@ -149,6 +155,7 @@ class IcsEvent extends Model implements Subscribeable
         return IcsEvent::with('unit')->where('calendar_id', $cal_id)->whereDate('startDate', '<=', $dt)->whereDate('endDate', '>=', $dt)->get();
     }
 
+    //篩選指定日期的所有研習行事曆事件，靜態函式
     public static function inTimeForTraining($date)
     {
         if (is_string($date)) {
@@ -159,6 +166,7 @@ class IcsEvent extends Model implements Subscribeable
         return IcsEvent::with('unit')->where('training', true)->whereDate('startDate', '<=', $dt)->whereDate('endDate', '>=', $dt)->get();
     }
 
+    //篩選本月份的所有學生行事曆事件，靜態函式
     public static function inMonthForStudent()
     {
         $cal = IcsCalendar::forStudent();
@@ -170,16 +178,19 @@ class IcsEvent extends Model implements Subscribeable
             ->get();
     }
 
+    //取得登載此事件的行事曆物件
     public function calendar()
     {
         return $this->belongsTo('App\Models\IcsCalendar', 'id', 'calendar_id');
     }
 
+    //取得此事件的登錄單位
     public function unit()
     {
         return $this->hasOne('App\Models\Unit', 'id', 'unit_id');
     }
 
+    //將此行事曆事件轉換為標準 ICS 格式
     public function toICS()
     {
         $event = Event::create($this->summary)

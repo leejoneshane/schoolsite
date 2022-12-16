@@ -12,11 +12,7 @@ class ClubKind extends Model
 
 	protected $table = 'club_kinds';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    //以下屬性可以批次寫入
     protected $fillable = [
         'name',
         'single',
@@ -30,11 +26,7 @@ class ClubKind extends Model
         'weight',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
+    //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'single' => 'boolean',
         'stop_enroll' => 'boolean',
@@ -43,21 +35,7 @@ class ClubKind extends Model
         'expireDate' => 'datetime:Y-m-d',
     ];
 
-    public function clubs()
-    {
-        return $this->hasMany('App\Models\Club', 'kind_id');
-    }
-
-    public function enrolls()
-    {
-        return $this->hasManyThrough(ClubEnroll::class, Club::class, 'kind_id', 'club_id');
-    }
-
-    public function enroll_clubs()
-    {
-        return $this->clubs()->where('stop_enroll', false)->get();
-    }
-
+    //篩選已開放報名的所有社團分類，靜態函式
     public static function can_enroll()
     {
         $today = Carbon::now();
@@ -65,6 +43,24 @@ class ClubKind extends Model
             ->where('enrollDate', '<=', $today)
             ->where('expireDate', '>=', $today)
             ->get();
+    }
+
+    //取得此社團分類的所有社團
+    public function clubs()
+    {
+        return $this->hasMany('App\Models\Club', 'kind_id');
+    }
+
+    //取得此社團分類的所有報名資訊
+    public function enrolls()
+    {
+        return $this->hasManyThrough(ClubEnroll::class, Club::class, 'kind_id', 'club_id');
+    }
+
+    //取得此社團分類目前開放報名的所有社團
+    public function enroll_clubs()
+    {
+        return $this->clubs()->where('stop_enroll', false)->get();
     }
 
 }

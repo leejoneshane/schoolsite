@@ -22,11 +22,7 @@ class Teacher extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    //以下屬性可以批次寫入
     protected $fillable = [
         'uuid',
         'idno',
@@ -50,6 +46,7 @@ class Teacher extends Model
         'character',
     ];
 
+    //以下為透過程式動態產生之屬性
     protected $appends = [
         'mainunit',
         'unit',
@@ -58,15 +55,12 @@ class Teacher extends Model
         'domain',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
+    //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'birthdate' => 'datetime:Y-m-d',
     ];
 
+    //提供教師的主要單位
     public function getMainunitAttribute()
     {
         $unit = Unit::find($this->unit_id);
@@ -78,16 +72,19 @@ class Teacher extends Model
         }
     }
 
+    //提供教師所屬單位
     public function getUnitAttribute()
     {
         return Unit::find($this->unit_id);
     }
 
+    //提供教師擔任職務
     public function getRoleAttribute()
     {
         return Role::find($this->role_id);
     }
 
+    //提供導師班級
     public function getTutorAttribute()
     {
         if ($this->tutor_class) {
@@ -96,6 +93,7 @@ class Teacher extends Model
         return false;
     }
 
+    //提供教師隸屬領域
     public function getDomainAttribute()
     {
         $domain = DB::table('belongs')->where('uuid', $this->uuid)->where('year', current_year())->first();
@@ -105,41 +103,49 @@ class Teacher extends Model
         return false;
     }
 
-    public static function findById($id) //全誼系統代號
+    //取得指定全誼系統代號的教師
+    public static function findById($id)
     {
         return Teacher::where('id', $id)->first();
     }
 
-    public static function findByIdno($idno) //身分證字號
+    //取得指定身分證字號的教師
+    public static function findByIdno($idno)
     {
         return Teacher::where('idno', $idno)->first();
     }
 
-    public static function findByClass($class_id) //任教年班
+    //取得指定班級的導師
+    public static function findByClass($class_id)
     {
         return Teacher::where('tutor_class', $class_id)->first();
     }
 
+    //取得教師的使用者帳戶
     public function user()
     {
         return $this->hasOne('App\Models\User', 'uuid', 'uuid')->withDefault();
     }
 
+    //取得教師的 Gsuite 帳戶
     public function gmails()
     {
         return $this->morphMany('App\Models\Gsuite', 'owner');
     }
 
+    //取得教師的導師班級
     public function tutor_classroom()
     {
         return $this->belongsTo('App\Models\Classroom', 'tutor_class');
     }
 
+    //取得教師的所有單位（不含上層單位）
     public function units()
     {
         return $this->belongsToMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id')->where('year', current_year());
     }
 
+    //取得教師的所有單位（包含上層單位）
     public function union()
     {
         $uni = [];
@@ -153,6 +159,7 @@ class Teacher extends Model
         return $uni;
     }
 
+    //取得教師的所有上層單位
     public function upper()
     {
         $upper = [];
@@ -168,47 +175,56 @@ class Teacher extends Model
         return $upper;
     }
 
+    //取得教師的所有職務
     public function roles()
     {
         return $this->belongsToMany('App\Models\Role', 'job_title', 'uuid', 'role_id')->wherePivot('year', current_year());
     }
 
+    //取得教師的所有配課
     public function assignment()
     {
         return DB::table('assignment')->where('year', current_year())->where('uuid', $this->uuid)->get();
     }
 
+    //取得教師的隸屬領域
     public function domains()
     {
         return $this->belongsToMany('App\Models\Domain', 'belongs', 'uuid', 'domain_id')->wherePivot('year', current_year());
     }
 
+    //取得教師的所有配課科目
     public function subjects()
     {
         return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id')->wherePivot('year', current_year());
     }
 
+    //取得教師的所有任教班級
     public function classrooms()
     {
         return $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id')->wherePivot('year', current_year());
     }
 
+    //取得教師的年資積分
     public function seniority()
     {
         return $this->hasOne('App\Models\Seniority', 'uuid', 'uuid')->where('syear', current_year());
     }
 
+    //取得教師的職編意願調查表
     public function survey($year = null)
     {
         if (!$year) $year = current_year();
         return $this->hasOne('App\Models\OrganizeSurvey', 'uuid', 'uuid')->where('syear', $year)->first();
     }
 
+    //取得教師最新的職編意願調查表
     public function last_survey()
     {
         return $this->hasOne('App\Models\OrganizeSurvey', 'uuid', 'uuid')->latest();
     }
 
+    //重新從 LDAP 同步教師個資
     public function sync()
     {
         $sso = new SSO;
@@ -216,6 +232,7 @@ class Teacher extends Model
         $this->fresh();
     }
 
+    //檢查此教師的同步資料是否已經過期
     public function expired()
     {
         $expire = new Carbon($this->updated_at);

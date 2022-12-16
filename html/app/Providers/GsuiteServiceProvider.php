@@ -967,11 +967,16 @@ class GsuiteServiceProvider extends ServiceProvider
     public function deal_graduate($leave, $target)
     {
         $detail_log = [];
-        $students = $this->find_users("email:$target* isSuspended=false");
+        if ($leave == 'suspend') {
+            $students = $this->find_users("email:$target* isSuspended=false");
+        } else {
+            $students = $this->find_users("email:$target*");
+        }
         foreach ($students as $s) {
             $realname = $s->getName()->getFullName();
             $org = $s->getOrganizations();
-            $org_title = $org[0]->getTitle();
+            $org_title = '';
+            if ($org && $org[0]) $org_title = $org[0]['title'];
             $user_key = $s->getPrimaryEmail();
             $detail_log[] = "在 G Suite 中找到畢業生 $org_title $realname ($user_key)......";
             if ($leave == 'suspend') {

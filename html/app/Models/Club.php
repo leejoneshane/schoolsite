@@ -11,11 +11,17 @@ class Club extends Model
 
 	protected $table = 'clubs';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    protected static $weekMap = [
+        0 => '日',
+        1 => '一',
+        2 => '二',
+        3 => '三',
+        4 => '四',
+        5 => '五',
+        6 => '六',
+    ];
+
+    //以下屬性可以批次寫入
     protected $fillable = [
         'name',
         'short_name',
@@ -39,11 +45,7 @@ class Club extends Model
         'maximum',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
+    //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'for_grade' => 'array',
         'weekdays' => 'array',
@@ -55,22 +57,14 @@ class Club extends Model
         'endDate' => 'datetime:Y-m-d',
     ];
 
+    //以下為透過程式動態產生之屬性
     protected $appends = [
 		'grade',
         'studytime',
         'style',
     ];
 
-    protected static $weekMap = [
-        0 => '日',
-        1 => '一',
-        2 => '二',
-        3 => '三',
-        4 => '四',
-        5 => '五',
-        6 => '六',
-    ];
-
+    //提供可報名年級中文字串
     public function getGradeAttribute()
     {
         $str = '';
@@ -80,6 +74,7 @@ class Club extends Model
         return $str.'年級';
     }
 
+    //提供上課時間中文字串
     public function getStudytimeAttribute()
     {
         $str ='';
@@ -101,11 +96,13 @@ class Club extends Model
         return $str;
     }
 
+    //提供此社團的分類樣式
     public function getStyleAttribute()
     {
         return $this->kind->style;
     }
 
+    //篩選可報名的社團（可依年級篩選），靜態函式
     public static function can_enroll($grade = null)
     {
         $today = Carbon::now();
@@ -131,6 +128,7 @@ class Club extends Model
         }
     }
 
+    //篩選本學年需進行收費統計的社團，靜態函式
     public static function cash_enroll()
     {
         if (date('m') > 7) {
@@ -148,26 +146,31 @@ class Club extends Model
         ->get();
     }
 
+    //取得此社團的分類
     public function kind()
     {
         return $this->belongsTo('App\Models\ClubKind');
     }
 
+    //取得此社團的主辦單位
     public function unit()
     {
         return $this->belongsTo('App\Models\Unit');
     }
 
+    //取得此社團所有的報名資訊，依報名時間排序
     public function enrolls()
     {
         return $this->hasMany('App\Models\ClubEnroll')->orderBy('created_at');
     }
 
+    //取得此社團所有已錄取的報名資訊，依報名時間排序
     public function accepted_enrolls()
     {
         return $this->hasMany('App\Models\ClubEnroll')->where('accepted', true)->orderBy('created_at');
     }
 
+    //取得此社團指定學年或本學年所有的報名資訊，依報名時間排序
     public function year_enrolls($year = null)
     {
         if ($year) {
@@ -176,7 +179,7 @@ class Club extends Model
             return $this->enrolls()->where('year', current_year())->get();
         }
     }
-
+    //取得此社團指定學年或本學年所有已錄取的報名資訊，依報名時間排序
     public function year_accepted($year = null)
     {
         if ($year) {
@@ -186,16 +189,19 @@ class Club extends Model
         }
     }
 
+    //計算此社團本學年報名學生數
     public function count_enrolls()
     {
         return $this->year_enrolls()->count();
     }
 
+    //計算此社團本學年錄取學生數
     public function count_accepted()
     {
         return $this->year_accepted()->count();
     }
 
+    //取得此社團所有的學生
     public function students()
     {
         return $this->belongsToMany('App\Models\Student', 'students_clubs', 'club_id', 'uuid')
@@ -216,11 +222,13 @@ class Club extends Model
             ]);
     }
 
+    //取得此社團指定學年或本學年所有的學生
     public function enroll_students($year)
     {
         return $this->students()->wherePivot('year', $year)->get();
     }
 
+    //取得此社團指定學年或本學年所有已錄取的學生
     public function accepted_students($year)
     {
         return $this->students()->wherePivot('year', $year)->wherePivot('accepted', 1)->get();

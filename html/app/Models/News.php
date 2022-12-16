@@ -20,22 +20,20 @@ class News extends Model
         6 => '六',
     ];
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    //以下屬性可以批次寫入
     protected $fillable = [
         'name',
         'model',
         'cron',
     ];
 
+    //以下為透過程式動態產生之屬性
     protected $appends = [
         'job',
         'loop',
     ];
 
+    //提供派報時間字串
     public function getJobAttribute()
     {
         list($loop, $day) = explode('.', $this->cron);
@@ -48,17 +46,20 @@ class News extends Model
         return '自動';
     }
 
+    //提供派報時間陣列
     public function getLoopAttribute()
     {
         list($loop, $day) = explode('.', $this->cron);
         return [ 'loop' => $loop, 'day' => $day];
     }
 
+    //取得此電子報的所有訂閱戶
     public function subscribers()
     {
         return $this->belongsToMany('App\Models\Subscriber', 'news_subscribers', 'news_id', 'subscriber_id')->as('subscription')->withTimestamps();
     }
 
+    //取得此電子報所有已驗證郵件地址的訂閱戶
     public function verified()
     {
         return $this->belongsToMany('App\Models\Subscriber', 'news_subscribers', 'news_id', 'subscriber_id')->whereNotNull('email_verified_at')->as('subscription')->withTimestamps();

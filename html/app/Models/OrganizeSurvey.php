@@ -9,11 +9,7 @@ class OrganizeSurvey extends Model
 
     protected $table = 'organize_survey';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    //以下屬性可以批次寫入
     protected $fillable = [
         'id',
         'syear',
@@ -39,10 +35,12 @@ class OrganizeSurvey extends Model
         'assign',
     ];
 
+    //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'special' => 'array',
     ];
 
+    //建立意願調查表物件模型時，若省略學年，則預設為目前學年
     public static function boot()
     {
         parent::boot();
@@ -53,16 +51,19 @@ class OrganizeSurvey extends Model
         });
     }
 
+    //篩選今年度所有意願調查表，靜態函式
     public static function current()
     {
         return OrganizeSurvey::where('syear', current_year())->get();
     }
 
+    //篩選指定人員今年度的意願調查表，靜態函式
     public static function findByUUID($uuid)
     {
         return OrganizeSurvey::where('syear', current_year())->where('uuid', $uuid)->first();
     }
 
+    //取得填寫此意願調查表的教師
     public function teacher()
     {
         return $this->hasOne('App\Models\Teacher', 'uuid', 'uuid');

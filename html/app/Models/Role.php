@@ -9,11 +9,7 @@ class Role extends Model
 
     protected $table = 'roles';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    //以下屬性可以批次寫入
     protected $fillable = [
         'role_no',
         'unit_id',
@@ -21,11 +17,13 @@ class Role extends Model
         'organize',
     ];
 
+    //篩選指定名稱的職務，靜態函式
     public static function findByName($name)
     {
         return Role::where('name', 'like', '%'.$name.'%')->first();
     }
 
+    //篩選指定代碼的職務，靜態函式
     public static function filter($role_no)
     {
         return Role::selectRaw('roles.*, LEFT(units.unit_no, 3) as top')
@@ -35,6 +33,7 @@ class Role extends Model
             ->get();
     }
 
+    //篩選職級為主任的職務，靜態函式    
     public static function director()
     {
         return Role::selectRaw('roles.*, LEFT(units.unit_no, 3) as top')
@@ -45,6 +44,7 @@ class Role extends Model
             ->get();
     }
 
+    //篩選所有的組長職務，靜態函式
     public static function organize()
     {
         return Role::selectRaw('roles.*, LEFT(units.unit_no, 3) as top')
@@ -55,11 +55,13 @@ class Role extends Model
             ->get();
     }
 
+    //取得此職務配屬單位
     public function unit()
     {
         return $this->belongsTo('App\Models\Unit');
     }
 
+    //取得擔任此職務的所有教師
     public function teachers()
     {
         return $this->belongsToMany('App\Models\Teacher', 'job_title', 'role_id', 'uuid')->where('year', current_year());

@@ -11,31 +11,36 @@ class Meeting extends Model implements Subscribeable
     protected $table = 'meeting';
     const template = 'emails.meeting';
 
+    //以下屬性可以批次寫入
     protected $fillable = [
         'unit_id',
         'role',
         'reporter',
         'words',
-        'inside',
+        'inside', //若為 true 則不會透過電子報派送
         'expired_at',
     ];
 
+    //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'inside' => 'boolean',
         'expired_at' => 'datetime:Y-m-d',
     ];
 
+    //取得要輸出到電子報的網路朝會報告
     public function newsletter()
     {
         $meets = Meeting::inTimeOpen(date('Y-m-d'));
         return ['meets' => $meets];
     }
 
+    //取得輸入此網路朝會報告的單位
     public function unit()
     {
         return $this->hasOne('App\Models\Unit', 'id', 'unit_id');
     }
 
+    //篩選指定日期的所有網路朝會報告，靜態函式
     public static function inTime($date)
     {
         if (is_string($date)) {
@@ -49,6 +54,7 @@ class Meeting extends Model implements Subscribeable
             ->get();
     }
 
+    //篩選指定日期的所有內部網路朝會報告，靜態函式
     public static function inTimeInside($date)
     {
         if (is_string($date)) {
@@ -63,6 +69,7 @@ class Meeting extends Model implements Subscribeable
             ->get();
     }
 
+    //篩選指定日期的所有公開網路朝會報告，靜態函式
     public static function inTimeOpen($date)
     {
         if (is_string($date)) {
