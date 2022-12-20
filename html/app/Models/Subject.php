@@ -8,7 +8,6 @@ class Subject extends Model
 {
 
     protected $table = 'subjects';
-    protected $primaryKey = 'id';
     public $incrementing = false;
     protected $keyType = 'string';
 
