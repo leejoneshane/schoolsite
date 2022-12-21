@@ -100,14 +100,22 @@
                 href="{{ route('students.edit', ['uuid' => $s->uuid]) }}">
                 <i class="fa-solid fa-user-pen"></i>
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="void()"
+            <button class="py-2 pr-6 text-green-300 hover:text-green-600"
+                onclick="
+                    const myform = document.getElementById('remove');
+                    myform.action = '{{ route('students.sync', ['uuid' => $s->uuid]) }}';
+                    myform.submit();
+            ">
+                <i class="fa-solid fa-rotate"></i>
+            </button>
+            <button class="py-2 pr-6 text-red-300 hover:text-red-600"
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('students.remove', ['uuid' => $s->uuid]) }}';
                     myform.submit();
             ">
                 <i class="fa-solid fa-trash"></i>
-            </a>
+            </button>
         </td>
     </tr>
     @endforeach

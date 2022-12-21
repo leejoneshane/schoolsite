@@ -364,6 +364,13 @@ class SchoolDataController extends Controller
         return redirect(urldecode($request->input('referer')))->with('success', '教師資訊已經更新完成！');
     }
 
+    public function teacherSync(Request $request, $uuid)
+    {
+        $referer = $request->headers->get('referer');
+        Teacher::find($uuid)->sync();
+        return redirect(urldecode($referer))->with('success', '教師資訊已經重新同步！');
+    }
+
     public function teacherRemove(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');
@@ -446,6 +453,13 @@ class SchoolDataController extends Controller
         $student->www = $request->input('www');
         $student->save();
         return redirect(urldecode($request->input('referer')))->with('success', '學生資訊已經更新完成！');
+    }
+
+    public function studentSync(Request $request, $uuid)
+    {
+        $referer = $request->headers->get('referer');
+        Student::find($uuid)->sync();
+        return redirect(urldecode($referer))->with('success', '學生資訊已經重新同步！');
     }
 
     public function studentRemove(Request $request, $uuid)

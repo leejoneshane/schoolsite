@@ -192,10 +192,12 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::get('database/teachers/{search?}', 'App\Http\Controllers\Admin\SchoolDataController@teacherList')->name('teachers');
     Route::get('database/teachers/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@teacherEdit');
     Route::post('database/teachers/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@teacherUpdate')->name('teachers.edit');
+    Route::post('database/teachers/{uuid}/sync', 'App\Http\Controllers\Admin\SchoolDataController@teacherSync')->name('teachers.sync');
     Route::post('database/teachers/{uuid}/remove', 'App\Http\Controllers\Admin\SchoolDataController@teacherRemove')->name('teachers.remove');
     Route::get('database/students/{search?}', 'App\Http\Controllers\Admin\SchoolDataController@studentList')->name('students');
     Route::get('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@studentEdit');
     Route::post('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@studentUpdate')->name('students.edit');
+    Route::post('database/students/{uuid}/sync', 'App\Http\Controllers\Admin\SchoolDataController@studentSync')->name('students.sync');
     Route::post('database/students/{uuid}/remove', 'App\Http\Controllers\Admin\SchoolDataController@studentRemove')->name('students.remove');
 // 選單管理
     Route::get('website/menus/{menu?}', 'App\Http\Controllers\Admin\MenuController@index');
