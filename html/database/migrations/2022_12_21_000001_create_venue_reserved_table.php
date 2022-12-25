@@ -13,12 +13,15 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('venues', function (Blueprint $table) {
+        Schema::create('venue_reserved', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->uuid('manager');
-            $table->text('description', 500);
-            $table->json('availability');
+            $table->integer('venue_id');
+            $table->uuid('uuid');
+            $table->date('reserved_at');
+            $table->integer('weekday');
+            $table->integer('session');
+            $table->integer('length')->default(1);
+            $table->string('reason')->nullable();
             $table->timestamps();
         });
     }
@@ -30,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('venues');
+        Schema::dropIfExists('venue_reserved');
     }
 };

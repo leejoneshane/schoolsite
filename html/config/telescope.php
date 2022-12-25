@@ -98,6 +98,7 @@ return [
     'ignore_paths' => [
         'nova-api*',
         'messager*',
+        'broadcasting*',
     ],
 
     'ignore_commands' => [
