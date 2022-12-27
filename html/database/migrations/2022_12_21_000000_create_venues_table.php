@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->uuid('uuid');
             $table->text('description', 500)->nullable();
-            $table->json('availability')->default('[]');
+            $table->json('availability');
             $table->date('unavailable_at')->nullable();
             $table->date('unavailable_until')->nullable();
             $table->integer('schedule_limit')->default(30);
