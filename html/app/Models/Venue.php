@@ -31,6 +31,20 @@ class Venue extends Model
         'open' => 'boolean',
     ];
 
+    //以下為透過程式動態產生之屬性
+    protected $appends = [
+        'denytime',
+    ];
+
+    //提供禁止預約時段字串
+    public function getDenytimeAttribute()
+    {
+        $str = substr($this->unavailable_at, 0, 10);
+        $str .= '～';
+        $str .= substr($this->unavailable_until, 0, 10);
+        return $str;
+    }
+
     //取得此場地的管理員
     public function manager()
     {

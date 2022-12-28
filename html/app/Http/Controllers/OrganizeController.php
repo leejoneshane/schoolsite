@@ -47,7 +47,7 @@ class OrganizeController extends Controller
         $flow = OrganizeSettings::current();
         if ($flow->onSurvey()) {
             $age = ($teacher->birthdate->format('md') > date("md")) ? date("Y") - $teacher->birthdate->format('Y') - 1 : date("Y") - $teacher->birthdate->format('Y');
-            OrganizeSurvey::UpdateOrCreate([
+            OrganizeSurvey::updateOrCreate([
                 'syear' => current_year(),
                 'uuid' => $teacher->uuid,
             ],[
@@ -125,7 +125,7 @@ class OrganizeController extends Controller
         $pause_at = $request->input('pause_at');
         $second_stage = $request->input('second_stage');
         $close_at = $request->input('close_at');
-        OrganizeSettings::UpdateOrCreate([
+        OrganizeSettings::updateOrCreate([
             'syear' => current_year(),
         ],[
             'survey_at' => $survey_at,

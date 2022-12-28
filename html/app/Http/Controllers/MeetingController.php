@@ -31,7 +31,11 @@ class MeetingController extends Controller
         $user = Auth::user();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = $user->profile;
-        return view('app.meetingadd', ['teacher' => $teacher]);
+        if ($teacher->role->role_no == 'C02' || $user->is_admin) {
+            return view('app.meetingadd', ['teacher' => $teacher]);
+        } else {
+            return redirect()->route('meeting')->with('error', '只有主任才能新增業務報告！');
+        }
     }
 
     public function insert(Request $request)
@@ -39,15 +43,20 @@ class MeetingController extends Controller
         $user = Auth::user();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = $user->profile;
-        Meeting::create([
-            'unit_id' => $teacher->mainunit->id,
-            'role' => $teacher->role->name,
-            'reporter' => $teacher->realname,
-            'words' => $request->input('words'),
-            'inside' => $request->boolean('open'),
-            'expired_at' => ($request->input('enddate')) ?: null,
-        ]);
-        return redirect()->route('meeting')->with('success', '業務報告已為您張貼！');
+        if ($teacher->role->role_no == 'C02' || $user->is_admin) {
+            $teacher = $user->profile;
+            Meeting::create([
+                'unit_id' => $teacher->mainunit->id,
+                'role' => $teacher->role->name,
+                'reporter' => $teacher->realname,
+                'words' => $request->input('words'),
+                'inside' => $request->boolean('open'),
+                'expired_at' => ($request->input('enddate')) ?: null,
+            ]);
+            return redirect()->route('meeting')->with('success', '業務報告已為您張貼！');
+        } else {
+            return redirect()->route('meeting')->with('error', '只有主任才能新增業務報告！');
+        }
     }
 
     public function edit($id)
@@ -55,9 +64,13 @@ class MeetingController extends Controller
         $user = Auth::user();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = $user->profile;
-        $meet = Meeting::find($id);
-        if (!$meet) return redirect()->route('meeting')->with('error', '找不到業務報告，因此無法修改內容！');
-        return view('app.meetingedit', ['teacher' => $teacher, 'meet' => $meet]);
+        if ($teacher->role->role_no == 'C02' || $user->is_admin) {
+            $meet = Meeting::find($id);
+            if (!$meet) return redirect()->route('meeting')->with('error', '找不到業務報告，因此無法修改內容！');
+            return view('app.meetingedit', ['teacher' => $teacher, 'meet' => $meet]);
+        } else {
+            return redirect()->route('meeting')->with('error', '只有主任才能修改業務報告！');
+        }
     }
 
     public function update(Request $request, $id)
@@ -65,32 +78,41 @@ class MeetingController extends Controller
         $user = Auth::user();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = $user->profile;
-        $meet = Meeting::find($id);
-        if (!$meet) return redirect()->route('meeting')->with('error', '找不到業務報告，因此無法修改內容！');
-        if ($request->boolean('switch')) {
-            $meet->update([
-                'role' => $teacher->role->name,
-                'reporter' => $teacher->realname,
-                'words' => $request->input('words'),
-                'inside' => $request->boolean('open'),
-                'expired_at' => ($request->input('enddate')) ?: null,
-            ]);
+        if ($teacher->role->role_no == 'C02' || $user->is_admin) {
+            $meet = Meeting::find($id);
+            if (!$meet) return redirect()->route('meeting')->with('error', '找不到業務報告，因此無法修改內容！');
+            if ($request->boolean('switch')) {
+                $meet->update([
+                    'role' => $teacher->role->name,
+                    'reporter' => $teacher->realname,
+                    'words' => $request->input('words'),
+                    'inside' => $request->boolean('open'),
+                    'expired_at' => ($request->input('enddate')) ?: null,
+                ]);
+            } else {
+                $meet->update([
+                    'words' => $request->input('words'),
+                    'inside' => $request->boolean('open'),
+                    'expired_at' => ($request->input('enddate')) ?: null,
+                ]);
+            }
+            return redirect()->route('meeting')->with('success', '業務報告內容已為您更新！');
         } else {
-            $meet->update([
-                'words' => $request->input('words'),
-                'inside' => $request->boolean('open'),
-                'expired_at' => ($request->input('enddate')) ?: null,
-            ]);
+            return redirect()->route('meeting')->with('error', '只有主任才能修改業務報告！');
         }
-        return redirect()->route('meeting')->with('success', '業務報告內容已為您更新！');
     }
 
     public function remove($id)
     {
         $user = Auth::user();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
-        Meeting::destroy($id);
-        return redirect()->route('meeting')->with('success', '業務報告已經移除！');
+        $teacher = $user->profile;
+        if ($teacher->role->role_no == 'C02' || $user->is_admin) {
+            Meeting::destroy($id);
+            return redirect()->route('meeting')->with('success', '業務報告已經移除！');
+        } else {
+            return redirect()->route('meeting')->with('error', '只有主任才能移除業務報告！');
+        }
     }
 
     public function storeImage(Request $request)

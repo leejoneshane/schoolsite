@@ -76,6 +76,15 @@ class HomeController extends Controller
                 'weight' => 30,
             ]);
         }
+        if (!Menu::find('venue')) {
+            Menu::create([
+                'id' => 'venue',
+                'parent_id' => 'affairs',
+                'caption' => '場地預約',
+                'url' => 'route.venues',
+                'weight' => 40,
+            ]);
+        }
     }
 
     public function index()

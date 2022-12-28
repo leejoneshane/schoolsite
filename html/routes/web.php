@@ -164,6 +164,16 @@ Route::group(['prefix' => 'organize', 'middleware' => [ 'auth'] ], function () {
     Route::get('list/result/{year?}', 'App\Http\Controllers\OrganizeController@listResult')->name('organize.listresult');
 });
 
+// 場地/設備預約
+Route::group(['prefix' => 'venue', 'middleware' => [ 'auth'] ], function () {
+    Route::get('/', 'App\Http\Controllers\VenueController@index')->name('venues');
+    Route::get('add', 'App\Http\Controllers\VenueController@add');
+    Route::post('add', 'App\Http\Controllers\VenueController@insert')->name('venue.add');
+    Route::get('edit/{id}', 'App\Http\Controllers\VenueController@edit');
+    Route::post('edit/{id}', 'App\Http\Controllers\VenueController@update')->name('venue.edit');
+    Route::post('remove/{id}', 'App\Http\Controllers\VenueController@remove')->name('venue.remove');
+});
+
 // 管理後台
 Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
