@@ -99,6 +99,7 @@ return [
         'nova-api*',
         'messager*',
         'broadcasting*',
+        'opcache-api*',
     ],
 
     'ignore_commands' => [
