@@ -63,7 +63,7 @@ Route::group(['prefix' => 'calendar'], function () {
     Route::get('seme', 'App\Http\Controllers\CalendarController@seme')->name('calendar.seme');
     Route::get('training', 'App\Http\Controllers\CalendarController@training')->name('calendar.training');
     Route::get('student', 'App\Http\Controllers\CalendarController@student')->name('calendar.student');
-    Route::get('download', 'App\Http\Controllers\CalendarController@student')->name('calendar.download');
+    Route::get('download', 'App\Http\Controllers\CalendarController@download')->name('calendar.download');
     Route::get('import', 'App\Http\Controllers\CalendarController@student')->name('calendar.import');
 });
 
@@ -172,6 +172,7 @@ Route::group(['prefix' => 'venue', 'middleware' => [ 'auth'] ], function () {
     Route::get('edit/{id}', 'App\Http\Controllers\VenueController@edit');
     Route::post('edit/{id}', 'App\Http\Controllers\VenueController@update')->name('venue.edit');
     Route::post('remove/{id}', 'App\Http\Controllers\VenueController@remove')->name('venue.remove');
+    Route::get('reserve/{id}', 'App\Http\Controllers\VenueController@index')->name('venue.reserve');
 });
 
 // 管理後台

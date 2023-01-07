@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Venue;
 use App\Models\User;
+use App\Models\Teacher;
 
 class VenueController extends Controller
 {
@@ -29,7 +30,8 @@ class VenueController extends Controller
         }
         $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
         if ($user->is_admin || $manager) {
-            return view('app.venueadd', ['teacher' => $user->profile]);
+            $teachers = Teacher::orderBy('realname')->get();
+            return view('app.venueadd', ['teacher' => $user->profile, 'teachers' => $teachers]);
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能新增場地或設備！');
         }
@@ -43,12 +45,27 @@ class VenueController extends Controller
         }
         $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
         if ($user->is_admin || $manager) {
-            Venue::create([
-                'name' => $request->input('name'),
-                'manager' => $request->input('uuid'),
+            $venue = Venue::create([
+                'name' => $request->input('title'),
+                'uuid' => $request->input('manager'),
                 'description' => $request->input('description'),
             ]);
-            return redirect()->route('venues')->with('success', '場地/設備新增完整！');
+            $unavailable = $request->input('unavailable');
+            if ($unavailable && $unavailable == 'yes') {
+                $venue->unavailable_at = $request->input('startdate');
+                $venue->unavailable_until = $request->input('enddate');
+            }
+            $limit = $request->integer('limit');
+            if ($limit) {
+                $venue->schedule_limit = $limit;
+            } else {
+                $venue->schedule_limit = 0;
+            }
+            if ($request->has('open') && $request->input('open') == 'yes') {
+                $venue->open = true;
+            }
+            $venue->save();
+            return redirect()->route('venues')->with('success', '場地/設備新增完成！');
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能新增場地或設備！');
         }
@@ -64,7 +81,8 @@ class VenueController extends Controller
         if (!$venue) return redirect()->route('venues')->with('error', '找不到此場地/設備，因此無法編輯！');
         $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
         if ($user->is_admin || $manager || $venue->manager->uuid == $user->uuid) {
-            return view('app.venueedit', ['venue' => $venue]);
+            $teachers = Teacher::orderBy('realname')->get();
+            return view('app.venueedit', ['venue' => $venue, 'teachers' => $teachers]);
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能修改場地或設備！');
         }
@@ -80,11 +98,27 @@ class VenueController extends Controller
         if (!$venue) return redirect()->route('venues')->with('error', '找不到此場地/設備，因此無法編輯！');
         $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
         if ($user->is_admin || $manager || $venue->manager->uuid == $user->uuid) {
-            Venue::find($id)->update([
-                'name' => $request->input('name'),
-                'manager' => $request->input('uuid'),
+            $venue = Venue::find($id);
+            $venue->update([
+                'name' => $request->input('title'),
+                'uuid' => $request->input('manager'),
                 'description' => $request->input('description'),
             ]);
+            $unavailable = $request->input('unavailable');
+            if ($unavailable && $unavailable == 'yes') {
+                $venue->unavailable_at = $request->input('startdate');
+                $venue->unavailable_until = $request->input('enddate');
+            }
+            $limit = $request->integer('limit');
+            if ($limit) {
+                $venue->schedule_limit = $limit;
+            } else {
+                $venue->schedule_limit = 0;
+            }
+            if ($request->has('open') && $request->input('open') == 'yes') {
+                $venue->open = true;
+            }
+            $venue->save();
             return redirect()->route('venues')->with('success', '場地/設備更新完成！');
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能修改場地或設備！');
