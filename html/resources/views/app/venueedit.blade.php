@@ -34,7 +34,7 @@
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入場地容留人數、可使用設備（如：單槍、大屏、麥克風、有無網路...等）、鑰匙保管方式，設備請輸入外觀、規格、配件、使用條件或限制...等資訊！</span>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">禁止借用時段：</label>
+        <label class="inline">不出借時段：</label>
         <input type="checkbox" name="unavailable" value="yes" onclick="
             const sdate = document.getElementById('sdate');
             const edate = document.getElementById('edate');
@@ -45,11 +45,38 @@
                 sdate.setAttribute('disabled', '');
                 edate.setAttribute('disabled', '');
             }
-        "{{ (!empty($venue->denytime)) ? ' checked' : '' }}>
+        "{{ ($venue->denytime != '無') ? ' checked' : '' }}>
         <input class="inline w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" id="sdate" name="startdate" value="{{ $venue->unavailable_at }}"{{ (empty($venue->denytime)) ? ' disabled' : '' }}>　到　
+            type="date" id="sdate" name="startdate" value="{{ $venue->unavailable_at }}"{{ ($venue->denytime == '無') ? ' disabled' : '' }}>　到　
         <input class="inline w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" id="edate" name="enddate" value="{{ $venue->unavailable_until }}"{{ (empty($venue->denytime)) ? ' disabled' : '' }}>
+            type="date" id="edate" name="enddate" value="{{ $venue->unavailable_until }}"{{ ($venue->denytime == '無') ? ' disabled' : '' }}>
+    </div></p>
+    <p><div class="p-3">
+        <label class="inline">不出借節次：</label>
+        <table class="inline border-collapse text-sm text-left">
+            <thead>
+                <tr class="font-semibold text-lg">
+                    <th class="border border-slate-300">星期</th>
+                    <th class="border border-slate-300">一</th>
+                    <th class="border border-slate-300">二</th>
+                    <th class="border border-slate-300">三</th>
+                    <th class="border border-slate-300">四</th>
+                    <th class="border border-slate-300">五</th>
+                </tr>    
+            </thead>
+            <tbody>
+                @foreach ($venue->sessions as $key => $se)
+                <tr>
+                    <th class="border border-slate-300 font-semibold text-lg">{{ $se }}</th>
+                    <td class="border border-slate-300"><input type="checkbox" name="map[0][{{ $key }}]" value="yes"{{ ($venue->available[0][$key]) ? '' : ' checked' }}></td>
+                    <td class="border border-slate-300"><input type="checkbox" name="map[1][{{ $key }}]" value="yes"{{ ($venue->available[1][$key]) ? '' : ' checked' }}></td>
+                    <td class="border border-slate-300"><input type="checkbox" name="map[2][{{ $key }}]" value="yes"{{ ($venue->available[2][$key]) ? '' : ' checked' }}></td>
+                    <td class="border border-slate-300"><input type="checkbox" name="map[3][{{ $key }}]" value="yes"{{ ($venue->available[3][$key]) ? '' : ' checked' }}></td>
+                    <td class="border border-slate-300"><input type="checkbox" name="map[4][{{ $key }}]" value="yes"{{ ($venue->available[4][$key]) ? '' : ' checked' }}></td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
     </div></p>
     <p><div class="p-3">
         <label for="limit" class="inline">可預約時程：</label>

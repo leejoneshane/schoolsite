@@ -70,7 +70,7 @@
         </th>
     </tr>
     @foreach ($clubs as $club)
-    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $kind->style }}">
+    <tr class="odd:bg-white even:bg-gray-100 hover:bg-green-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $kind->style }}">
         <td class="p-2 cursor-pointer" onclick="
         window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
         ">{{ $club->name }}</td>

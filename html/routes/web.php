@@ -172,7 +172,12 @@ Route::group(['prefix' => 'venue', 'middleware' => [ 'auth'] ], function () {
     Route::get('edit/{id}', 'App\Http\Controllers\VenueController@edit');
     Route::post('edit/{id}', 'App\Http\Controllers\VenueController@update')->name('venue.edit');
     Route::post('remove/{id}', 'App\Http\Controllers\VenueController@remove')->name('venue.remove');
-    Route::get('reserve/{id}', 'App\Http\Controllers\VenueController@index')->name('venue.reserve');
+    Route::get('reserve/list/{id}/date/{date?}', 'App\Http\Controllers\VenueController@reserve')->name('venue.reserve');
+    Route::post('reserve/view', 'App\Http\Controllers\VenueController@show')->name('venue.reserve.view');
+    Route::post('reserve/add', 'App\Http\Controllers\VenueController@reserveAdd')->name('venue.reserve.add');
+    Route::post('reserve/insert', 'App\Http\Controllers\VenueController@reserveInsert')->name('venue.reserve.insert');
+    Route::post('reserve/edit', 'App\Http\Controllers\VenueController@reserveEdit')->name('venue.reserve.edit');
+    Route::post('reserve/update', 'App\Http\Controllers\VenueController@reserveUpdate')->name('venue.reserve.update');
 });
 
 // 管理後台

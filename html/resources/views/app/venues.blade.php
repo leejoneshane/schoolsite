@@ -26,11 +26,14 @@
         <th scope="col" class="p-2">
             管理員
         </th>
-        <th scope="col" class="p-2">
+        <th scope="col" class="p-2 w-1/5">
             場地或設備描述
         </th>
         <th scope="col" class="p-2">
-            禁止預約時段
+            不出借時段
+        </th>
+        <th scope="col" class="p-2 w-1/5">
+            不出借節次
         </th>
         <th scope="col" class="p-2">
             可預約期限
@@ -45,7 +48,7 @@
     @endif
     </tr>
     @forelse ($venues as $venue)
-    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 hover:bg-green-100">
         <td class="p-2 cursor-pointer" onclick="
         window.location.replace('{{ route('venue.reserve', ['id' => $venue->id]) }}');
         ">{{ $venue->name }}</td>
@@ -58,6 +61,9 @@
         <td class="p-2 cursor-pointer" onclick="
         window.location.replace('{{ route('venue.reserve', ['id' => $venue->id]) }}');
         ">{{ $venue->denytime }}</td>
+        <td class="p-2 cursor-pointer" onclick="
+        window.location.replace('{{ route('venue.reserve', ['id' => $venue->id]) }}');
+        ">{{ $venue->denysession }}</td>
         <td class="p-2 cursor-pointer" onclick="
         window.location.replace('{{ route('venue.reserve', ['id' => $venue->id]) }}');
         ">{{ ($venue->schedule_limit > 0) ? $venue->schedule_limit.'天內' : '未設定' }}</td>
