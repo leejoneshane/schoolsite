@@ -1,7 +1,7 @@
 version: '3'
 services:
   laravel:
-    image: leejoneshane/schoolsite
+    image: leejoneshane/laravel
     extra_hosts:
       - host.docker.internal:host-gateway
     ports:
@@ -69,29 +69,12 @@ services:
     depends_on:
       - mysql
       - redis
-      - meilisearch
       - mailhog
       
   redis:
     image: redis
     networks:
       - backend
-      
-  meilisearch:
-    image: getmeili/meilisearch:latest
-    ports:
-      - 7700:7700
-    environment:
-      MEILI_MASTER_KEY: masterKey
-      MEILI_ENV: production
-    volumes:
-      - ./:/meili_data
-    networks:
-      - backend
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--spider",  "http://localhost:7700/health"]
-      retries: 3
-      timeout: 5s
       
   mailhog:
     image: mailhog/mailhog

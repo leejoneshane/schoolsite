@@ -1,4 +1,23 @@
 <?php
+use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
+use Jenssegers\Agent\Facades\Agent;
+
+function watch(Request $request, $action) {
+    $device = Agent::device();
+    $platform = Agent::platform();
+    $platform .= Agent::version($platform);
+    $browser = Agent::browser();
+    $browser .= Agent::version($browser);
+    $robot = Agent::robot();
+    DB::table('watchdog')->insert([
+        'uuid' => $request->user()->uuid,
+        'ip' => $request->ip(),
+        'agent' => $request->header('User-Agent'),
+        'url' => $request->fullUrl(),
+        'action' => $action,
+    ]);
+}
 
 function current_year() {
     if (date('m') > 7) {

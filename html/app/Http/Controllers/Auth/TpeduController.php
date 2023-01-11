@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Student;
+use App\Models\Watchdog;
 use App\Providers\TpeduServiceProvider;
 
 class TpeduController extends Controller
@@ -54,6 +55,7 @@ class TpeduController extends Controller
                         $user->save();
                     }
                     Auth::login($user);
+                    Watchdog::watch($request, '登入網站');
                     return redirect()->route('home');
                 } else { //new user
                     $tpuser = false;
