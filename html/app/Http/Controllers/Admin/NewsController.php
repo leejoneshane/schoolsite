@@ -46,7 +46,7 @@ class NewsController extends Controller
             'model' => $model,
             'cron' => $cronjob,
         ]);
-        Watchdog::watch($request, '新增電子報：' . $n->toJson());
+        Watchdog::watch($request, '新增電子報：' . $n->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('news')->with('success', '電子報新增完成！');
     }
 
@@ -80,14 +80,14 @@ class NewsController extends Controller
             'model' => $model,
             'cron' => $cronjob,
         ]);
-        Watchdog::watch($request, '更新電子報：' . $n->toJson());
+        Watchdog::watch($request, '更新電子報：' . $n->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('news')->with('success', '電子報更新完成！');
     }
 
     public function remove(Request $request, $news)
     {
         $n = News::find($news);
-        Watchdog::watch($request, '移除電子報：' . $n->toJson());
+        Watchdog::watch($request, '移除電子報：' . $n->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $n->delete();
         return redirect()->route('news')->with('success', '電子報已經刪除！');
     }

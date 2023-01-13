@@ -21,7 +21,7 @@ class MenuController extends Controller
         }
         $menus = Menu::submenus();
         $instance = Menu::find($menu);
-        if (!empty($menu)) {
+        if (!empty($instance)) {
             $items = $instance->childs;
         } else {
             $items = Menu::topmenus();
@@ -43,7 +43,7 @@ class MenuController extends Controller
             $m->url = $urls[$id];
             $m->weight = $weights[$id];
             $m->save();
-            Watchdog::watch($request, '更新選單項目：' . $m->toJson());
+            Watchdog::watch($request, '更新選單項目：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
         foreach ($ids as $old => $new) {
             if ($old == $new) continue;
@@ -88,7 +88,7 @@ class MenuController extends Controller
                 'weight' => $weight,
             ]);
         }
-        Watchdog::watch($request, '新增選單項目：' . $m->toJson());
+        Watchdog::watch($request, '新增選單項目：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('menus')->with('success', '選單項目新增完成！');
     }
 
@@ -101,7 +101,7 @@ class MenuController extends Controller
                 'parent_id' => $parent,
             ]);
         }
-        Watchdog::watch($request, '移除選單項目：' . $item->toJson());
+        Watchdog::watch($request, '移除選單項目：' . $item->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $item->delete();
         return redirect()->route('menus')->with('success', '選單項目已經刪除！');
     }

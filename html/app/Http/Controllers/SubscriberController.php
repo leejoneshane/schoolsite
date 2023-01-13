@@ -19,7 +19,7 @@ class SubscriberController extends Controller
             $subscriber = Subscriber::create([
                 'email' => $request->input('email'),
             ]);
-            Watchdog::watch($request, '建立訂閱戶：' . $subscriber->toJson());
+            Watchdog::watch($request, '建立訂閱戶：' . $subscriber->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
 
         if ($subscriber) {
@@ -50,7 +50,7 @@ class SubscriberController extends Controller
             Watchdog::watch($request, '取消訂閱電子報：' . $news->name);
         }
         if (empty($subscriber->news)) {
-            Watchdog::watch($request, '移除訂閱戶：' . $subscriber->toJson());
+            Watchdog::watch($request, '移除訂閱戶：' . $subscriber->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $subscriber->delete();
         }
         return redirect()->route('home')->with('success', '您已經取消訂閱電子報：'.$news->name.'!');
@@ -72,7 +72,7 @@ class SubscriberController extends Controller
         }
 
         if ($subscriber->markEmailAsVerified()) {
-            Watchdog::watch($request, '訂閱戶郵件驗證成功：' . $subscriber->toJson());
+            Watchdog::watch($request, '訂閱戶郵件驗證成功：' . $subscriber->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('home')->with('success', '恭喜您成為國語實小電子報訂戶！');
         }
 

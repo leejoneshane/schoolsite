@@ -53,7 +53,7 @@ class MeetingController extends Controller
                 'inside' => $request->boolean('open'),
                 'expired_at' => ($request->input('enddate')) ?: null,
             ]);
-            Watchdog::watch($request, '新增網路朝會業務報告：' . $m->toJson());
+            Watchdog::watch($request, '新增網路朝會業務報告：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('meeting')->with('success', '業務報告已為您張貼！');
         } else {
             return redirect()->route('meeting')->with('error', '只有主任才能新增業務報告！');
@@ -97,7 +97,7 @@ class MeetingController extends Controller
                     'expired_at' => ($request->input('enddate')) ?: null,
                 ]);
             }
-            Watchdog::watch($request, '更新網路朝會業務報告：' . $meet->toJson());
+            Watchdog::watch($request, '更新網路朝會業務報告：' . $meet->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('meeting')->with('success', '業務報告內容已為您更新！');
         } else {
             return redirect()->route('meeting')->with('error', '只有主任才能修改業務報告！');
@@ -111,7 +111,7 @@ class MeetingController extends Controller
         $teacher = $user->profile;
         if ($teacher->role->role_no == 'C02' || $user->is_admin) {
             $m = Meeting::find($id);
-            Watchdog::watch($request, '移除網路朝會業務報告：' . $m->toJson());
+            Watchdog::watch($request, '移除網路朝會業務報告：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $m->delete();
             return redirect()->route('meeting')->with('success', '業務報告已經移除！');
         } else {

@@ -74,7 +74,7 @@ class ClubController extends Controller
             'style' => $request->input('style'),
             'weight' => $max,
         ]);
-        Watchdog::watch($request, '新增社團類別：' . $k->toJson());
+        Watchdog::watch($request, '新增社團類別：' . $k->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $kinds = ClubKind::orderBy('weight')->get();
         return view('app.clubkind', ['kinds' => $kinds])->with('success', '社團類別已經新增完成！');
     }
@@ -103,7 +103,7 @@ class ClubController extends Controller
             'restTime' => $request->input('rest'),
             'style' => $request->input('style'),
         ]);
-        Watchdog::watch($request, '更新社團類別：' . $k->toJson());
+        Watchdog::watch($request, '更新社團類別：' . $k->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $kinds = ClubKind::orderBy('weight')->get();
         return view('app.clubkind', ['kinds' => $kinds])->with('success', '社團類別已經修改完成！');
     }
@@ -114,7 +114,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $k = ClubKind::find($kid);
-            Watchdog::watch($request, '新增社團類別：' . $k->toJson());
+            Watchdog::watch($request, '新增社團類別：' . $k->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $k->delete();
             $kinds = ClubKind::orderBy('weight')->get();
             return view('app.clubkind', ['kinds' => $kinds])->with('success', '社團類別已經移除！');
@@ -135,7 +135,7 @@ class ClubController extends Controller
                 $kind->weight = $w - 1;
                 $kind->save();
             }
-            Watchdog::watch($request, '修改社團類別的權重：' . $kind->toJson());
+            Watchdog::watch($request, '修改社團類別的權重：' . $kind->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('clubs.kinds');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -155,7 +155,7 @@ class ClubController extends Controller
                 $kind->weight = $w + 1;
                 $kind->save();
             }
-            Watchdog::watch($request, '修改社團類別的權重：' . $kind->toJson());
+            Watchdog::watch($request, '修改社團類別的權重：' . $kind->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('clubs.kinds');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -331,7 +331,7 @@ class ClubController extends Controller
             'total' => $request->input('total') ?: 0,
             'maximum' => $request->input('limit') ?: 0,
         ]);
-        Watchdog::watch($request, '新增學生社團：' . $c->toJson());
+        Watchdog::watch($request, '新增學生社團：' . $c->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經新增完成！');
     }
 
@@ -376,7 +376,7 @@ class ClubController extends Controller
             'total' => $request->input('total') ?: 0,
             'maximum' => $request->input('limit') ?: 0,
         ]);
-        Watchdog::watch($request, '更新學生社團：' . $club->toJson());
+        Watchdog::watch($request, '更新學生社團：' . $club->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經修改完成！');
     }
 
@@ -390,7 +390,7 @@ class ClubController extends Controller
             if ($club->enrolls) {
                 return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('error', '此課外社團已經錄取學生，因此無法移除！');
             } else {
-                Watchdog::watch($request, '移除學生社團：' . $club->toJson());
+                Watchdog::watch($request, '移除學生社團：' . $club->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                 $club->delete();
                 return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經移除完成！');
             }
@@ -500,14 +500,14 @@ class ClubController extends Controller
         ]);
         Notification::sendNow($enroll, new ClubEnrollNotification($order));
         if ($club->kind->manual_auditin) {
-            Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson() . '報名順位：' . $order);
+            Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '報名順位：' . $order);
             return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.'因須進行資格審核，待錄取作業完成後，將另行公告通知！');
         }
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
         if ($order > $club->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
-        Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson() . '報名順位：' . $order . $message);
+        Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '報名順位：' . $order . $message);
         return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
     }
 
@@ -542,7 +542,7 @@ class ClubController extends Controller
             'email' => $request->input('email'),
             'mobile' => $request->input('mobile'),
         ]);
-        Watchdog::watch($request, '修改報名資訊：' . $enroll->toJson());
+        Watchdog::watch($request, '修改報名資訊：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('clubs.enroll')->with('success', '報名資訊已更新！');
     }
 
@@ -552,7 +552,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $e = ClubEnroll::find($enroll_id);
-            Watchdog::watch($request, '刪除報名資訊：' . $e->toJson());
+            Watchdog::watch($request, '刪除報名資訊：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $e->delete();
             return back()->with('success', '報名資訊已經刪除！');
         } else {
@@ -561,7 +561,7 @@ class ClubController extends Controller
                 return redirect()->route('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
             }
             $e = ClubEnroll::find($enroll_id);
-            Watchdog::watch($request, '取消報名：' . $e->toJson());
+            Watchdog::watch($request, '取消報名：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $e->delete();
             return back()->with('success', '已為您取消報名！');
         }
@@ -597,7 +597,7 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
             $enroll->update(['accepted' => true]);
-            Watchdog::watch($request, '將報名資訊設定為錄取：' . $enroll->toJson());
+            Watchdog::watch($request, '將報名資訊設定為錄取：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -611,7 +611,7 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
             $enroll->update(['accepted' => false]);
-            Watchdog::watch($request, '將報名資訊設定為不錄取：' . $enroll->toJson());
+            Watchdog::watch($request, '將報名資訊設定為不錄取：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -811,7 +811,7 @@ class ClubController extends Controller
                 return !is_null($enroll->email);
             });
             Notification::send($enrolled, new ClubEnrolledNotification());
-            Watchdog::watch($request, '寄送錄取通知，學生社團：' . $club->name . '報名資訊：' . $enrolled->toJson());
+            Watchdog::watch($request, '寄送錄取通知，學生社團：' . $club->name . '報名資訊：' . $enrolled->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return back()->with('success', '已安排於背景進行錄取通知郵寄作業，郵件將會為您陸續寄出！');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');

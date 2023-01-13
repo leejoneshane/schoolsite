@@ -35,7 +35,7 @@ class Watchdog extends Model
         $robot = Agent::robot();
         $dog = Watchdog::create([
             'uuid' => $request->user()->uuid,
-            'ip' => $request->ip(),
+            'ip' => $request->header('x-real-ip'),
             'device' => $device,
             'platform' => $platform,
             'browser' => $browser,

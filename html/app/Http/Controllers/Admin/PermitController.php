@@ -37,7 +37,7 @@ class PermitController extends Controller
             'permission' => $perm,
             'description' => $desc,
         ]);
-        Watchdog::watch($request, '新增權限：' . $p->toJson());
+        Watchdog::watch($request, '新增權限：' . $p->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('permission')->with('success', '權限新增完成！');
     }
 
@@ -61,14 +61,14 @@ class PermitController extends Controller
             'permission' => $perm,
             'description' => $desc,
         ]);
-        Watchdog::watch($request, '更新權限：' . $p->toJson());
+        Watchdog::watch($request, '更新權限：' . $p->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('permission')->with('success', '權限更新完成！');
     }
 
     public function remove(Request $request, $id)
     {
         $p = Permission::find($id);
-        Watchdog::watch($request, '移除權限：' . $p->toJson());
+        Watchdog::watch($request, '移除權限：' . $p->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $p->delete();
         return redirect()->route('permission')->with('success', '權限已經移除！');
     }
@@ -98,11 +98,11 @@ class PermitController extends Controller
             foreach ($users as $u) {
                 $user_list[] = $u->realname;
             }
-            $log = '授予權限' . $perm->toJson() . '給' . implode('、', $user_list);
+            $log = '授予權限' . $perm->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '給' . implode('、', $user_list);
             Watchdog::watch($request, $log);
         } else {
             $log = '已經移除所有授權！';
-            Watchdog::watch($request, '移除所有已授權人員：' . $perm->toJson());
+            Watchdog::watch($request, '移除所有已授權人員：' . $perm->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
         return back()->with('success', $log);
     }

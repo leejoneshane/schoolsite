@@ -86,7 +86,7 @@ class SeniorityController extends Controller
         $score = Seniority::findBy($uuid, $year);
         $score->ok = true;
         $score->save();
-        Watchdog::watch($request, '確認年資無誤：' . $score->toJson());
+        Watchdog::watch($request, '確認年資無誤：' . $score->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return response()->json($score);
     }
 
@@ -97,7 +97,7 @@ class SeniorityController extends Controller
         $score = Seniority::findBy($uuid, $year);
         $score->ok = false;
         $score->save();
-        Watchdog::watch($request, '懷疑年資有誤：' . $score->toJson());
+        Watchdog::watch($request, '懷疑年資有誤：' . $score->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return response()->json($score);
     }
 
@@ -119,7 +119,7 @@ class SeniorityController extends Controller
         $score->new_teach_month = $ntm;
         $score->new_teach_score = $nts;
         $score->save();
-        Watchdog::watch($request, '修正年資：' . $score->toJson());
+        Watchdog::watch($request, '修正年資：' . $score->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return response()->json($score);
     }
 

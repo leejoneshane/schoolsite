@@ -102,7 +102,7 @@ class OrganizeController extends Controller
                 ]);
             }
         }
-        Watchdog::watch($request, '填寫職務編排意願調查：' . $survey->toJson());
+        Watchdog::watch($request, '填寫職務編排意願調查：' . $survey->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('organize')->with('success', '已為您儲存職務意願表，截止日前您仍然可以修改！');
     }
 
@@ -135,7 +135,7 @@ class OrganizeController extends Controller
             'second_stage' => $second_stage,
             'close_at' => $close_at,
         ]);
-        Watchdog::watch($request, '設定職務編排時程：' . $setting->toJson());
+        Watchdog::watch($request, '設定職務編排時程：' . $setting->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('organize.setting')->with('success', '職務編排流程設定完成！');
     }
 

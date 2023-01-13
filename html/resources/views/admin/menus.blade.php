@@ -98,7 +98,7 @@
                     type="text" name="weights[{{ $i->id }}]" value="{{ $i->weight }}">
             </td>
             <td class="p-2">
-                @if ($menu->top != 'admin')
+                @if ($i->top != 'admin')
                 <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="void()"
                     onclick="
                         const myform = document.getElementById('remove');

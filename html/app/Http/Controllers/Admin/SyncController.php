@@ -41,7 +41,7 @@ class SyncController extends Controller
             'student' => $student,
             'target' => $target,
             'remove' => $remove,
-        ]));
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return view('admin')->with('success', '同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
     }
 
@@ -58,7 +58,7 @@ class SyncController extends Controller
         Watchdog::watch($request, '開始進行 AD 同步！' . json_encode([
             'password' => $password,
             'leave' => $leave,
-        ]));
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return view('admin')->with('success', 'AD 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
     }
 
@@ -80,7 +80,7 @@ class SyncController extends Controller
             'password' => $password,
             'leave' => $leave,
             'target' => $target,
-        ]));
+        ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return view('admin')->with('success', 'Google 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
     }
 

@@ -12,8 +12,11 @@ function watch(Request $request, $action) {
     $robot = Agent::robot();
     DB::table('watchdog')->insert([
         'uuid' => $request->user()->uuid,
-        'ip' => $request->ip(),
-        'agent' => $request->header('User-Agent'),
+        'ip' => $request->header('x-real-ip'),
+        'device' => $device,
+        'platform' => $platform,
+        'browser' => $browser,
+        'robot' => $robot,
         'url' => $request->fullUrl(),
         'action' => $action,
     ]);

@@ -130,7 +130,7 @@ class CalendarController extends Controller
             $event->endTime = $request->input('end_time');
         }
         $event->save();
-        Watchdog::watch($request, '新增行事曆事件：' . $event->toJson());
+        Watchdog::watch($request, '新增行事曆事件：' . $event->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('calendar')->withInput();
     }
 
@@ -178,14 +178,14 @@ class CalendarController extends Controller
             $event->endTime = $request->input('end_time');
         }
         $event->save();
-        Watchdog::watch($request, '更新行事曆事件：' . $event->toJson());
+        Watchdog::watch($request, '更新行事曆事件：' . $event->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('calendar')->withInput();
     }
 
     public function eventRemove(Request $request, $event_id)
     {
         $e = IcsEvent::find($event_id);
-        Watchdog::watch($request, '移除行事曆事件：' . $e->toJson());
+        Watchdog::watch($request, '移除行事曆事件：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $e->delete();
         return redirect()->route('calendar')->withInput();
     }
