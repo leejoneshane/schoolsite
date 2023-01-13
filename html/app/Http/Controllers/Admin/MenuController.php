@@ -6,18 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use App\Models\Menu;
+use App\Models\Watchdog;
 
 class MenuController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
 
     public function index($menu = '')
     {
@@ -51,12 +43,14 @@ class MenuController extends Controller
             $m->url = $urls[$id];
             $m->weight = $weights[$id];
             $m->save();
+            Watchdog::watch($request, '更新選單項目：' . $m->toJson());
         }
         foreach ($ids as $old => $new) {
             if ($old == $new) continue;
             $m = Menu::find($old);
             $m->id = $new;
             $m->save();
+            Watchdog::watch($request, '變更選單項目代號：' . $old . '->' . $new);
         }
         return redirect()->route('menus')->with('success', '選單項目已經更新！');
     }
@@ -79,7 +73,7 @@ class MenuController extends Controller
         $url = $request->input('url');
         $weight = $request->input('weight');
         if (!empty($menu)) {
-            Menu::create([
+            $m = Menu::create([
                 'id' => $mid,
                 'parent_id' => $menu,
                 'caption' => $caption,
@@ -87,17 +81,18 @@ class MenuController extends Controller
                 'weight' => $weight,
             ]);
         } else {
-            Menu::create([
+            $m = Menu::create([
                 'id' => $mid,
                 'caption' => $caption,
                 'url' => $url,
                 'weight' => $weight,
             ]);
         }
+        Watchdog::watch($request, '新增選單項目：' . $m->toJson());
         return redirect()->route('menus')->with('success', '選單項目新增完成！');
     }
 
-    public function remove($menu)
+    public function remove(Request $request, $menu)
     {
         $item = Menu::find($menu);
         $parent = $item->parent_id;
@@ -106,6 +101,7 @@ class MenuController extends Controller
                 'parent_id' => $parent,
             ]);
         }
+        Watchdog::watch($request, '移除選單項目：' . $item->toJson());
         $item->delete();
         return redirect()->route('menus')->with('success', '選單項目已經刪除！');
     }

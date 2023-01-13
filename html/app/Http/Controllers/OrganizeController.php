@@ -15,7 +15,7 @@ use App\Models\OrganizeSettings;
 use App\Models\OrganizeSurvey;
 use App\Models\OrganizeVacancy;
 use App\Models\Seniority;
-
+use App\Models\Watchdog;
 
 class OrganizeController extends Controller
 {
@@ -47,7 +47,7 @@ class OrganizeController extends Controller
         $flow = OrganizeSettings::current();
         if ($flow->onSurvey()) {
             $age = ($teacher->birthdate->format('md') > date("md")) ? date("Y") - $teacher->birthdate->format('Y') - 1 : date("Y") - $teacher->birthdate->format('Y');
-            OrganizeSurvey::updateOrCreate([
+            $survey = OrganizeSurvey::updateOrCreate([
                 'syear' => current_year(),
                 'uuid' => $teacher->uuid,
             ],[
@@ -62,7 +62,7 @@ class OrganizeController extends Controller
         if ($flow->onFirstStage()) {
             $specials = null;
             if ($request->has('specials')) $specials = array_map('intval', $request->input('specials'));
-            OrganizeSurvey::where('syear', current_year())
+            $survey = OrganizeSurvey::where('syear', current_year())
             ->where('uuid', $teacher->uuid)
             ->update([
                 'admin1' => $request->input('admin1'),
@@ -74,7 +74,7 @@ class OrganizeController extends Controller
         if ($flow->onSecondStage()) {
             if ($request->has('specials')) {
                 $specials = array_map('intval', $request->input('specials'));
-                OrganizeSurvey::where('syear', current_year())
+                $survey = OrganizeSurvey::where('syear', current_year())
                 ->where('uuid', $teacher->uuid)
                 ->update([
                     'special' => $specials,
@@ -88,7 +88,7 @@ class OrganizeController extends Controller
                     'overcome' => $request->input('overcome'),
                 ]);
             } else {
-                OrganizeSurvey::where('syear', current_year())
+                $survey = OrganizeSurvey::where('syear', current_year())
                 ->where('uuid', $teacher->uuid)
                 ->update([
                     'teach1' => $request->input('teach1'),
@@ -102,6 +102,7 @@ class OrganizeController extends Controller
                 ]);
             }
         }
+        Watchdog::watch($request, '填寫職務編排意願調查：' . $survey->toJson());
         return redirect()->route('organize')->with('success', '已為您儲存職務意願表，截止日前您仍然可以修改！');
     }
 
@@ -125,7 +126,7 @@ class OrganizeController extends Controller
         $pause_at = $request->input('pause_at');
         $second_stage = $request->input('second_stage');
         $close_at = $request->input('close_at');
-        OrganizeSettings::updateOrCreate([
+        $setting = OrganizeSettings::updateOrCreate([
             'syear' => current_year(),
         ],[
             'survey_at' => $survey_at,
@@ -134,6 +135,7 @@ class OrganizeController extends Controller
             'second_stage' => $second_stage,
             'close_at' => $close_at,
         ]);
+        Watchdog::watch($request, '設定職務編排時程：' . $setting->toJson());
         return redirect()->route('organize.setting')->with('success', '職務編排流程設定完成！');
     }
 
@@ -154,7 +156,7 @@ class OrganizeController extends Controller
         }
     }
 
-    public function reset()
+    public function reset(Request $request)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('organize.manager');
@@ -165,6 +167,7 @@ class OrganizeController extends Controller
             DB::table('organize_assign')->where('syear', current_year())->delete();
             OrganizeVacancy::where('syear', current_year())->delete();
             $this->vacancy_init();
+            Watchdog::watch($request, '重新計算職缺');
             return redirect()->route('organize.vacancy');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -305,6 +308,7 @@ class OrganizeController extends Controller
         $vacancy = OrganizeVacancy::find($vacancy_id);
         $vacancy->stage = $stage;
         $vacancy->save();
+        Watchdog::watch($request, '修改職缺：' . $vacancy->name . '，意願調查階段：' . $stage);
         return response()->json($vacancy);
     }
 
@@ -315,6 +319,7 @@ class OrganizeController extends Controller
         $vacancy = OrganizeVacancy::find($vacancy_id);
         $vacancy->special = $special;
         $vacancy->save();
+        Watchdog::watch($request, '修改職缺：' . $vacancy->name . '，特殊任務：' . $special);
         return response()->json($vacancy);
     }
 
@@ -325,6 +330,7 @@ class OrganizeController extends Controller
         $vacancy = OrganizeVacancy::find($vacancy_id);
         $vacancy->shortfall = $shortfall;
         $vacancy->save();
+        Watchdog::watch($request, '修改職缺：' . $vacancy->name . '，員額數：' . $shortfall);
         return response()->json($vacancy);
     }
 
@@ -340,6 +346,8 @@ class OrganizeController extends Controller
             ->where('vacancy_id', $vacancy_id)
             ->where('uuid', $uuid)
             ->delete();
+        $t = Teacher::find($uuid);
+        Watchdog::watch($request, '將' . $t->realname . '的職務：' . $vacancy->name . '開缺');
         return response()->json('success');
     }
 
@@ -359,6 +367,7 @@ class OrganizeController extends Controller
                 ->where('vacancy_id', $vacancy_id)
                 ->delete();    
         }
+        Watchdog::watch($request, '將職務：' . $vacancy->name . '所有人員開缺');
         return response()->json('success');
     }
 
@@ -374,6 +383,8 @@ class OrganizeController extends Controller
             'vacancy_id' => $vacancy_id,
             'uuid' => $uuid,
         ]);
+        $t = Teacher::find($uuid);
+        Watchdog::watch($request, '保留' . $t->realname . '的職缺：' . $vacancy->name);
         return response()->json('success');
     }
 
@@ -545,6 +556,8 @@ class OrganizeController extends Controller
             'vacancy_id' => $vacancy_id,
             'uuid' => $uuid,
         ]);
+        $t = Teacher::find($uuid);
+        Watchdog::watch($request, '安排' . $t->realname . '擔任職缺：' . $vacancy->name);
         return response()->json('success');
     }
 
@@ -564,6 +577,8 @@ class OrganizeController extends Controller
             ->where('vacancy_id', $vacancy_id)
             ->where('uuid', $uuid)
             ->delete();
+        $t = Teacher::find($uuid);
+        Watchdog::watch($request, '取消' . $t->realname . '擔任職缺：' . $vacancy->name . '的安排');
         return response()->json('success');
     }
 

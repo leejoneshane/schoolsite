@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 use App\Models\Menu;
+use App\Models\Watchdog;
 
 class AdminController extends Controller
 {
@@ -138,6 +140,15 @@ class AdminController extends Controller
                 'caption' => '電子報管理',
                 'url' => 'route.news',
                 'weight' => 30,
+            ]);
+        }
+        if (!Menu::find('watchdog')) {
+            Menu::create([
+                'id' => 'watchdog',
+                'parent_id' => 'website',
+                'caption' => '瀏覽歷程',
+                'url' => 'route.watchdog',
+                'weight' => 40,
             ]);
         }
     }

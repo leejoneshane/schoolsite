@@ -8,18 +8,10 @@ use App\Jobs\SyncFromTpedu;
 use App\Jobs\SyncToAD;
 use App\Jobs\SyncToGoogle;
 use App\Models\Classroom;
+use App\Models\Watchdog;
 
 class SyncController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
 
     public function syncFromTpedu()
     {
@@ -39,6 +31,17 @@ class SyncController extends Controller
         $target = !empty($request->input('target')) ? $request->input('target') : false;
         $remove = ($request->input('leave') == 'remove') ? true : false;
         SyncFromTpedu::dispatch($expire, $password, $unit, $classroom, $subject, $teacher, $student, $target, $remove);
+        Watchdog::watch($request, '開始進行單一身份驗證同步！' . json_encode([
+            'expire' => $expire,
+            'password' => $password,
+            'unit' => $unit,
+            'classroom' => $classroom,
+            'subject' => $subject,
+            'teacher' => $teacher,
+            'student' => $student,
+            'target' => $target,
+            'remove' => $remove,
+        ]));
         return view('admin')->with('success', '同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
     }
 
@@ -52,6 +55,10 @@ class SyncController extends Controller
         $password = ($request->input('password') == 'sync') ? true : false;
         $leave = $request->input('leave');
         SyncToAD::dispatch($password, $leave);
+        Watchdog::watch($request, '開始進行 AD 同步！' . json_encode([
+            'password' => $password,
+            'leave' => $leave,
+        ]));
         return view('admin')->with('success', 'AD 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
     }
 
@@ -69,6 +76,11 @@ class SyncController extends Controller
         if ($leave == 'onduty') $target = $request->input('target1');
         if ($leave != 'onduty') $target = $request->input('target2');
         SyncToGoogle::dispatch($password, $leave, $target);
+        Watchdog::watch($request, '開始進行 Google 同步！' . json_encode([
+            'password' => $password,
+            'leave' => $leave,
+            'target' => $target,
+        ]));
         return view('admin')->with('success', 'Google 同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
     }
 

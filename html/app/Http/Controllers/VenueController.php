@@ -8,6 +8,7 @@ use App\Models\Venue;
 use App\Models\VenueReserve;
 use App\Models\User;
 use App\Models\Teacher;
+use App\Models\Watchdog;
 use Carbon\Carbon;
 
 class VenueController extends Controller
@@ -89,6 +90,7 @@ class VenueController extends Controller
                 $venue->open = true;
             }
             $venue->save();
+            Watchdog::watch($request, '新增可預約場地或設備：' . $venue->toJson());
             return redirect()->route('venues')->with('success', '場地/設備新增完成！');
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能新增場地或設備！');
@@ -153,13 +155,14 @@ class VenueController extends Controller
                 $venue->open = true;
             }
             $venue->save();
+            Watchdog::watch($request, '更新可預約場地或設備：' . $venue->toJson());
             return redirect()->route('venues')->with('success', '場地/設備更新完成！');
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能修改場地或設備！');
         }
     }
 
-    public function remove($id)
+    public function remove(Request $request, $id)
     {
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
@@ -167,7 +170,9 @@ class VenueController extends Controller
         }
         $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
         if ($manager) {
-            Venue::destroy($id);
+            $venue = Venue::find($id);
+            Watchdog::watch($request, '更新可預約場地或設備：' . $venue->toJson());
+            $venue->delete();
             return redirect()->route('venues')->with('success', '場地/設備已經移除！');
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能管理場地或設備！');
@@ -248,7 +253,7 @@ class VenueController extends Controller
         if ($manager) {
             $venue_id = $request->input('venue_id');
             $date = $request->input('date');
-            VenueReserve::create([
+            $r = VenueReserve::create([
                 'venue_id' => $venue_id,
                 'uuid' => $user->uuid,
                 'reserved_at' => $date,
@@ -257,6 +262,7 @@ class VenueController extends Controller
                 'length' => $request->input('length'),
                 'reason' => $request->input('reason'),
             ]);
+            Watchdog::watch($request, '新增場地或設備預約紀錄：' . $r->toJson());
             return redirect()->route('venue.reserve', ['id' => $venue_id, 'date' => $date])->with('success', '已經為您預約場地或設備！');
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能管理場地或設備！');
@@ -304,8 +310,10 @@ class VenueController extends Controller
                     'length' => $request->input('length'),
                     'reason' => $request->input('reason'),
                 ]);
+                Watchdog::watch($request, '修改場地或設備預約紀錄：' . $reserve->toJson());
                 return redirect()->route('venue.reserve', ['id' => $reserve->venue->id, 'date' => substr($reserve->reserved_at, 0, 10)])->with('success', '已經為您修改預約紀錄！');
             } else {
+                Watchdog::watch($request, '移除場地或設備預約紀錄：' . $reserve->toJson());
                 $reserve->delete();
                 return redirect()->route('venue.reserve', ['id' => $reserve->venue->id, 'date' => substr($reserve->reserved_at, 0, 10)])->with('success', '已經為您取消預約！');
             }

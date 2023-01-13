@@ -7,18 +7,10 @@ use Illuminate\Http\Request;
 use App\Models\Permission;
 use App\Models\Unit;
 use App\Models\Teacher;
+use App\Models\Watchdog;
 
 class PermitController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //
-    }
 
     public function index()
     {
@@ -40,11 +32,12 @@ class PermitController extends Controller
         if ($ckf) {
             return back()->withInput()->with('error', '該權限已經存在，無法再新增！');
         }
-        Permission::create([
+        $p = Permission::create([
             'group' => $app,
             'permission' => $perm,
             'description' => $desc,
         ]);
+        Watchdog::watch($request, '新增權限：' . $p->toJson());
         return redirect()->route('permission')->with('success', '權限新增完成！');
     }
 
@@ -63,17 +56,20 @@ class PermitController extends Controller
         if ($ckf && $ckf->id != $id) {
             return back()->withInput()->with('error', '該權限已經存在，無法修改成新的代號！');
         }
-        Permission::find($id)->update([
+        $p = Permission::find($id)->update([
             'group' => $app,
             'permission' => $perm,
             'description' => $desc,
         ]);
+        Watchdog::watch($request, '更新權限：' . $p->toJson());
         return redirect()->route('permission')->with('success', '權限更新完成！');
     }
 
-    public function remove($id)
+    public function remove(Request $request, $id)
     {
-        Permission::destroy($id);
+        $p = Permission::find($id);
+        Watchdog::watch($request, '移除權限：' . $p->toJson());
+        $p->delete();
         return redirect()->route('permission')->with('success', '權限已經移除！');
     }
 
@@ -99,9 +95,14 @@ class PermitController extends Controller
         $perm = Permission::find($id)->removeAll();
         if (!empty($users)) {
             $perm->assignByUUID($users);
-            $log = '已經授權給指定人員！';
+            foreach ($users as $u) {
+                $user_list[] = $u->realname;
+            }
+            $log = '授予權限' . $perm->toJson() . '給' . implode('、', $user_list);
+            Watchdog::watch($request, $log);
         } else {
             $log = '已經移除所有授權！';
+            Watchdog::watch($request, '移除所有已授權人員：' . $perm->toJson());
         }
         return back()->with('success', $log);
     }

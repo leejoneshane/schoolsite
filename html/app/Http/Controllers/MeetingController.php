@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Meeting;
-use App\Models\Teacher;
+use App\Models\Watchdog;
 use Carbon\Carbon;
 
 class MeetingController extends Controller
@@ -45,7 +45,7 @@ class MeetingController extends Controller
         $teacher = $user->profile;
         if ($teacher->role->role_no == 'C02' || $user->is_admin) {
             $teacher = $user->profile;
-            Meeting::create([
+            $m = Meeting::create([
                 'unit_id' => $teacher->mainunit->id,
                 'role' => $teacher->role->name,
                 'reporter' => $teacher->realname,
@@ -53,6 +53,7 @@ class MeetingController extends Controller
                 'inside' => $request->boolean('open'),
                 'expired_at' => ($request->input('enddate')) ?: null,
             ]);
+            Watchdog::watch($request, '新增網路朝會業務報告：' . $m->toJson());
             return redirect()->route('meeting')->with('success', '業務報告已為您張貼！');
         } else {
             return redirect()->route('meeting')->with('error', '只有主任才能新增業務報告！');
@@ -96,19 +97,22 @@ class MeetingController extends Controller
                     'expired_at' => ($request->input('enddate')) ?: null,
                 ]);
             }
+            Watchdog::watch($request, '更新網路朝會業務報告：' . $meet->toJson());
             return redirect()->route('meeting')->with('success', '業務報告內容已為您更新！');
         } else {
             return redirect()->route('meeting')->with('error', '只有主任才能修改業務報告！');
         }
     }
 
-    public function remove($id)
+    public function remove(Request $request, $id)
     {
         $user = Auth::user();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = $user->profile;
         if ($teacher->role->role_no == 'C02' || $user->is_admin) {
-            Meeting::destroy($id);
+            $m = Meeting::find($id);
+            Watchdog::watch($request, '移除網路朝會業務報告：' . $m->toJson());
+            $m->delete();
             return redirect()->route('meeting')->with('success', '業務報告已經移除！');
         } else {
             return redirect()->route('meeting')->with('error', '只有主任才能移除業務報告！');
@@ -124,6 +128,7 @@ class MeetingController extends Controller
             $fileName = $fileName . '_' . time() . '.' . $extension;
             $request->file('upload')->move(public_path('meeting'), $fileName);
             $url = asset('meeting/' . $fileName);
+            Watchdog::watch($request, '上傳圖片：' . $url);
             return response()->json(['fileName' => $fileName, 'uploaded'=> 1, 'url' => $url]);
         }
     }

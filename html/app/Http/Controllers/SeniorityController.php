@@ -8,6 +8,7 @@ use App\Imports\SeniorityImport;
 use App\Exports\SeniorityExport;
 use App\Models\Seniority;
 use App\Models\User;
+use App\Models\Watchdog;
 
 class SeniorityController extends Controller
 {
@@ -53,6 +54,7 @@ class SeniorityController extends Controller
         if ($user->is_admin || $manager) {
             $importer = new SeniorityImport();
             $importer->import($request->file('excel'));
+            Watchdog::watch($request, '匯入年資統計：' . $request->file('excel')->path());
             return redirect()->route('seniority')->with('success', '教職員年資已經匯入完成！');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -84,6 +86,7 @@ class SeniorityController extends Controller
         $score = Seniority::findBy($uuid, $year);
         $score->ok = true;
         $score->save();
+        Watchdog::watch($request, '確認年資無誤：' . $score->toJson());
         return response()->json($score);
     }
 
@@ -94,6 +97,7 @@ class SeniorityController extends Controller
         $score = Seniority::findBy($uuid, $year);
         $score->ok = false;
         $score->save();
+        Watchdog::watch($request, '懷疑年資有誤：' . $score->toJson());
         return response()->json($score);
     }
 
@@ -115,6 +119,7 @@ class SeniorityController extends Controller
         $score->new_teach_month = $ntm;
         $score->new_teach_score = $nts;
         $score->save();
+        Watchdog::watch($request, '修正年資：' . $score->toJson());
         return response()->json($score);
     }
 

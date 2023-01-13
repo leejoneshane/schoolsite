@@ -23,6 +23,7 @@ use App\Exports\ClubClassExport;
 use App\Exports\ClubEnrolledExport;
 use App\Exports\ClubRollExport;
 use App\Exports\ClubTimeExport;
+use App\Models\Watchdog;
 
 class ClubController extends Controller
 {
@@ -61,7 +62,7 @@ class ClubController extends Controller
     public function kindInsert(Request $request)
     {
         $max = ClubKind::max('weight') + 1;
-        ClubKind::create([
+        $k = ClubKind::create([
             'name' => $request->input('title'),
             'single' => $request->boolean('single'),
             'stop_enroll' => $request->boolean('stop'),
@@ -73,6 +74,7 @@ class ClubController extends Controller
             'style' => $request->input('style'),
             'weight' => $max,
         ]);
+        Watchdog::watch($request, '新增社團類別：' . $k->toJson());
         $kinds = ClubKind::orderBy('weight')->get();
         return view('app.clubkind', ['kinds' => $kinds])->with('success', '社團類別已經新增完成！');
     }
@@ -90,7 +92,7 @@ class ClubController extends Controller
 
     public function kindUpdate(Request $request, $kid)
     {
-        ClubKind::find($kid)->update([
+        $k = ClubKind::find($kid)->update([
             'name' => $request->input('title'),
             'single' => $request->boolean('single'),
             'stop_enroll' => $request->boolean('stop'),
@@ -101,16 +103,19 @@ class ClubController extends Controller
             'restTime' => $request->input('rest'),
             'style' => $request->input('style'),
         ]);
+        Watchdog::watch($request, '更新社團類別：' . $k->toJson());
         $kinds = ClubKind::orderBy('weight')->get();
         return view('app.clubkind', ['kinds' => $kinds])->with('success', '社團類別已經修改完成！');
     }
 
-    public function kindRemove($kid)
+    public function kindRemove(Request $request, $kid)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
-            ClubKind::destroy($kid);
+            $k = ClubKind::find($kid);
+            Watchdog::watch($request, '新增社團類別：' . $k->toJson());
+            $k->delete();
             $kinds = ClubKind::orderBy('weight')->get();
             return view('app.clubkind', ['kinds' => $kinds])->with('success', '社團類別已經移除！');
         } else {
@@ -130,13 +135,14 @@ class ClubController extends Controller
                 $kind->weight = $w - 1;
                 $kind->save();
             }
+            Watchdog::watch($request, '修改社團類別的權重：' . $kind->toJson());
             return redirect()->route('clubs.kinds');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function kindDown($kid)
+    public function kindDown(Request $request, $kid)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
@@ -149,6 +155,7 @@ class ClubController extends Controller
                 $kind->weight = $w + 1;
                 $kind->save();
             }
+            Watchdog::watch($request, '修改社團類別的權重：' . $kind->toJson());
             return redirect()->route('clubs.kinds');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -198,6 +205,7 @@ class ClubController extends Controller
             $kid = $request->input('kind');
             $importer = new ClubImport($kid);
             $importer->import($request->file('excel'));
+            Watchdog::watch($request, '匯入學生社團：' . $request->file('excel')->path());
             return redirect()->route('clubs.admin', ['kid' => $kid])->with('success', '課外社團已經匯入完成！');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -301,7 +309,7 @@ class ClubController extends Controller
             return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('error', '該課外社團已經存在，無法再新增！');
         }
         $grades = $request->input('grades');
-        Club::create([
+        $c = Club::create([
             'name' => $title,
             'short_name' => $request->input('short'),
             'kind_id' => $kind_id,
@@ -323,6 +331,7 @@ class ClubController extends Controller
             'total' => $request->input('total') ?: 0,
             'maximum' => $request->input('limit') ?: 0,
         ]);
+        Watchdog::watch($request, '新增學生社團：' . $c->toJson());
         return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經新增完成！');
     }
 
@@ -367,10 +376,11 @@ class ClubController extends Controller
             'total' => $request->input('total') ?: 0,
             'maximum' => $request->input('limit') ?: 0,
         ]);
+        Watchdog::watch($request, '更新學生社團：' . $club->toJson());
         return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經修改完成！');
     }
 
-    public function clubRemove($club_id)
+    public function clubRemove(Request $request, $club_id)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
@@ -380,6 +390,7 @@ class ClubController extends Controller
             if ($club->enrolls) {
                 return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('error', '此課外社團已經錄取學生，因此無法移除！');
             } else {
+                Watchdog::watch($request, '移除學生社團：' . $club->toJson());
                 $club->delete();
                 return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經移除完成！');
             }
@@ -406,15 +417,17 @@ class ClubController extends Controller
         $club = Club::find($club_id);
         $kind_id = $club->kind_id;
         $enroll_ids = $request->input('enrolls');
+        $message = $request->input('message');
         if (!empty($enroll_ids)) {
             $enrolls = ClubEnroll::whereIn('id', $enroll_ids)->whereNotNull('email')->get();
-            Notification::sendNow($enrolls, new ClubNotification($request->input('message')));
+            Notification::sendNow($enrolls, new ClubNotification($message));
+            Watchdog::watch($request, '寄送郵件給學生社團：' . $club->name . '的錄取學生，郵件內容：' . $message);
             return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '已安排於背景進行郵寄作業，郵件將會為您陸續寄出！');
         }
         return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('message', '因為沒有寄送對象，已經取消郵寄作業！');
     }
 
-    public function clubPrune($club_id)
+    public function clubPrune(Request $request, $club_id)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
@@ -422,6 +435,7 @@ class ClubController extends Controller
             $club = Club::find($club_id);
             ClubEnroll::where('club_id', $club_id)->where('year', current_year())->delete();
             $kind_id = $club->kind_id;
+            Watchdog::watch($request, '移除學生社團' . $club->name . '所有報名資訊');
             return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '已經移除此課外社團本年度報名資訊，可以重新開始報名！');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -486,12 +500,14 @@ class ClubController extends Controller
         ]);
         Notification::sendNow($enroll, new ClubEnrollNotification($order));
         if ($club->kind->manual_auditin) {
+            Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson() . '報名順位：' . $order);
             return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.'因須進行資格審核，待錄取作業完成後，將另行公告通知！');
         }
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
         if ($order > $club->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson() . '報名順位：' . $order . $message);
         return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
     }
 
@@ -526,22 +542,27 @@ class ClubController extends Controller
             'email' => $request->input('email'),
             'mobile' => $request->input('mobile'),
         ]);
+        Watchdog::watch($request, '修改報名資訊：' . $enroll->toJson());
         return redirect()->route('clubs.enroll')->with('success', '報名資訊已更新！');
     }
 
-    public function enrollRemove($enroll_id)
+    public function enrollRemove(Request $request, $enroll_id)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
-            ClubEnroll::destroy($enroll_id);
+            $e = ClubEnroll::find($enroll_id);
+            Watchdog::watch($request, '刪除報名資訊：' . $e->toJson());
+            $e->delete();
             return back()->with('success', '報名資訊已經刪除！');
         } else {
             $enroll = ClubEnroll::find($enroll_id);
             if ($enroll && $enroll->uuid != $user->uuid) {
                 return redirect()->route('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
             }
-            ClubEnroll::destroy($enroll_id);
+            $e = ClubEnroll::find($enroll_id);
+            Watchdog::watch($request, '取消報名：' . $e->toJson());
+            $e->delete();
             return back()->with('success', '已為您取消報名！');
         }
         return back();
@@ -569,26 +590,28 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollValid($enroll_id)
+    public function enrollValid(Request $request, $enroll_id)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
             $enroll->update(['accepted' => true]);
+            Watchdog::watch($request, '將報名資訊設定為錄取：' . $enroll->toJson());
             return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function enrollDeny($enroll_id)
+    public function enrollDeny(Request $request, $enroll_id)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
             $enroll->update(['accepted' => false]);
+            Watchdog::watch($request, '將報名資訊設定為不錄取：' . $enroll->toJson());
             return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -652,12 +675,14 @@ class ClubController extends Controller
         ]);
         Notification::sendNow($enroll, new ClubEnrollNotification($order));
         if ($club->kind->manual_auditin) {
+            Watchdog::watch($request, '新增報名資訊，學生社團：' . $club->name . '，學生：' . $student->class_id . $student->realname);
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '已經完成報名手續，該生報名順位為'.$order.'！');
         }
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
         if ($order > $club->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        Watchdog::watch($request, '新增報名資訊，學生社團：' . $club->name . '，學生：' . $student->class_id . $student->realname);
         return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '已經完成報名手續，該生報名順位為'.$order.$message);
     }
 
@@ -730,6 +755,7 @@ class ClubController extends Controller
             } else {
                 $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
             }
+            Watchdog::watch($request, '快速新增報名資訊，學生社團：' . $club->name . '，學生：' . $stdno.$student->realname);
         }
         return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', $message);
     }
@@ -769,11 +795,13 @@ class ClubController extends Controller
                     'mobile' => $old->mobile,
                 ]);
             }
+            $student = $old->student;
+            Watchdog::watch($request, '匯入舊生，學生社團：' . $club->name . '學生：' . $student->class_id . $student->realname);
         }
         return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '匯入完成！');
     }
 
-    public function enrollNotify($club_id)
+    public function enrollNotify(Request $request, $club_id)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
@@ -783,6 +811,7 @@ class ClubController extends Controller
                 return !is_null($enroll->email);
             });
             Notification::send($enrolled, new ClubEnrolledNotification());
+            Watchdog::watch($request, '寄送錄取通知，學生社團：' . $club->name . '報名資訊：' . $enrolled->toJson());
             return back()->with('success', '已安排於背景進行錄取通知郵寄作業，郵件將會為您陸續寄出！');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');

@@ -10,6 +10,7 @@ use App\Models\IcsEvent;
 use App\Providers\GcalendarServiceProvider as GCAL;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
+use App\Models\Watchdog;
 
 class CalendarController extends Controller
 {
@@ -27,6 +28,7 @@ class CalendarController extends Controller
         11 => '十一',
         12 => '十二',
     ];
+
     protected static $weekMap = [
         0 => '日',
         1 => '一',
@@ -36,6 +38,7 @@ class CalendarController extends Controller
         5 => '五',
         6 => '六',
     ];
+
     /**
      * Create a new controller instance.
      *
@@ -127,6 +130,7 @@ class CalendarController extends Controller
             $event->endTime = $request->input('end_time');
         }
         $event->save();
+        Watchdog::watch($request, '新增行事曆事件：' . $event->toJson());
         return redirect()->route('calendar')->withInput();
     }
 
@@ -174,12 +178,15 @@ class CalendarController extends Controller
             $event->endTime = $request->input('end_time');
         }
         $event->save();
+        Watchdog::watch($request, '更新行事曆事件：' . $event->toJson());
         return redirect()->route('calendar')->withInput();
     }
 
     public function eventRemove(Request $request, $event_id)
     {
-        IcsEvent::destroy($event_id);
+        $e = IcsEvent::find($event_id);
+        Watchdog::watch($request, '移除行事曆事件：' . $e->toJson());
+        $e->delete();
         return redirect()->route('calendar')->withInput();
     }
 

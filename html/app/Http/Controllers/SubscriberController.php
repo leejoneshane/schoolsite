@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Models\Subscriber;
 use App\Models\News;
+use App\Models\Watchdog;
 
 class SubscriberController extends Controller
 {
@@ -15,9 +16,10 @@ class SubscriberController extends Controller
         $news = News::find($news);
         $subscriber = Subscriber::where('email', $request->input('email'))->first();
         if (!$subscriber) {
-            Subscriber::create([
+            $subscriber = Subscriber::create([
                 'email' => $request->input('email'),
             ]);
+            Watchdog::watch($request, '建立訂閱戶：' . $subscriber->toJson());
         }
 
         if ($subscriber) {
@@ -25,11 +27,13 @@ class SubscriberController extends Controller
                 'news_id' => $news->id,
                 'subscriber_id' => $subscriber->id,
             ]);
+            Watchdog::watch($request, '訂閱電子報：' . $news->name);
         }
 
         if (config('subscribers.verify')) {
             if (! $subscriber->verified) {
                 $subscriber->sendEmailVerificationNotification();
+                Watchdog::watch($request, '寄送郵件信箱確認信到 ' . $subscriber->email);
                 return redirect()->route('home')->with('success', '電子報：'.$news->name.'的驗證信已經寄送到您的電子郵件信箱，請收信並進行驗證！');
             }
         }
@@ -43,8 +47,10 @@ class SubscriberController extends Controller
         $subscriber = Subscriber::where('email', $request->input('email'))->first();
         if ($subscriber) {
             DB::table('news_subscribers')->where('news_id', $news->id)->where('subscriber_id', $subscriber->id)->delete();
+            Watchdog::watch($request, '取消訂閱電子報：' . $news->name);
         }
         if (empty($subscriber->news)) {
+            Watchdog::watch($request, '移除訂閱戶：' . $subscriber->toJson());
             $subscriber->delete();
         }
         return redirect()->route('home')->with('success', '您已經取消訂閱電子報：'.$news->name.'!');
@@ -66,6 +72,7 @@ class SubscriberController extends Controller
         }
 
         if ($subscriber->markEmailAsVerified()) {
+            Watchdog::watch($request, '訂閱戶郵件驗證成功：' . $subscriber->toJson());
             return redirect()->route('home')->with('success', '恭喜您成為國語實小電子報訂戶！');
         }
 

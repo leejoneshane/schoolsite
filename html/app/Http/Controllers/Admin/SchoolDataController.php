@@ -13,6 +13,7 @@ use App\Models\Domain;
 use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\Student;
+use App\Models\Watchdog;
 
 class SchoolDataController extends Controller
 {
@@ -49,6 +50,7 @@ class SchoolDataController extends Controller
                 $unit->unit_no = $unit_ids[$id];
                 $unit->name = $name;
                 $unit->save();
+                Watchdog::watch($request, '更新行政單位：' . $unit->toJson());
             }
             $message ='行政單位已更新並儲存！';
         }
@@ -62,6 +64,7 @@ class SchoolDataController extends Controller
                 $role->name = $name;
                 $role->organize = (isset($organize[$id]) && $organize[$id] == 'yes') ? true : false;
                 $role->save();
+                Watchdog::watch($request, '更新職務：' . $role->toJson());
             }
             $message = '職稱已更新並儲存！';
         }
@@ -78,10 +81,11 @@ class SchoolDataController extends Controller
     {
         $input = $request->only(['unit_id', 'unit_name']);
         if ($input) {
-            Unit::create([
+            $u = Unit::create([
                 'unit_no' => $input['unit_id'],
                 'name' => $input['unit_name'],
             ]);
+            Watchdog::watch($request, '新增行政單位：' . $u->toJson());
         }
         return redirect()->route('units')->with('success', '行政單位已新增完成！');
     }
@@ -94,12 +98,13 @@ class SchoolDataController extends Controller
 
     public function roleInsert(Request $request)
     {
-        Role::create([
+        $r = Role::create([
             'role_no' => $request->input('role_id'),
             'unit_id' => $request->input('role_unit'),
             'name' => $request->input('role_name'),
             'organize' => $request->boolean('organize'),
         ]);
+        Watchdog::watch($request, '更新職務：' . $r->toJson());
         $units = Unit::with('roles')->orderBy('unit_no')->get();
         return view('admin.roleadd', ['units' => $units])->with('success', '職務層級已新增完成！');
     }
@@ -137,6 +142,7 @@ class SchoolDataController extends Controller
             $cls->name = $name;
             $cls->tutor = array($tutors[$id]);
             $cls->save();
+            Watchdog::watch($request, '更新班級資訊：' . $cls->toJson());
         }
         $grades = Grade::all();
         $classes = Classroom::all();
@@ -157,6 +163,7 @@ class SchoolDataController extends Controller
             $dom = Domain::find($id);
             $dom->name = $name;
             $dom->save();
+            Watchdog::watch($request, '更新教學領域：' . $dom->toJson());
         }
         return redirect()->route('domains')->with('success', '領域名稱已更新並儲存！');
     }
@@ -170,9 +177,10 @@ class SchoolDataController extends Controller
     {
         $input = $request->only(['domain_name']);
         if ($input) {
-            Domain::create([
+            $d = Domain::create([
                 'name' => $input['domain_name'],
             ]);
+            Watchdog::watch($request, '新增教學領域：' . $d->toJson());
         }
         return redirect()->route('domains')->with('success', '教學領域已經新增完成！');
     }
@@ -190,6 +198,7 @@ class SchoolDataController extends Controller
             $subj = Subject::find($id);
             $subj->name = $name;
             $subj->save();
+            Watchdog::watch($request, '更新教學科目：' . $subj->toJson());
         }
         return redirect()->route('subjects')->with('success', '科目名稱已更新並儲存！');
     }
@@ -361,20 +370,24 @@ class SchoolDataController extends Controller
         $teacher->address = $request->input('address');
         $teacher->www = $request->input('www');
         $teacher->save();
+        Watchdog::watch($request, '更新教師資訊：' . $teacher->toJson());
         return redirect(urldecode($request->input('referer')))->with('success', '教師資訊已經更新完成！');
     }
 
     public function teacherSync(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');
-        Teacher::find($uuid)->sync();
+        $t = Teacher::find($uuid)->sync();
+        Watchdog::watch($request, '同步教師資訊：' . $t->toJson());
         return redirect(urldecode($referer))->with('success', '教師資訊已經重新同步！');
     }
 
     public function teacherRemove(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');
-        Teacher::find($uuid)->delete();
+        $t = Teacher::find($uuid);
+        Watchdog::watch($request, '將離職教師標註為移除：' . $t->toJson());
+        $t->delete();
         return redirect(urldecode($referer))->with('success', '離職教師已經標註為移除！');
     }
 
@@ -452,20 +465,24 @@ class SchoolDataController extends Controller
         $student->address = $request->input('address');
         $student->www = $request->input('www');
         $student->save();
+        Watchdog::watch($request, '更新學生資訊：' . $student->toJson());
         return redirect(urldecode($request->input('referer')))->with('success', '學生資訊已經更新完成！');
     }
 
     public function studentSync(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');
-        Student::find($uuid)->sync();
+        $s = Student::find($uuid)->sync();
+        Watchdog::watch($request, '同步學生資訊：' . $s->toJson());
         return redirect(urldecode($referer))->with('success', '學生資訊已經重新同步！');
     }
 
     public function studentRemove(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');
-        Student::find($uuid)->delete();
+        $s = Student::find($uuid);
+        Watchdog::watch($request, '將轉學生標註為移除：' . $s->toJson());
+        $s->delete();
         return redirect(urldecode($referer))->with('success', '轉學生已經標註為移除！');
     }
 

@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\News;
 use App\Models\Subscriber;
+use App\Models\Watchdog;
 
 class NewsController extends Controller
 {
+
     public function index()
     {
         $news = News::all();
@@ -39,11 +41,12 @@ class NewsController extends Controller
                 $cronjob = 'weekly.'.$weekday;
                 break;
         }
-        News::create([
+        $n = News::create([
             'name' => $caption,
             'model' => $model,
             'cron' => $cronjob,
         ]);
+        Watchdog::watch($request, '新增電子報：' . $n->toJson());
         return redirect()->route('news')->with('success', '電子報新增完成！');
     }
 
@@ -72,17 +75,20 @@ class NewsController extends Controller
                 $cronjob = 'weekly.'.$weekday;
                 break;
         }
-        News::find($news)->update([
+        $n = News::find($news)->update([
             'name' => $caption,
             'model' => $model,
             'cron' => $cronjob,
         ]);
+        Watchdog::watch($request, '更新電子報：' . $n->toJson());
         return redirect()->route('news')->with('success', '電子報更新完成！');
     }
 
-    public function remove($news)
+    public function remove(Request $request, $news)
     {
-        News::destroy($news);
+        $n = News::find($news);
+        Watchdog::watch($request, '移除電子報：' . $n->toJson());
+        $n->delete();
         return redirect()->route('news')->with('success', '電子報已經刪除！');
     }
 
@@ -106,6 +112,8 @@ class NewsController extends Controller
             $sub->sendEmailVerificationNotification();
         }
         $sub->subscription($news);
+        $news_name = News::find($news)->name;
+        Watchdog::watch($request, '訂閱電子報：' . $news_name . '訂閱戶：' . $email);
         return redirect()->route('subscribers', ['news' => $news])->with('success', '訂閱戶新增完成！');
     }
 
@@ -117,15 +125,18 @@ class NewsController extends Controller
         if ($email != $old) {
             $sub->update([ 'email' => $email]);
             $sub->sendEmailVerificationNotification();
+            Watchdog::watch($request, '變更訂閱者信箱：' . $old . '->' . $email);
             return redirect()->route('subscribers', ['news' => $news])->with('success', '訂閱戶電子郵件更新完成！');
         }
         return redirect()->route('subscribers', ['news' => $news])->with('error', '訂閱戶電子郵件與原有郵件地址相同！');
     }
 
-    public function removeSub($news, $id)
+    public function removeSub(Request $request, $news, $id)
     {
         $sub = Subscriber::find($id);
         $sub->cancel($news);
+        $news_name = News::find($news)->name;
+        Watchdog::watch($request, '取消訂閱電子報：' . $news_name . '訂閱戶：' . $sub->email);
         return redirect()->route('subscribers', ['news' => $news])->with('success', '訂閱戶：'.$sub->email.' 已取消訂閱！');
     }
 

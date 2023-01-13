@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Events\PrivateMessage;
 use App\Events\PublicMessage;
+use App\Models\Watchdog;
 
 class MessagerController extends Controller
 {
@@ -16,12 +17,14 @@ class MessagerController extends Controller
         $from = $request->input('from');
         $to = $request->input('to');
         $message = $request->input('message');
+        Watchdog::watch($request, '推播，從' . $from . '到' . $to . '，訊息：' . $message);
         broadcast(new PrivateMessage($from, $to, $message));
     }
 
     public function broadcast(Request $request)
     {
         $message = $request->input('message');
+        Watchdog::watch($request, '廣播，訊息：' . $message);
         broadcast(new PublicMessage($message));
     }
 
