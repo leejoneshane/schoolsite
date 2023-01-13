@@ -28,7 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_admin',
     ];
 
-    //以下屬性隱藏不顯示（render 時忽略）
+    //以下屬性隱藏不顯示（toJson 時忽略）
     protected $hidden = [
         'password',
         'remember_token',

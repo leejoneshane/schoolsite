@@ -35,12 +35,17 @@ class VenueReserve extends Model
         'id',
         'venue_id',
         'uuid',
-        'subscriber',
         'reserved_at',
         'weekday',
         'session',
         'length',
         'reason',
+    ];
+
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'venue',
+        'subscriber',
     ];
 
     //以下屬性需進行資料庫欄位格式轉換

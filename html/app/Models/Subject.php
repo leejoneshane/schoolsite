@@ -17,6 +17,12 @@ class Subject extends Model
         'name',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'teachers',
+        'classrooms',
+    ];
+
     //取得該科目所有任教教師
     public function teachers()
     {

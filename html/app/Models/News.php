@@ -27,6 +27,12 @@ class News extends Model
         'cron',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'subscribers',
+        'verified',
+    ];
+
     //以下為透過程式動態產生之屬性
     protected $appends = [
         'job',

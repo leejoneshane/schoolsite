@@ -35,6 +35,11 @@ class OrganizeSurvey extends Model
         'assign',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'teacher',
+    ];
+
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'special' => 'array',

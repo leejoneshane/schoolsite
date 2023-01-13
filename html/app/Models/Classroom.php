@@ -20,6 +20,15 @@ class Classroom extends Model
         'name',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'grade',
+        'tutor',
+        'students',
+        'teachers',
+        'subjects',
+    ];
+
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'tutor' => 'array',

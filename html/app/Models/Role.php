@@ -17,6 +17,12 @@ class Role extends Model
         'organize',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'unit',
+        'teachers',
+    ];
+
     //篩選指定名稱的職務，靜態函式
     public static function findByName($name)
     {

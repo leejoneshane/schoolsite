@@ -26,6 +26,11 @@ class ClubKind extends Model
         'weight',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'clubs',
+    ];
+
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'single' => 'boolean',
@@ -49,12 +54,6 @@ class ClubKind extends Model
     public function clubs()
     {
         return $this->hasMany('App\Models\Club', 'kind_id');
-    }
-
-    //取得此社團分類的所有報名資訊
-    public function enrolls()
-    {
-        return $this->hasManyThrough(ClubEnroll::class, Club::class, 'kind_id', 'club_id');
     }
 
     //取得此社團分類目前開放報名的所有社團

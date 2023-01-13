@@ -15,6 +15,11 @@ class Domain extends Model
         'name',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'teachers',
+    ];
+
     //取得指定學年的領域教師
     public function year($year)
     {

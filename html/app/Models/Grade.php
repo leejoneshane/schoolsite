@@ -16,6 +16,11 @@ class Grade extends Model
         'name',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'classrooms',
+    ];
+
     //取得此年級所有的班級
     public function classrooms()
     {

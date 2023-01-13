@@ -19,6 +19,12 @@ class Permission extends Model
         'description',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'users',
+        'teachers',
+    ];
+
     //移除此權限時，一併移除此權限的所有授權紀錄
     public function delete()
     {

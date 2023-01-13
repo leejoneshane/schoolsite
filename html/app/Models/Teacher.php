@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Providers\TpeduServiceProvider as SSO;
 use Illuminate\Support\Facades\DB;
 use App\Models\Unit;
-use App\Models\Role;
 use App\Models\Domain;
 use App\Models\Classroom;
 
@@ -46,11 +45,27 @@ class Teacher extends Model
         'character',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'user',
+        'gmails',
+        'unit',
+        'units',
+        'role',
+        'roles',
+        'domain',
+        'domains',
+        'mainunit',
+        'tutor_classroom',
+        'subjects',
+        'classrooms',
+        'seniority',
+        'last_survey',
+    ];
+
     //以下為透過程式動態產生之屬性
     protected $appends = [
         'mainunit',
-        'unit',
-        'role',
         'tutor',
         'domain',
     ];
@@ -70,18 +85,6 @@ class Teacher extends Model
         } else {
             return $unit->uplevel();
         }
-    }
-
-    //提供教師所屬單位
-    public function getUnitAttribute()
-    {
-        return Unit::find($this->unit_id);
-    }
-
-    //提供教師擔任職務
-    public function getRoleAttribute()
-    {
-        return Role::find($this->role_id);
     }
 
     //提供導師班級
@@ -119,6 +122,18 @@ class Teacher extends Model
     public static function findByClass($class_id)
     {
         return Teacher::where('tutor_class', $class_id)->first();
+    }
+
+    //取得教師所屬單位
+    public function unit()
+    {
+        return $this->belongsTo('App\Models\Unit');
+    }
+
+    //取得教師主要職務
+    public function role()
+    {
+        return $this->belongsTo('App\Models\Role');
     }
 
     //取得教師的使用者帳戶

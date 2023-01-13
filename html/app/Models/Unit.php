@@ -15,6 +15,12 @@ class Unit extends Model
         'name',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'roles',
+        'teachers',
+    ];
+
     //取得指定代碼的單位物件，靜態函式
     public static function findByNo($unit_no)
     {

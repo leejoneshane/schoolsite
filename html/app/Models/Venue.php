@@ -45,6 +45,16 @@ class Venue extends Model
         'open',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'sessions',
+        'denytime',
+        'denysession',
+        'available',
+        'manager',
+        'reserved',
+    ];
+
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'availability' => AsCollection::class,

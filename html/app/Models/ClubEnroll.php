@@ -41,6 +41,12 @@ class ClubEnroll extends Model
         'audited_at',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'club',
+        'students',
+    ];
+
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'need_lunch' => 'boolean',

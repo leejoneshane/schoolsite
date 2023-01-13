@@ -56,6 +56,12 @@ class IcsEvent extends Model implements Subscribeable
         'event_id',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'calendar',
+        'unit',
+    ];
+
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'all_day' => 'boolean',

@@ -21,6 +21,11 @@ class Meeting extends Model implements Subscribeable
         'expired_at',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'unit',
+    ];
+
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'inside' => 'boolean',

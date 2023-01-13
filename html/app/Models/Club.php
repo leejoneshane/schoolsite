@@ -45,6 +45,15 @@ class Club extends Model
         'maximum',
     ];
 
+    //以下屬性隱藏不顯示（toJson 時忽略）
+    protected $hidden = [
+        'kind',
+        'unit',
+        'enrolls',
+        'accepted_enrolls',
+        'students',
+    ];
+
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'for_grade' => 'array',
