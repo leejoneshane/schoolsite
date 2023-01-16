@@ -6,7 +6,7 @@
 <input type="date" id="date" class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
     value="{{ $date->format('Y-m-d') }}" onchange="
         var mydate = this.value;
-        window.location.replace('{{ route('watchdog') }}' + '/date=' + mydate);
+        window.location.replace('{{ route('watchdog') }}' + '?date=' + mydate);
 ">
 <label for="idno" class="inline p-2">用戶IP：</label>
 <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
@@ -51,10 +51,10 @@
     }
     search = search.slice(0, -1);
     if (search) {
-        window.location.replace('{{ route('watchdog') }}' + '/' + search);
+        window.location.replace('{{ route('watchdog') }}' + '?' + search);
     } else {
         var mydate = document.getElementById('date').value;
-        window.location.replace('{{ route('watchdog') }}' + '/date=' + mydate);
+        window.location.replace('{{ route('watchdog') }}' + '?date=' + mydate);
     }
 "></i>
 <table class="w-full py-4 text-left font-normal">
