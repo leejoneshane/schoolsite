@@ -849,7 +849,7 @@ class ClubController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
-            $filename = Club::find($club_id)->name.'點名表';
+            $filename = Club::find($club_id)->name.'時序表';
             $exporter = new ClubTimeExport($club_id);
             return $exporter->download($filename);
         } else {
