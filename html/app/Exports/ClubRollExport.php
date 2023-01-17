@@ -30,24 +30,25 @@ class ClubRollExport
         $section->addText('學生社團點名表', ['bold' => true, 'color' => '3333FF', 'size' => 18], ['alignment' => 'center', 'lineHeight' => 1.5]);
         $section->addTextBreak(1);
         $section->addText('月份：　　社團全名：'.$club->name.'　　指導老師簽名：　　　　　　', ['bold' => true, 'size' => 14], ['lineHeight' => 1]);
-        $table = $section->addTable(['borderSize' => 2, 'borderColor' => '999999', 'cellMargin' => 50]);
+        $table = $section->addTable(['unit' => 'pct', 'width' => 100 * 50, 'borderSize' => 2, 'borderColor' => '999999', 'cellMargin' => 50]);
         $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(4.2), ['gridSpan' => 4,'bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(3.75), ['gridSpan' => 4, 'bgColor' => 'cccccc', 'valign' => 'center'])
             ->addText('學生\日期', ['bold' => true], ['alignment' => 'right']);
-        for ($i=0; $i<30; $i++) {
-            $table->addCell(Converter::cmToTwip(0.7));
+        for ($i=0; $i<20; $i++) {
+            $table->addCell(Converter::cmToTwip(0.7), ['gridSpan' => 2]);
         }
         $table->addRow();
         $table->addCell(Converter::cmToTwip(0.7), ['bgColor' => 'cccccc', 'valign' => 'center'])
             ->addText('編號', ['bold' => true], ['alignment' => 'center']);
-        $table->addCell(Converter::cmToTwip(0.7), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(0.77), ['bgColor' => 'cccccc', 'valign' => 'center'])
             ->addText('年班', ['bold' => true], ['alignment' => 'center']);
         $table->addCell(Converter::cmToTwip(0.7), ['bgColor' => 'cccccc', 'valign' => 'center'])
             ->addText('座號', ['bold' => true], ['alignment' => 'center']);
-        $table->addCell(Converter::cmToTwip(2.1), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(1.59), ['bgColor' => 'cccccc', 'valign' => 'center'])
             ->addText('姓名', ['bold' => true], ['alignment' => 'center']);
-        for ($i=0; $i<30; $i++) {
-            $table->addCell()->addText('出席', ['bold' => true], ['alignment' => 'center']);;
+        for ($i=0; $i<20; $i++) {
+            $table->addCell()->addText('出席', ['bold' => true], ['alignment' => 'center']);
+            $table->addCell()->addText('午餐', ['bold' => true], ['alignment' => 'center']);
         }
         $j = 1;
         foreach ($enrolls as $enroll) {
@@ -56,7 +57,7 @@ class ClubRollExport
             $table->addCell()->addText($enroll->student->class_id);
             $table->addCell()->addText($enroll->student->seat);
             $table->addCell()->addText($enroll->student->realname);
-            for ($i=0; $i<30; $i++) {
+            for ($i=0; $i<40; $i++) {
                 $table->addCell();
             }
         }

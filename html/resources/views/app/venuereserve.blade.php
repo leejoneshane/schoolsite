@@ -42,7 +42,7 @@
                         window.location.replace('{{ route('venue.reserve', [ 'id' => $venue->id ]) }}/{{ $date->copy()->addWeek()->format('Y-m-d') }}');
                     ">下一週<i class="fa-solid fa-forward-step"></i></button>
                 </th>
-            </tr>  
+            </tr>
             <tr class="font-semibold text-lg">
                 <th class="border-r bg-gray-200">日期</th>
                 <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[0]->format('Y-m-d') }}</th>
@@ -50,7 +50,7 @@
                 <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[2]->format('Y-m-d') }}</th>
                 <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[3]->format('Y-m-d') }}</th>
                 <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[4]->format('Y-m-d') }}</th>
-            </tr>  
+            </tr>
             <tr class="font-semibold text-lg">
                 <th class="border-b border-r border-slate-300">星期</th>
                 <th class="border-b border-l border-slate-300 text-center">一</th>
@@ -58,7 +58,7 @@
                 <th class="border-b border-l border-slate-300 text-center">三</th>
                 <th class="border-b border-l border-slate-300 text-center">四</th>
                 <th class="border-b border-l border-slate-300 text-center">五</th>
-            </tr>    
+            </tr>
         </thead>
         <tbody>
             @foreach ($venue->sessions as $key => $se)
@@ -84,6 +84,8 @@
                 </td>
                     @elseif ($result->map[$i][$key] === false)
                 <td class="w-32 border-t border-l border-slate-300 bg-pink-200 text-center">暫不出借</td>
+                    @elseif ($result->map[$i][$key] == 'Z')
+                <td class="w-32 border-t border-l border-slate-300 bg-gray-200 text-center">已經過期</td>
                     @elseif ($result->map[$i][$key] == 'X')
                 <td class="w-32 border-t border-l border-slate-300 bg-gray-200 text-center">尚未開放</td>
                     @elseif ($result->map[$i][$key] != '-')

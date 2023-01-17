@@ -120,7 +120,7 @@ class Venue extends Model
                     }
                 }
                 if ($session1 || $session2) {
-                    $str .= self::$weekMap[$i] . $session1 . $session2 . ' ';
+                    $str .= self::$weekMap[$i] . $session1 . (($session1 && $session2) ? ' ' : '') . $session2 . ' ';
                 }
             }
         } else {
@@ -166,7 +166,7 @@ class Venue extends Model
     public function week_reserved(Carbon $date)
     {
         $sdate = $date->format('Y-m-d');
-        $edate = $date->addDays(4)->format('Y-m-d');
+        $edate = $date->copy()->addDays(4)->format('Y-m-d');
         return $this->reserved()->whereBetween('reserved_at', [$sdate, $edate])->get();
     }
 
@@ -194,6 +194,11 @@ class Venue extends Model
             if ($sdate->between($this->unavailable_at, $this->unavailable_until)) {
                 for ($j=0; $j<10; $j++) {
                     $whole->map[$i][$j] = false; //位於不出借時段，則設為 false
+                }
+            }
+            if ($sdate <= Carbon::today()) {
+                for ($j=0; $j<10; $j++) {
+                    $whole->map[$i][$j] = 'Z'; //如果時間已經結束，設為 'Z'
                 }
             }
             if ($sdate > Carbon::today()->addDays($this->schedule_limit)) {

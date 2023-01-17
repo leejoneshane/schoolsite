@@ -2,7 +2,6 @@
 
 namespace App\Exports;
 
-use Carbon\Carbon;
 use App\Models\Club;
 use App\Models\ClubEnroll;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
