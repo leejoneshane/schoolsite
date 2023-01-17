@@ -13,13 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('repair_reply', function (Blueprint $table) {
+        Schema::create('repair_kinds', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid');
-            $table->integer('job_id');
-            $table->string('status');
-            $table->string('comment')->nullable();
-            $table->timestamps();
+            $table->string('name');
+            $table->text('description')->nullable();
+            $table->json('manager')->nullable();
         });
     }
 
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('repair_reply');
+        Schema::dropIfExists('repair_kinds');
     }
 };

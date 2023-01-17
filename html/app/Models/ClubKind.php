@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Club;
-use App\Models\ClubEnroll;
 use Carbon\Carbon;
 
 class ClubKind extends Model

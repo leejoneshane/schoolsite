@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('kind_id');
             $table->string('place');
             $table->string('summary');
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

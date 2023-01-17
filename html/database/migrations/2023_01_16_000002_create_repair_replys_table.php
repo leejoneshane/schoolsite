@@ -13,10 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('repair_kind', function (Blueprint $table) {
+        Schema::create('repair_replys', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('description')->nullable();
+            $table->uuid('uuid');
+            $table->integer('job_id');
+            $table->string('status');
+            $table->string('comment')->nullable();
+            $table->timestamps();
         });
     }
 
@@ -27,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('repair_kind');
+        Schema::dropIfExists('repair_replys');
     }
 };
