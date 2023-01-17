@@ -54,21 +54,19 @@
         　　3. 若要輸入多位學生，請用空白隔開。例如：30301 30421。<br>
     </p>
 </div>
-<div class="flex flex-col gap-3 justify-center items-center">
-    <div class="bg-white rounded p-10">
-        <form method="POST" action="{{ route('clubs.fastappend', ['club_id' => $club->id]) }}">
-            @csrf
-            <p class="p-6">
-                <label for="stdno" class="block text-3xl font-bold">請輸入報名學生的班級座號：</label>
-                <textarea class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    name="stdno" rows="5" cols="180"></textarea>
-            </p>
-            <p class="p-6">
-                <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    儲存
-                </button>
-            </p>
-        </form>
-    </div>
+<div class="w-full flex flex-col gap-3 justify-center items-center">
+    <form method="POST" action="{{ route('clubs.fastappend', ['club_id' => $club->id]) }}">
+        @csrf
+        <p class="p-6">
+            <label for="stdno" class="block text-2xl font-bold">請輸入報名學生的班級座號：</label>
+            <textarea class="inline w-2/3 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+                name="stdno" rows="5" cols="180"></textarea>
+        </p>
+        <p class="p-6">
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                儲存
+            </button>
+        </p>
+    </form>
 </div>
 @endsection

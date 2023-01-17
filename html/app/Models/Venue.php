@@ -80,10 +80,13 @@ class Venue extends Model
     //提供不出借時段字串
     public function getDenytimeAttribute()
     {
-        $str = substr($this->unavailable_at, 0, 10);
-        $str .= '～';
-        $str .= substr($this->unavailable_until, 0, 10);
-        return ($str == '～') ? '無' : $str;
+        $str = '';
+        if ($this->unavailable_at && $this->unavailable_until) {
+            $str = substr($this->unavailable_at, 0, 10);
+            $str .= '～';
+            $str .= substr($this->unavailable_until, 0, 10);    
+        }
+        return $str;
     }
 
     //提供不出借節次字串
