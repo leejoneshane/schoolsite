@@ -45,7 +45,7 @@ class VenueController extends Controller
         }
         $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
         if ($manager) {
-            $teachers = Teacher::orderBy('realname')->get();
+            $teachers = Teacher::admins();
             return view('app.venueadd', ['teacher' => $user->profile, 'teachers' => $teachers, 'sessions' => self::$sessionMap]);
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能新增場地或設備！');
@@ -107,7 +107,7 @@ class VenueController extends Controller
         if (!$venue) return redirect()->route('venues')->with('error', '找不到此場地/設備，因此無法編輯！');
         $manager = ($user->is_admin || $user->hasPermission('venue.manager') || $venue->manager->uuid == $user->uuid);
         if ($manager) {
-            $teachers = Teacher::orderBy('realname')->get();
+            $teachers = Teacher::admins();
             return view('app.venueedit', ['venue' => $venue, 'teachers' => $teachers]);
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能修改場地或設備！');

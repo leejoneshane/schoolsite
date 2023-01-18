@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Providers\TpeduServiceProvider as SSO;
 use Illuminate\Support\Facades\DB;
 use App\Models\Unit;
+use App\Models\Role;
 use App\Models\Domain;
 use App\Models\Classroom;
 
@@ -104,6 +105,53 @@ class Teacher extends Model
             return Domain::find($domain->id);
         }
         return false;
+    }
+
+    //取得所有行政人員
+    public static function admins()
+    {
+        $roles = Role::administrator()->pluck('id');
+        return Teacher::selectRaw('teachers.*, LEFT(units.unit_no, 3) as top')
+            ->leftjoin('units', 'units.id', '=', 'teachers.unit_id')
+            ->leftjoin('roles', 'roles.id', '=', 'teachers.role_id')
+            ->whereIn('teachers.role_id', $roles)
+            ->orderBy('top')
+            ->orderBy('roles.role_no')
+            ->orderBy('roles.name')
+            ->get();
+    }
+
+    //取得所有主任
+    public static function director()
+    {
+        $roles = Role::director()->pluck('id');
+        return Teacher::leftjoin('units', 'units.id', '=', 'teachers.unit_id')
+            ->whereIn('teachers.role_id', $roles)
+            ->orderBy('units.unit_no')
+            ->get();
+    }
+
+    //取得所有非主任行政人員（包含：組長、特殊任務）
+    public static function manager()
+    {
+        $roles = Role::manager()->pluck('id');
+        return Teacher::selectRaw('teachers.*, LEFT(units.unit_no, 3) as top')
+            ->leftjoin('units', 'units.id', '=', 'teachers.unit_id')
+            ->leftjoin('roles', 'roles.id', '=', 'teachers.role_id')
+            ->whereIn('teachers.role_id', $roles)
+            ->orderBy('top')
+            ->orderBy('roles.role_no')
+            ->orderBy('roles.name')
+            ->get();
+    }
+
+    //取得級任和科任教師(不含行政人員)
+    public static function general()
+    {
+        $roles = Role::general()->pluck('id');
+        return Teacher::whereIn('role_id', $roles)
+            ->orderBy('tutor_class')
+            ->get();
     }
 
     //取得指定全誼系統代號的教師

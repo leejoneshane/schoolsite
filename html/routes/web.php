@@ -180,6 +180,19 @@ Route::group(['prefix' => 'venue', 'middleware' => [ 'auth'] ], function () {
     Route::post('reserve/update', 'App\Http\Controllers\VenueController@reserveUpdate')->name('venue.reserve.update');
 });
 
+// 修繕登記
+Route::group(['prefix' => 'repair', 'middleware' => [ 'auth'] ], function () {
+    Route::get('/', 'App\Http\Controllers\RepairController@index')->name('repair');
+    Route::get('/list/{kind?}', 'App\Http\Controllers\RepairController@list')->name('repair.list');
+    Route::get('/kinds/add', 'App\Http\Controllers\RepairController@addkind');
+    Route::post('/kinds/add', 'App\Http\Controllers\RepairController@insertKind')->name('repair.addkind');
+    Route::get('/kinds/edit/{kind}', 'App\Http\Controllers\RepairController@editKind');
+    Route::post('/kinds/edit/{kind}', 'App\Http\Controllers\RepairController@updateKind')->name('repair.editkind');
+    Route::post('/kinds/remove/{kind}', 'App\Http\Controllers\RepairController@removeKind')->name('repair.removekind');
+    Route::get('/report/{kind}', 'App\Http\Controllers\RepairController@report');
+    Route::post('/report/{kind}', 'App\Http\Controllers\RepairController@insertJob')->name('repair.report');
+});
+
 // 管理後台
 Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');

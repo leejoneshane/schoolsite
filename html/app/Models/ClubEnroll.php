@@ -49,7 +49,6 @@ class ClubEnroll extends Model
 
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
-        'need_lunch' => 'boolean',
         'weekdays' => 'array',
         'accepted' => 'boolean',
         'audited_at' => 'datetime:Y-m-d H:i:s',

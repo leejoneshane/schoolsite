@@ -39,7 +39,21 @@ class Role extends Model
             ->get();
     }
 
-    //篩選職級為主任的職務，靜態函式    
+    //篩選所有行政人員職務，靜態函式
+    public static function administrator()
+    {
+        return Role::selectRaw('roles.*, LEFT(units.unit_no, 3) as top')
+            ->join('units', 'units.id', '=', 'roles.unit_id')
+            ->where('roles.organize', true)
+            ->orWhere(function ($query) {
+                $query->where('roles.role_no', '!=', 'C05');
+                $query->where('roles.role_no', '!=', 'C06');
+            })
+            ->orderBy('top')
+            ->get();
+    }
+
+    //篩選職級為主任的職務，靜態函式
     public static function director()
     {
         return Role::selectRaw('roles.*, LEFT(units.unit_no, 3) as top')
@@ -50,13 +64,24 @@ class Role extends Model
             ->get();
     }
 
-    //篩選所有的組長職務，靜態函式
-    public static function organize()
+    //篩選所有的非主任行政人員（包含：組長、特殊任務），靜態函式
+    public static function manager()
     {
         return Role::selectRaw('roles.*, LEFT(units.unit_no, 3) as top')
             ->join('units', 'units.id', '=', 'roles.unit_id')
             ->where('roles.organize', true)
             ->where('roles.role_no', '!=', 'C02')
+            ->orderBy('top')
+            ->get();
+    }
+
+    //篩選所有的級科任職務，靜態函式
+    public static function general()
+    {
+        return Role::selectRaw('roles.*, LEFT(units.unit_no, 3) as top')
+            ->join('units', 'units.id', '=', 'roles.unit_id')
+            ->where('roles.role_no', 'C05')
+            ->orWhere('roles.role_no', 'C06')
             ->orderBy('top')
             ->get();
     }

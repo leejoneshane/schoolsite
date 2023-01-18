@@ -417,10 +417,13 @@ class TpeduServiceProvider extends ServiceProvider
     function sync_roles($only = false, $sync = false)
     {
         $detail_log = [];
-        if (!$only && $sync) {
-            Role::truncate();
-            $detail_log[] = '快取資料庫中已經有職稱資料，職稱資料必須在同步教師資料時才能同步處理，已經將職稱資料清空！';
+        $fetch = Role::first();
+        if ($fetch) {
+            $detail_log[] = '快取資料庫中已經有職稱資料，跳過不處理！';
+            return $detail_log;
         }
+        Role::truncate();
+        $detail_log[] = '職稱資料必須在同步教師資料時才能同步處理，已經將快取資料清空！';
         return $detail_log;
     }
 

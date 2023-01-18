@@ -57,7 +57,7 @@
         window.location.replace('{{ route('watchdog') }}' + '?date=' + mydate);
     }
 "></i>
-<table class="w-full py-4 text-left font-normal">
+<table class="w-full table-fixed py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
         <th scope="col" class="p-2">
             時間
@@ -106,7 +106,7 @@
         <td class="p-2">{{ $user->profile->realname }}</td>
     </tr>
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
-        <td colspan="8" class="border-b">{{ $log->action }}</td>
+        <td colspan="8" class="border-b">{!! nl2br($log->action) !!}</td>
     </tr>
     @endforeach
 </table>

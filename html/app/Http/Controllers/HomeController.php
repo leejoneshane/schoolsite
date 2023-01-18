@@ -85,6 +85,15 @@ class HomeController extends Controller
                 'weight' => 40,
             ]);
         }
+        if (!Menu::find('repair')) {
+            Menu::create([
+                'id' => 'repair',
+                'parent_id' => 'affairs',
+                'caption' => '修繕登記',
+                'url' => 'route.repair',
+                'weight' => 50,
+            ]);
+        }
     }
 
     public function index()

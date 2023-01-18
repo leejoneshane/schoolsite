@@ -202,7 +202,7 @@ class OrganizeController extends Controller
                 }
             }
         }
-        $admins = Role::organize();
+        $admins = Role::manager();
         foreach ($admins as $a) {
             $teachers = Teacher::where('role_id', $a->id)->get();
             if ($teachers->count() > 0) {
