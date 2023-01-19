@@ -191,6 +191,10 @@ Route::group(['prefix' => 'repair', 'middleware' => [ 'auth'] ], function () {
     Route::post('/kinds/remove/{kind}', 'App\Http\Controllers\RepairController@removeKind')->name('repair.removekind');
     Route::get('/report/{kind}', 'App\Http\Controllers\RepairController@report');
     Route::post('/report/{kind}', 'App\Http\Controllers\RepairController@insertJob')->name('repair.report');
+    Route::post('/report/remove/{job}', 'App\Http\Controllers\RepairController@removeJob')->name('repair.removejob');
+    Route::get('/reply/{job}', 'App\Http\Controllers\RepairController@reply');
+    Route::post('/reply/{job}', 'App\Http\Controllers\RepairController@insertReply')->name('repair.reply');
+    Route::post('/reply/remove/{reply}', 'App\Http\Controllers\RepairController@removeReply')->name('repair.removereply');
 });
 
 // 管理後台

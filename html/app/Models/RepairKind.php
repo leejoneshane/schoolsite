@@ -15,6 +15,7 @@ class RepairKind extends Model
     protected $fillable = [
         'name',
         'description',
+        'selftest',
         'manager',
     ];
 

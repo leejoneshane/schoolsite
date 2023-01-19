@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-club" action="{{ route('repair.addkind') }}" method="POST">
+<form id="add-kind" action="{{ route('repair.addkind') }}" method="POST">
     @csrf
     <p class="p-3">
         <label for="title" class="inline">名稱：</label>
@@ -25,7 +25,13 @@
         <label for="description" class="inline">詳細描述：</label>
         <textarea id="description" name="description" rows="4" class="inline block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         ></textarea>
-        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請列舉設備種類、維修流程、自我檢測方式、負責處室、其它聯絡方式...等資訊！</span>
+        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請列舉設備種類、維修流程、負責處室、其它聯絡方式...等資訊！</span>
+    </p>
+    <p class="p-3">
+        <label for="selftest" class="inline">一級維修檢測方式：</label>
+        <textarea id="selftest" name="selftest" rows="4" class="inline block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        ></textarea>
+        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請列舉不同故障情形的檢測方式、報修前應紀錄的重點...等資訊！</span>
     </p>
     <p class="p-6">
         <div class="inline">

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class RepairReply extends Model
 {
 
-	protected $table = 'repair_jobs';
+	protected $table = 'repair_replys';
 
     //以下屬性可以批次寫入
     protected $fillable = [

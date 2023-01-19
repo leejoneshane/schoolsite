@@ -22,6 +22,7 @@ class RepairJob extends Model
     protected $hidden = [
         'reporter',
         'kind',
+        'replys',
         'reply',
     ];
 
@@ -37,10 +38,16 @@ class RepairJob extends Model
         return $this->belongsTo('App\Models\RepairKind', 'id', 'kind_id');
     }
 
+    //取得此報修紀錄的所有回覆（由舊到新）
+    public function replys()
+    {
+        return $this->hasMany('App\Models\RepairReply', 'job_id')->oldest();
+    }
+
     //取得此報修紀錄的最後一筆回覆
     public function reply()
     {
-        return $this->hasOne('App\Models\RepairReply', 'job_id')->latest();
+        return $this->hasOne('App\Models\RepairReply', 'job_id')->latestOfMany();
     }
 
 }
