@@ -32,7 +32,7 @@ class RepairReply extends Model
     //取得此報修紀錄的分類
     public function job()
     {
-        return $this->belongsTo('App\Models\RepairJob', 'id', 'job_id');
+        return $this->belongsTo('App\Models\RepairJob', 'job_id');
     }
 
 }
