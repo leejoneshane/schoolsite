@@ -17,9 +17,9 @@
 </div>
 <p></p>
 <div class="pt-10">
-    <table class="border-collapse">
+    <table class="w-full border-collapse">
         @foreach ($kinds as $kind)
-            <tr>
+            <tr class="border p-3 bg-green-200">
                 <th class="font-semibold text-left">
                     <a href="{{ route('repair.list') }}/{{ $kind->id}}" class="text-lg text-blue-700 dark:text-blue-500 hover:text-blue-600 hover:dark:text-blue-400 underline">
                         {{ $kind->name }}
@@ -40,9 +40,9 @@
                     @endadmin
                 </th>
             </tr>
-            <tr>
+            <tr class="border p-3 bg-green-100">
                 <td class="text-left">
-                    {{ nl2br($kind->description) }}<br>
+                    {!! nl2br($kind->description) !!}<br>
                     負責人員：
                     @foreach ($kind->managers as $teacher)
                     {{ $teacher->role_name . $teacher->realname }}

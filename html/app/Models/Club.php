@@ -232,15 +232,23 @@ class Club extends Model
     }
 
     //取得此社團指定學年或本學年所有的學生
-    public function enroll_students($year)
+    public function enroll_students($year = null)
     {
-        return $this->students()->wherePivot('year', $year)->get();
+        if ($year) {
+            return $this->students()->wherePivot('year', $year)->get();
+        } else {
+            return $this->students()->wherePivot('year', current_year())->get();
+        }
     }
 
     //取得此社團指定學年或本學年所有已錄取的學生
-    public function accepted_students($year)
+    public function accepted_students($year = null)
     {
-        return $this->students()->wherePivot('year', $year)->wherePivot('accepted', 1)->get();
+        if ($year) {
+            return $this->students()->wherePivot('year', $year)->wherePivot('accepted', 1)->get();
+        } else {
+            return $this->students()->wherePivot('year', current_year())->wherePivot('accepted', 1)->get();
+        }
     }
 
 }
