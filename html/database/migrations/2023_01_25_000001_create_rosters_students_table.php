@@ -15,7 +15,8 @@ return new class extends Migration
     {
         Schema::create('rosters_students', function (Blueprint $table) {
             $table->id();
-            $table->integer('year');
+            $table->string('section');
+            $table->string('class_id');
             $table->integer('roster_id');
             $table->uuid('uuid');
             $table->uuid('deal');

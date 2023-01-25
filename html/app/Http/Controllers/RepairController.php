@@ -37,7 +37,6 @@ class RepairController extends Controller
             $kind = RepairKind::first();
         }
         $jobs = $kind->jobs()->paginate(16);
-        dd($jobs->first()->reply);
         return view('app.repairlist', ['kind' => $kind, 'jobs' => $jobs]);
     }
 

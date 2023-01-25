@@ -51,6 +51,10 @@ function current_seme() {
     return $seme;
 }
 
+function current_section() {
+    return current_year() . current_seme();
+}
+
 function current_between_date() {
     if (date('m') > 7) {
         $syear = date('Y');

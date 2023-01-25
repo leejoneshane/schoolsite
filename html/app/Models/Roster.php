@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 class Roster extends Model
@@ -36,6 +37,14 @@ class Roster extends Model
         'ended_at' => 'datetime:Y-m-d',
     ];
 
+    //取得已填報的所有學期，傳回陣列，靜態函式
+    public static function sections()
+    {
+        return DB::table('rosters_students')->selectRaw('DISTINCT(section)')->get()->transform(function ($item) {
+            return $item->section;
+        })->toArray();
+    }
+
     //取得已填報學生集合
     public function students()
     {
@@ -43,7 +52,8 @@ class Roster extends Model
             ->as('list')
             ->withPivot([
                 'id',
-                'year',
+                'section',
+                'class_id',
                 'deal',
                 'created_at',
                 'updated_at',
@@ -51,12 +61,32 @@ class Roster extends Model
     }
 
     //取得指定學年或本學年之學生名單
-    public function year_students($year = null)
+    public function year_students($section = null)
     {
-        if ($year) {
-            return $this->students()->wherePivot('year', $year)->get();
+        if ($section) {
+            return $this->students()->wherePivot('section', $section)->get();
         } else {
-            return $this->students()->wherePivot('year', current_year())->get();
+            return $this->students()->wherePivot('section', current_section())->get();
+        }
+    }
+
+    //計算本學期已填報班級數
+    public function count_classes($section = null)
+    {
+        if ($section) {
+            return DB::table('rosters_students')->distinct('class_id')->where('section', $section)->count();
+        } else {
+            return DB::table('rosters_students')->distinct('class_id')->where('section', current_section())->count();
+        }
+    }
+
+    //檢查本學期已填報學生數
+    public function count($section = null)
+    {
+        if ($section) {
+            return DB::table('rosters_students')->where('section', $section)->count();
+        } else {
+            return DB::table('rosters_students')->where('section', current_section())->count();
         }
     }
 

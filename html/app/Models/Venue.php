@@ -196,12 +196,16 @@ class Venue extends Model
         for ($i=0; $i<5; $i++) {
             if ($sdate->between($this->unavailable_at, $this->unavailable_until)) {
                 for ($j=0; $j<10; $j++) {
-                    $whole->map[$i][$j] = false; //位於不出借時段，則設為 false
+                    if ($whole->map[$i][$j] === true) {
+                        $whole->map[$i][$j] = false; //位於不出借時段，則設為 false
+                    }
                 }
             }
             if ($sdate <= Carbon::today()) {
                 for ($j=0; $j<10; $j++) {
-                    $whole->map[$i][$j] = 'Z'; //如果時間已經結束，設為 'Z'
+                    if ($whole->map[$i][$j] === true) {
+                        $whole->map[$i][$j] = 'Z'; //如果時間已經結束，設為 'Z'
+                    }
                 }
             }
             if ($sdate > Carbon::today()->addDays($this->schedule_limit)) {

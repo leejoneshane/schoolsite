@@ -32,9 +32,9 @@
         <th scope="col" class="p-2">
             不出借時段
         </th>
-        <th scope="col" class="p-2 w-1/5">
+        <!--th scope="col" class="p-2 w-1/5">
             不出借節次
-        </th>
+        </th-->
         <th scope="col" class="p-2">
             可預約期限
         </th>
@@ -61,9 +61,9 @@
         <td class="p-2 cursor-pointer" onclick="
         window.location.replace('{{ route('venue.reserve', ['id' => $venue->id]) }}');
         ">{{ $venue->denytime }}</td>
-        <td class="p-2 cursor-pointer" onclick="
+        <!--td class="p-2 cursor-pointer" onclick="
         window.location.replace('{{ route('venue.reserve', ['id' => $venue->id]) }}');
-        ">{{ $venue->denysession }}</td>
+        ">{{ $venue->denysession }}</td-->
         <td class="p-2 cursor-pointer" onclick="
         window.location.replace('{{ route('venue.reserve', ['id' => $venue->id]) }}');
         ">{{ ($venue->schedule_limit > 0) ? $venue->schedule_limit.'天內' : '未設定' }}</td>

@@ -197,6 +197,21 @@ Route::group(['prefix' => 'repair', 'middleware' => [ 'auth'] ], function () {
     Route::post('/reply/remove/{reply}', 'App\Http\Controllers\RepairController@removeReply')->name('repair.removereply');
 });
 
+// 學生名單填報
+Route::group(['prefix' => 'roster', 'middleware' => [ 'auth'] ], function () {
+    Route::get('/list/{section?}', 'App\Http\Controllers\RosterController@list')->name('rosters');
+    Route::get('/summary/{id}/{section?}', 'App\Http\Controllers\RosterController@summary')->name('roster.summary');
+    Route::get('/add', 'App\Http\Controllers\RosterController@add');
+    Route::post('/add', 'App\Http\Controllers\RosterController@insert')->name('roster.add');
+    Route::get('/edit/{id}', 'App\Http\Controllers\RosterController@edit');
+    Route::post('/edit/{id}', 'App\Http\Controllers\RosterController@update')->name('roster.edit');
+    Route::post('/remove/{id}', 'App\Http\Controllers\RosterController@remove')->name('roster.remove');
+    Route::post('/reset/{id}', 'App\Http\Controllers\RosterController@reset')->name('roster.reset');
+    Route::get('/enroll/{id}/{class?}', 'App\Http\Controllers\RosterController@enroll');
+    Route::get('/view/{id}/{section}', 'App\Http\Controllers\RosterController@show');
+    Route::get('/download/{id}/{section}', 'App\Http\Controllers\RosterController@download');
+});
+
 // 管理後台
 Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
