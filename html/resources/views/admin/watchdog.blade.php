@@ -14,15 +14,17 @@
 <label for="user" class="inline p-2">教師帳號：</label>
 <select id="user" name="user" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
     <option></option>
-    @foreach ($teachers as $teacher)
+    @foreach ($teachers as $t)
     @php
         $gap = '';
-        for ($i=0;$i<6-mb_strlen($teacher->role_name);$i++) {
-                $gap .= '　';
-            }
-        $display = $teacher->role_name . $gap . $teacher->realname;
+        $rname = '';
+        if ($t->role_name) $rname = $t->role_name;
+        for ($i=0;$i<6-mb_strlen($rname);$i++) {
+            $gap .= '　';
+        }
+        $display = $t->role_name . $gap . $t->realname;
     @endphp
-    <option value="{{ $teacher->uuid }}"{{ ($teacher->uuid == $uuid) ? ' selected' : '' }}>{{ $display }}</option>
+    <option value="{{ $t->uuid }}"{{ ($t->uuid == $uuid) ? ' selected' : '' }}>{{ $display }}</option>
     @endforeach
 </select>
 <label for="stdid" class="inline p-2">學生帳號，學號：</label>

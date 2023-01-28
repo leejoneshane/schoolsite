@@ -18,24 +18,25 @@ class RosterController extends Controller
 
     public function list($section = null)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能填報學生名單！');
         }
         if ($section) {
             $section = current_section();
         }
-        $rosters = Roster::all();
-        $classes = Classroom::orderBy('id')->get();
         $teacher = Teacher::find($user->uuid);
-        return view('app.rosters', ['teacher' => $teacher, 'section' => $section, 'rosters' => $rosters, 'classes' => $classes]);
+        $rosters = Roster::all();
+        $sections = Roster::sections();
+        $classes = Classroom::orderBy('id')->get();
+        return view('app.rosters', ['teacher' => $teacher, 'section' => $section, 'sections' => $sections, 'rosters' => $rosters, 'classes' => $classes]);
     }
 
     public function add()
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('roster.manager');
-        if ($user->is_admin || $manager) {
+        if (!($user->is_admin || $manager)) {
             return redirect()->route('home')->with('error', '只有管理員才能新增學生表單！');
         }
         return view('app.rosteradd');
@@ -61,7 +62,7 @@ class RosterController extends Controller
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('roster.manager');
-        if ($user->is_admin || $manager) {
+        if (!($user->is_admin || $manager)) {
             return redirect()->route('home')->with('error', '只有管理員才能修改學生表單！');
         }
         $roster = Roster::find($id);
@@ -102,7 +103,7 @@ class RosterController extends Controller
             ->where('section', current_section())
             ->delete();
         Watchdog::watch($request, '重設學生表單：' . $roster->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return redirect()->route('rosters')->with('success', '學生表單已經移除！');
+        return redirect()->route('rosters')->with('success', '學生表單已經重設！');
     }
 
     public function summary($id, $section)

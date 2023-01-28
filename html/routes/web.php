@@ -183,33 +183,34 @@ Route::group(['prefix' => 'venue', 'middleware' => [ 'auth'] ], function () {
 // 修繕登記
 Route::group(['prefix' => 'repair', 'middleware' => [ 'auth'] ], function () {
     Route::get('/', 'App\Http\Controllers\RepairController@index')->name('repair');
-    Route::get('/list/{kind?}', 'App\Http\Controllers\RepairController@list')->name('repair.list');
-    Route::get('/kinds/add', 'App\Http\Controllers\RepairController@addkind');
-    Route::post('/kinds/add', 'App\Http\Controllers\RepairController@insertKind')->name('repair.addkind');
-    Route::get('/kinds/edit/{kind}', 'App\Http\Controllers\RepairController@editKind');
-    Route::post('/kinds/edit/{kind}', 'App\Http\Controllers\RepairController@updateKind')->name('repair.editkind');
-    Route::post('/kinds/remove/{kind}', 'App\Http\Controllers\RepairController@removeKind')->name('repair.removekind');
-    Route::get('/report/{kind}', 'App\Http\Controllers\RepairController@report');
-    Route::post('/report/{kind}', 'App\Http\Controllers\RepairController@insertJob')->name('repair.report');
-    Route::post('/report/remove/{job}', 'App\Http\Controllers\RepairController@removeJob')->name('repair.removejob');
-    Route::get('/reply/{job}', 'App\Http\Controllers\RepairController@reply');
-    Route::post('/reply/{job}', 'App\Http\Controllers\RepairController@insertReply')->name('repair.reply');
-    Route::post('/reply/remove/{reply}', 'App\Http\Controllers\RepairController@removeReply')->name('repair.removereply');
+    Route::get('list/{kind?}', 'App\Http\Controllers\RepairController@list')->name('repair.list');
+    Route::get('kinds/add', 'App\Http\Controllers\RepairController@addKind');
+    Route::post('kinds/add', 'App\Http\Controllers\RepairController@insertKind')->name('repair.addkind');
+    Route::get('kinds/edit/{kind}', 'App\Http\Controllers\RepairController@editKind');
+    Route::post('kinds/edit/{kind}', 'App\Http\Controllers\RepairController@updateKind')->name('repair.editkind');
+    Route::post('kinds/remove/{kind}', 'App\Http\Controllers\RepairController@removeKind')->name('repair.removekind');
+    Route::get('report/{kind}', 'App\Http\Controllers\RepairController@report');
+    Route::post('report/{kind}', 'App\Http\Controllers\RepairController@insertJob')->name('repair.report');
+    Route::post('report/remove/{job}', 'App\Http\Controllers\RepairController@removeJob')->name('repair.removejob');
+    Route::get('reply/{job}', 'App\Http\Controllers\RepairController@reply');
+    Route::post('reply/{job}', 'App\Http\Controllers\RepairController@insertReply')->name('repair.reply');
+    Route::post('reply/remove/{reply}', 'App\Http\Controllers\RepairController@removeReply')->name('repair.removereply');
+    Route::post('image-upload', 'App\Http\Controllers\RepairController@storeImage')->name('repair.imageupload');
 });
 
 // 學生名單填報
 Route::group(['prefix' => 'roster', 'middleware' => [ 'auth'] ], function () {
-    Route::get('/list/{section?}', 'App\Http\Controllers\RosterController@list')->name('rosters');
-    Route::get('/summary/{id}/{section?}', 'App\Http\Controllers\RosterController@summary')->name('roster.summary');
-    Route::get('/add', 'App\Http\Controllers\RosterController@add');
-    Route::post('/add', 'App\Http\Controllers\RosterController@insert')->name('roster.add');
-    Route::get('/edit/{id}', 'App\Http\Controllers\RosterController@edit');
-    Route::post('/edit/{id}', 'App\Http\Controllers\RosterController@update')->name('roster.edit');
-    Route::post('/remove/{id}', 'App\Http\Controllers\RosterController@remove')->name('roster.remove');
-    Route::post('/reset/{id}', 'App\Http\Controllers\RosterController@reset')->name('roster.reset');
-    Route::get('/enroll/{id}/{class?}', 'App\Http\Controllers\RosterController@enroll');
-    Route::get('/view/{id}/{section}', 'App\Http\Controllers\RosterController@show');
-    Route::get('/download/{id}/{section}', 'App\Http\Controllers\RosterController@download');
+    Route::get('list/{section?}', 'App\Http\Controllers\RosterController@list')->name('rosters');
+    Route::get('summary/{id}/{section?}', 'App\Http\Controllers\RosterController@summary')->name('roster.summary');
+    Route::get('add', 'App\Http\Controllers\RosterController@add');
+    Route::post('add', 'App\Http\Controllers\RosterController@insert')->name('roster.add');
+    Route::get('edit/{id}', 'App\Http\Controllers\RosterController@edit');
+    Route::post('edit/{id}', 'App\Http\Controllers\RosterController@update')->name('roster.edit');
+    Route::post('remove/{id}', 'App\Http\Controllers\RosterController@remove')->name('roster.remove');
+    Route::post('reset/{id}', 'App\Http\Controllers\RosterController@reset')->name('roster.reset');
+    Route::get('enroll/{id}/{class?}', 'App\Http\Controllers\RosterController@enroll');
+    Route::get('view/{id}/{section}', 'App\Http\Controllers\RosterController@show');
+    Route::get('download/{id}/{section}', 'App\Http\Controllers\RosterController@download');
 });
 
 // 管理後台

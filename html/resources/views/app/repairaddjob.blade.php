@@ -9,7 +9,7 @@
 </div>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
-        {!! nl2br($kind->selftest) !!}
+        {!! $kind->selftest !!}
     </p>
 </div>
 <form id="add-job" action="{{ route('repair.report', ['kind' => $kind->id]) }}" method="POST">

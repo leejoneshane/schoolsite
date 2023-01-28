@@ -156,4 +156,18 @@ class RepairController extends Controller
         return redirect()->route('repair.reply', ['job' => $job])->with('success', '修繕回應已經刪除！');
     }
 
+    public function storeImage(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $originName = $request->file('upload')->getClientOriginalName();
+            $fileName = pathinfo($originName, PATHINFO_FILENAME);
+            $extension = $request->file('upload')->getClientOriginalExtension();
+            $fileName = $fileName . '_' . time() . '.' . $extension;
+            $request->file('upload')->move(public_path('meeting'), $fileName);
+            $url = asset('repair/' . $fileName);
+            Watchdog::watch($request, '上傳圖片：' . $url);
+            return response()->json(['fileName' => $fileName, 'uploaded'=> 1, 'url' => $url]);
+        }
+    }
+
 }

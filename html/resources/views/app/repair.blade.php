@@ -42,7 +42,7 @@
             </tr>
             <tr class="border p-3 bg-green-100">
                 <td class="text-left">
-                    {!! nl2br($kind->description) !!}<br>
+                    {!! $kind->description !!}<br>
                     負責人員：
                     @foreach ($kind->managers as $teacher)
                     {{ $teacher->role_name . $teacher->realname }}

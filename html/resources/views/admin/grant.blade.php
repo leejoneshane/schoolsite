@@ -27,11 +27,14 @@
             @foreach ($teachers as $t)
             @php
                 $gap = '';
-                for ($i=0;$i<6-mb_strlen($t->role_name);$i++) {
+                $rname = '';
+                if ($t->role_name) $rname = $t->role_name;
+                for ($i=0;$i<6-mb_strlen($rname);$i++) {
                     $gap .= '　';
                 }
+                $display = $t->role_name . $gap . $t->realname;
             @endphp
-            <option {{ ($user->uuid == $t->uuid) ? 'selected' : ''}} value="{{ $t->uuid }}">{{ $t->role_name }}{{ $gap }}{{ $t->realname }}</option>
+            <option {{ ($user->uuid == $t->uuid) ? 'selected' : ''}} value="{{ $t->uuid }}">{{ $display }}</option>
             @endforeach
         </select>
         <button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_teacher(this);"><i class="fa-solid fa-circle-minus"></i></button>
@@ -61,11 +64,14 @@ function add_teacher() {
 	@foreach ($teachers as $t)
     @php
         $gap = '';
-        for ($i=0;$i<6-mb_strlen($t->role_name);$i++) {
+        $rname = '';
+        if ($t->role_name) $rname = $t->role_name;
+        for ($i=0;$i<6-mb_strlen($rname);$i++) {
             $gap .= '　';
         }
+        $display = $t->role_name . $gap . $t->realname;
     @endphp
-	my_cls += '<option value="{{ $t->uuid }}">{{ $t->role_name }}{{ $gap }}{{ $t->realname }}</option>';
+	my_cls += '<option value="{{ $t->uuid }}">{{ $display }}</option>';
 	@endforeach
 	my_cls += '</select>';
     const elemc = document.createElement('select');

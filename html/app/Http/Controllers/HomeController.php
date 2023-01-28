@@ -94,6 +94,15 @@ class HomeController extends Controller
                 'weight' => 50,
             ]);
         }
+        if (!Menu::find('roster')) {
+            Menu::create([
+                'id' => 'roster',
+                'parent_id' => 'affairs',
+                'caption' => '學生名單填報',
+                'url' => 'route.rosters',
+                'weight' => 60,
+            ]);
+        }
     }
 
     public function index()

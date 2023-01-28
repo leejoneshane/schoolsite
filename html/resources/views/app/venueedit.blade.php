@@ -19,11 +19,14 @@
         @foreach ($teachers as $t)
         @php
             $gap = '';
-            for ($i=0;$i<6-mb_strlen($t->role_name);$i++) {
+            $rname = '';
+            if ($t->role_name) $rname = $t->role_name;
+            for ($i=0;$i<6-mb_strlen($rname);$i++) {
                 $gap .= '　';
             }
+            $display = $t->role_name . $gap . $t->realname;
         @endphp
-        <option value="{{ $t->uuid }}"{{ ($t->uuid == $venue->uuid) ? ' selected' : '' }}>{{ $t->role_name }}{{ $gap }}{{ $t->realname }}</option>
+        <option value="{{ $t->uuid }}"{{ ($t->uuid == $venue->uuid) ? ' selected' : '' }}>{{ $display }}</option>
         @endforeach
         </select>
     </div></p>
