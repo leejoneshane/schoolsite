@@ -8,7 +8,7 @@
     </a>
 </div>
 <label for="section">請選擇學期：</label>
-<select id="section" class="inline w-16 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
+<select id="section" class="inline w-32 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="
     var section = this.value;
     window.location.replace('{{ route('rosters') }}' + '/' + section);

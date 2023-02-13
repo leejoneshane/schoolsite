@@ -292,7 +292,7 @@ class Teacher extends Model
     {
         $sso = new SSO;
         $sso->fetch_user($this->uuid);
-        $this->fresh();
+        $this->refresh();
     }
 
     //檢查此教師的同步資料是否已經過期

@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Classroom;
+use App\Models\Domain;
 use App\Models\Watchdog;
 use App\Models\Roster;
 use Carbon\Carbon;
@@ -27,7 +28,9 @@ class RosterController extends Controller
         }
         $teacher = Teacher::find($user->uuid);
         $rosters = Roster::all();
+        $current = current_section();
         $sections = Roster::sections();
+        if (!in_array($current, $sections)) $sections[] = $current;
         $classes = Classroom::orderBy('id')->get();
         return view('app.rosters', ['teacher' => $teacher, 'section' => $section, 'sections' => $sections, 'rosters' => $rosters, 'classes' => $classes]);
     }
@@ -36,10 +39,11 @@ class RosterController extends Controller
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('roster.manager');
+        $domains = Domain::all();
         if (!($user->is_admin || $manager)) {
             return redirect()->route('home')->with('error', '只有管理員才能新增學生表單！');
         }
-        return view('app.rosteradd');
+        return view('app.rosteradd', ['domains' => $domains]);
     }
 
     public function insert(Request $request)

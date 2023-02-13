@@ -144,7 +144,9 @@ class GsuiteServiceProvider extends ServiceProvider
                 if ($page_token) $opt['pageToken'] = $page_token;
                 $result = $this->directory->users->listUsers($opt);
                 $page_token = $result->getNextPageToken();
-                $users = array_merge($users, $result->getUsers());
+                if ($result->getUsers()) {
+                    $users = array_merge($users, $result->getUsers());
+                }
             } while ($page_token);
             return $users;
         } catch (\Google_Service_Exception $e) {

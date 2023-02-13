@@ -27,7 +27,7 @@
         <tr class="bg-white">
             <td class="p-2">{{ $month }}</td>
             <td class="p-2">{{ $day }}</td>
-            <td class="p-2">{{ $event->wd }}</td>
+            <td class="p-2">{{ $event->weekday }}</td>
             <td class="p-2">{{ $event->content }}</td>
         </tr>
         @endforeach

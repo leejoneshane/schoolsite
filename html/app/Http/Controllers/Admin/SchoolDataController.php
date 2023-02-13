@@ -377,7 +377,8 @@ class SchoolDataController extends Controller
     public function teacherSync(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');
-        $t = Teacher::find($uuid)->sync();
+        $t = Teacher::find($uuid);
+        $t->sync();
         Watchdog::watch($request, '同步教師資訊：' . $t->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect(urldecode($referer))->with('success', '教師資訊已經重新同步！');
     }
@@ -472,7 +473,8 @@ class SchoolDataController extends Controller
     public function studentSync(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');
-        $s = Student::find($uuid)->sync();
+        $s = Student::find($uuid);
+        $s->sync();
         Watchdog::watch($request, '同步學生資訊：' . $s->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect(urldecode($referer))->with('success', '學生資訊已經重新同步！');
     }
