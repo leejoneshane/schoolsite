@@ -35,13 +35,13 @@
     @forelse ($rosters as $roster)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">
-            <span class="text-sm">{{ $roster->name }}</span>
+            <span>{{ $roster->name }}</span>
         </td>
         <td class="p-2">
-            <span class="text-sm">{{ $roster->count_classes($section) }}</span>
+            <span>{{ $roster->count_classes($section) }}</span>
         </td>
         <td class="p-2">
-            <span class="text-sm">{{ $roster->count($section) }}</span>
+            <span>{{ $roster->count($section) }}</span>
         </td>
         <td class="p-2">
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
@@ -71,14 +71,14 @@
                 <i class="fa-solid fa-recycle"></i>
             </button>
             @endif
-            <label for="classes" class="inline p-2">修改名單：</label>
-            <select id="classes" class="inline rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+            <label for="classes" class="inline">修改名單：</label>
+            <select id="classes" class="inline rounded w-32 py-2 mr-6 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                 onchange="
                 var cls = this.value;
                 window.location.replace('{{ route('roster.enroll', ['id' => $roster->id]) }}' + '/' + cls);
                 ">
                 <option></option>
-                @foreach ($classes as $cls)
+                @foreach ($roster->classes() as $cls)
                 <option value="{{ $cls->id }}">{{ $cls->name }}</option>
                 @endforeach
             </select>
@@ -89,14 +89,14 @@
                 <i class="fa-solid fa-pen-to-square"></i>
             </a>
             @elseif (in_array($teacher->domain->id, $roster->domains))
-            <label for="classes" class="inline p-2">修改名單：</label>
-            <select id="classes" class="inline rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+            <label for="classes" class="inline">修改名單：</label>
+            <select id="classes" class="inline rounded w-32 py-2 mr-6 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                 onchange="
                 var cls = this.value;
                 window.location.replace('{{ route('roster.enroll', ['id' => $roster->id]) }}' + '/' + cls);
                 ">
                 <option></option>
-                @foreach ($classes as $cls)
+                @foreach ($roster->classes() as $cls)
                 <option value="{{ $cls->id }}">{{ $cls->name }}</option>
                 @endforeach
             </select>

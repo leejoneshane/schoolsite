@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Student;
+use App\Models\Grade;
 use App\Models\Classroom;
 use App\Models\Domain;
 use App\Models\Watchdog;
@@ -19,11 +20,12 @@ class RosterController extends Controller
 
     public function list($section = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('roster.manager');
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能填報學生名單！');
         }
-        if ($section) {
+        if (!$section) {
             $section = current_section();
         }
         $teacher = Teacher::find($user->uuid);
@@ -31,19 +33,20 @@ class RosterController extends Controller
         $current = current_section();
         $sections = Roster::sections();
         if (!in_array($current, $sections)) $sections[] = $current;
-        $classes = Classroom::orderBy('id')->get();
-        return view('app.rosters', ['teacher' => $teacher, 'section' => $section, 'sections' => $sections, 'rosters' => $rosters, 'classes' => $classes]);
+        return view('app.rosters', ['teacher' => $teacher, 'manager' => $user->is_admin || $manager, 'section' => $section, 'sections' => $sections, 'rosters' => $rosters]);
     }
 
     public function add()
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('roster.manager');
-        $domains = Domain::all();
         if (!($user->is_admin || $manager)) {
             return redirect()->route('home')->with('error', '只有管理員才能新增學生表單！');
         }
-        return view('app.rosteradd', ['domains' => $domains]);
+        $grades = Grade::all();
+        $fields = Roster::FIELDS;
+        $domains = Domain::all();
+        return view('app.rosteradd', ['grades' => $grades, 'fields' => $fields, 'domains' => $domains]);
     }
 
     public function insert(Request $request)
@@ -70,7 +73,10 @@ class RosterController extends Controller
             return redirect()->route('home')->with('error', '只有管理員才能修改學生表單！');
         }
         $roster = Roster::find($id);
-        return view('app.rosteredit', ['roster' => $roster]);
+        $grades = Grade::all();
+        $fields = Roster::FIELDS;
+        $domains = Domain::all();
+        return view('app.rosteredit', ['roster' => $roster, 'fields' => $fields, 'grades' => $grades, 'domains' => $domains]);
     }
 
     public function update(Request $request, $id)
@@ -118,16 +124,17 @@ class RosterController extends Controller
         }
         $roster = Roster::find($id);
         $records = DB::table('rosters_students')
-            ->select('*', DB::raw('count(*) as total'))
+            ->select('class_id', DB::raw('count(*) as total'))
             ->where('roster_id', $id)
             ->where('section', $section)
             ->groupBy('class_id')
             ->get();
+        $classes = $roster->classes(); 
         $sum = [];
         foreach ($records as $record) {
             $sum[$record->class_id] = $record->total;
         }
-        return view('app.rostersummary', ['roster' => $roster, 'summary' => $sum]);
+        return view('app.rostersummary', ['roster' => $roster, 'classes' => $classes, 'summary' => $sum]);
     }
 
     public function enroll($id, $class = null)
