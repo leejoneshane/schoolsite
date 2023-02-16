@@ -147,13 +147,23 @@ class Roster extends Model
         }
     }
 
+    //取得指定學年或本學年之學生名單
+    public function class_students($class, $section = null)
+    {
+        if ($section) {
+            return $this->students()->wherePivot('class_id', $class)->wherePivot('section', $section)->get();
+        } else {
+            return $this->students()->wherePivot('class_id', $class)->wherePivot('section', current_section())->get();
+        }
+    }
+
     //計算本學期已填報班級數
     public function count_classes($section = null)
     {
         if ($section) {
-            return DB::table('rosters_students')->distinct('class_id')->where('section', $section)->count();
+            return DB::table('rosters_students')->distinct('class_id')->where('roster_id', $this->id)->where('section', $section)->count();
         } else {
-            return DB::table('rosters_students')->distinct('class_id')->where('section', current_section())->count();
+            return DB::table('rosters_students')->distinct('class_id')->where('roster_id', $this->id)->where('section', current_section())->count();
         }
     }
 
@@ -161,9 +171,9 @@ class Roster extends Model
     public function count($section = null)
     {
         if ($section) {
-            return DB::table('rosters_students')->where('section', $section)->count();
+            return DB::table('rosters_students')->where('roster_id', $this->id)->where('section', $section)->count();
         } else {
-            return DB::table('rosters_students')->where('section', current_section())->count();
+            return DB::table('rosters_students')->where('roster_id', $this->id)->where('section', current_section())->count();
         }
     }
 

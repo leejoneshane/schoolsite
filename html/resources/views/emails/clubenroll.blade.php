@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    @vite
+    @vite(['resources/css/tailwind.css','resources/scripts/main.ts'])
 </head>
 <body>
     <div class="flex items-center justify-center h-screen p-5 bg-gray-100 w-screen">

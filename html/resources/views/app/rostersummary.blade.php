@@ -42,12 +42,12 @@
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
     @foreach ($classes as $cls)
         <td class="p-2">
-            <a href="{{ route('roster.enroll', ['id' => $roster->id, 'class' => $cls->id]) }}" class="text-blue-700 dark:text-blue-300 underline">{{ $cls->name }}</a>
+            <a href="{{ route('roster.show', ['id' => $roster->id, 'section' => $section, 'class' => $cls->id]) }}" class="text-blue-700 dark:text-blue-300 underline">{{ $cls->name }}</a>
         </td>
         <td class="p-2">
             {{ isset($summary[$cls->id]) ? $summary[$cls->id] : '0' }}
         </td>
-    @if ($loop->iteration % 5 == 0)
+    @if ($loop->iteration % 9 == 0)
     </tr>
     <tr>
     @endif

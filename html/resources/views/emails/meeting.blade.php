@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>網路朝會報告事項</title>
-    @vite
+    @vite(['resources/css/tailwind.css','resources/scripts/main.ts'])
 </head>
 <body>
     <div class="text-2xl font-bold leading-normal pb-5">

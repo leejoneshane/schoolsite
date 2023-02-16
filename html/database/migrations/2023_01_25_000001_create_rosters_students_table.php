@@ -20,7 +20,8 @@ return new class extends Migration
             $table->integer('roster_id');
             $table->uuid('uuid');
             $table->uuid('deal');
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

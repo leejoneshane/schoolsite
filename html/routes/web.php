@@ -208,8 +208,9 @@ Route::group(['prefix' => 'roster', 'middleware' => [ 'auth'] ], function () {
     Route::post('edit/{id}', 'App\Http\Controllers\RosterController@update')->name('roster.edit');
     Route::post('remove/{id}', 'App\Http\Controllers\RosterController@remove')->name('roster.remove');
     Route::post('reset/{id}', 'App\Http\Controllers\RosterController@reset')->name('roster.reset');
-    Route::get('enroll/{id}/{class?}', 'App\Http\Controllers\RosterController@enroll')->name('roster.enroll');
-    Route::get('view/{id}/{section}', 'App\Http\Controllers\RosterController@show')->name('roster.show');
+    Route::get('enroll/{id}/{class?}', 'App\Http\Controllers\RosterController@enroll');
+    Route::post('enroll/{id}/{class?}', 'App\Http\Controllers\RosterController@save_enroll')->name('roster.enroll');
+    Route::get('view/{id}/{section}/{class?}', 'App\Http\Controllers\RosterController@show')->name('roster.show');
     Route::get('download/{id}/{section}', 'App\Http\Controllers\RosterController@download')->name('roster.download');
 });
 

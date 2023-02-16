@@ -13,6 +13,7 @@ use App\Models\Classroom;
 use App\Models\Domain;
 use App\Models\Watchdog;
 use App\Models\Roster;
+use App\Exports\RosterExport;
 use Carbon\Carbon;
 
 class RosterController extends Controller
@@ -25,12 +26,12 @@ class RosterController extends Controller
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能填報學生名單！');
         }
-        if (!$section) {
-            $section = current_section();
-        }
         $teacher = Teacher::find($user->uuid);
         $rosters = Roster::all();
         $current = current_section();
+        if (!$section) {
+            $section = $current;
+        }
         $sections = Roster::sections();
         if (!in_array($current, $sections)) $sections[] = $current;
         return view('app.rosters', ['teacher' => $teacher, 'manager' => $user->is_admin || $manager, 'section' => $section, 'sections' => $sections, 'rosters' => $rosters]);
@@ -58,8 +59,8 @@ class RosterController extends Controller
             'domains' => $request->input('domains'),
             'started_at' => $request->input('start'),
             'ended_at' => $request->input('end'),
-            'min' => $request->input('min'),
-            'max' => $request->input('max'),
+            'min' => min($request->input('min'), $request->input('max')),
+            'max' => max($request->input('min'), $request->input('max')),
         ]);
         Watchdog::watch($request, '新增學生表單：' . $roster->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('rosters')->with('success', '學生表單新增完成！');
@@ -89,8 +90,8 @@ class RosterController extends Controller
             'domains' => $request->input('domains'),
             'started_at' => $request->input('start'),
             'ended_at' => $request->input('end'),
-            'min' => $request->input('min'),
-            'max' => $request->input('max'),
+            'min' => min($request->input('min'), $request->input('max')),
+            'max' => max($request->input('min'), $request->input('max')),
         ]);
         Watchdog::watch($request, '更新學生表單：' . $roster->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('repair')->with('success', '學生表單編輯完成！');
@@ -116,8 +117,9 @@ class RosterController extends Controller
         return redirect()->route('rosters')->with('success', '學生表單已經重設！');
     }
 
-    public function summary($id, $section)
+    public function summary($id, $section = null)
     {
+        if (!$section) $section = current_section();
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能填報學生名單！');
@@ -134,7 +136,7 @@ class RosterController extends Controller
         foreach ($records as $record) {
             $sum[$record->class_id] = $record->total;
         }
-        return view('app.rostersummary', ['roster' => $roster, 'classes' => $classes, 'summary' => $sum]);
+        return view('app.rostersummary', ['roster' => $roster, 'section' => $section, 'classes' => $classes, 'summary' => $sum]);
     }
 
     public function enroll($id, $class = null)
@@ -150,13 +152,29 @@ class RosterController extends Controller
             $classroom = Classroom::find($teacher->tutor_class);
         }
         $roster = Roster::find($id);
-        return view('app.rosterenroll', ['roster' => $roster, 'classroom' => $classroom]);
+        $fields = [];
+        if ($roster->fields) {
+            foreach ($roster->fields as $f1) {
+                foreach (Roster::FIELDS as $f2) {
+                    if ($f1 == $f2['id']) {
+                        $fields[] = $f2;
+                    }
+                }
+            }
+        }
+        $students = $roster->class_students($classroom->id);
+        return view('app.rosterenroll', ['roster' => $roster, 'classroom' => $classroom, 'fields' => $fields, 'students' => $students]);
     }
 
-    public function save_enroll(Request $request, $id)
+    public function save_enroll(Request $request, $id, $class = null)
     {
         $roster = Roster::find($id);
-        $class_id = $request->input('classroom');
+        if ($class) {
+            $class_id = $class;
+        } else {
+            $class_id = $request->input('classroom');
+        }
+        $old = $roster->class_students($class_id);
         $students = $request->input('students');
         foreach ($students as $uuid) {
             $student = Student::find($uuid);
@@ -167,20 +185,47 @@ class RosterController extends Controller
                 'uuid' => $uuid,
                 'deal' => $request->user()->uuid,
             ]);
-            Watchdog::watch($request, '新增學生「' . $student->class_id . $student->seat . $student->realname . '」到表單「' . $roster->name . '」中。');
+            Watchdog::watch($request, '新增學生「' . $student->stdno . $student->realname . '」到表單「' . $roster->name . '」中。');
+            $old->reject(function ($stu) use ($uuid) {
+                return $stu->uuid == $uuid;
+            });
+        }
+        foreach ($old as $del) {
+            $temp = DB::table('rosters_students')
+                ->where('section', current_section())
+                ->where('roster_id', $id)
+                ->where('uuid', $del->uuid)
+                ->first();
+            Watchdog::watch($request, '從表單「' . $roster->name . '」移除學生「' . $del->stdno . $del->realname . '」。');
+            DB::table('rosters_students')->where('id', $temp->id)->delete();
         }
         return redirect()->route('roster.enroll', ['id' => $id, 'class' => $class_id])->with('success', '已為您填報學生表單！');
     }
 
-    public function show($id, $section)
+    public function show(Request $request, $id, $section, $class = null)
     {
+        $referer = $request->headers->get('referer');
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能填報學生名單！');
         }
         $roster = Roster::find($id);
-        $students = $roster->year_students($section);
-        return view('app.rostershow', ['roster' => $roster, 'students' => $students]);
+        $fields = [];
+        if ($roster->fields) {
+            foreach ($roster->fields as $f1) {
+                foreach (Roster::FIELDS as $f2) {
+                    if ($f1 == $f2['id']) {
+                        $fields[] = $f2;
+                    }
+                }
+            }
+        }
+        if ($class) {
+            $students = $roster->class_students($class, $section);
+        } else {
+            $students = $roster->year_students($section);
+        }
+        return view('app.rostershow', ['referer' => $referer, 'roster' => $roster, 'fields' => $fields, 'students' => $students]);
     }
 
     public function download($id, $section)
@@ -189,9 +234,9 @@ class RosterController extends Controller
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能填報學生名單！');
         }
-        $roster = Roster::find($id);
-        $students = $roster->year_students($section);
-        return view('app.rostershow', ['roster' => $roster, 'students' => $students]);
+        $filename = Roster::find($id)->name . '名單一覽表';
+        $exporter = new RosterExport($id, $section);
+        return $exporter->download("$filename.xlsx");
     }
 
 }

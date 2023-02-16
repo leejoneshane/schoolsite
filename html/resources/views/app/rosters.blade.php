@@ -53,6 +53,7 @@
                 href="{{ route('roster.edit', ['id' => $roster->id]) }}" title="編輯">
                 <i class="fa-solid fa-pen"></i>
             </a>
+            @if ($section == current_section())
             <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
                 onclick="
                     const myform = document.getElementById('remove');
@@ -61,7 +62,6 @@
             ">
                 <i class="fa-solid fa-trash"></i>
             </button>
-            @if ($section == current_section())
             <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="名單歸零"
             onclick="
                 const myform = document.getElementById('remove');
@@ -70,7 +70,6 @@
             ">
                 <i class="fa-solid fa-recycle"></i>
             </button>
-            @endif
             <label for="classes" class="inline">修改名單：</label>
             <select id="classes" class="inline rounded w-32 py-2 mr-6 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                 onchange="
@@ -82,6 +81,7 @@
                 <option value="{{ $cls->id }}">{{ $cls->name }}</option>
                 @endforeach
             </select>
+            @endif
         @elseif ($roster->opened())
             @if ($teacher->tutor_class)
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" title="名單填報"
@@ -107,7 +107,7 @@
                 <i class="fa-solid fa-eye"></i>
             </a>
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" title="名單下載"
-                href="{{ route('roster.download', ['id' => $roster->id, 'section => $section']) }}">
+                href="{{ route('roster.download', ['id' => $roster->id, 'section' => $section]) }}">
                 <i class="fa-solid fa-file-arrow-down"></i>
             </a>
         </td>
