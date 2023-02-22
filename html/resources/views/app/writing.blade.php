@@ -6,7 +6,7 @@
     明日小作家
     @if ($manager)
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('writing.genres') }}">
-        <i class="fa-solid fa-circle-plus"></i>管理專欄
+        <i class="fa-solid fa-bookmark"></i>管理專欄
     </a>
     @endif
     @student
@@ -14,15 +14,7 @@
         <i class="fa-solid fa-circle-plus"></i>我要投稿
     </a>
     @endstudent
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('writing.rank') }}">
-        <i class="fa-solid fa-circle-plus"></i>總排行榜
-    </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('writing.rank', ['section' => current_section()]) }}">
-        <i class="fa-solid fa-circle-plus"></i>學期排行榜
-    </a>
-</div>
-<div>
-    <label for="sort">排序：</label>
+    <label for="sort" class="py-2 pl-6 text-sm">排序：</label>
     <select id="sort" class="inline w-48 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
         onchange="
         var order = this.value;
@@ -32,7 +24,7 @@
         <option value="author" {{ ($order == 'author') ? 'selected' : '' }}>作者</option>
         <option value="hits" {{ ($order == 'hits') ? 'selected' : '' }}>閱讀次數</option>
     </select>
-    <label for="genre">專欄：</label>
+    <label for="genre" class="py-2 pl-6 text-sm">專欄：</label>
     <select id="genre" class="inline w-48 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
         onchange="
         var genre = this.value;

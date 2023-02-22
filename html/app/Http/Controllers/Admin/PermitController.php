@@ -56,7 +56,8 @@ class PermitController extends Controller
         if ($ckf && $ckf->id != $id) {
             return back()->withInput()->with('error', '該權限已經存在，無法修改成新的代號！');
         }
-        $p = Permission::find($id)->update([
+        $p = Permission::find($id);
+        $p->update([
             'group' => $app,
             'permission' => $perm,
             'description' => $desc,

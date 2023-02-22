@@ -48,9 +48,12 @@ Route::get('email/verify/{id}/{hash}', 'App\Http\Controllers\Auth\VerificationCo
 Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@resend')->name('verification.resend');
 
 // 電子報訂閱
-Route::post('news/{news}/subscriber', 'App\Http\Controllers\SubscriberController@store')->name('subscriber.store');
-Route::get('news/{news}/delete', 'App\Http\Controllers\SubscriberController@delete')->name('subscriber.delete');
-Route::get('news/{id}/verify/{hash}', 'App\Http\Controllers\SubscriberController@verify')->name('subscriber.verify');
+Route::group(['prefix' => 'subscriber'], function () {
+    Route::get('/', 'App\Http\Controllers\SubscriberController@index')->name('subscriber');
+    Route::post('add/{news}', 'App\Http\Controllers\SubscriberController@store')->name('subscriber.store');
+    Route::get('delete/{news}', 'App\Http\Controllers\SubscriberController@delete')->name('subscriber.delete');
+    Route::get('verify/{id}/{hash}', 'App\Http\Controllers\SubscriberController@verify')->name('subscriber.verify');
+});
 
 // 行事曆
 Route::group(['prefix' => 'calendar'], function () {
@@ -123,13 +126,18 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
 //明日小作家
 Route::group(['prefix' => 'writing', 'middleware' => [ 'auth'] ], function () {
     Route::get('list', 'App\Http\Controllers\WritingController@index')->name('writing');
-    Route::get('genres', 'App\Http\Controllers\WritingController@index')->name('writing.genres');
+    Route::get('genres', 'App\Http\Controllers\WritingController@genres')->name('writing.genres');
+    Route::get('genre/add', 'App\Http\Controllers\WritingController@addGenre');
+    Route::post('genre/add', 'App\Http\Controllers\WritingController@insertGenre')->name('writing.addgenre');
+    Route::get('genre/edit/{genre}', 'App\Http\Controllers\WritingController@editGenre');
+    Route::post('genre/edit/{genre}', 'App\Http\Controllers\WritingController@updateGenre')->name('writing.editgenre');
+    Route::post('genre/remove/{genre}', 'App\Http\Controllers\WritingController@removeGenre')->name('writing.removegenre');
     Route::get('add/{genre}', 'App\Http\Controllers\WritingController@add');
     Route::post('add/{genre}', 'App\Http\Controllers\WritingController@insert')->name('writing.add');
     Route::get('edit/{id}', 'App\Http\Controllers\WritingController@edit');
     Route::post('edit/{id}', 'App\Http\Controllers\WritingController@update')->name('writing.edit');
     Route::post('remove/{id}', 'App\Http\Controllers\WritingController@remove')->name('writing.remove');
-    Route::get('rank/{section?}', 'App\Http\Controllers\WritingController@index')->name('writing.rank');
+    Route::get('view/{id}', 'App\Http\Controllers\WritingController@show')->name('writing.view');
 });
 
 // 網路朝會
