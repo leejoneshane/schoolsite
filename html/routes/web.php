@@ -120,6 +120,18 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('list/enroll/{club_id}/{year?}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
 });
 
+//明日小作家
+Route::group(['prefix' => 'writing', 'middleware' => [ 'auth'] ], function () {
+    Route::get('list', 'App\Http\Controllers\WritingController@index')->name('writing');
+    Route::get('genres', 'App\Http\Controllers\WritingController@index')->name('writing.genres');
+    Route::get('add/{genre}', 'App\Http\Controllers\WritingController@add');
+    Route::post('add/{genre}', 'App\Http\Controllers\WritingController@insert')->name('writing.add');
+    Route::get('edit/{id}', 'App\Http\Controllers\WritingController@edit');
+    Route::post('edit/{id}', 'App\Http\Controllers\WritingController@update')->name('writing.edit');
+    Route::post('remove/{id}', 'App\Http\Controllers\WritingController@remove')->name('writing.remove');
+    Route::get('rank/{section?}', 'App\Http\Controllers\WritingController@index')->name('writing.rank');
+});
+
 // 網路朝會
 Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth'] ], function () {
     Route::get('list/{date?}', 'App\Http\Controllers\MeetingController@index')->name('meeting');

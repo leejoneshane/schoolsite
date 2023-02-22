@@ -32,7 +32,7 @@ class MeetingController extends Controller
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = $user->profile;
         if ($teacher->role->role_no == 'C02' || $user->is_admin) {
-            return view('app.meetingadd', ['teacher' => $teacher]);
+            return view('app.meeting_add', ['teacher' => $teacher]);
         } else {
             return redirect()->route('meeting')->with('error', '只有主任才能新增業務報告！');
         }
@@ -68,7 +68,7 @@ class MeetingController extends Controller
         if ($teacher->role->role_no == 'C02' || $user->is_admin) {
             $meet = Meeting::find($id);
             if (!$meet) return redirect()->route('meeting')->with('error', '找不到業務報告，因此無法修改內容！');
-            return view('app.meetingedit', ['teacher' => $teacher, 'meet' => $meet]);
+            return view('app.meeting_edit', ['teacher' => $teacher, 'meet' => $meet]);
         } else {
             return redirect()->route('meeting')->with('error', '只有主任才能修改業務報告！');
         }

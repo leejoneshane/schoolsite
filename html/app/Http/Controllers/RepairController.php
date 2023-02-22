@@ -37,7 +37,7 @@ class RepairController extends Controller
             $kind = RepairKind::first();
         }
         $jobs = $kind->jobs()->paginate(16);
-        return view('app.repairlist', ['kind' => $kind, 'jobs' => $jobs]);
+        return view('app.repair_list', ['kind' => $kind, 'jobs' => $jobs]);
     }
 
     public function addKind()
@@ -46,7 +46,7 @@ class RepairController extends Controller
             return redirect()->route('home')->with('error', '只有管理員才能新增修繕項目！');
         }
         $teachers = Teacher::admins();
-        return view('app.repairaddkind', ['teachers' => $teachers]);
+        return view('app.repair_addkind', ['teachers' => $teachers]);
     }
 
     public function insertKind(Request $request)
@@ -68,7 +68,7 @@ class RepairController extends Controller
         }
         $kind = RepairKind::find($kind);
         $teachers = Teacher::admins();
-        return view('app.repaireditkind', ['kind' => $kind, 'teachers' => $teachers]);
+        return view('app.repair_editkind', ['kind' => $kind, 'teachers' => $teachers]);
     }
 
     public function updateKind(Request $request, $kind)
@@ -99,7 +99,7 @@ class RepairController extends Controller
             return redirect()->route('home')->with('error', '只有教職員才能登記修繕紀錄！');
         }
         $kind = RepairKind::find($kind);
-        return view('app.repairaddjob', ['kind' => $kind]);
+        return view('app.repair_addjob', ['kind' => $kind]);
     }
 
     public function insertJob(Request $request, $kind)
@@ -131,7 +131,7 @@ class RepairController extends Controller
             return redirect()->route('home')->with('error', '只有教職員才能登記修繕紀錄！');
         }
         $job = RepairJob::find($job);
-        return view('app.repairaddreply', ['job' => $job]);
+        return view('app.repair_addreply', ['job' => $job]);
     }
 
     public function insertReply(Request $request, $job)

@@ -46,7 +46,7 @@ class VenueController extends Controller
         $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
         if ($manager) {
             $teachers = Teacher::admins();
-            return view('app.venueadd', ['teacher' => $user->profile, 'teachers' => $teachers, 'sessions' => self::$sessionMap]);
+            return view('app.venue_add', ['teacher' => $user->profile, 'teachers' => $teachers, 'sessions' => self::$sessionMap]);
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能新增場地或設備！');
         }
@@ -108,7 +108,7 @@ class VenueController extends Controller
         $manager = ($user->is_admin || $user->hasPermission('venue.manager') || $venue->manager->uuid == $user->uuid);
         if ($manager) {
             $teachers = Teacher::admins();
-            return view('app.venueedit', ['venue' => $venue, 'teachers' => $teachers]);
+            return view('app.venue_edit', ['venue' => $venue, 'teachers' => $teachers]);
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能修改場地或設備！');
         }
@@ -195,7 +195,7 @@ class VenueController extends Controller
         $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
         if ($manager) {
             $result = $venue->weekly($date);
-            return view('app.venuereserve', ['date' => $date, 'venue' => $venue, 'result' => $result]);
+            return view('app.venue_reserve', ['date' => $date, 'venue' => $venue, 'result' => $result]);
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能管理場地或設備！');
         }
@@ -214,7 +214,7 @@ class VenueController extends Controller
             if (!$reserve) {
                 $body = '找不到預約記錄！';
             } else {
-                $body = view('app.venuelog', ['reserve' => $reserve])->render();
+                $body = view('app.venue_log', ['reserve' => $reserve])->render();
             }
             return response()->json((object) [ 'header' => $header, 'body' => $body]);
         } else {
@@ -237,7 +237,7 @@ class VenueController extends Controller
             $session = intval($request->input('session'));
             $sessionStr = self::$sessionMap[$session];
             $max = intval($request->input('max'));
-            return view('app.venuebooking', ['date' => $reserve_date, 'venue' => $venue, 'weekday' => $weekday, 'session' => $session, 'session_name' => $sessionStr ,'max' => $max]);
+            return view('app.venue_booking', ['date' => $reserve_date, 'venue' => $venue, 'weekday' => $weekday, 'session' => $session, 'session_name' => $sessionStr ,'max' => $max]);
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能管理場地或設備！');
         }
@@ -289,7 +289,7 @@ class VenueController extends Controller
                     break;
                 }
             }
-            return view('app.venueeditbooking', ['reserve' => $reserve, 'session_name' => $session_name, 'max' => $max]);
+            return view('app.venue_editbooking', ['reserve' => $reserve, 'session_name' => $session_name, 'max' => $max]);
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能管理場地或設備！');
         }

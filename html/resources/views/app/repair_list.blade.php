@@ -79,6 +79,7 @@
         @csrf
     </form>
 </table>
+{{ $jobs->links('pagination::tailwind') }}
 <script>
     function show(job) {
         var tr=document.getElementById('detail_' + job);

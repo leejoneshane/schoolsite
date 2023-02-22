@@ -47,7 +47,7 @@ class RosterController extends Controller
         $grades = Grade::all();
         $fields = Roster::FIELDS;
         $domains = Domain::all();
-        return view('app.rosteradd', ['grades' => $grades, 'fields' => $fields, 'domains' => $domains]);
+        return view('app.roster_add', ['grades' => $grades, 'fields' => $fields, 'domains' => $domains]);
     }
 
     public function insert(Request $request)
@@ -77,7 +77,7 @@ class RosterController extends Controller
         $grades = Grade::all();
         $fields = Roster::FIELDS;
         $domains = Domain::all();
-        return view('app.rosteredit', ['roster' => $roster, 'fields' => $fields, 'grades' => $grades, 'domains' => $domains]);
+        return view('app.roster_edit', ['roster' => $roster, 'fields' => $fields, 'grades' => $grades, 'domains' => $domains]);
     }
 
     public function update(Request $request, $id)
@@ -136,7 +136,7 @@ class RosterController extends Controller
         foreach ($records as $record) {
             $sum[$record->class_id] = $record->total;
         }
-        return view('app.rostersummary', ['roster' => $roster, 'section' => $section, 'classes' => $classes, 'summary' => $sum]);
+        return view('app.roster_summary', ['roster' => $roster, 'section' => $section, 'classes' => $classes, 'summary' => $sum]);
     }
 
     public function enroll($id, $class = null)
@@ -163,7 +163,7 @@ class RosterController extends Controller
             }
         }
         $students = $roster->class_students($classroom->id);
-        return view('app.rosterenroll', ['roster' => $roster, 'classroom' => $classroom, 'fields' => $fields, 'students' => $students]);
+        return view('app.roster_enroll', ['roster' => $roster, 'classroom' => $classroom, 'fields' => $fields, 'students' => $students]);
     }
 
     public function save_enroll(Request $request, $id, $class = null)
@@ -225,7 +225,7 @@ class RosterController extends Controller
         } else {
             $students = $roster->year_students($section);
         }
-        return view('app.rostershow', ['referer' => $referer, 'roster' => $roster, 'fields' => $fields, 'students' => $students]);
+        return view('app.roster_show', ['referer' => $referer, 'roster' => $roster, 'fields' => $fields, 'students' => $students]);
     }
 
     public function download($id, $section)

@@ -37,7 +37,7 @@ class SeniorityController extends Controller
         $manager = $user->hasPermission('organize.manager');
         if ($user->is_admin || $manager) {
             $current = current_year();
-            return view('app.seniorityupload', ['current' => $current]);
+            return view('app.seniority_upload', ['current' => $current]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }

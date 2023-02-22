@@ -49,6 +49,15 @@ class HomeController extends Controller
                 'weight' => 20,
             ]);
         }
+        if (!Menu::find('writing')) {
+            Menu::create([
+                'id' => 'writing',
+                'parent_id' => 'parenting',
+                'caption' => '明日小作家',
+                'url' => 'route.writing',
+                'weight' => 30,
+            ]);
+        }
         if (!Menu::find('meeting')) {
             Menu::create([
                 'id' => 'meeting',
