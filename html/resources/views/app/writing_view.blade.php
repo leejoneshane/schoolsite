@@ -16,14 +16,20 @@
 <div id="sheet" class="p-0" style="
     width: 1792px;
     height: 810px;
+    font-family: 'cwTeXKai', 'cwTeXFangSong', '標楷體';
+    font-variant-east-asian: traditional;
+    east-asian-width-values: full-width;
     padding-top: 0.25rem;
-    font-family: ‘cwTeXKai’, 'cwTeXFangSong', '標楷體';
     font-size: 1.5rem;
     line-height: 2rem;
     letter-spacing: 0.535rem;
+    ime-mode: active;
     writing-mode:vertical-rl;
     -webkit-writing-mode: vertical-rl;
-">{{ '　　　　' . $context->title . '\n' . $context->words }}</div>
+    word-break: break-all;
+    white-space: pre-wrap;
+    overflow-x: scroll;
+">　　　　{{ $context->title }}<br>{{ str_replace(' ', '', $context->words) }}</div>
 <script>
     var font = 32;
     var c = document.createElement('canvas');

@@ -394,7 +394,7 @@ class SchoolDataController extends Controller
 
     public function studentList($search = '')
     {
-        $class_id = $idno = $realname = $email = '';
+        $class_id = $idno = $id = $realname = $email = '';
         if (!empty($search)) {
             $parameters = explode('&', $search);
             foreach ($parameters as $p) {
@@ -402,6 +402,9 @@ class SchoolDataController extends Controller
                 switch ($key) {
                     case 'class':
                         $class_id = $val;
+                        break;
+                    case 'id':
+                        $id = $val;
                         break;
                     case 'idno':
                         $idno = $val;
@@ -417,9 +420,12 @@ class SchoolDataController extends Controller
         }
         $classes = Classroom::all();
         $query = Student::query();
-        if (!empty($idno) || !empty($realname) || !empty($email)) {
+        if (!empty($idno) || !empty($id) || !empty($realname) || !empty($email)) {
             if (!empty($idno)) {
                 $query = $query->where('idno', 'like', '%'.$idno.'%');
+            }
+            if (!empty($id)) {
+                $query = $query->where('id', 'like', '%'.$id.'%');
             }
             if (!empty($realname)) {
                 $query = $query->where('realname', 'like', '%'.$realname.'%');
@@ -434,7 +440,7 @@ class SchoolDataController extends Controller
             $query = $query->where('class_id', $class_id);
         }
         $students = $query->orderByRaw('class_id, cast(seat as unsigned)')->get();
-        return view('admin.students', ['current' => $class_id, 'idno' => $idno, 'realname' => $realname, 'email' => $email, 'classes' => $classes, 'students' => $students]);
+        return view('admin.students', ['current' => $class_id, 'idno' => $idno, 'id' => $id, 'realname' => $realname, 'email' => $email, 'classes' => $classes, 'students' => $students]);
     }
 
     public function studentEdit(Request $request, $uuid)

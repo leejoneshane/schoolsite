@@ -18,21 +18,25 @@ class WritingController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('writing.manager');
         $genres = WritingGenre::all();
-        if (!empty($request->input('genre'))) {
+        if ($request->input('genre')) {
             $genre = WritingGenre::find($request->input('genre'));
+        } elseif (session('genre')) {
+            $genre = WritingGenre::find(session('genre'));
         } else {
             $genre = WritingGenre::latest('id')->first();
         }
         if ($request->input('order')) {
             $order = $request->input('order');
         } else {
-            $order = 'updated_at';
+            $order = session('order', 'updated_at');
         }
         if ($genre) {
             $contexts = $genre->contexts()->orderByDesc($order)->paginate(16);
         } else {
             $contexts = collect();
         }
+        session(['genre' => $genre->id]);
+        session(['order' => $order]);
         return view('app.writing', ['manager' => $manager, 'genres' => $genres, 'genre' => $genre, 'order' => $order, 'contexts' => $contexts]);
     }
 
@@ -114,27 +118,29 @@ class WritingController extends Controller
     public function add(Request $request, $genre)
     {
         $referer = $request->headers->get('referer');
-        $user = Auth::user();
-        if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法投稿！');
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('writing.manager');
+        if (!$manager && $user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法投稿！');
         $genre = WritingGenre::find($genre);
         return view('app.writing_add', ['referer' => $referer, 'genre' => $genre]);
     }
 
     public function insert(Request $request, $genre)
     {
-        $user = Auth::user();
-        if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法投稿！');
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('writing.manager');
+        if (!$manager && $user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法投稿！');
         $stu = Student::find($user->uuid);
         $genre = WritingGenre::find($genre);
         $referer = $request->input('referer');
-        $lines = explode("\n", $request->input('words'));
+        $lines = explode('<br>', $request->input('words'));
         $first = array_shift($lines);
         if ($first) {
             $title = mb_ereg_replace('　', '', $first);
         } else {
             $title = '無題';            
         }
-        $words = implode("\n", $lines);
+        $words = implode('<br>', $lines);
         $context = WritingContext::create([
             'genre_id' => $genre->id,
             'uuid' => $stu->uuid,
@@ -151,26 +157,27 @@ class WritingController extends Controller
     public function edit(Request $request, $id)
     {
         $referer = $request->headers->get('referer');
-        $user = Auth::user();
-        if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法投稿！');
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('writing.manager');
+        if (!$manager && $user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法投稿！');
         $context = WritingContext::find($id);
         return view('app.writing_edit', ['referer' => $referer, 'context' => $context]);
     }
 
     public function update(Request $request, $id)
     {
-        $user = Auth::user();
-        if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法投稿！');
-        $stu = Student::find($user->uuid);
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('writing.manager');
+        if (!$manager && $user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法投稿！');
         $referer = $request->input('referer');
-        $lines = explode("\n", $request->input('words'));
+        $lines = explode('<br>', $request->input('words'));
         $first = array_shift($lines);
         if ($first) {
             $title = mb_ereg_replace('　', '', $first);
         } else {
-            $title = '無題';            
+            $title = '無題';
         }
-        $words = implode("\n", $lines);
+        $words = implode('<br>', $lines);
         $context = WritingContext::find($id);
         $context->update([
             'title' => $title,
@@ -183,8 +190,9 @@ class WritingController extends Controller
     public function remove(Request $request, $id)
     {
         $referer = $request->headers->get('referer');
-        $user = Auth::user();
-        if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法投稿！');
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('writing.manager');
+        if (!$manager && $user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法投稿！');
         $context = WritingContext::find($id);
         Watchdog::watch($request, '刪除投稿文章：' . $context->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $context->delete();

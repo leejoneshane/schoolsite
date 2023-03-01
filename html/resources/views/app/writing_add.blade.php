@@ -10,20 +10,25 @@
 </div>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
-        寫作須知：使用中文直式稿紙，右邊第一行必須輸入標題，作者會自動帶入請不要輸入，請使用滑鼠控制游標，按「ctrl + w」投稿！
+        寫作須知：使用中文直式稿紙，右邊第一行必須輸入標題，作者會自動帶入請不要輸入，投稿時請切換到英文輸入法，然後按「ctrl + w」！
     </p>
 </div>
 <div id="sheet" contentEditable="true" class="p-0" style="
     width: 1792px;
     height: 810px;
+    font-family: 'cwTeXKai', 'cwTeXFangSong', '標楷體';
+    font-variant-east-asian: traditional;
+    east-asian-width-values: full-width;
     padding-top: 0.25rem;
-    font-family: ‘cwTeXKai’, 'cwTeXFangSong', '標楷體';
     font-size: 1.5rem;
     line-height: 2rem;
     letter-spacing: 0.535rem;
     ime-mode: active;
     writing-mode:vertical-rl;
     -webkit-writing-mode: vertical-rl;
+    word-break: break-all;
+    white-space: pre-wrap;
+    overflow-x: scroll;
 "></div>
 <form class="hidden" id="insert" action="{{ route('writing.add', [ 'genre' => $genre->id ]) }}" method="POST">
     @csrf
@@ -72,10 +77,11 @@
             moveCaretPosition(1);
             e.preventDefault();
         } else if (e.ctrlKey == true && e.key == 'w') {
-            var input = document.getElementById('words');
-            input.innerText = document.getElementById('sheet').innerText;
-            var form = document.getElementById('insert');
-            form.submit();
+            const input = document.getElementById('words');
+            const words = document.getElementById('sheet').innerText.replace(/\n/, '<br>');
+            input.innerText = words;
+            document.getElementById('insert').submit();
+            e.preventDefault();
         }
     }
 

@@ -16,12 +16,12 @@ return new class extends Migration
         Schema::create('writing_context', function (Blueprint $table) {
             $table->id();
             $table->integer('genre_id');
-            $table->uuid('uuid');
+            $table->uuid('uuid')->nullable();
             $table->string('title');
             $table->text('words');
-            $table->string('author');
-            $table->string('classname');
-            $table->integer('hits');
+            $table->string('author')->nullable();
+            $table->string('classname')->nullable();
+            $table->integer('hits')->default(0);
             $table->timestamps();
         });
     }

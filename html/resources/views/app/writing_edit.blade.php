@@ -10,21 +10,26 @@
 </div>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
-        寫作須知：使用中文直式稿紙，右邊第一行必須輸入標題，作者會自動帶入請不要輸入，請使用滑鼠控制游標，按「ctrl + s」儲存，按「ctrl + w」儲存並關閉！
+        寫作須知：使用中文直式稿紙，右邊第一行必須輸入標題，作者會自動帶入請不要輸入。請切換到英文輸入法，按「ctrl + s」儲存，按「ctrl + w」儲存並關閉！
     </p>
 </div>
 <div id="sheet" contentEditable="true" class="p-0" style="
     width: 1792px;
     height: 810px;
+    font-family: 'cwTeXKai', 'cwTeXFangSong', '標楷體';
+    font-variant-east-asian: traditional;
+    east-asian-width-values: full-width;
     padding-top: 0.25rem;
-    font-family: ‘cwTeXKai’, 'cwTeXFangSong', '標楷體';
     font-size: 1.5rem;
     line-height: 2rem;
     letter-spacing: 0.535rem;
     ime-mode: active;
     writing-mode:vertical-rl;
     -webkit-writing-mode: vertical-rl;
-">{{ '　　　　' . $context->title . '\n' . $context->words }}</div>
+    word-break: break-all;
+    white-space: pre-wrap;
+    overflow-x: scroll;
+">　　　　{{ $context->title }}<br>{{ str_replace(' ', '', $context->words) }}</div>
 <form class="hidden" id="update" action="{{ route('writing.edit', [ 'id' => $context->id ]) }}" method="POST">
     @csrf
     <input type="hidden" name="referer" value="{{ $referer }}">
@@ -73,7 +78,7 @@
             e.preventDefault();
         } else if (e.ctrlKey == true && e.key == 's') {
             window.axios.post('{{ route('writing.edit', [ 'id' => $context->id ]) }}', {
-                words: document.getElementById('sheet').innerText,
+                words: document.getElementById('sheet').innerText.replace(/\n/, '<br>'),
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -81,10 +86,11 @@
                 }
             });
         } else if (e.ctrlKey == true && e.key == 'w') {
-            var input = document.getElementById('words');
-            input.innerText = document.getElementById('sheet').innerText;
-            var form = document.getElementById('update');
-            form.submit();
+            const input = document.getElementById('words');
+            const words = document.getElementById('sheet').innerText.replace(/\n/, '<br>');
+            input.innerText = words;
+            document.getElementById('insert').submit();
+            e.preventDefault();
         }
     }
 
