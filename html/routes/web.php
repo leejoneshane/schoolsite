@@ -49,9 +49,9 @@ Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@re
 
 // 電子報訂閱
 Route::group(['prefix' => 'subscriber'], function () {
-    Route::get('/', 'App\Http\Controllers\SubscriberController@index')->name('subscriber');
-    Route::post('add/{news}', 'App\Http\Controllers\SubscriberController@store')->name('subscriber.store');
-    Route::get('delete/{news}', 'App\Http\Controllers\SubscriberController@delete')->name('subscriber.delete');
+    Route::get('/list/{email?}', 'App\Http\Controllers\SubscriberController@index')->name('subscriber');
+    Route::post('add/{news?}', 'App\Http\Controllers\SubscriberController@subscription')->name('subscriber.subscription');
+    Route::get('delete/{news?}', 'App\Http\Controllers\SubscriberController@remove')->name('subscriber.cancel');
     Route::get('verify/{id}/{hash}', 'App\Http\Controllers\SubscriberController@verify')->name('subscriber.verify');
 });
 

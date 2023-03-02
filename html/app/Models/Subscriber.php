@@ -15,7 +15,6 @@ class Subscriber extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
-        'news_id',
         'email',
     ];
 
@@ -45,6 +44,16 @@ class Subscriber extends Model
     public function news()
     {
         return $this->belongsToMany('App\Models\News', 'news_subscribers', 'subscriber_id', 'news_id')->as('subscription')->withTimestamps();
+    }
+
+    //檢查訂閱戶是否已訂閱指定電子報
+    public function subscripted($news_id)
+    {
+        $checked = false;
+        foreach ($this->news as $new) {
+            if ($new->id == $news_id) $checked = true;
+        }
+        return $checked;
     }
 
     //將訂閱戶設定為已驗證狀態

@@ -58,6 +58,15 @@ class HomeController extends Controller
                 'weight' => 30,
             ]);
         }
+        if (!Menu::find('subscriber')) {
+            Menu::create([
+                'id' => 'subscriber',
+                'parent_id' => 'parenting',
+                'caption' => '訂閱電子報',
+                'url' => 'route.subscriber',
+                'weight' => 40,
+            ]);
+        }
         if (!Menu::find('meeting')) {
             Menu::create([
                 'id' => 'meeting',

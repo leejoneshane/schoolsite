@@ -4,17 +4,29 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
 use App\Models\Subscriber;
 use App\Models\News;
 use App\Models\Watchdog;
+use Carbon\Carbon;
 
 class SubscriberController extends Controller
 {
-    public function subscription(Request $request, $news)
+    public function index($email = null)
     {
+        $subscriber = null;
+        if ($email) {
+            $subscriber = Subscriber::findByEmail($email);
+        }
+        $news = News::all();
+        $this->removeUnverify();
+        return view('app.subscriber', ['email' => $email, 'subscriber' => $subscriber, 'news' => $news]);
+    }
+
+    public function subscription(Request $request, $news = null)
+    {
+        if (!$news) return redirect()->route('subscriber');
         $news = News::find($news);
-        $subscriber = Subscriber::where('email', $request->input('email'))->first();
+        $subscriber = Subscriber::findByEmail($request->input('email'));
         if (!$subscriber) {
             $subscriber = Subscriber::create([
                 'email' => $request->input('email'),
@@ -23,37 +35,35 @@ class SubscriberController extends Controller
         }
 
         if ($subscriber) {
-            DB::table('news_subscribers')->insert([
-                'news_id' => $news->id,
-                'subscriber_id' => $subscriber->id,
-            ]);
-            Watchdog::watch($request, '訂閱電子報：' . $news->name);
+            $subscriber->subscription($news->id);
+            Watchdog::watch($request, $subscriber->email . '訂閱電子報：' . $news->name);
         }
 
         if (config('subscribers.verify')) {
-            if (! $subscriber->verified) {
+            if (!($subscriber->verified)) {
                 $subscriber->sendEmailVerificationNotification();
                 Watchdog::watch($request, '寄送郵件信箱確認信到 ' . $subscriber->email);
-                return redirect()->route('home')->with('success', '電子報：'.$news->name.'的驗證信已經寄送到您的電子郵件信箱，請收信並進行驗證！');
+                return redirect()->route('subscriber')->with('success', '電子報：'.$news->name.'的驗證信已經寄送到您的電子郵件信箱，請收信並進行驗證！');
             }
         }
 
         return redirect()->route('home')->with('success', '恭喜您！您已經成功訂閱電子報：'.$news->name.'!');
     }
 
-    public function remove(Request $request, $news)
+    public function remove(Request $request, $news = null)
     {
+        if (!$news) return redirect()->route('subscriber');
         $news = News::find($news);
-        $subscriber = Subscriber::where('email', $request->input('email'))->first();
+        $subscriber = Subscriber::findByEmail($request->input('email'));
         if ($subscriber) {
-            DB::table('news_subscribers')->where('news_id', $news->id)->where('subscriber_id', $subscriber->id)->delete();
-            Watchdog::watch($request, '取消訂閱電子報：' . $news->name);
+            $subscriber->cancel($news->id);
+            Watchdog::watch($request, $subscriber->email . '取消訂閱電子報：' . $news->name);
         }
         if (empty($subscriber->news)) {
             Watchdog::watch($request, '移除訂閱戶：' . $subscriber->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $subscriber->delete();
         }
-        return redirect()->route('home')->with('success', '您已經取消訂閱電子報：'.$news->name.'!');
+        return redirect()->route('subscriber')->with('success', '您已經取消訂閱電子報：'.$news->name.'!');
     }
 
     public function verify(Request $request, $id, $hash)
@@ -77,5 +87,11 @@ class SubscriberController extends Controller
         }
 
         return redirect()->route('home')->with('success', '因為不明原因，驗證失敗！');
+    }
+
+    public function removeUnverify($days = null) {
+        if (!$days) $days = 30;
+        $expired = Carbon::now()->subDays($days);
+        Subscriber::whereNull('email_verified_at')->where('created_at', '<', $expired)->delete();
     }
 }
