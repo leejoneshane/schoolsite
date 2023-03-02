@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('students_clubs', function (Blueprint $table) {
+        Schema::create('clubs_students', function (Blueprint $table) {
             $table->id();
             $table->integer('year');
             $table->uuid();
@@ -37,6 +37,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('students_clubs');
+        Schema::dropIfExists('clubs_students');
     }
 };

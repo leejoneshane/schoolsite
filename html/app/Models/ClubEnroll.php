@@ -14,7 +14,7 @@ class ClubEnroll extends Model
 {
     use Notifiable;
 
-    protected $table = 'students_clubs';
+    protected $table = 'clubs_students';
 
     protected static $weekMap = [
         0 => '日',
@@ -171,10 +171,10 @@ class ClubEnroll extends Model
     //篩選指定班級本學年所有的報名資訊，靜態函式
     public static function currentByClass($class_id)
     {
-        return ClubEnroll::leftJoin('students', 'students_clubs.uuid', '=', 'students.uuid')
-            ->select('students_clubs.*')
-            ->where('students_clubs.accepted', true)
-            ->where('students_clubs.year', current_year())
+        return ClubEnroll::leftJoin('students', 'clubs_students.uuid', '=', 'students.uuid')
+            ->select('clubs_students.*')
+            ->where('clubs_students.accepted', true)
+            ->where('clubs_students.year', current_year())
             ->where('students.class_id', $class_id)
             ->orderBy('students.seat')
             ->get();
@@ -211,7 +211,7 @@ class ClubEnroll extends Model
     //取得有報名資訊的所有學年，傳回陣列，靜態函式
     public static function years()
     {
-        return DB::table('students_clubs')->selectRaw('DISTINCT(year)')->get()->transform(function ($item) {
+        return DB::table('clubs_students')->selectRaw('DISTINCT(year)')->get()->transform(function ($item) {
             return $item->year;
         })->toArray();
     }

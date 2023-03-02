@@ -213,7 +213,7 @@ class Club extends Model
     //取得此社團所有的學生
     public function students()
     {
-        return $this->belongsToMany('App\Models\Student', 'students_clubs', 'club_id', 'uuid')
+        return $this->belongsToMany('App\Models\Student', 'clubs_students', 'club_id', 'uuid')
             ->as('enroll')
             ->withPivot([
                 'id',
