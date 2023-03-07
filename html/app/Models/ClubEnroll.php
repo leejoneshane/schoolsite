@@ -12,6 +12,9 @@ use Carbon\CarbonPeriod;
 
 class ClubEnroll extends Model
 {
+    /**
+     * Notifiable: 可以接收通知
+     */
     use Notifiable;
 
     protected $table = 'clubs_students';

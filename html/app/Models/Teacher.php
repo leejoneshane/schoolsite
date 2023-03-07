@@ -14,7 +14,9 @@ use App\Models\Classroom;
 
 class Teacher extends Model
 {
-
+    /**
+     * SoftDeletes: 刪除資料只標註而不移除
+     */
     use SoftDeletes;
 
     protected $table = 'teachers';

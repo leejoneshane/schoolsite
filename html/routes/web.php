@@ -234,6 +234,27 @@ Route::group(['prefix' => 'roster', 'middleware' => [ 'auth'] ], function () {
     Route::get('download/{id}/{section}', 'App\Http\Controllers\RosterController@download')->name('roster.download');
 });
 
+// 分組座位表
+Route::group(['prefix' => 'seats', 'middleware' => [ 'auth'] ], function () {
+    Route::get('/', 'App\Http\Controllers\SeatsController@index')->name('seats');
+    Route::get('theme', 'App\Http\Controllers\SeatsController@theme')->name('seats.theme');
+    Route::get('theme/add', 'App\Http\Controllers\SeatsController@addTheme');
+    Route::post('theme/add', 'App\Http\Controllers\SeatsController@insertTheme')->name('seats.addtheme');
+    Route::get('theme/view', 'App\Http\Controllers\SeatsController@showTheme')->name('seats.viewtheme');
+    Route::get('theme/edit/{id}', 'App\Http\Controllers\SeatsController@editTheme');
+    Route::post('theme/edit/{id}', 'App\Http\Controllers\SeatsController@updateTheme')->name('seats.edittheme');
+    Route::post('theme/remove/{id}', 'App\Http\Controllers\SeatsController@removeTheme')->name('seats.removetheme');
+    Route::get('add', 'App\Http\Controllers\SeatsController@add');
+    Route::post('add', 'App\Http\Controllers\SeatsController@insert')->name('seats.add');
+    Route::get('view/{id}', 'App\Http\Controllers\SeatsController@show')->name('seats.view');
+    Route::post('auto/{id}', 'App\Http\Controllers\SeatsController@auto')->name('seats.auto');
+    Route::get('edit/{id}', 'App\Http\Controllers\SeatsController@edit');
+    Route::post('edit/{id}', 'App\Http\Controllers\SeatsController@update')->name('seats.edit');
+    Route::get('change/{id}', 'App\Http\Controllers\SeatsController@change');
+    Route::post('change/{id}', 'App\Http\Controllers\SeatsController@updateChange')->name('seats.change');
+    Route::post('remove/{id}', 'App\Http\Controllers\SeatsController@remove')->name('seats.remove');
+});
+
 // 管理後台
 Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');

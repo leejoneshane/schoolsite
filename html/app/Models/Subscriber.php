@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\DB;
 
 class Subscriber extends Model
 {
+    /**
+     * Notifiable: 可以接收通知
+     */
     use Notifiable;
 
     protected $table = 'subscribers';

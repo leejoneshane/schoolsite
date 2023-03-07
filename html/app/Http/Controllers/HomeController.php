@@ -31,6 +31,15 @@ class HomeController extends Controller
                 'weight' => 20,
             ]);
         }
+        if (!Menu::find('classmanage')) {
+            Menu::create([
+                'id' => 'classmanage',
+                'parent_id' => 'main',
+                'caption' => '班級經營',
+                'url' => '#',
+                'weight' => 30,
+            ]);
+        }
         if (!Menu::find('calendar')) {
             Menu::create([
                 'id' => 'calendar',
@@ -119,6 +128,15 @@ class HomeController extends Controller
                 'caption' => '學生名單填報',
                 'url' => 'route.rosters',
                 'weight' => 60,
+            ]);
+        }
+        if (!Menu::find('seats')) {
+            Menu::create([
+                'id' => 'seats',
+                'parent_id' => 'classmanage',
+                'caption' => '分組座位表',
+                'url' => 'route.seats',
+                'weight' => 10,
             ]);
         }
     }

@@ -1,24 +1,20 @@
 @extends('layouts.main')
 
 @section('content')
-<div class="text-2xl font-bold leading-normal pb-5">
+<div class="text-2xl font-bold leading-normal">
     預約場地或設備
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('venues') }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<p><div class="p-3">
-    <label class="inline">名稱：{{ $venue->name }}</label>
-</div></p>
-<p><div class="p-3">
-    <label class="inline">管理員：{{ $venue->manager->realname }}</label>
-</div></p>
-<p><div class="p-3">
-    <label class="inline">借用須知：{{ $venue->description }}</label>
-</div></p>
-<p><div class="p-3">
+<div class="p-3">
+    <label class="inline pr-6">名稱：{{ $venue->name }}</label>
+    <label class="inline pr-6">管理員：{{ $venue->manager->realname }}</label>
+    <label class="inline pr-6">借用須知：{{ $venue->description }}</label>
+</div>
+<div class="p-3">
     <label class="inline align-top">我要預約：</label>
-    <div class="p-8 inline-block rounded-lg border shadow-2xl">
+    <div class="p-3 inline-block rounded-lg border shadow-2xl">
     <table class="border-collapse text-sm text-left">
         @php
         $dates[0] = $result->start->copy(); 
@@ -110,7 +106,7 @@
         </tbody>
     </table>
     </div>
-</div></p>
+</div>
 <div id="defaultModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-full h-full max-w-2xl md:h-auto">
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">

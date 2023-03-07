@@ -42,7 +42,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $kinds = ClubKind::orderBy('weight')->get();
-            return view('app.club_kind', ['kinds' => $kinds]);
+            return view('app.club_kinds', ['kinds' => $kinds]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -76,7 +76,7 @@ class ClubController extends Controller
         ]);
         Watchdog::watch($request, '新增社團類別：' . $k->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $kinds = ClubKind::orderBy('weight')->get();
-        return view('app.club_kind', ['kinds' => $kinds])->with('success', '社團類別已經新增完成！');
+        return view('app.club_kinds', ['kinds' => $kinds])->with('success', '社團類別已經新增完成！');
     }
 
     public function kindEdit($kid)
@@ -105,7 +105,7 @@ class ClubController extends Controller
         ]);
         Watchdog::watch($request, '更新社團類別：' . $k->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $kinds = ClubKind::orderBy('weight')->get();
-        return view('app.club_kind', ['kinds' => $kinds])->with('success', '社團類別已經修改完成！');
+        return view('app.club_kinds', ['kinds' => $kinds])->with('success', '社團類別已經修改完成！');
     }
 
     public function kindRemove(Request $request, $kid)
@@ -117,7 +117,7 @@ class ClubController extends Controller
             Watchdog::watch($request, '新增社團類別：' . $k->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $k->delete();
             $kinds = ClubKind::orderBy('weight')->get();
-            return view('app.club_kind', ['kinds' => $kinds])->with('success', '社團類別已經移除！');
+            return view('app.club_kinds', ['kinds' => $kinds])->with('success', '社團類別已經移除！');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -136,7 +136,7 @@ class ClubController extends Controller
                 $kind->save();
             }
             Watchdog::watch($request, '修改社團類別的權重：' . $kind->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('clubs.kinds');
+            return redirect()->route('clubs.club_kinds');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -156,7 +156,7 @@ class ClubController extends Controller
                 $kind->save();
             }
             Watchdog::watch($request, '修改社團類別的權重：' . $kind->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('clubs.kinds');
+            return redirect()->route('clubs.club_kinds');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
