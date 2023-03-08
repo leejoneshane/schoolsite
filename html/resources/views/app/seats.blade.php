@@ -37,7 +37,7 @@
             window.location.replace('{{ route('seats.view', ['id' => $s->id]) }}');
         ">{{ $s->created_at }}</td>
         <td class="p-2">
-            <button class="py-2 pr-6 text-red-300 hover:text-red-600"
+            <button class="py-2 pr-6 text-amber-500 hover:text-amber-300"
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('seats.auto', ['id' => $s->id]) }}';
@@ -45,15 +45,15 @@
             ">
                 <i class="fa-solid fa-wand-magic-sparkles"></i>自動分組
             </button>
-            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+            <a class="py-2 pr-6 text-blue-500 hover:text-blue-300"
                 href="{{ route('seats.edit', ['id' => $s->id]) }}">
-                <i class="fa-solid fa-pen"></i>編輯座位
+                <i class="fa-solid fa-chair"></i>安排座位
             </a>
-            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+            <a class="py-2 pr-6 text-blue-500 hover:text-blue-300"
                 href="{{ route('seats.change', ['id' => $s->id]) }}">
                 <i class="fa-solid fa-chess-board"></i>變更版型
             </a>
-            <button class="py-2 pr-6 text-red-300 hover:text-red-600"
+            <button class="py-2 pr-6 text-red-500 hover:text-red-300"
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('seats.remove', ['id' => $s->id]) }}';

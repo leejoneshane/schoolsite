@@ -12,7 +12,7 @@
         請先從右側選單，選取要設定的組別，然後在左側表格適當的位置點一下。
     </p>
 </div>
-<form id="add-club" action="{{ route('seats.edittheme', [ 'id' => $template->id ]) }}" method="POST">
+<form id="edit-theme" action="{{ route('seats.edittheme', [ 'id' => $template->id ]) }}" method="POST">
     @csrf
     <input type="hidden" id="matrix" name="matrix" value="{{ json_encode($template->matrix) }}">
     <div class="flex flex-col">
@@ -66,13 +66,8 @@
     </div>
 </form>
 <script>
-    const styles = [
-        @foreach ($styles as $style)
-        '{{ $style }}',
-        @endforeach
-    ];
-
-    const matrix = {{ json_encode($template->matrix) }};
+    const styles = {!! json_encode($styles, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!};
+    const matrix = {!! json_encode($template->matrix, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!};
 
     var ngroup = 0;
 

@@ -17,6 +17,11 @@ class Seats extends Model
         'uuid',
     ];
 
+    //以下為透過程式動態產生之屬性
+    protected $appends = [
+        'name',
+    ];
+
     //以下屬性隱藏不顯示（toJson 時忽略）
     protected $hidden = [
         'classroom',
@@ -24,6 +29,12 @@ class Seats extends Model
         'creater',
         'students',
     ];
+
+    //提供座位表名稱
+    public function getNameAttribute()
+    {
+        return $this->classroom->name . $this->theme->name . '座位表';
+    }
 
     //篩選指定使用者建立的所有座位表，傳回集合物件
     public static function findByUUID($uuid)
@@ -65,24 +76,39 @@ class Seats extends Model
     public function students()
     {
         return $this->belongsToMany('App\Models\Student', 'seats_students', 'seats_id', 'uuid')
-            ->as('seat')
             ->withPivot([
                 'sequence',
                 'group_no',
             ]);
     }
 
+    //取得不在此座位表上的所有學生
+    public function students_without()
+    {
+        return $this->classroom->students->diff($this->student);
+    }
+
     //取得此座位表的表徵陣列
     public function matrix()
     {
         $order = [];
-        $stus = $this->students;
         $whole = $this->theme->matrix;
         foreach ($whole as $row => $columns) {
             foreach ($columns as $col => $group) {
-                $order[$group] += 1;
-                $stu = $stus->where('sequence', $order[$group])->where('group_no', $group)->first();    
-                $whole[$row][$col] = $stu;
+                if ($group > 0) {
+                    if (isset($order[$group])) {
+                        $order[$group]++;
+                    } else {
+                        $order[$group] = 1;
+                    }
+                    $stu = $this->students()
+                        ->wherePivot('sequence', $order[$group])
+                        ->wherePivot('group_no', $group)
+                        ->first();
+                    $whole[$row][$col] = $stu;
+                } else {
+                    $whole[$row][$col] = null;
+                }
             }
         }
         return $whole;

@@ -248,11 +248,12 @@ Route::group(['prefix' => 'seats', 'middleware' => [ 'auth'] ], function () {
     Route::post('add', 'App\Http\Controllers\SeatsController@insert')->name('seats.add');
     Route::get('view/{id}', 'App\Http\Controllers\SeatsController@show')->name('seats.view');
     Route::post('auto/{id}', 'App\Http\Controllers\SeatsController@auto')->name('seats.auto');
-    Route::get('edit/{id}', 'App\Http\Controllers\SeatsController@edit');
-    Route::post('edit/{id}', 'App\Http\Controllers\SeatsController@update')->name('seats.edit');
+    Route::get('edit/{id}', 'App\Http\Controllers\SeatsController@edit')->name('seats.edit');
     Route::get('change/{id}', 'App\Http\Controllers\SeatsController@change');
     Route::post('change/{id}', 'App\Http\Controllers\SeatsController@updateChange')->name('seats.change');
     Route::post('remove/{id}', 'App\Http\Controllers\SeatsController@remove')->name('seats.remove');
+    Route::post('assign', 'App\Http\Controllers\SeatsController@assign')->name('seats.assign');
+    Route::post('unassign', 'App\Http\Controllers\SeatsController@unassign')->name('seats.unassign');
 });
 
 // 管理後台
