@@ -114,11 +114,6 @@ class SeatsController extends Controller
         return redirect()->route('seats')->with('success', '座位表新增完成！');
     }
 
-    public function show($id)
-    {
-
-    }
-
     public function auto(Request $request, $id)
     {
         $user = Auth::user();
@@ -201,42 +196,68 @@ class SeatsController extends Controller
         $styles = SeatsTheme::$styles;
         $students = [];
         foreach ($seats->classroom->students as $stu) {
+            if ($stu->gender == 1) {
+                $label = '<label class="text-blue-700">'.(($stu->seat >= 10) ? $stu->seat : '0'.$stu->seat).'　'.$stu->realname.'</label>';
+            } else {
+                $label = '<label class="text-red-700">'.(($stu->seat >= 10) ? $stu->seat : '0'.$stu->seat).'　'.$stu->realname.'</label>';
+            }
             $obj = (object) [
                 'uuid' => $stu->uuid,
-                'gender' => $stu->gender,
+                'html' => $label,
             ];
             $students[$stu->seat] = $obj;
         };
         $matrix = [];
         foreach ($seats->matrix() as $i => $cols) {
-            foreach ($cols as $j => $stu) {
-                if ($stu) {
-                    $matrix[$i][$j][0] = $stu->seat;
-                    if ($stu->gender == 1) {
-                        $matrix[$i][$j][1] = '<label class="text-blue-700">'.(($stu->seat >= 10) ? $stu->seat : '0'.$stu->seat).'　'.$stu->realname.'</label>';
-                    } else {
-                        $matrix[$i][$j][1] = '<label class="text-red-700">'.(($stu->seat >= 10) ? $stu->seat : '0'.$stu->seat).'　'.$stu->realname.'</label>';
-                    }
-                    $matrix[$i][$j][2] = $stu->pivot->sequence;
-                    $matrix[$i][$j][3] = $stu->pivot->group_no;
+            foreach ($cols as $j => $pos) {
+                if (is_object($pos->student)) {
+                    $matrix[$i][$j][0] = $pos->student->seat;
+                    $matrix[$i][$j][1] = $students[$pos->student->seat]->html;
+                    $matrix[$i][$j][2] = $pos->sequence;
+                    $matrix[$i][$j][3] = $pos->group;
                 } else {
-                    $matrix[$i][$j][0] = null;
-                    $matrix[$i][$j][1] = '';
-                    $matrix[$i][$j][2] = 0;
-                    $matrix[$i][$j][3] = 0;
-                }    
+                    $matrix[$i][$j][0] = 0;
+                    $matrix[$i][$j][1] = '&nbsp;';
+                    $matrix[$i][$j][2] = $pos->sequence;
+                    $matrix[$i][$j][3] = $pos->group;
+                }
             }
         }
         $without = [];
         $without[] = [ 0, '　清　除　' ];
         foreach ($seats->students_without() as $stu) {
-            if ($stu->gender == 1) {
-                $without[] = '<label class="text-blue-700">'.(($stu->seat >= 10) ? $stu->seat : '0'.$stu->seat).'　'.$stu->realname.'</label>';
-            } else {
-                $without[] = '<label class="text-red-700">'.(($stu->seat >= 10) ? $stu->seat : '0'.$stu->seat).'　'.$stu->realname.'</label>';
-            }
+            $without[] = [ $stu->seat, $students[$stu->seat]->html ];
         }
         return view('app.seats_edit', ['seats' => $seats, 'styles' => $styles, 'students' => $students, 'matrix' => $matrix, 'without' => $without]);
+    }
+
+    public function show($id)
+    {
+        $user = Auth::user();
+        if ($user->user_type != 'Teacher') {
+            return redirect()->route('home')->with('error', '只有教職員才能查閱分組座位表！');
+        }
+        $seats = Seats::find($id);
+        $styles = SeatsTheme::$styles;
+        return view('app.seats_view', ['seats' => $seats, 'styles' => $styles]);
+    }
+
+    public function group($id)
+    {
+        $user = Auth::user();
+        if ($user->user_type != 'Teacher') {
+            return redirect()->route('home')->with('error', '只有教職員才能查閱分組一覽表！');
+        }
+        $seats = Seats::find($id);
+        $styles = SeatsTheme::$styles;
+        $groups =[];
+        foreach ($seats->students as $stu) {
+            $groups[$stu->pivot->group_no][] = $stu; 
+        }
+        foreach ($seats->students_without() as $stu) {
+            $groups['none'][] = $stu;
+        }
+        return view('app.seats_group', ['seats' => $seats, 'styles' => $styles, 'groups' => $groups]);
     }
 
     public function change($id)
@@ -283,10 +304,31 @@ class SeatsController extends Controller
 
     public function assign(Request $request)
     {
+        $id = $request->input('seats_id');
+        $uuid = $request->input('uuid');
+        $seq = $request->input('sequence');
+        $g = $request->input('group_no');
+        $seats = Seats::find($id);
+        $stu = Student::find($uuid);
+        DB::table('seats_students')->insert([
+            'seats_id' => $id,
+            'uuid' => $uuid,
+            'sequence' => $seq,
+            'group_no' => $g,
+        ]);
+        Watchdog::watch($request, $seats->name.'安排座位：第'.$g.'組'.$stu->seat.$stu->realname);
+        return response()->json('success');
     }
 
     public function unassign(Request $request)
     {
+        $id = $request->input('seats_id');
+        $uuid = $request->input('uuid');
+        $seats = Seats::find($id);
+        $stu = Student::find($uuid);
+        DB::table('seats_students')->where('seats_id', $id)->where('uuid', $uuid)->delete();
+        Watchdog::watch($request, $seats->name.'取消'.$stu->seat.$stu->realname.'的座位！');
+        return response()->json('success');
     }
 
 }

@@ -214,7 +214,6 @@ class Club extends Model
     public function students()
     {
         return $this->belongsToMany('App\Models\Student', 'clubs_students', 'club_id', 'uuid')
-            ->as('enroll')
             ->withPivot([
                 'id',
                 'year',

@@ -79,13 +79,15 @@ class Seats extends Model
             ->withPivot([
                 'sequence',
                 'group_no',
-            ]);
+            ])
+            ->orderByPivot('group_no')
+            ->orderByPivot('sequence');
     }
 
     //取得不在此座位表上的所有學生
     public function students_without()
     {
-        return $this->classroom->students->diff($this->student);
+        return $this->classroom->students->diff($this->students);
     }
 
     //取得此座位表的表徵陣列
@@ -105,9 +107,17 @@ class Seats extends Model
                         ->wherePivot('sequence', $order[$group])
                         ->wherePivot('group_no', $group)
                         ->first();
-                    $whole[$row][$col] = $stu;
+                    $whole[$row][$col] = (object) [
+                        'student' => $stu,
+                        'sequence' => $order[$group],
+                        'group' => $group,
+                    ];
                 } else {
-                    $whole[$row][$col] = null;
+                    $whole[$row][$col] = (object) [
+                        'student' => null,
+                        'sequence' => 0,
+                        'group' => 0,
+                    ];
                 }
             }
         }

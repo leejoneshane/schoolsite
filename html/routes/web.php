@@ -247,6 +247,7 @@ Route::group(['prefix' => 'seats', 'middleware' => [ 'auth'] ], function () {
     Route::get('add', 'App\Http\Controllers\SeatsController@add');
     Route::post('add', 'App\Http\Controllers\SeatsController@insert')->name('seats.add');
     Route::get('view/{id}', 'App\Http\Controllers\SeatsController@show')->name('seats.view');
+    Route::get('view/{id}/group', 'App\Http\Controllers\SeatsController@group')->name('seats.group');
     Route::post('auto/{id}', 'App\Http\Controllers\SeatsController@auto')->name('seats.auto');
     Route::get('edit/{id}', 'App\Http\Controllers\SeatsController@edit')->name('seats.edit');
     Route::get('change/{id}', 'App\Http\Controllers\SeatsController@change');

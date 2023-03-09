@@ -9,7 +9,8 @@
 </div>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
-        請先從右側選單，選取要設定的組別，然後在左側表格適當的位置點一下。
+        1. 請先從右側選單，選取要設定的組別，然後在左側表格適當的位置點一下。<br>
+        2. 重新整理頁面可以清除所有座位！
     </p>
 </div>
 <form id="add-theme" action="{{ route('seats.addtheme') }}" method="POST">

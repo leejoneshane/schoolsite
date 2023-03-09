@@ -3,7 +3,7 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     安排座位
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seats.theme') }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seats') }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
@@ -12,44 +12,41 @@
         請先從右側選單，選取學生，然後在左側表格適當的位置點一下。
     </p>
 </div>
-<form id="edit-seats" action="{{ route('seats.edit', ['id' => $seats->id]) }}" method="POST">
-    @csrf
-    <div class="flex flex-col">
-        <div class="flex flex-row justify-center">
-            <label class="p-3">{{ $seats->name }}</label>
-        </div>
-        <div class="flex flex-row justify-center">
-            <div class="p-3">
-                <table class="cursor-pointer border border-2 border-slate-300">
-                    @foreach ($matrix as $i => $cols)
-                    <tr class="h-10">
-                        @foreach ($cols as $j => $data)
-                        <td class="w-28 border border-2 border-slate-300 {{ $styles[$data[3]] }}" onclick="set_group(this,{{ $i }}, {{ $j }})">
-                            {!! $data[1] !!}
-                        </td>
-                        @endforeach
-                    </tr>
-                    @endforeach
-                </table>
-                <table>
-                    <tr class="h-10">
-                        <td class="w-48"></td>
-                        <td class="w-32 border border-black border-2 bg-teal-300 text-center">講　　　　桌</td>
-                        <td class="w-48"></td>
-                    </tr>
-                </table>
-            </div>
-            <div class="p-3 h-[440px] overflow-y-scroll">
-                請選擇學生：
-                <ul id="stu_list">
-                    @foreach ($without as $i => $l)
-                    <li id="list{{ $i }}" class="cursor-pointer bg-white" onclick="sel_student(this)">{{ $l[1] }}　<i id="gp{{ $i }}" class="fa-solid fa-check{{ ($loop->first) ? '' : ' hidden' }}"></i></li>
-                    @endforeach
-                </ul>
-            </div>  
-        </div>
+<div class="flex flex-col">
+    <div class="flex flex-row justify-center">
+        <label class="p-3">{{ $seats->name }}</label>
     </div>
-</form>
+    <div class="flex flex-row justify-center">
+        <div class="p-3">
+            <table class="cursor-pointer border border-2 border-slate-300">
+                @foreach ($matrix as $i => $cols)
+                <tr class="h-10">
+                    @foreach ($cols as $j => $data)
+                    <td class="w-24 border border-2 border-slate-300 {{ $styles[$data[3]] }}" onclick="set_group(this,{{ $i }}, {{ $j }})">
+                        {!! $data[1] !!}
+                    </td>
+                    @endforeach
+                </tr>
+                @endforeach
+            </table>
+            <table>
+                <tr class="h-10">
+                    <td class="w-72"></td>
+                    <td class="w-48 border border-black border-2 bg-teal-300 text-center">講　　　　桌</td>
+                    <td class="w-72"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="p-3 h-[440px] overflow-y-scroll">
+            請選擇學生：
+            <ul id="stu_list">
+                @foreach ($without as $i => $l)
+                <li id="list{{ $i }}" class="cursor-pointer bg-white" onclick="sel_student(this)">{!! $l[1] !!}　<i id="gp{{ $i }}" class="fa-solid fa-check{{ ($loop->first) ? '' : ' hidden' }}"></i></li>
+                @endforeach
+            </ul>
+        </div>  
+    </div>
+</div>
 <script>
     const students = {!! json_encode($students, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!};
     const matrix = {!! json_encode($matrix, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!};
@@ -57,11 +54,11 @@
     var stu = 0;
 
     function sel_student(obj) {
-        stu = obj.id.substring(4);
-        for(var i=0; i<=sel.length; i++) {
+        stu = parseInt(obj.id.substring(4));
+        for(var i=0; i<sel.length; i++) {
             document.getElementById('gp'+i).classList.add('hidden');
         }
-        document.getElementById('gp'+no).classList.remove('hidden');
+        document.getElementById('gp'+stu).classList.remove('hidden');
     }
 
     function set_group(obj,x,y) {
@@ -73,23 +70,21 @@
         if (stu == 0) { //從座位清除學生
             if (old > 0) {
                 //將要清除的學生加入到候選清單和陣列中
-                sel[smax] = [ old, matrix[x][y][1] ];
+                sel[smax] = [ old, students[old].html ];
                 var li = document.createElement('li');
                 li.id = 'list' + smax;
                 li.classList.add('cursor-pointer', 'bg-white');
                 li.onclick = function() {sel_student(this);};
-                li.innerHTML = matrix[x][y][1] + '　<i id="gp' + smax + '" class="fa-solid fa-check hidden"></i>';
+                li.innerHTML = sel[smax][1] + '　<i id="gp' + smax + '" class="fa-solid fa-check"></i>';
                 stu_list.appendChild(li);
                 //將座位清空
                 matrix[x][y][0] = 0;
-                matrix[x][y][1] = '';
                 obj.innerHTML = '&nbsp;';
                 //重整候選清單的選取標記
                 stu = smax;
                 for(var i=0; i<smax; i++) {
                     document.getElementById('gp'+i).classList.add('hidden');
                 }
-                document.getElementById('gp'+smax).classList.remove('hidden');
                 //移除該學生的資料紀錄
                 window.axios.post('{{ route('seats.unassign') }}', {
                     seats_id: '{{$seats->id}}',
@@ -108,7 +103,7 @@
             for (var i=stu+1; i<smax; i++){
                 var li = document.getElementById('list' + i);
                 li.id = 'list' + (i - 1);
-                li.getElementsById('gp' + i).id = 'gp' + (i - 1);
+                document.getElementById('gp' + i).id = 'gp' + (i - 1);
             }
             //將選取學生寫入座位表中
             matrix[x][y][0] = newone;
@@ -133,13 +128,12 @@
             });
         } else { //交換學生座位
             //將選取中的清單置換為座位表中的學生
-            var temp = matrix[x][y][1];
+            var temp = students[old].html;
             var li = document.getElementById('list' + stu);
-            li.innerHTML = temp + '　<i id="gp' + stu + '" class="fa-solid fa-check hidden"></i>';
+            li.innerHTML = temp + '　<i id="gp' + stu + '" class="fa-solid fa-check"></i>';
             //將選取學生排入座位表中
             matrix[x][y][0] = newone;
-            matrix[x][y][1] = sel[stu][1];
-            obj.innerHTML = sel[stu][1];
+            obj.innerHTML = students[newone].html;
             //將選取中的陣列置換為座位表中的學生
             sel[stu][0] = old;
             sel[stu][1] = temp;

@@ -37,6 +37,14 @@
             window.location.replace('{{ route('seats.view', ['id' => $s->id]) }}');
         ">{{ $s->created_at }}</td>
         <td class="p-2">
+            <a class="py-2 pr-6 text-blue-500 hover:text-blue-300"
+                href="{{ route('seats.view', ['id' => $s->id]) }}">
+                <i class="fa-solid fa-eye"></i>瀏覽座位表
+            </a>
+            <a class="py-2 pr-6 text-blue-500 hover:text-blue-300"
+                href="{{ route('seats.group', ['id' => $s->id]) }}">
+                <i class="fa-solid fa-people-group"></i>分組一覽表
+            </a>
             <button class="py-2 pr-6 text-amber-500 hover:text-amber-300"
                 onclick="
                     const myform = document.getElementById('remove');

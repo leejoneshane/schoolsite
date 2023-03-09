@@ -126,7 +126,6 @@ class Roster extends Model
     public function students()
     {
         return $this->belongsToMany('App\Models\Student', 'rosters_students', 'roster_id', 'uuid')
-            ->as('list')
             ->withPivot([
                 'id',
                 'section',
