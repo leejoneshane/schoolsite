@@ -80,7 +80,7 @@
 </div>
 <div class="p-3">
     <label for="sections">請選擇學期：</label>
-    <select id="sections" class="inline p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
+    <select id="sections" class="inline w-48 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
         onchange="
         var section = this.value;
         window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}' + '/' + section);
