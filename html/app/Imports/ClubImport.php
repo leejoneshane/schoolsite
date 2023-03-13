@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Club;
+use App\Models\ClubSection;
 use App\Models\Unit;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -62,32 +63,34 @@ class ClubImport implements ToCollection, WithHeadingRow
                 $stime = substr($row['stime'], 0, 2).':'.substr($row['stime'], -2);
                 $etime = substr($row['etime'], 0, 2).':'.substr($row['etime'], -2);
             }
-            Club::updateOrCreate(
-                [
-                    'name' => $row['name'],
-                ],
-                [
-                    'short_name' => $row['short'],
-                    'kind_id' => $this->kind,
-                    'unit_id' => $unit->id,
-                    'for_grade' => $grades,
-                    'weekdays' => $weekdays,
-                    'self_defined' => $self_define,
-                    'self_remove' => $self_remove,
-                    'has_lunch' => $has_lunch,
-                    'stop_enroll' => false,
-                    'startDate' => $sdate,
-                    'endDate' => $edate,
-                    'startTime' => $stime,
-                    'endTime' => $etime,
-                    'teacher' => $row['teacher'],
-                    'location' => $row['place'],
-                    'memo' => $row['memo'],
-                    'cash' => $row['cash'],
-                    'total' => $row['total'],
-                    'maximum' => $row['maxnum'],
-                ]
-            );
+            $club = Club::updateOrCreate([
+                'name' => $row['name'],
+            ],[
+                'short_name' => $row['short'],
+                'kind_id' => $this->kind,
+                'unit_id' => $unit->id,
+                'for_grade' => $grades,
+                'self_remove' => $self_remove,
+                'has_lunch' => $has_lunch,
+                'stop_enroll' => false,
+            ]);
+            ClubSection::updateOrCreate([
+                'section' => current_section(),
+                'club_id' => $club->id,
+            ],[
+                'weekdays' => $weekdays,
+                'self_defined' => $self_define,
+                'startDate' => $sdate,
+                'endDate' => $edate,
+                'startTime' => $stime,
+                'endTime' => $etime,
+                'teacher' => $row['teacher'],
+                'location' => $row['place'],
+                'memo' => $row['memo'],
+                'cash' => $row['cash'],
+                'total' => $row['total'],
+                'maximum' => $row['maxnum'],
+            ]);
         }
     }
 }

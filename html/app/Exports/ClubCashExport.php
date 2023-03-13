@@ -32,10 +32,11 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
         $record = new \stdClass;
         $record->clubs = [];
         foreach ($enrolls as $enroll) {
+            $sec = $enroll->club->section();
             if (!$old) { //first
                 $old = $enroll->uuid;
                 $record->student = $enroll->student;
-                $record->clubs[$enroll->club->id] = $enroll->club->cash;
+                $record->clubs[$enroll->club_id] = $sec->cash;
             } elseif ($old != $enroll->uuid) { //prev
                 $total = 0;
                 foreach ($record->clubs as $cash) {
@@ -47,9 +48,9 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
                 $record = new \stdClass;
                 $record->clubs = [];
                 $record->student = $enroll->student;
-                $record->clubs[$enroll->club->id] = $enroll->club->cash;
+                $record->clubs[$enroll->club_id] = $sec->cash;
             } else {
-                $record->clubs[$enroll->club->id] = $enroll->club->cash;
+                $record->clubs[$enroll->club_id] = $sec->cash;
             }
         }
         //last one

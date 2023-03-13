@@ -115,19 +115,19 @@ class Student extends Model
     }
 
     //取得此學生指定學年的所有社團報名資訊
-    public function year_enrolls($year = null)
+    public function section_enrolls($section = null)
     {
-        if ($year) {
-            return $this->enrolls()->where('year', $year)->get();
+        if ($section) {
+            return $this->enrolls()->where('section', $section)->get();
         } else {
-            return $this->enrolls()->where('year', current_year())->get();
+            return $this->enrolls()->where('section', current_section())->get();
         }
     }
 
     //取得此學生指定分類的所有社團報名資訊
     public function current_enrolls_for_kind($kind_id)
     {
-        $filtered = $this->year_enrolls()->filter(function ($enroll) use ($kind_id) {
+        $filtered = $this->section_enrolls()->filter(function ($enroll) use ($kind_id) {
             return $enroll->club->kind_id == $kind_id;
         });
         return $filtered;

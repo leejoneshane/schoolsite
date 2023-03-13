@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Club;
+use App\Models\ClubSection;
 use App\Models\ClubKind;
 use App\Models\ClubEnroll;
 use App\Models\Unit;
@@ -173,7 +173,7 @@ class ClubController extends Controller
                 $kind = ClubKind::first();
             }
             $kinds = ClubKind::orderBy('weight')->get();
-            $clubs = Club::where('kind_id', $kind->id)->orderBy('startDate', 'desc')->get();
+            $clubs = Club::where('kind_id', $kind->id)->get();
             return view('app.clubs', ['kind' => $kind, 'kinds' => $kinds, 'clubs' => $clubs]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -315,21 +315,9 @@ class ClubController extends Controller
             'kind_id' => $kind_id,
             'unit_id' => $request->input('unit'),
             'for_grade' => $grades ?: [],
-            'weekdays' => $request->input('weekdays'),
-            'self_defined' => $request->has('selfdefine') ? true : false,
             'self_remove' => $request->has('remove') ? true : false,
             'has_lunch' => $request->has('lunch') ? true : false,
             'stop_enroll' => $request->has('stop') ? true : false,
-            'startDate' => $request->input('startdate'),
-            'endDate' => $request->input('enddate'),
-            'startTime' => $request->input('starttime'),
-            'endTime' => $request->input('endtime'),
-            'teacher' => $request->input('teacher'),
-            'location' => $request->input('location'),
-            'memo' => $request->input('memo'),
-            'cash' => $request->input('cash') ?: 0,
-            'total' => $request->input('total') ?: 0,
-            'maximum' => $request->input('limit') ?: 0,
         ]);
         Watchdog::watch($request, '新增學生社團：' . $c->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經新增完成！');
@@ -359,22 +347,10 @@ class ClubController extends Controller
             'short_name' => $request->input('short'),
             'kind_id' => $kind_id,
             'unit_id' => $request->input('unit'),
-            'for_grade' => $grades ?: [],
-            'weekdays' => $request->input('weekdays'),
             'self_defined' => $request->has('selfdefine') ? true : false,
             'self_remove' => $request->has('remove') ? true : false,
             'has_lunch' => $request->has('lunch') ? true : false,
             'stop_enroll' => $request->has('stop') ? true : false,
-            'startDate' => $request->input('startdate'),
-            'endDate' => $request->input('enddate'),
-            'startTime' => $request->input('starttime'),
-            'endTime' => $request->input('endtime'),
-            'teacher' => $request->input('teacher'),
-            'location' => $request->input('location'),
-            'memo' => $request->input('memo'),
-            'cash' => $request->input('cash') ?: 0,
-            'total' => $request->input('total') ?: 0,
-            'maximum' => $request->input('limit') ?: 0,
         ]);
         Watchdog::watch($request, '更新學生社團：' . $club->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經修改完成！');
@@ -405,7 +381,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            $enrolls = $club->year_enrolls();
+            $enrolls = $club->section_enrolls();
             return view('app.club_mail', ['club' => $club, 'enrolls' => $enrolls]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -437,6 +413,109 @@ class ClubController extends Controller
             $kind_id = $club->kind_id;
             Watchdog::watch($request, '移除學生社團' . $club->name . '所有報名資訊');
             return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '已經移除此課外社團本年度報名資訊，可以重新開始報名！');
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function sectionList($club_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $club = Club::find($club_id);
+            $sections = ClubSection::where('club_id', $club_id)->get();
+            $new = ClubSection::where('club_id', $club_id)->where('section', current_section())->exists();
+            return view('app.club_sections', ['club' => $club, 'sections' => $sections, 'new' => $new]);
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function sectionAdd($club_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $club = Club::find($club_id);
+            return view('app.club_addsection', ['club' => $club]);
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function sectionInsert(Request $request, $club_id)
+    {
+        $found = ClubSection::where('club_id', $club_id)->where('section', current_section())->first();
+        if ($found) {
+            return redirect()->route('clubs.sections', ['club_id' => $club_id])->with('error', '本學期已經開班！');
+        }
+        $c = ClubSection::create([
+            'section' => current_section(),
+            'club_id' => $club_id,
+            'weekdays' => $request->input('weekdays'),
+            'self_defined' => $request->has('selfdefine') ? true : false,
+            'startDate' => $request->input('startdate'),
+            'endDate' => $request->input('enddate'),
+            'startTime' => $request->input('starttime'),
+            'endTime' => $request->input('endtime'),
+            'teacher' => $request->input('teacher'),
+            'location' => $request->input('location'),
+            'memo' => $request->input('memo'),
+            'cash' => $request->input('cash') ?: 0,
+            'total' => $request->input('total') ?: 0,
+            'maximum' => $request->input('limit') ?: 0,
+        ]);
+        Watchdog::watch($request, '新增學生社團開班資訊：' . $c->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        return redirect()->route('clubs.sections', ['club_id' => $club_id])->with('success', '開班資訊已經新增完成！');
+    }
+
+    public function sectionEdit($section_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $section = ClubSection::find($section_id);
+            return view('app.club_editsection', ['section' => $section]);
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function sectionUpdate(Request $request, $section_id)
+    {
+        $section = ClubSection::find($section_id);
+        $section->update([
+            'weekdays' => $request->input('weekdays'),
+            'self_defined' => $request->has('selfdefine') ? true : false,
+            'startDate' => $request->input('startdate'),
+            'endDate' => $request->input('enddate'),
+            'startTime' => $request->input('starttime'),
+            'endTime' => $request->input('endtime'),
+            'teacher' => $request->input('teacher'),
+            'location' => $request->input('location'),
+            'memo' => $request->input('memo'),
+            'cash' => $request->input('cash') ?: 0,
+            'total' => $request->input('total') ?: 0,
+            'maximum' => $request->input('limit') ?: 0,
+        ]);
+        Watchdog::watch($request, '更新開班資訊：' . $section->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        return redirect()->route('clubs.sections', ['club_id' => $section->club_id])->with('success', '開班資訊已經修改完成！');
+    }
+
+    public function sectionRemove(Request $request, $section_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $section = ClubSection::find($section_id);
+            if ($section->club->enrolls) {
+                return redirect()->route('clubs.sections', ['club_id' => $section->club_id])->with('error', '此學期已經錄取學生，因此無法移除！');
+            } else {
+                Watchdog::watch($request, '移除開班資訊：' . $section->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                $section->delete();
+                return redirect()->route('clubs.sections', ['club_id' => $section->club_id])->with('success', '開班資訊已經移除完成！');
+            }
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -477,7 +556,7 @@ class ClubController extends Controller
         if ($order > $club->maximum) {
             return redirect()->route('clubs.enroll')->with('error', '很抱歉，該學生社團已經額滿！');
         }
-        $enrolls = Student::find($user->uuid)->year_enrolls();
+        $enrolls = Student::find($user->uuid)->section_enrolls();
         $weekdays = null;
         if ($club->self_defined) {
             $weekdays = $request->input('weekdays');
@@ -568,23 +647,23 @@ class ClubController extends Controller
         return back();
     }
 
-    public function enrollList($club_id, $year = null)
+    public function enrollList($club_id, $section = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            $current = current_year();
-            $years = ClubEnroll::years();
-            if (!$year) {
-                if (!empty($years)) {
-                    $year = $years[0];
+            $current = current_section();
+            $sections = ClubEnroll::sections();
+            if (!$section) {
+                if (!empty($sections)) {
+                    $section = $sections->first()->section;
                 } else {
-                    $year = $current;
+                    $section = $current;
                 }
             }
-            $enrolls = $club->year_enrolls();
-            return view('app.club_enrolls', ['club' => $club, 'current' => $current, 'year' => $year, 'years' => $years, 'enrolls' => $enrolls]);
+            $enrolls = $club->section_enrolls($section);
+            return view('app.club_enrolls', ['club' => $club, 'current' => $current, 'section' => $section, 'sections' => $sections, 'enrolls' => $enrolls]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -652,7 +731,7 @@ class ClubController extends Controller
         if ($order > $club->maximum) {
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '很抱歉，該學生社團已經額滿！');
         }
-        $enrolls = Student::find($uuid)->year_enrolls();
+        $enrolls = Student::find($uuid)->section_enrolls();
         $weekdays = null;
         if ($club->self_defined) {
             $weekdays = $request->input('weekdays');
@@ -726,7 +805,7 @@ class ClubController extends Controller
                 $message .= $stdno.$student->realname.'因該社團已經額滿，無法報名！';
                 continue;
             }
-            $enrolls = $student->year_enrolls();
+            $enrolls = $student->section_enrolls();
             $weekdays = null;
             if ($club->self_defined) {
                 $weekdays = $request->input('weekdays');
@@ -766,11 +845,12 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            $current = current_year();
-            $years = ClubEnroll::years();
-            $key = array_search($current, $years);
-            if ($key !== false) unset($years[$key]);
-            return view('_import', ['club' => $club, 'current' => $current, 'years' => $years]);
+            $current = current_section();
+            $sections = ClubEnroll::sections();
+            $sections = $sections->reject(function ($item) use ($current) {
+                return $item->section == $current;
+            });
+            return view('_import', ['club' => $club, 'current' => $current, 'sections' => $sections]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -780,7 +860,7 @@ class ClubController extends Controller
     {
         $club = Club::find($club_id);
         $year = $request->input('year');
-        $enrolls = $club->year_enrolls($year);
+        $enrolls = $club->section_enrolls($year);
         foreach ($enrolls as $old) {
             $check = ClubEnroll::findBy($old->uuid, $club_id);
             if (!$check) {
@@ -807,7 +887,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            $enrolled = $club->year_accepted()->filter(function ($enroll) {
+            $enrolled = $club->section_accepted()->filter(function ($enroll) {
                 return !is_null($enroll->email);
             });
             Notification::send($enrolled, new ClubEnrolledNotification());

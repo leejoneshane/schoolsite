@@ -137,7 +137,7 @@ class Roster extends Model
     }
 
     //取得指定學年或本學年之學生名單
-    public function year_students($section = null)
+    public function section_students($section = null)
     {
         if ($section) {
             return $this->students()->wherePivot('section', $section)->get();

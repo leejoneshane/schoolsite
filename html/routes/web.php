@@ -79,6 +79,7 @@ Route::post('messager/broadcast', 'App\Http\Controllers\MessagerController@broad
 Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('/', 'App\Http\Controllers\ClubController@index')->name('clubs');
     Route::get('enroll', 'App\Http\Controllers\ClubController@clubEnroll')->name('clubs.enroll');
+    Route::get('list/enroll/{club_id}/{section?}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
     Route::get('enroll/add/{club_id}', 'App\Http\Controllers\ClubController@enrollAdd');
     Route::post('enroll/add/{club_id}', 'App\Http\Controllers\ClubController@enrollInsert')->name('clubs.addenroll');
     Route::get('enroll/edit/{enroll_id}', 'App\Http\Controllers\ClubController@enrollEdit');
@@ -104,6 +105,7 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::post('kind/{kid}/remove', 'App\Http\Controllers\ClubController@kindRemove')->name('clubs.removekind');
     Route::get('kind/{kid}/up', 'App\Http\Controllers\ClubController@kindUp')->name('clubs.upkind');
     Route::get('kind/{kid}/down', 'App\Http\Controllers\ClubController@kindDown')->name('clubs.downkind');
+    Route::get('list/{kid?}', 'App\Http\Controllers\ClubController@clubList')->name('clubs.admin');
     Route::get('add/{kid?}', 'App\Http\Controllers\ClubController@clubAdd');
     Route::post('add/{kid?}', 'App\Http\Controllers\ClubController@clubInsert')->name('clubs.add');
     Route::get('edit/{club_id}', 'App\Http\Controllers\ClubController@clubEdit');
@@ -112,6 +114,12 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('mail/{club_id}', 'App\Http\Controllers\ClubController@clubMail');
     Route::post('mail/{club_id}', 'App\Http\Controllers\ClubController@clubNotify')->name('clubs.mail');
     Route::post('prune/{club_id}', 'App\Http\Controllers\ClubController@clubPrune')->name('clubs.prune');
+    Route::get('section/{club_id}', 'App\Http\Controllers\ClubController@sectionList')->name('clubs.sections');
+    Route::get('section/add/{club_id}', 'App\Http\Controllers\ClubController@sectionAdd');
+    Route::post('section/add/{club_id}', 'App\Http\Controllers\ClubController@sectionInsert')->name('clubs.addsection');
+    Route::get('section/edit/{section_id}', 'App\Http\Controllers\ClubController@sectionEdit');
+    Route::post('section/edit/{section_id}', 'App\Http\Controllers\ClubController@sectionUpdate')->name('clubs.editsection');
+    Route::post('section/remove/{section_id}', 'App\Http\Controllers\ClubController@sectionRemove')->name('clubs.removesection');
     Route::get('import/{kid?}', 'App\Http\Controllers\ClubController@clubUpload');
     Route::post('import/{kid?}', 'App\Http\Controllers\ClubController@clubImport')->name('clubs.import');
     Route::get('export/{kid}', 'App\Http\Controllers\ClubController@clubExport')->name('clubs.export');
@@ -119,8 +127,7 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('cash', 'App\Http\Controllers\ClubController@clubExportCash')->name('clubs.cash');
     Route::get('classroom/{kid}/{class_id?}', 'App\Http\Controllers\ClubController@clubClassroom')->name('clubs.classroom');
     Route::get('classroom/{kid}/export/{class_id}', 'App\Http\Controllers\ClubController@clubExportClass')->name('clubs.exportclass');
-    Route::get('list/{kid?}', 'App\Http\Controllers\ClubController@clubList')->name('clubs.admin');
-    Route::get('list/enroll/{club_id}/{year?}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
+
 });
 
 //明日小作家
@@ -307,7 +314,7 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('website/permission/{id}/remove', 'App\Http\Controllers\Admin\PermitController@remove')->name('permission.remove');
     Route::get('website/permission/{id}/grant', 'App\Http\Controllers\Admin\PermitController@grantList');
     Route::post('website/permission/{id}/grant', 'App\Http\Controllers\Admin\PermitController@grantUpdate')->name('permission.grant');
-// 電子報管理    
+// 電子報管理
     Route::get('website/news', 'App\Http\Controllers\Admin\NewsController@index')->name('news');
     Route::get('website/news/add', 'App\Http\Controllers\Admin\NewsController@add');
     Route::post('website/news/add', 'App\Http\Controllers\Admin\NewsController@insert')->name('news.add');

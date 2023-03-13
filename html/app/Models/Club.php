@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\ClubEnroll;
+use App\Models\ClubSection;
 use Carbon\Carbon;
 
 class Club extends Model
@@ -28,25 +28,14 @@ class Club extends Model
         'kind_id',
         'unit_id',
         'for_grade',
-        'weekdays',
-        'self_defined',
         'self_remove',
         'has_lunch',
         'stop_enroll',
-        'startDate',
-        'endDate',
-        'startTime',
-        'endTime',
-        'teacher',
-        'location',
-        'memo',
-        'cash',
-        'total',
-        'maximum',
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）
     protected $hidden = [
+        'sections',
         'kind',
         'unit',
         'enrolls',
@@ -57,19 +46,14 @@ class Club extends Model
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'for_grade' => 'array',
-        'weekdays' => 'array',
-        'self_defined' => 'boolean',
         'self_remove' => 'boolean',
         'has_lunch' => 'boolean',
         'stop_enroll' => 'boolean',
-        'startDate' => 'datetime:Y-m-d',
-        'endDate' => 'datetime:Y-m-d',
     ];
 
     //以下為透過程式動態產生之屬性
     protected $appends = [
 		'grade',
-        'studytime',
         'style',
     ];
 
@@ -83,28 +67,6 @@ class Club extends Model
         return $str.'年級';
     }
 
-    //提供上課時間中文字串
-    public function getStudytimeAttribute()
-    {
-        $str ='';
-        $str .= substr($this->startDate, 0, 10);
-        $str .= '～';
-        $str .= substr($this->endDate, 0, 10);
-        if ($this->self_defined) {
-            $str .= ' 每週上課日由家長自選';
-        } else {
-            $str .= ' 每週';
-            foreach ($this->weekdays as $d) {
-                $str .= self::$weekMap[$d];
-            }
-        }
-        $str .= ' ';
-        $str .= $this->startTime;
-        $str .= '～';
-        $str .= $this->endTime;
-        return $str;
-    }
-
     //提供此社團的分類樣式
     public function getStyleAttribute()
     {
@@ -116,8 +78,10 @@ class Club extends Model
     {
         $today = Carbon::now();
         if ($grade) {
-            return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
-            ->select('clubs.*', 'club_kinds.style')
+            return Club::select('clubs.*', 'club_kinds.style')
+            ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
+            ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
+            ->where('clubs_section.section', current_section())
             ->where('club_kinds.stop_enroll', false)
             ->whereDate('club_kinds.enrollDate', '<=', $today)
             ->whereDate('club_kinds.expireDate', '>=', $today)
@@ -126,8 +90,10 @@ class Club extends Model
             ->orderBy('clubs.kind_id')
             ->get();
         } else {
-            return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
-            ->select('clubs.*', 'club_kinds.style')
+            return Club::select('clubs.*', 'club_kinds.style')
+            ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
+            ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
+            ->where('clubs_section.section', current_section())
             ->where('club_kinds.stop_enroll', false)
             ->whereDate('club_kinds.enrollDate', '<=', $today)
             ->whereDate('club_kinds.expireDate', '>=', $today)
@@ -155,6 +121,26 @@ class Club extends Model
         ->get();
     }
 
+    //取得此社團的學期資訊
+    public function sections()
+    {
+        return $this->hasMany('App\Models\ClubSection', 'club_id')->orderBy('section', 'desc');
+    }
+
+    //提供目前的學期資訊
+    public function section($section = null)
+    {
+        if ($section) {
+            return ClubSection::where('club_id', $this->id)
+            ->where('section', $section)
+            ->first();
+        } else {
+            return ClubSection::where('club_id', $this->id)
+            ->where('section', current_section())
+            ->first();
+        }
+    }
+
     //取得此社團的分類
     public function kind()
     {
@@ -180,34 +166,34 @@ class Club extends Model
     }
 
     //取得此社團指定學年或本學年所有的報名資訊，依報名時間排序
-    public function year_enrolls($year = null)
+    public function section_enrolls($section = null)
     {
-        if ($year) {
-            return $this->enrolls()->where('year', $year)->get();
+        if ($section) {
+            return $this->enrolls()->where('section', $section)->get();
         } else {
-            return $this->enrolls()->where('year', current_year())->get();
+            return $this->enrolls()->where('section', current_section())->get();
         }
     }
     //取得此社團指定學年或本學年所有已錄取的報名資訊，依報名時間排序
-    public function year_accepted($year = null)
+    public function section_accepted($section = null)
     {
-        if ($year) {
-            return $this->accepted_enrolls()->where('year', $year)->get();
+        if ($section) {
+            return $this->accepted_enrolls()->where('section', $section)->get();
         } else {
-            return $this->accepted_enrolls()->where('year', current_year())->get();
+            return $this->accepted_enrolls()->where('section', current_section())->get();
         }
     }
 
     //計算此社團本學年報名學生數
-    public function count_enrolls()
+    public function count_enrolls($section = null)
     {
-        return $this->year_enrolls()->count();
+        return $this->section_enrolls($section)->count();
     }
 
     //計算此社團本學年錄取學生數
-    public function count_accepted()
+    public function count_accepted($section = null)
     {
-        return $this->year_accepted()->count();
+        return $this->section_accepted($section)->count();
     }
 
     //取得此社團所有的學生
@@ -216,7 +202,7 @@ class Club extends Model
         return $this->belongsToMany('App\Models\Student', 'clubs_students', 'club_id', 'uuid')
             ->withPivot([
                 'id',
-                'year',
+                'section',
                 'need_lunch',
                 'weekdays',
                 'identity',
@@ -231,22 +217,22 @@ class Club extends Model
     }
 
     //取得此社團指定學年或本學年所有的學生
-    public function enroll_students($year = null)
+    public function enroll_students($section = null)
     {
-        if ($year) {
-            return $this->students()->wherePivot('year', $year)->get();
+        if ($section) {
+            return $this->students()->wherePivot('section', $section)->get();
         } else {
-            return $this->students()->wherePivot('year', current_year())->get();
+            return $this->students()->wherePivot('section', current_section())->get();
         }
     }
 
     //取得此社團指定學年或本學年所有已錄取的學生
-    public function accepted_students($year = null)
+    public function accepted_students($section = null)
     {
-        if ($year) {
-            return $this->students()->wherePivot('year', $year)->wherePivot('accepted', 1)->get();
+        if ($section) {
+            return $this->students()->wherePivot('section', $section)->wherePivot('accepted', 1)->get();
         } else {
-            return $this->students()->wherePivot('year', current_year())->wherePivot('accepted', 1)->get();
+            return $this->students()->wherePivot('section', current_section())->wherePivot('accepted', 1)->get();
         }
     }
 

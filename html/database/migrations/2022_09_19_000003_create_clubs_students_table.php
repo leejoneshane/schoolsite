@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('clubs_students', function (Blueprint $table) {
             $table->id();
-            $table->integer('year');
+            $table->string('section');
             $table->uuid();
             $table->integer('club_id');
             $table->integer('need_lunch')->default(0);

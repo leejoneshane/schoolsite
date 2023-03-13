@@ -55,14 +55,14 @@
 </div>
 <div class="flex flex-col gap-3 justify-center items-center">
     <div class="bg-white rounded p-10">
-    @if (empty($years))
+    @if (empty($sections))
         <label>很抱歉，找不到可以匯入的舊生！</label>
     @else
         <form method="POST" action="{{ route('clubs.importold', ['club_id' => $club->id]) }}">
             @csrf
-            <label for="year">請選擇要匯入的學年度：</label>
+            <label for="year">請選擇要匯入的學期：</label>
             <select id="year" class="inline w-24 py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700">
-                @foreach ($years as $y)
+                @foreach ($sections as $y)
                 <option value="{{ $y }}">{{ $y }}</option>
                 @endforeach
             </select>

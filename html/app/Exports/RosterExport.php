@@ -42,7 +42,7 @@ class RosterExport implements FromCollection, WithHeadings, WithColumnFormatting
 
     public function collection()
     {
-        return $this->roster->year_students($this->section);
+        return $this->roster->section_students($this->section);
     }
 
     public function headings(): array

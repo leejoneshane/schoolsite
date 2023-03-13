@@ -19,7 +19,7 @@ class ClubRollExport
     public function export($title, $filename, $type)
     {
         $club = Club::find($this->club_id);
-        $enrolls = $club->year_accepted()->sortBy(function ($en) {
+        $enrolls = $club->section_accepted()->sortBy(function ($en) {
             return $en->student->stdno;
         });
         $phpWord = new PhpWord();

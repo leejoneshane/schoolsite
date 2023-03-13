@@ -36,7 +36,7 @@
         </th>
     </tr>
     @forelse ($students as $student)
-        @foreach ($student->year_enrolls() as $enroll)
+        @foreach ($student->section_enrolls() as $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         @if($loop->first)
         <td class="p-2">{{ $student->class_id }}{{ $student->seat }}</td>
@@ -52,7 +52,7 @@
         <td class="p-2"></td>
         @endif
         <td class="p-2 {{ $enroll->club->style }}">{{ $enroll->club->name }}</td>
-        <td class="p-2">{{ $enroll->year_order() + 1 }}</td>
+        <td class="p-2">{{ $enroll->section_order() + 1 }}</td>
         <td class="p-2">
             @if ($enroll->accepted)
             <i class="fa-solid fa-check"></i>

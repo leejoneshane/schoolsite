@@ -31,7 +31,7 @@ class ClubEnroll extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
-        'year',
+        'section',
         'uuid',
         'club_id',
         'need_lunch',
@@ -86,7 +86,8 @@ class ClubEnroll extends Model
                 $str .= self::$weekMap[$d];
             }
         } else {
-            foreach ($this->club->weekdays as $d) {
+            $section = $this->club->section($this->section); 
+            foreach ($section->weekdays as $d) {
                 $str .= self::$weekMap[$d];
             }
         }
@@ -97,23 +98,23 @@ class ClubEnroll extends Model
     public function getStudytimeAttribute()
     {
         $str ='';
-        $str .= substr($this->club->startDate, 0, 10);
+        $str .= substr($this->club->section($this->section)->startDate, 0, 10);
         $str .= '～';
-        $str .= substr($this->club->endDate, 0, 10);
+        $str .= substr($this->club->section($this->section)->endDate, 0, 10);
         $str .= ' 週';
         if ($this->club->self_defined) {
             foreach ($this->weekdays as $d) {
                 $str .= self::$weekMap[$d];
             }
         } else {
-            foreach ($this->club->weekdays as $d) {
+            foreach ($this->club->section($this->section)->weekdays as $d) {
                 $str .= self::$weekMap[$d];
             }
         }
         $str .= ' ';
-        $str .= $this->club->startTime;
+        $str .= $this->club->section($this->section)->startTime;
         $str .= '～';
-        $str .= $this->club->endTime;
+        $str .= $this->club->section($this->section)->endTime;
         return $str;
     }
 
@@ -135,8 +136,8 @@ class ClubEnroll extends Model
     {
         parent::boot();
         self::creating(function($model) {
-            if (empty($model->year)) {
-                $model->year = current_year();
+            if (empty($model->section)) {
+                $model->section = current_section();
             }
         });
     }
@@ -162,13 +163,13 @@ class ClubEnroll extends Model
     //篩選本學年所有的報名資訊，靜態函式
     public static function current()
     {
-        return ClubEnroll::where('year', current_year())->get();
+        return ClubEnroll::where('section', current_section())->get();
     }
 
     //篩選本學年所有已被錄取的報名資訊，靜態函式
     public static function current_accepted()
     {
-        return ClubEnroll::where('year', current_year())->where('accepted', true)->get();
+        return ClubEnroll::where('section', current_section())->where('accepted', true)->get();
     }
 
     //篩選指定班級本學年所有的報名資訊，靜態函式
@@ -177,7 +178,7 @@ class ClubEnroll extends Model
         return ClubEnroll::leftJoin('students', 'clubs_students.uuid', '=', 'students.uuid')
             ->select('clubs_students.*')
             ->where('clubs_students.accepted', true)
-            ->where('clubs_students.year', current_year())
+            ->where('clubs_students.section', current_section())
             ->where('students.class_id', $class_id)
             ->orderBy('students.seat')
             ->get();
@@ -187,14 +188,14 @@ class ClubEnroll extends Model
     public static function repetition()
     {
         return ClubEnroll::select('uuid')
-            ->where('year', current_year())
+            ->where('section', current_section())
             ->groupBy('uuid')
             ->havingRaw('count(*) > ?', [1])
             ->get();
     }
 
     //根據學生 UUID、社團編號、學年度，篩選符合的報名資訊，靜態函式
-    public static function findBy($uuid = null, $club_id = null, $year = null)
+    public static function findBy($uuid = null, $club_id = null, $section = null)
     {
         $query = ClubEnroll::query();
         if ($uuid) {
@@ -203,27 +204,34 @@ class ClubEnroll extends Model
         if ($club_id) {
             $query = $query->where('club_id', $club_id);
         }
-        if ($year) {
-            $query = $query->where('year', $year);
+        if ($section) {
+            $query = $query->where('section', $section);
         } else {
-            $query = $query->where('year', current_year());
+            $query = $query->where('section', current_section());
         }
         return $query->first();
     }
 
-    //取得有報名資訊的所有學年，傳回陣列，靜態函式
-    public static function years()
+    //取得有報名資訊的所有學年，傳回物件集合，靜態函式
+    public static function sections()
     {
-        return DB::table('clubs_students')->selectRaw('DISTINCT(year)')->get()->transform(function ($item) {
-            return $item->year;
-        })->toArray();
+        return DB::table('clubs_students')->selectRaw('DISTINCT(section)')->orderBy('section', 'desc')->get()->map(function ($item) {
+            $sec = $item->section;
+            $seme = substr($sec, -1);
+            if ($seme == 1) {
+                $strseme = '上學期';
+            } else {
+                $strseme = '下學期';
+            }
+            return (object) [ 'section' => $sec, 'name' => '第'.substr($sec, 0, -1).'學年'.$strseme ];
+        });
     }
 
     //取得此報名資訊的報名順位
-    public function year_order()
+    public function section_order()
     {
         return ClubEnroll::where('club_id', $this->club_id)
-            ->where('year', $this->year)
+            ->where('section', $this->section)
             ->where('created_at', '<', $this->created_at)
             ->count();
     }
@@ -237,7 +245,7 @@ class ClubEnroll extends Model
     //傳送報名成功通知信給報名學生
     public function sendClubEnrollNotification()
     {
-        $order = $this->year_order() + 1;
+        $order = $this->section_order() + 1;
         $this->notify(new ClubEnrollNotification($order));
     }
 
@@ -250,9 +258,10 @@ class ClubEnroll extends Model
     //檢查上課時間是否與指定社團有衝突（可傳入家長自訂上課日，或直接檢查社團上課日）
     public function conflict($club, $weekdays = null)
     {
-        $old = $this->club;
+        $old = $this->club->section();
+        $new = $club->section();
         $date_period_old = new CarbonPeriod($old->startDate, $old->endDate);
-        $date_period_new = new CarbonPeriod($club->startDate, $club->endDate);
+        $date_period_new = new CarbonPeriod($new->startDate, $new->endDate);
         if ($date_period_old->overlaps($date_period_new)) {
             if ($old->self_defined) {
                 $weekdays_old = $this->weekdays;
@@ -262,12 +271,12 @@ class ClubEnroll extends Model
             if ($weekdays) {
                 $weekdays_new = $weekdays;
             } else {
-                $weekdays_new = $club->weekdays;
+                $weekdays_new = $new->weekdays;
             }
             $overlap = array_intersect($weekdays_new, $weekdays_old);
             if (!empty($overlap)) {
                 $time_period_old = new CarbonPeriod($old->startTime, $old->endTime);
-                $time_period_new = new CarbonPeriod($club->startTime, $club->endTime);
+                $time_period_new = new CarbonPeriod($new->startTime, $new->endTime);
                 if ($time_period_old->overlaps($time_period_new)) {
                     return true;
                 }

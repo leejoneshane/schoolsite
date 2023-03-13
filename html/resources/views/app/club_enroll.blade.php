@@ -43,10 +43,10 @@
         <td class="p-2">{{ $club->name }}</td>
         <td class="p-2">{{ $club->teacher }}</td>
         <td class="p-2">{{ $club->grade }}</td>
-        <td class="p-2">{{ $club->studytime }}</td>
-        <td class="p-2">{{ $club->location }}</td>
-        <td class="p-2">{{ $club->total }}</td>
-        <td class="p-2">{{ $club->maximum }}</td>
+        <td class="p-2">{{ $club->section()->studytime }}</td>
+        <td class="p-2">{{ $club->section()->location }}</td>
+        <td class="p-2">{{ $club->section()->total }}</td>
+        <td class="p-2">{{ $club->section()->maximum }}</td>
         <td class="p-2">{{ $club->count_enrolls() }}</td>
         <td class="p-2">
             @if ($enroll = $student->get_enroll($club->id))
@@ -70,7 +70,7 @@
     @endforelse
 </table>
 <div class="block w-full h-12"></div>
-@if ($student->year_enrolls()->isNotEmpty())
+@if ($student->section_enrolls()->isNotEmpty())
 <table class="w-full py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
         <th scope="col" class="p-2">
@@ -95,13 +95,13 @@
             管理
         </th>
     </tr>
-    @foreach ($student->year_enrolls() as $enroll)
+    @foreach ($student->section_enrolls() as $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2 {{ $enroll->club->style }}">{{ $enroll->club->name }}</td>
         <td class="p-2">{{ $enroll->parent }}</td>
         <td class="p-2">{{ $enroll->email }}</td>
         <td class="p-2">{{ $enroll->mobile }}</td>
-        <td class="p-2">{{ $enroll->year_order() + 1 }}</td>
+        <td class="p-2">{{ $enroll->section_order() + 1 }}</td>
         <td class="p-2">
             @if ($enroll->accepted)
             <i class="fa-solid fa-check"></i>

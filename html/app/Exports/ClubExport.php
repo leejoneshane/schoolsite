@@ -51,6 +51,7 @@ class ClubExport implements FromCollection, WithHeadings, WithColumnFormatting, 
 
     public function map($row): array
     {
+        $section = $row->section();
         $unit = $row->unit->name;
         $grades = [0,0,0,0,0,0];
         for ($i=0; $i<6; $i++) {
@@ -59,12 +60,12 @@ class ClubExport implements FromCollection, WithHeadings, WithColumnFormatting, 
             }
         }
         $grade = implode('', $grades);
-        if ($row->self_defined) {
+        if ($section->self_defined) {
             $week = '00000';
         } else {
             $weekdays = [0,0,0,0,0];
             for ($i=0; $i<5; $i++) {
-                if (in_array($i + 1, $row->weekdays)) {
+                if (in_array($i + 1, $section->weekdays)) {
                     $weekdays[$i] = 1;
                 }
             }
@@ -80,16 +81,16 @@ class ClubExport implements FromCollection, WithHeadings, WithColumnFormatting, 
             $row->short_name,
             $grade,
             $week,
-            $row->startDate->format('Y-m-d'),
-            $row->endDate->format('Y-m-d'),
-            $row->startTime,
-            $row->endTime,
-            $row->teacher,
-            $row->location,
-            $row->cash,
-            $row->total,
-            $row->maximum,
-            $row->memo,
+            $section->startDate->format('Y-m-d'),
+            $section->endDate->format('Y-m-d'),
+            $section->startTime,
+            $section->endTime,
+            $section->teacher,
+            $section->location,
+            $section->cash,
+            $section->total,
+            $section->maximum,
+            $section->memo,
             $lunch,
             $remove,
         ];

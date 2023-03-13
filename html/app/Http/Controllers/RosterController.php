@@ -223,7 +223,7 @@ class RosterController extends Controller
         if ($class) {
             $students = $roster->class_students($class, $section);
         } else {
-            $students = $roster->year_students($section);
+            $students = $roster->section_students($section);
         }
         return view('app.roster_show', ['referer' => $referer, 'roster' => $roster, 'fields' => $fields, 'students' => $students]);
     }

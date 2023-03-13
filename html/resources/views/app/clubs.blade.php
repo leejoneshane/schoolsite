@@ -45,10 +45,10 @@
             營隊全名
         </th>
         <th scope="col" class="p-2">
-            指導老師
+            招生年級
         </th>
         <th scope="col" class="p-2">
-            招生年級
+            指導老師
         </th>
         <th scope="col" class="p-2">
             上課時段
@@ -70,33 +70,31 @@
         </th>
     </tr>
     @foreach ($clubs as $club)
-    <tr class="odd:bg-white even:bg-gray-100 hover:bg-green-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $kind->style }}">
-        <td class="p-2 cursor-pointer" onclick="
-        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
-        ">{{ $club->name }}</td>
-        <td class="p-2 cursor-pointer" onclick="
-        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
-        ">{{ $club->teacher }}</td>
-        <td class="p-2 cursor-pointer" onclick="
-        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
-        ">{{ $club->grade }}</td>
-        <td class="p-2 cursor-pointer" onclick="
-        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
-        ">{{ $club->studytime }}</td>
-        <td class="p-2 cursor-pointer" onclick="
-        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
-        ">{{ $club->location }}</td>
-        <td class="p-2 cursor-pointer" onclick="
-        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
-        ">{{ $club->total }}</td>
-        <td class="p-2 cursor-pointer" onclick="
-        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
-        ">{{ $club->maximum }}</td>
-        <td class="p-2 cursor-pointer" onclick="
-        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}');
-        ">{{ $club->count_enrolls() }}</td>
+    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $kind->style }}">
+        <td class="p-2">{{ $club->name }}</td>
+        <td class="p-2">{{ $club->grade }}</td>
+        @if ($club->section())
+        <td class="p-2">{{ $club->section()->teacher }}</td>
+        <td class="p-2">{{ $club->section()->studytime }}</td>
+        <td class="p-2">{{ $club->section()->location }}</td>
+        <td class="p-2">{{ $club->section()->total }}</td>
+        <td class="p-2">{{ $club->section()->maximum }}</td>
+        <td class="p-2">{{ $club->count_enrolls() }}</td>
+        @else
+        <td colspan="6" class="p-2">本學期未開班</td>
+        @endif
         <td class="p-2">
             @if (Auth::user()->is_admin ||  Auth::user()->profile->mainunit->id == $club->unit_id)
+            @if ($club->section(current_section()))
+            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+                href="{{ route('clubs.sections', ['club_id' => $club->id]) }}" title="時程管理">
+                <i class="fa-solid fa-timeline"></i>
+            </a>
+            @endif
+            <a class="py-2 pr-6 text-green-300 hover:text-green-600"
+                href="{{ route('clubs.enrolls', ['club_id' => $club->id]) }}" title="學生管理">
+                <i class="fa-solid fa-people-line"></i>
+            </a>
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('clubs.edit', ['club_id' => $club->id]) }}" title="編輯">
                 <i class="fa-solid fa-pen"></i>

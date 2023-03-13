@@ -20,21 +20,9 @@ return new class extends Migration
             $table->integer('kind_id');
             $table->integer('unit_id');
             $table->json('for_grade');
-            $table->json('weekdays')->nullable();
-            $table->boolean('self_defined')->default(0);
             $table->boolean('self_remove')->default(1);
             $table->boolean('has_lunch')->default(0);
             $table->boolean('stop_enroll')->default(0);
-            $table->date('startDate');
-			$table->date('endDate');
-			$table->time('startTime');
-			$table->time('endTime');
-            $table->string('teacher')->nullable();
-            $table->string('location')->nullable();
-            $table->text('memo')->nullable();
-            $table->integer('cash');
-            $table->integer('total');
-            $table->integer('maximum');
             $table->timestamps();
         });
     }

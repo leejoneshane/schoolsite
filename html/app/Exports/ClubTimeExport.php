@@ -19,7 +19,7 @@ class ClubTimeExport
     public function export($title, $filename, $type)
     {
         $club = Club::find($this->club_id);
-        $enrolls = $club->year_accepted()->sortBy(function ($en) {
+        $enrolls = $club->section_accepted()->sortBy(function ($en) {
             return $en->student->stdno;
         });
         $phpWord = new PhpWord();
@@ -48,16 +48,13 @@ class ClubTimeExport
             $table->addCell()->addText($enroll->student->class_id);
             $table->addCell()->addText($enroll->student->seat);
             $table->addCell()->addText($enroll->student->realname);
-            $enroll_id = $enroll->id;
-            $next = $enroll->student->year_enrolls()->reject($enroll);
-//            $next->reject(function ($en) use($enroll_id) {
-//                return $en->id == $enroll_id;
-//            });
+            $next = $enroll->student->section_enrolls()->reject($enroll);
             $cells = array([],[],[]);
             foreach ($next as $en) {
-                if ($en->club->startTime < '16:00:00') {
+                $sec = $en->club->section();
+                if ($sec->startTime < '16:00:00') {
                     $cells[0][] = $en;
-                } elseif ($en->club->startTime < '17:00:00') {
+                } elseif ($sec->startTime < '17:00:00') {
                     $cells[1][] = $en;
                 } else {
                     $cells[2][] = $en;
@@ -68,7 +65,8 @@ class ClubTimeExport
                 foreach ($cell as $en) {
                     $short = $en->club->short_name;
                     $weekday = $en->weekday;
-                    $time = str_replace(':', '', $en->club->startTime);
+                    $sec = $en->club->section();
+                    $time = str_replace(':', '', $sec->startTime);
                     $time = substr($time, 0, 4);
                     $col->addText("$short($weekday$time)");
                 }
