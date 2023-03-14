@@ -94,7 +94,7 @@ class RosterController extends Controller
             'max' => max($request->input('min'), $request->input('max')),
         ]);
         Watchdog::watch($request, '更新學生表單：' . $roster->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return redirect()->route('repair')->with('success', '學生表單編輯完成！');
+        return redirect()->route('rosters')->with('success', '學生表單編輯完成！');
     }
 
     public function remove(Request $request, $id)

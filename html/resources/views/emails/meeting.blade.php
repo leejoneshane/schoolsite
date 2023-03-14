@@ -19,7 +19,7 @@
             <th class="p-2 w-8">{{ $meet->role . $meet->reporter }}：{{ $meet->created_at . $meet->unit->name }}業務報告</th>
         </tr>
         <tr class="bg-white">
-            <td class="p-2">{{ $meet->words }}</td>
+            <td class="p-2">{!! $meet->words !!}</td>
         </tr>
     @endforeach
     </table>

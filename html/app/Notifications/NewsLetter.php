@@ -62,7 +62,8 @@ class NewsLetter extends Notification
     public function toArray($notifiable)
     {
         return [
-            'news' => $this->news,
+            'title' => $this->title,
+            'view' => $this->view,
             'content' => $this->content,
         ];
     }

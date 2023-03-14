@@ -209,7 +209,7 @@ Route::group(['prefix' => 'venue', 'middleware' => [ 'auth'] ], function () {
 
 // 修繕登記
 Route::group(['prefix' => 'repair', 'middleware' => [ 'auth'] ], function () {
-    Route::get('/', 'App\Http\Controllers\RepairController@index')->name('repair');
+    Route::get('index', 'App\Http\Controllers\RepairController@index')->name('repair');
     Route::get('list/{kind?}', 'App\Http\Controllers\RepairController@list')->name('repair.list');
     Route::get('kinds/add', 'App\Http\Controllers\RepairController@addKind');
     Route::post('kinds/add', 'App\Http\Controllers\RepairController@insertKind')->name('repair.addkind');

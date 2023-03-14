@@ -36,7 +36,11 @@ class Meeting extends Model implements Subscribeable
     public function newsletter()
     {
         $meets = Meeting::inTimeOpen(date('Y-m-d'));
-        return ['meets' => $meets];
+        if ($meets) {
+            return ['meets' => $meets];
+        } else {
+            return null;
+        }
     }
 
     //取得輸入此網路朝會報告的單位
