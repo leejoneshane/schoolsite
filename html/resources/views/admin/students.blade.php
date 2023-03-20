@@ -14,42 +14,17 @@
 </select>
 <label for="idno" class="inline p-2">身份證字號：</label>
 <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-    type="text" id="idno" value="{{ $idno }}">
+    type="text" id="idno" value="{{ $idno }}" onchange="query()">
 <label for="idno" class="inline p-2">學號：</label>
 <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-    type="text" id="id" value="{{ $id }}">
+    type="text" id="id" value="{{ $id }}" onchange="query()">
 <label for="name" class="inline p-2">姓名：</label>
 <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-    type="text" id="name" value="{{ $realname }}">
+    type="text" id="name" value="{{ $realname }}" onchange="query()">
 <label for="email" class="inline p-2">電子郵件：</label>
 <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-    type="text" id="email" value="{{ $email }}">
-<i class="fa-solid fa-magnifying-glass" onclick="
-    var search = '';
-    var idno = document.getElementById('idno').value;
-    if (idno) {
-        search = search + 'idno=' + idno + '&';
-    }
-    var id = document.getElementById('id').value;
-    if (id) {
-        search = search + 'id=' + id + '&';
-    }
-    var myname = document.getElementById('name').value;
-    if (myname) {
-        search = search + 'name=' + myname + '&';
-    }
-    var email = document.getElementById('email').value;
-    if (email) {
-        search = search + 'email=' + email + '&';
-    }
-    search = search.slice(0, -1);
-    if (search) {
-        window.location.replace('{{ route('students') }}' + '/' + search);
-    } else {
-        var cls = document.getElementById('classes').value;
-        window.location.replace('{{ route('students') }}' + '/class=' + cls);
-    }
-"></i>
+    type="text" id="email" value="{{ $email }}" onchange="query()">
+<i class="fa-solid fa-magnifying-glass" onclick="query()"></i>
 <table class="w-full py-4 text-left font-normal">
     <tr class="font-semibold text-lg">
         <th scope="col" class="p-2">
@@ -130,4 +105,32 @@
         @csrf
     </form>
 </table>
+<script>
+    function query() {
+        var search = '';
+    var idno = document.getElementById('idno').value;
+    if (idno) {
+        search = search + 'idno=' + idno + '&';
+    }
+    var id = document.getElementById('id').value;
+    if (id) {
+        search = search + 'id=' + id + '&';
+    }
+    var myname = document.getElementById('name').value;
+    if (myname) {
+        search = search + 'name=' + myname + '&';
+    }
+    var email = document.getElementById('email').value;
+    if (email) {
+        search = search + 'email=' + email + '&';
+    }
+    search = search.slice(0, -1);
+    if (search) {
+        window.location.replace('{{ route('students') }}' + '/' + search);
+    } else {
+        var cls = document.getElementById('classes').value;
+        window.location.replace('{{ route('students') }}' + '/class=' + cls);
+    }
+}
+</script>
 @endsection
