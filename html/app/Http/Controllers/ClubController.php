@@ -553,7 +553,7 @@ class ClubController extends Controller
             if ($same_kind->isNotEmpty()) return redirect()->route('clubs.enroll')->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
         }
         $order = $club->count_enrolls() + 1;
-        if ($order > $club->maximum) {
+        if ($order > $club->section()->maximum) {
             return redirect()->route('clubs.enroll')->with('error', '很抱歉，該學生社團已經額滿！');
         }
         $enrolls = Student::find($user->uuid)->section_enrolls();
@@ -585,7 +585,7 @@ class ClubController extends Controller
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
-        if ($order > $club->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        if ($order > $club->section()->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
         Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '報名順位：' . $order . $message);
         return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
     }
@@ -728,7 +728,7 @@ class ClubController extends Controller
             if ($same_kind->isNotEmpty()) return redirect()->route('clubs.enroll')->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
         }
         $order = $club->count_enrolls() + 1;
-        if ($order > $club->maximum) {
+        if ($order > $club->section()->maximum) {
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '很抱歉，該學生社團已經額滿！');
         }
         $enrolls = Student::find($uuid)->section_enrolls();
@@ -760,7 +760,7 @@ class ClubController extends Controller
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
-        if ($order > $club->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        if ($order > $club->section()->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
         Watchdog::watch($request, '新增報名資訊，學生社團：' . $club->name . '，學生：' . $student->class_id . $student->realname);
         return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '已經完成報名手續，該生報名順位為'.$order.$message);
     }
@@ -780,7 +780,8 @@ class ClubController extends Controller
     public function enrollInsertFast(Request $request, $club_id)
     {
         $message = '';
-        $list = str_replace('\r\n', ' ', $request->input('stdno'));
+        $regex = '/[\s\t\r\n]+/';
+        $list = preg_replace($regex, ' ', $request->input('stdno'));
         $students = explode(' ', $list);
         foreach ($students as $stdno) {
             $stdno = trim($stdno);
@@ -801,7 +802,7 @@ class ClubController extends Controller
                 }
             }
             $order = $club->count_enrolls() + 1;
-            if ($order > $club->maximum) {
+            if ($order > $club->section()->maximum) {
                 $message .= $stdno.$student->realname.'因該社團已經額滿，無法報名！';
                 continue;
             }
@@ -829,7 +830,7 @@ class ClubController extends Controller
             }
             $enroll->accepted = true;
             $enroll->save();
-            if ($order > $club->total) {
+            if ($order > $club->section()->total) {
                 $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'，目前列為候補！';
             } else {
                 $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
@@ -850,7 +851,7 @@ class ClubController extends Controller
             $sections = $sections->reject(function ($item) use ($current) {
                 return $item->section == $current;
             });
-            return view('_import', ['club' => $club, 'current' => $current, 'sections' => $sections]);
+            return view('app.club_import', ['club' => $club, 'current' => $current, 'sections' => $sections]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }

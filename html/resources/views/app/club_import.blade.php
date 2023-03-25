@@ -37,12 +37,12 @@
     </tr>
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $club->style }}">
         <td class="p-2">{{ $club->name }}</td>
-        <td class="p-2">{{ $club->teacher }}</td>
+        <td class="p-2">{{ $club->section()->teacher }}</td>
         <td class="p-2">{{ $club->grade }}</td>
-        <td class="p-2">{{ $club->studytime }}</td>
-        <td class="p-2">{{ $club->location }}</td>
-        <td class="p-2">{{ $club->total }}</td>
-        <td class="p-2">{{ $club->maximum }}</td>
+        <td class="p-2">{{ $club->section()->studytime }}</td>
+        <td class="p-2">{{ $club->section()->location }}</td>
+        <td class="p-2">{{ $club->section()->total }}</td>
+        <td class="p-2">{{ $club->section()->maximum }}</td>
         <td class="p-2">{{ $club->count_enrolls() }}</td>
     </tr>
 </table>
@@ -61,9 +61,9 @@
         <form method="POST" action="{{ route('clubs.importold', ['club_id' => $club->id]) }}">
             @csrf
             <label for="year">請選擇要匯入的學期：</label>
-            <select id="year" class="inline w-24 py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700">
+            <select id="year" class="inline py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700">
                 @foreach ($sections as $y)
-                <option value="{{ $y }}">{{ $y }}</option>
+                <option value="{{ $y->section }}">{{ $y->name }}</option>
                 @endforeach
             </select>
             <p class="p-6">

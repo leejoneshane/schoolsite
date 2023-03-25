@@ -49,9 +49,9 @@ class ClubEnrolledExport
         $table->addCell()->addText($club->kind->name);
         $table->addCell()->addText($club->unit->name);
         $table->addCell()->addText($club->grade);
-        $table->addCell()->addText($club->teacher);
-        $table->addCell()->addText($club->location);
-        $table->addCell()->addText($club->studytime);
+        $table->addCell()->addText($club->section()->teacher);
+        $table->addCell()->addText($club->section()->location);
+        $table->addCell()->addText($club->section()->studytime);
         $section->addTextBreak(1);
         $table = $section->addTable(['borderSize' => 2, 'borderColor' => '999999', 'cellMargin' => 50]);
         $table->addRow(null, ['tblHeader' => true]);

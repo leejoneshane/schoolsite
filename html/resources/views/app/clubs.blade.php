@@ -85,12 +85,10 @@
         @endif
         <td class="p-2">
             @if (Auth::user()->is_admin ||  Auth::user()->profile->mainunit->id == $club->unit_id)
-            @if ($club->section(current_section()))
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('clubs.sections', ['club_id' => $club->id]) }}" title="時程管理">
                 <i class="fa-solid fa-timeline"></i>
             </a>
-            @endif
             <a class="py-2 pr-6 text-green-300 hover:text-green-600"
                 href="{{ route('clubs.enrolls', ['club_id' => $club->id]) }}" title="學生管理">
                 <i class="fa-solid fa-people-line"></i>

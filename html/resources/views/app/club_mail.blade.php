@@ -28,9 +28,9 @@
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2 {{ $club->kind->style }}">{{ $club->name }}</td>
         <td class="p-2">{{ $club->grade }}</td>
-        <td class="p-2">{{ $club->teacher }}</td>
-        <td class="p-2">{{ $club->location }}</td>
-        <td class="p-2">{{ $club->studytime }}</td>
+        <td class="p-2">{{ $club->section()->teacher }}</td>
+        <td class="p-2">{{ $club->section()->location }}</td>
+        <td class="p-2">{{ $club->section()->studytime }}</td>
     </tr>
 </table>
 <form id="mail-club" action="{{ route('clubs.mail', ['club_id' => $club->id]) }}" method="POST">
