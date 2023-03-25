@@ -181,6 +181,7 @@ class RosterController extends Controller
             DB::table('rosters_students')->insert([
                 'section' => current_section(),
                 'class_id' => $class_id,
+                'seat' => $student->seat,
                 'roster_id' => $id,
                 'uuid' => $uuid,
                 'deal' => $request->user()->uuid,

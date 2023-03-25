@@ -60,10 +60,10 @@
         @foreach ($students as $stu)
         <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
             <td class="p-2">
-                {{ $stu->class_id }}
+                {{ $stu->pivot->class_id }}
             </td>
             <td class="p-2">
-                {{ $stu->seat }}
+                {{ $stu->pivot->seat }}
             </td>
             <td class="p-2">
                 {{ $stu->realname }}

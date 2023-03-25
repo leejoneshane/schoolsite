@@ -57,10 +57,12 @@ class RosterExport implements FromCollection, WithHeadings, WithColumnFormatting
     public function map($row): array
     {
         $rowdata = [];
-        $class_name = Classroom::find($row->class_id)->name;
+        $class_name = Classroom::find($row->pivot->class_id)->name;
         foreach ($this->fields as $f) {
             if ($f['id'] == 'class_id') {
                 $rowdata[] = $class_name;
+            } if ($f['id'] == 'seat') {
+                $rowdata[] = $row->pivot->seat;
             } else {
                 $rowdata[] = $row->{$f['id']};
             }

@@ -130,10 +130,12 @@ class Roster extends Model
                 'id',
                 'section',
                 'class_id',
+                'seat',
                 'deal',
                 'created_at',
                 'updated_at',
-            ]);
+            ])->orderByPivot('class_id')
+            ->orderByPivot('seat');
     }
 
     //取得指定學年或本學年之學生名單

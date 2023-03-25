@@ -13,14 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('rosters_students', function (Blueprint $table) {
+        Schema::create('dayoff_students', function (Blueprint $table) {
             $table->id();
-            $table->string('section');
-            $table->string('class_id');
-            $table->integer('seat');
-            $table->integer('roster_id');
+            $table->integer('dayoff_id');
             $table->uuid('uuid');
-            $table->uuid('deal');
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
@@ -33,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('rosters_students');
+        Schema::dropIfExists('dayoff_students');
     }
 };
