@@ -26,7 +26,7 @@ class DayoffExport
         $section = $phpWord->addSection(['orientation' => 'portrait', 'pageNumberingStart' => 1]);
         $header = $section->addHeader();
         $header->addText(config('app.name') . ' - 公假單', null, ['alignment' => 'center']);
-        $header->addWatermark(public_path('images/logo.jpg'), ['posHorizontal' => 'absolute', 'posVertical' => 'absolute', 'marginTop' => 270, 'marginLeft' => 170]);
+        $header->addWatermark(public_path('images/meps.png'), ['posHorizontal' => 'absolute', 'posVertical' => 'absolute', 'marginTop' => 270, 'marginLeft' => 170]);
         $section->addFooter()->addPreserveText('第 {PAGE} 頁，共 {NUMPAGES} 頁', null, ['alignment' => 'center']);
         $members = [];
         $old = $students->first()->class_id;
