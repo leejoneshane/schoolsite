@@ -80,7 +80,7 @@ class DayoffExport
         $table->addRow(Converter::cmToTwip(1.2), ['tblHeader' => false]);
         $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
             ->addText('學生名單', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'top'])
+        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
             ->addText($stu_list, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(Converter::cmToTwip(1.2), ['tblHeader' => false]);
         $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
@@ -132,7 +132,7 @@ class DayoffExport
         $table->addRow(Converter::cmToTwip(1.2), ['tblHeader' => false]);
         $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
             ->addText('學生名單', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'top'])
+        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
             ->addText($stu_list, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(null, ['tblHeader' => false]);
         if ($dayoff->who) {
