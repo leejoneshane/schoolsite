@@ -26,7 +26,7 @@ class DayoffExport
         $section = $phpWord->addSection(['orientation' => 'portrait', 'pageNumberingStart' => 1]);
         $header = $section->addHeader();
         $header->addText(config('app.name') . ' - 公假單', null, ['alignment' => 'center']);
-        $header->addWatermark(public_path('images/meps.png'), ['posHorizontal' => 'absolute', 'posVertical' => 'absolute', 'marginTop' => 270, 'marginLeft' => 170]);
+        $header->addWatermark(public_path('images/meps.png'), ['posHorizontal' => 'absolute', 'posVertical' => 'absolute', 'marginTop' => 280, 'marginLeft' => 170]);
         $section->addFooter()->addPreserveText('第 {PAGE} 頁，共 {NUMPAGES} 頁', null, ['alignment' => 'center']);
         $members = [];
         $old = $students->first()->class_id;
@@ -77,14 +77,14 @@ class DayoffExport
             ->addText('地點', ['bold' => true], ['alignment' => 'right']);
         $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
             ->addText($dayoff->location, ['bold' => false], ['alignment' => 'left']);
-        $table->addRow(null, ['tblHeader' => false]);
+        $table->addRow(Converter::cmToTwip(1.2), ['tblHeader' => false]);
         $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
             ->addText('學生名單', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center', 'lineHeight' => 2])
+        $table->addCell(Converter::cmToTwip(6), ['valign' => 'top'])
             ->addText($stu_list, ['bold' => false], ['alignment' => 'left']);
-        $table->addRow(null, ['tblHeader' => false]);
+        $table->addRow(Converter::cmToTwip(1.2), ['tblHeader' => false]);
         $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('學生簽名', ['bold' => true], ['alignment' => 'right', 'lineHeight' => 2]);
+            ->addText('學生簽名', ['bold' => true], ['alignment' => 'right']);
         $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
             ->addText(null, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(null, ['tblHeader' => false]);
@@ -129,10 +129,10 @@ class DayoffExport
             ->addText('地點', ['bold' => true], ['alignment' => 'right']);
         $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
             ->addText($dayoff->location, ['bold' => false], ['alignment' => 'left']);
-        $table->addRow(null, ['tblHeader' => false]);
+        $table->addRow(Converter::cmToTwip(1.2), ['tblHeader' => false]);
         $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
             ->addText('學生名單', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(6), ['valign' => 'top'])
             ->addText($stu_list, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(null, ['tblHeader' => false]);
         if ($dayoff->who) {
@@ -143,7 +143,7 @@ class DayoffExport
                 ->addText('導師簽名', ['bold' => true], ['alignment' => 'right']);
         }
         $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
-            ->addText(null, ['bold' => false], ['alignment' => 'left', 'lineHeight' => 2]);
+            ->addText(null, ['bold' => false], ['alignment' => 'left']);
         $section->addTextBreak(1);
         $section->addText('回條請於　　月　　日星期　　繳回業務單位', ['bold' => false, 'size' => 11], ['alignment' => 'right', 'lineHeight' => 1.5]);
         $section->addText('　　年　　月　　日發布', ['bold' => false, 'size' => 11], ['alignment' => 'right', 'lineHeight' => 1.5]);
