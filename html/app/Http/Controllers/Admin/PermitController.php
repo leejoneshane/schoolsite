@@ -95,9 +95,9 @@ class PermitController extends Controller
         $users = $request->input('teachers');
         $perm = Permission::find($id)->removeAll();
         if (!empty($users)) {
-            $perm->assignByUUID($users);
+            $perm->assign($users);
             foreach ($users as $u) {
-                $user_list[] = $u->realname;
+                $user_list[] = Teacher::find($u)->realname;
             }
             $log = '授予權限' . $perm->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '給' . implode('、', $user_list);
             Watchdog::watch($request, $log);
