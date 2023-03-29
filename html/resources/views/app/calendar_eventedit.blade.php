@@ -82,17 +82,17 @@
             type="time" id="etime" name="end_time" value="{{ $event->endTime }}" min="07:00" max="18:00" step="300">
     </div></p>
     <p><div class="p-3">
-        <label for="unit_name" class="inline">事件摘要：</label>
+        <label for="summary" class="inline">事件摘要：</label>
         <input class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="text" name="summary" value="{{ $event->summary }}">
     </p>
     <p><div class="p-3">
-        <label for="unit_name" class="inline">補充說明：</label>
+        <label for="desc" class="inline">補充說明：</label>
         <textarea class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             name="desc" rows="5" cols="120">{{ $event->description }}</textarea>
     </div></p>
     <p><div class="p-3">
-        <label for="unit_name" class="inline">地點：</label>
+        <label for="location" class="inline">地點：</label>
         <input class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="text" name="location" value="{{ $event->location }}">
     </div></p>

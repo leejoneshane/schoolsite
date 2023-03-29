@@ -241,6 +241,28 @@ Route::group(['prefix' => 'roster', 'middleware' => [ 'auth'] ], function () {
     Route::get('download/{id}/{section}', 'App\Http\Controllers\RosterController@download')->name('roster.download');
 });
 
+// 公假單套印
+Route::group(['prefix' => 'dayoff', 'middleware' => [ 'auth'] ], function () {
+    Route::get('/', 'App\Http\Controllers\DayoffController@index')->name('dayoff');
+    Route::get('add', 'App\Http\Controllers\DayoffController@add');
+    Route::post('add', 'App\Http\Controllers\DayoffController@insert')->name('dayoff.add');
+    Route::get('edit/{id}', 'App\Http\Controllers\DayoffController@edit');
+    Route::post('edit/{id}', 'App\Http\Controllers\DayoffController@update')->name('dayoff.edit');
+    Route::post('remove/{id}', 'App\Http\Controllers\DayoffController@remove')->name('dayoff.remove');
+    Route::get('sudents/{id?}', 'App\Http\Controllers\DayoffController@list')->name('dayoff.students');
+    Route::get('sudents/{id}/class/{class?}', 'App\Http\Controllers\DayoffController@classAdd');
+    Route::post('sudents/{id}/class/{class?}', 'App\Http\Controllers\DayoffController@classInsert')->name('dayoff.classadd');
+    Route::get('sudents/{id}/fastadd', 'App\Http\Controllers\DayoffController@fastAdd');
+    Route::post('sudents/{id}/fastadd', 'App\Http\Controllers\DayoffController@fastInsert')->name('dayoff.fastadd');
+    Route::get('sudents/{id}/import/club', 'App\Http\Controllers\DayoffController@importClub');
+    Route::post('sudents/{id}/import/club', 'App\Http\Controllers\DayoffController@importClubSave')->name('dayoff.importclub');
+    Route::get('sudents/{id}/import/roster', 'App\Http\Controllers\DayoffController@importRoster');
+    Route::post('sudents/{id}/import/roster', 'App\Http\Controllers\DayoffController@importRosterSave')->name('dayoff.importroster');
+    Route::post('sudents/{id}/remove', 'App\Http\Controllers\DayoffController@removeStudent')->name('dayoff.delstudent');
+    Route::get('download/{id}', 'App\Http\Controllers\DayoffController@download')->name('dayoff.download');
+    Route::get('print/{id}', 'App\Http\Controllers\DayoffController@print')->name('dayoff.print');
+});
+
 // 分組座位表
 Route::group(['prefix' => 'seats', 'middleware' => [ 'auth'] ], function () {
     Route::get('/', 'App\Http\Controllers\SeatsController@index')->name('seats');

@@ -18,9 +18,9 @@ return new class extends Migration
             $table->uuid('uuid');
             $table->string('reason');
             $table->json('datetimes');
-            $table->string('location');
+            $table->string('location')->nullable();
             $table->boolean('who')->default(0);
-            $table->string('memo')->nullable();
+            $table->text('memo')->nullable();
             $table->timestamps();
         });
     }

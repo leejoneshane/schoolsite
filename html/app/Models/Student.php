@@ -53,6 +53,7 @@ class Student extends Model
     //以下為透過程式動態產生之屬性
     protected $appends = [
         'stdno',
+        'age',
     ];
 
     //以下屬性需進行資料庫欄位格式轉換
@@ -64,6 +65,12 @@ class Student extends Model
     public function getStdnoAttribute()
     {
         return $this->class_id . (($this->seat < 10) ? '0'.$this->seat : $this->seat);
+    }
+
+    //提供學生年齡
+    public function getAgeAttribute()
+    {
+        return Carbon::parse($this->birthdate)->age;
     }
 
     //篩選指定學號的學生

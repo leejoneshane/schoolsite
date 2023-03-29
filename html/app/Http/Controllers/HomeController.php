@@ -130,6 +130,15 @@ class HomeController extends Controller
                 'weight' => 60,
             ]);
         }
+        if (!Menu::find('dayoff')) {
+            Menu::create([
+                'id' => 'dayoff',
+                'parent_id' => 'affairs',
+                'caption' => '公假單',
+                'url' => 'route.dayoff',
+                'weight' => 70,
+            ]);
+        }
         if (!Menu::find('seats')) {
             Menu::create([
                 'id' => 'seats',

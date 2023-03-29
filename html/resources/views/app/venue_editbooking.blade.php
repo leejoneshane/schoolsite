@@ -11,22 +11,22 @@
     @csrf
     <input type="hidden" name="id" value="{{ $reserve->id }}">
     <p><div class="p-3">
-        <label for="title" class="inline">名稱：{{ $reserve->venue->name }}</label>
+        <label class="inline">名稱：{{ $reserve->venue->name }}</label>
     </div></p>
     <p><div class="p-3">
-        <label for="description" class="inline">借用須知：{{ $reserve->venue->description }}</label>
+        <label class="inline">借用須知：{{ $reserve->venue->description }}</label>
     </div></p>
     <p><div class="p-3">
-        <label for="manager" class="inline">預約者：{{ $reserve->subscriber->realname }}</label>
+        <label class="inline">預約者：{{ $reserve->subscriber->realname }}</label>
     </div></p>
     <p><div class="p-3">
-        <label for="manager" class="inline">預約日期：{{ substr($reserve->reserved_at, 0, 10) }}</label>
+        <label class="inline">預約日期：{{ substr($reserve->reserved_at, 0, 10) }}</label>
     </div></p>
     <p><div class="p-3">
-        <label for="manager" class="inline">預約開始節次：{{ $session_name }}</label>
+        <label class="inline">預約開始節次：{{ $session_name }}</label>
     </div></p>
     <p><div class="p-3">
-        <label for="limit" class="inline">共預約幾節？</label>
+        <label class="inline">共預約幾節？</label>
         <select name="length">
             @for ($i=1; $i<=$max; $i++)
             <option value="{{ $i }}"{{ ($i == $reserve->length) ? ' selected' : '' }}>{{ $i }}</option>
@@ -34,7 +34,7 @@
         </select>
     </div></p>
     <p><div class="p-3">
-        <label for="description" class="inline">預約原因（用途）：</label>
+        <label class="inline">預約原因（用途）：</label>
         <textarea name="reason" rows="4" class="inline block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         >{{ $reserve->reason }}</textarea>
     </div></p>

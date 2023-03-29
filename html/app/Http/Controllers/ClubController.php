@@ -779,6 +779,7 @@ class ClubController extends Controller
 
     public function enrollInsertFast(Request $request, $club_id)
     {
+        $club = Club::find($club_id);
         $message = '';
         $regex = '/[\s\t\r\n]+/';
         $list = preg_replace($regex, ' ', $request->input('stdno'));
@@ -793,7 +794,6 @@ class ClubController extends Controller
                 $message .= $stdno.$student->realname.'已經報名此社團，無法再次報名！';
                 continue;
             }
-            $club = Club::find($club_id);
             if ($club->kind->single) {
                 $same_kind = $student->current_enrolls_for_kind($club->kind_id);
                 if ($same_kind->isNotEmpty()) {

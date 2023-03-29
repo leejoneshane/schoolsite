@@ -71,6 +71,7 @@ class Teacher extends Model
         'mainunit',
         'tutor',
         'domain',
+        'age',
     ];
 
     //以下屬性需進行資料庫欄位格式轉換
@@ -107,6 +108,12 @@ class Teacher extends Model
             return Domain::find($domain->id);
         }
         return false;
+    }
+
+    //提供教師年齡
+    public function getAgeAttribute()
+    {
+        return Carbon::parse($this->birthdate)->age;
     }
 
     //取得所有行政人員

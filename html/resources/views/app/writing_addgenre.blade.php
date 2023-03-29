@@ -15,8 +15,8 @@
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>名稱請勿包含年度和學期！</span>
     </p>
     <p class="p-3">
-        <label for="grades" class="inline">徵稿說明：</label>
-        <textarea class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+        <label for="desc" class="inline">徵稿說明：</label>
+        <textarea id="desc" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             name="desc" rows="5" cols="120"></textarea>
     </p>
     <p class="p-6">

@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-roster" action="{{ route('roster.add') }}" method="POST">
+<form id="add-roster" action="{{ route('roster.edit', ['id' => $roster->id]) }}" method="POST">
     @csrf
     <p class="p-3">
         <label for="title" class="inline">名稱：</label>
@@ -55,7 +55,7 @@
     <p class="p-6">
         <div class="inline">
             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                新增
+                修改
             </button>
         </div>
     </p>
