@@ -32,13 +32,13 @@
         </th>
     </tr>
     @forelse ($reports as $report)
-    <tr class="bg-white hover:bg-green-100 dark:bg-gray-700 cursor-pointer" onclick="window.location.replace('{{ route('dayoff.students', ['id' => $report->id]) }}');">
-        <td class="border-b px-2 cursor-pointer">{{ substr($report->created_at, 0, 10) }}</td>
-        <td class="border-b px-2 cursor-pointer">{{ $report->reason }}</td>
-        <td class="border-b px-2 cursor-pointer">{{ $report->datetime }}</td>
-        <td class="border-b px-2 cursor-pointer">{{ $report->location }}</td>
-        <td class="border-b px-2 cursor-pointer">{{ $report->count_students() }}</td>
-        <td class="border-b px-2 cursor-pointer">{{ is_null($report->creater) ? '管理員' : $report->creater->unit_name . $report->creater->realname }}</td>
+    <tr class="bg-white hover:bg-green-100 dark:bg-gray-700">
+        <td class="border-b px-2 cursor-pointer" onclick="window.location.replace('{{ route('dayoff.students', ['id' => $report->id]) }}');">{{ substr($report->created_at, 0, 10) }}</td>
+        <td class="border-b px-2 cursor-pointer" onclick="window.location.replace('{{ route('dayoff.students', ['id' => $report->id]) }}');">{{ $report->reason }}</td>
+        <td class="border-b px-2 cursor-pointer" onclick="window.location.replace('{{ route('dayoff.students', ['id' => $report->id]) }}');">{{ $report->datetime }}</td>
+        <td class="border-b px-2 cursor-pointer" onclick="window.location.replace('{{ route('dayoff.students', ['id' => $report->id]) }}');">{{ $report->location }}</td>
+        <td class="border-b px-2 cursor-pointer" onclick="window.location.replace('{{ route('dayoff.students', ['id' => $report->id]) }}');">{{ $report->count_students() }}</td>
+        <td class="border-b px-2 cursor-pointer" onclick="window.location.replace('{{ route('dayoff.students', ['id' => $report->id]) }}');">{{ is_null($report->creater) ? '管理員' : $report->creater->unit_name . $report->creater->realname }}</td>
         <td class="border-b px-2">
             @if (Auth::user()->is_admin ||  $report->is_creater(Auth::user()->uuid))
             <a class="py-2 pr-6 text-green-300 hover:text-green-600"

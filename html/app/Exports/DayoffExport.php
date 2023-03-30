@@ -53,96 +53,96 @@ class DayoffExport
     }
 
     public function make_page($section, $dayoff, $class_name, $stu_list) {
-        $textbox = $section->addTextBox(['align' => 'center', 'width' => 72, 'height' => 32, 'borderColor' => '999999', 'borderSize' => 1]); 
-        $textbox->addText('公假單', ['bold' => true, 'size' => 18], ['alignment' => 'center', 'lineHeight' => 1.5]);
+//        $textbox = $section->addTextBox(['align' => 'center', 'width' => 72, 'height' => 32, 'borderColor' => '999999', 'borderSize' => 1]); 
+        $section->addText('公假單', ['underline' => 'single', 'bold' => true, 'size' => 18], ['alignment' => 'center', 'lineHeight' => 1.5]);
         $section->addTextBreak(1);
         $table = $section->addTable(['unit' => 'pct', 'width' => 100 * 50, 'borderSize' => 2, 'borderColor' => '999999', 'cellMargin' => 50]);
         $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('班級', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText($class_name, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('事由', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText($dayoff->reason, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('時間', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText($dayoff->datetime, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('地點', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText($dayoff->location, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(Converter::cmToTwip(1.2), ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('學生名單', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText($stu_list, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(Converter::cmToTwip(1.2), ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('學生簽名', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText(null, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('業務單位', ['bold' => true], ['alignment' => 'right']);
         if ($dayoff->creater) {
-            $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
-                ->addText($dayoff->creater->unit_name . $dayoff->creater->role_name . $dayoff->creater->realname, ['bold' => false], ['alignment' => 'left']);
+            $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
+                ->addText($dayoff->creater->unit_name . $dayoff->creater->realname, ['bold' => false], ['alignment' => 'left']);
         } else {
-            $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+            $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
                 ->addText('管理員', ['bold' => false], ['alignment' => 'left']);
         }
         $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('備註', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText($dayoff->memo, ['bold' => true], ['alignment' => 'left']);
         $section->addTextBreak(3);
         $section->addLine(['weight' => 1, 'width' => 460, 'height' => 0, 'dash' => 'dash', 'color' => '999999']);
         $section->addTextBreak(3);
-        $textbox = $section->addTextBox(['align' => 'center', 'width' => 72, 'height' => 32, 'borderColor' => '999999', 'borderSize' => 1]); 
-        $textbox->addText('回　條', ['bold' => true, 'size' => 18], ['alignment' => 'center', 'lineHeight' => 1.5]);
+//        $textbox = $section->addTextBox(['align' => 'center', 'width' => 72, 'height' => 32, 'borderColor' => '999999', 'borderSize' => 1]); 
+        $section->addText('回　條', ['underline' => 'single', 'bold' => true, 'size' => 18], ['alignment' => 'center', 'lineHeight' => 1.5]);
         $section->addTextBreak(1);
         $table = $section->addTable(['unit' => 'pct', 'width' => 100 * 50, 'borderSize' => 2, 'borderColor' => '999999', 'cellMargin' => 50]);
         $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('班級', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText($class_name, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('事由', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText($dayoff->reason, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('時間', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText($dayoff->datetime, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('地點', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText($dayoff->location, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(Converter::cmToTwip(1.2), ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
             ->addText('學生名單', ['bold' => true], ['alignment' => 'right']);
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText($stu_list, ['bold' => false], ['alignment' => 'left']);
         $table->addRow(null, ['tblHeader' => false]);
         if ($dayoff->who) {
-            $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+            $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
                 ->addText('導師及科任老師簽名', ['bold' => true], ['alignment' => 'right']);
         } else {
-            $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
+            $table->addCell(Converter::cmToTwip(2.75), ['bgColor' => 'd0d0d0', 'valign' => 'center'])
                 ->addText('導師簽名', ['bold' => true], ['alignment' => 'right']);
         }
-        $table->addCell(Converter::cmToTwip(6), ['valign' => 'center'])
+        $table->addCell(Converter::cmToTwip(13.34), ['valign' => 'center'])
             ->addText(null, ['bold' => false], ['alignment' => 'left']);
         $section->addTextBreak(1);
         $section->addText('回條請於　　月　　日星期　　繳回業務單位', ['bold' => false, 'size' => 11], ['alignment' => 'right', 'lineHeight' => 1.5]);

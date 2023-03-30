@@ -18,6 +18,7 @@ return new class extends Migration
             $table->uuid('uuid');
             $table->string('reason');
             $table->json('datetimes');
+            $table->string('rdate')->nullable();
             $table->string('location')->nullable();
             $table->boolean('who')->default(0);
             $table->text('memo')->nullable();

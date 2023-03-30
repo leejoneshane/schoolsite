@@ -48,9 +48,13 @@ class DayoffController extends Controller
         foreach ($dates as $k => $d) {
             $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
         }
+        if (empty($datetimes) && empty($request->input('rdate'))) {
+            return back()->withInput()->with('error', '「自訂時間字串」或「公假時間」至少要有一項有資料！');
+        }
         $dayoff = Dayoff::create([
             'uuid' => Auth::user()->uuid,
             'reason' => $request->input('reason'),
+            'rdate' => $request->input('rdate'),
             'datetimes' => $datetimes,
             'location' => $request->input('location'),
             'who' => ($request->input('who') == 'yes') ? true : false,
@@ -80,10 +84,14 @@ class DayoffController extends Controller
         foreach ($dates as $k => $d) {
             $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
         }
+        if (empty($datetimes) && empty($request->input('rdate'))) {
+            return back()->withInput()->with('error', '「自訂時間字串」或「公假時間」至少要有一項有資料！');
+        }
         $dayoff = Dayoff::find($id);
         $dayoff->update([
             'uuid' => Auth::user()->uuid,
             'reason' => $request->input('reason'),
+            'rdate' => $request->input('rdate'),
             'datetimes' => $datetimes,
             'location' => $request->input('location'),
             'who' => ($request->input('who') == 'yes') ? true : false,
@@ -300,9 +308,14 @@ class DayoffController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('dayoff.manager');
         if ($user->is_admin || $manager) {
-            $filename = config('app.name').'公假單';
-            $exporter = new DayoffExport($id);
-            return $exporter->download($filename);
+            $dayoff = Dayoff::find($id);
+            if ($dayoff->count_students() > 0) {
+                $filename = config('app.name').'公假單';
+                $exporter = new DayoffExport($id);
+                return $exporter->download($filename);    
+            } else {
+                return redirect()->route('dayoff')->with('message', '此公假單還沒有輸入學生名單，因此無法下載！');
+            }
         } else {
             return redirect()->route('home')->with('error', '只有管理員才能下載公假單！');
         }
@@ -313,9 +326,14 @@ class DayoffController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('dayoff.manager');
         if ($user->is_admin || $manager) {
-            $filename = config('app.name').'公假單';
-            $exporter = new DayoffExport($id);
-            return $exporter->view($filename);
+            $dayoff = Dayoff::find($id);
+            if ($dayoff->count_students() > 0) {
+                $filename = config('app.name').'公假單';
+                $exporter = new DayoffExport($id);
+                return $exporter->view($filename);
+            } else {
+                return redirect()->route('dayoff')->with('message', '此公假單還沒有輸入學生名單，因此無法列印！');
+            }
         } else {
             return redirect()->route('home')->with('error', '只有管理員才能列印公假單！');
         }

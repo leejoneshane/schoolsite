@@ -15,6 +15,7 @@ class Dayoff extends Model
         'uuid',
         'reason',
         'datetimes',
+        'rdate',
         'location',
         'who',
         'memo',
@@ -40,11 +41,15 @@ class Dayoff extends Model
     //提供公假時間字串
     public function getDatetimeAttribute()
     {
-        $datestrs = [];
-        foreach ($this->datetimes as $d) {
-            $datestrs[] = $d['date'] . ' ' . $d['from'] . '-' . $d['to']; 
+        if (!empty($this->rdate)) {
+            return $this->rdate;
+        } else {
+            $datestrs = [];
+            foreach ($this->datetimes as $d) {
+                $datestrs[] = $d['date'] . ' ' . $d['from'] . '-' . $d['to']; 
+            }
+            return implode('、', $datestrs);
         }
-        return implode('、', $datestrs);
     }
 
     //取得此公假單的建立者

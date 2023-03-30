@@ -15,25 +15,29 @@
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>事由請勿超過 25 個字，詳細內容請填寫於備註欄。</span>
     </p>
     <p class="p-3">
+        <label for="rdate" class="inline">自訂時間字串：</label>
+        <input type="text" id="rdate" name="rdate" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" maxlength="255">
+        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>若已經輸入自訂時間字串，底下的「公假時間」欄位可以留白。</span>
+    </p>
+    <p class="p-3">
         <label>公假時間：</label>
-        <br>日期：<input class="inline w-36 rounded px-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" type="date" name="dates[]" min="{{ current_between_date()->mindate }}" max="{{ current_between_date()->maxdate }}" value="{{ date('Y-m-d') }}"> 時間：<input class="inline w-36 rounded px-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" type="time" name="from[]" min="08:00" max="16:00" value="08:00"> ～ <input class="inline w-36 rounded px-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" type="time" name="to[]" min="08:00" max="16:00" value="16:00">
         <button id="new" type="button" class="py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="add_datetime()"><i class="fa-solid fa-circle-plus"></i>
         </button>
-        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>至少要有一筆時間紀錄。</span>
+        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>「自訂時間字串」或「公假時間」至少要有一項有資料。</span>
     </p>
     <p class="p-3">
         <label for="location" class="inline">地點：</label>
-        <input type="text" id="location" name="location" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" maxlength="25">
+        <input type="text" id="location" name="location" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" maxlength="255">
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>若沒有特定地點可以留白。</span>
     </p>
-    <p class="p-3">
+    <p><div class="p-3">
         <label for="who" class="inline-flex relative items-center cursor-pointer">
             <input type="checkbox" id="who" name="who" value="yes" class="sr-only peer">
             <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
             <span class="ml-3 text-gray-900 dark:text-gray-300">要求科任教師簽名</span>
         </label>
-    </p>
+    </div></p>
     <p class="p-3">
         <label for="memo" class="inline">備註：</label>
         <textarea class="inline w-1/2 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
