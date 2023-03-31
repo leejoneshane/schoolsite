@@ -15,7 +15,8 @@ class SeniorityController extends Controller
 
     public function index($year = null)
     {
-        if (Auth::user()->user_type == 'Student') {
+        $user = Auth::user();
+        if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $current = current_year();
@@ -23,8 +24,10 @@ class SeniorityController extends Controller
         $years = Seniority::years();
         if (!in_array($current, $years)) $years[] = $current;
         rsort($years);
+        $user = User::find($user->id);
+        $manager = $user->is_admin || $user->hasPermission('organize.manager');
         $teachers = Seniority::where('syear', $year)->orderBy('no')->paginate(16);
-        return view('app.seniority', ['current' => $current, 'year' => $year, 'years' => $years, 'teachers' => $teachers]);
+        return view('app.seniority', ['current' => $current, 'year' => $year, 'years' => $years, 'manager' => $manager, 'teachers' => $teachers]);
     }
 
     public function upload($kid = null)
@@ -111,7 +114,7 @@ class SeniorityController extends Controller
         $nss = round(($nsy * 12 + $nsm) / 12 * 0.7, 2); 
         $nty = $request->input('new_teach_year');
         $ntm = $request->input('new_teach_month');
-        $nts = round(($nty * 12 + $ntm) / 12 * 0.3, 2); 
+        $nts = round(($nty * 12 + $ntm) / 12 * 0.3, 2);
         $score->new_school_year = $nsy;
         $score->new_school_month = $nsm;
         $score->new_school_score = $nss;

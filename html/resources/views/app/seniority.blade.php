@@ -9,19 +9,23 @@
     </a>
     @endif
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seniority.export', ['year' => $year]) }}">
-        <i class="fa-solid fa-file-export"></i>匯出總表
+        <i class="fa-solid fa-file-export"></i>匯出本學期總表
+    </a>
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seniority.future') }}">
+        <i class="fa-solid fa-file-export"></i>產生下年度校正稿
     </a>
 </div>
 <label for="years">請選擇學年度：</label>
 <select id="years" class="inline w-16 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
-    onchange="
-    var year = this.value;
-    window.location.replace('{{ route('seniority') }}' + '/' + year);
-    ">
+    onchange="query()">
     @foreach ($years as $y)
     <option value="{{ $y }}"{{ ($y == $year) ? ' selected' : '' }}>{{ $y }}</option>
     @endforeach
 </select>
+<label for="name" class="inline p-2">姓名：</label>
+<input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+    type="text" id="name" value="{{ $realname }}" onchange="query()">
+<i class="fa-solid fa-magnifying-glass" onclick="query()"></i>
 <table class="w-full py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
         <th scope="col" rowspan="2" class="px-2 text-center">
@@ -30,7 +34,7 @@
         <th scope="col" rowspan="2" class="px-2 text-center">
             姓名
         </th>
-        <th colspan="6" class="px-2 text-center bg-green-300 dark:bg-green-500">
+        <th colspan="7" class="px-2 text-center bg-green-300 dark:bg-green-500">
             人事室概算
         </th>
         <th colspan="6" class="px-2 text-center bg-blue-300 dark:bg-blue-500">
@@ -60,6 +64,9 @@
             積分
         </th>
         <th scope="col" class="w-16 text-center">
+            校正
+        </th>
+        <th scope="col" class="w-16 text-center">
             在校年
         </th>
         <th scope="col" class="w-16 text-center">
@@ -82,12 +89,24 @@
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">{{ ($seniority->teacher->tutor) ?: $seniority->teacher->role_name }}</td>
         <td class="p-2">{{ $seniority->teacher->realname }}</td>
-        <td class="text-right text-green-700 dark:text-green-300">{{ $seniority->school_year }}</td>
-        <td class="text-right text-green-700 dark:text-green-300">{{ $seniority->school_month }}</td>
-        <td class="text-right text-green-700 dark:text-green-300">{{ $seniority->teach_year }}</td>
-        <td class="text-right text-green-700 dark:text-green-300">{{ $seniority->teach_month }}</td>
-        <td class="text-center text-green-700 dark:text-green-300">{{ $seniority->years }}</td>
-        <td class="text-center text-green-700 dark:text-green-300">{{ $seniority->score }}</td>
+        <td id="osy{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority->school_year }}</td>
+        <td id="osm{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority->school_month }}</td>
+        <td id="oty{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority->teach_year }}</td>
+        <td id="otm{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority->teach_month }}</td>
+        <td id="oy{{ $loop->iteration }}" class="text-center text-green-700 dark:text-green-300">{{ $seniority->years }}</td>
+        <td id="os{{ $loop->iteration }}" class="text-center text-green-700 dark:text-green-300">{{ $seniority->score }}</td>
+        <td class="p-2">
+            @if (($manager))
+            <button id="edit{{ $loop->iteration }}" class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+                title="編輯" onclick="edit_default('{{ $loop->iteration }}')">
+                <i class="fa-solid fa-pen"></i>
+            </button>
+            <button id="save{{ $loop->iteration }}" class="hidden py-2 pr-6 text-blue-300 hover:text-blue-600"
+                title="儲存" onclick="save_default('{{ $loop->iteration }}')">
+                <i class="fa-solid fa-floppy-disk"></i>
+            </button>
+            @endif
+        </td>
         <td id="nsy{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_school_year }}</td>
         <td id="nsm{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_school_month }}</td>
         <td id="nty{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_teach_year }}</td>
@@ -95,17 +114,17 @@
         <td id="ny{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newyears }}</td>
         <td id="ns{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newscore }}</td>
         <td class="p-2">
-        @if ((Auth::user()->is_admin ||  Auth::user()->uuid == $seniority->uuid))
+        @if (Auth::user()->uuid == $seniority->uuid)
             @if ($seniority->ok)
             <button class="py-2 pr-6 text-blue-500">
                 <i class="fa-solid fa-check"></i>
             </button>
             @else
-            <button id="edit{{ $loop->iteration }}" class="py-2 pr-6 text-blue-300 hover:text-blue-600{{ ($seniority->ok ? ' hidden' : '') }}"
+            <button id="edit{{ $loop->iteration }}" class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 title="編輯" onclick="edit('{{ $loop->iteration }}')">
                 <i class="fa-solid fa-pen"></i>
             </button>
-            <button id="save{{ $loop->iteration }}" class="hidden py-2 pr-6 text-blue-300 hover:text-blue-600{{ ($seniority->ok ? ' hidden' : '') }}"
+            <button id="save{{ $loop->iteration }}" class="hidden py-2 pr-6 text-blue-300 hover:text-blue-600"
                 title="儲存" onclick="save('{{ $loop->iteration }}')">
                 <i class="fa-solid fa-floppy-disk"></i>
             </button>
@@ -257,6 +276,24 @@
         });
         btn1.classList.remove('hidden');
         btn2.classList.add('hidden');
+    }
+
+    function query() {
+        var search = '';
+        var year = document.getElementById('years').value;
+        if (year) {
+            search = search + 'year=' + year + '&';
+        }
+        var myname = document.getElementById('name').value;
+        if (myname) {
+            search = search + 'name=' + myname + '&';
+        }
+        search = search.slice(0, -1);
+        if (search) {
+            window.location.replace('{{ route('seniority') }}' + '?' + search);
+        } else {
+            window.location.replace('{{ route('seniority') }}');
+        }
     }
 </script>
 @endsection

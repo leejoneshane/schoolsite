@@ -164,6 +164,7 @@ Route::group(['prefix' => 'seniority', 'middleware' => [ 'auth'] ], function () 
     Route::get('import', 'App\Http\Controllers\SeniorityController@upload');
     Route::post('import', 'App\Http\Controllers\SeniorityController@import')->name('seniority.import');
     Route::get('export/{year?}', 'App\Http\Controllers\SeniorityController@export')->name('seniority.export');
+    Route::get('export/future', 'App\Http\Controllers\SeniorityController@future')->name('seniority.future');
     Route::post('confirm', 'App\Http\Controllers\SeniorityController@confirm')->name('seniority.confirm');
     Route::post('cancel', 'App\Http\Controllers\SeniorityController@cancel')->name('seniority.cancel');
     Route::post('update', 'App\Http\Controllers\SeniorityController@update')->name('seniority.update');

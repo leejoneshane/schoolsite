@@ -80,7 +80,7 @@ class Seniority extends Model
     //提供總積分（在校積分 + 校外積分）
     public function getScoreAttribute()
     {
-        return $this->school_score + $this->teach_score;
+        return round($this->school_score + $this->teach_score, 2);
     }
 
     //提供修正後的教學年資
@@ -92,7 +92,7 @@ class Seniority extends Model
     //提供修正後的總積分
     public function getNewscoreAttribute()
     {
-        return $this->new_school_score + $this->new_teach_score;
+        return round($this->new_school_score + $this->new_teach_score, 2);
     }
 
     //根據 uuid 和學年篩選年資積分物件，靜態函式
