@@ -27,6 +27,9 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('dayoff.importroster', ['id' => $report->id]) }}">
         <i class="fa-solid fa-file-import"></i>匯入已填報學生名單
     </a>
+    <a class="text-sm py-2 pl-6 rounded text-red-300 hover:text-red-600" href="{{ route('dayoff.empty', ['id' => $report->id]) }}">
+        <i class="fa-solid fa-recycle"></i>清空學生名單
+    </a>
 </div>
 <div class="flex justify-center">
     <table class="py-4 text-left font-normal">
@@ -56,7 +59,7 @@
     <p>
         公假學生名單來源有手動輸入、社團學員名單、學生名單填報系統，分別說明如下：<br>
         　　1. 手動輸入可使用班級名單進行勾選，或是使用快速輸入直接從 Excel 表單複製學號欄位並貼上。<br>
-        　　2. 匯入社團學員名單請挑選要匯入哪一個學期的錄取名單，匯入後請從下方名單列表刪除不需要請公假的學生。<br>
+        　　2. 匯入社團學員名單只能匯入本學期的錄取名單，匯入後請從下方名單列表刪除不需要請公假的學生。<br>
         　　3. 匯入學生名單填報系統中的名單，該系統允許導師或科任老師自行填報名單。並可以設定填報上下限。<br>
     </p>
 </div>

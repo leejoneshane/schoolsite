@@ -259,6 +259,7 @@ Route::group(['prefix' => 'dayoff', 'middleware' => [ 'auth'] ], function () {
     Route::get('sudents/{id}/import/roster', 'App\Http\Controllers\DayoffController@importRoster');
     Route::post('sudents/{id}/import/roster', 'App\Http\Controllers\DayoffController@importRosterSave')->name('dayoff.importroster');
     Route::post('sudents/{id}/remove', 'App\Http\Controllers\DayoffController@removeStudent')->name('dayoff.delstudent');
+    Route::get('sudents/{id}/remove/all', 'App\Http\Controllers\DayoffController@removeStudents')->name('dayoff.empty');
     Route::get('download/{id}', 'App\Http\Controllers\DayoffController@download')->name('dayoff.download');
     Route::get('print/{id}', 'App\Http\Controllers\DayoffController@print')->name('dayoff.print');
 });

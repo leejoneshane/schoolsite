@@ -303,6 +303,19 @@ class DayoffController extends Controller
         return redirect()->route('dayoff.students', ['id' => $dayoff->id])->with('success', '已為您移除'.$student->stdno.$student->realname.'！');
     }
 
+    public function removeStudents(Request $request, $id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('dayoff.manager');
+        if (!($user->is_admin || $manager)) {
+            return redirect()->route('home')->with('error', '只有管理員才能清除公假名單！');
+        }
+        $dayoff = Dayoff::find($id);
+        Watchdog::watch($request, '將公假單「' . $dayoff->reason . '」的學生名單清空！');
+        DB::table('dayoff_students')->where('dayoff_id', $id)->delete();
+        return redirect()->route('dayoff.students', ['id' => $dayoff->id])->with('success', '已為您清空學生名單！');
+    }
+
     public function download($id)
     {
         $user = User::find(Auth::user()->id);
