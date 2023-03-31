@@ -28,7 +28,7 @@ class DayoffExport
         $header->addText(config('app.name') . ' - 公假單', null, ['alignment' => 'center']);
         $unit = $dayoff->creater->mainunit;
         $watermark = 'images/'.$unit->name.'圓戳章.jpg';
-        $header->addWatermark(public_path($watermark), ['posHorizontal' => 'absolute', 'posVertical' => 'absolute', 'marginTop' => 280, 'marginLeft' => 130]);
+        $header->addWatermark(public_path($watermark), ['posHorizontal' => 'absolute', 'posVertical' => 'absolute', 'marginTop' => 300, 'marginLeft' => 150]);
         $section->addFooter()->addPreserveText('第 {PAGE} 頁，共 {NUMPAGES} 頁', null, ['alignment' => 'center']);
         $members = [];
         $old = $students->first()->class_id;
