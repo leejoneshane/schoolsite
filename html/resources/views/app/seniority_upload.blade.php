@@ -10,50 +10,42 @@
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
         上傳檔案須為 xlsx（Excel 2010 以後版本），要匯入的資料必須位於第一個工作表。
-        該工作表的1~3列為標題列，格式如下：
+        該工作表的前兩列為標題列，格式如下：
         <div class="p-2"><table class="w-2/3 table-auto border border-collapse border-black">
             <thead>
             <tr>
                 <th colspan="10" class="border border-black text-center">臺北市國語實驗國民小學{{ $current }}學年度教師教學年資統計初稿  統計至{{ date('Y.m.d') }}</th>
             </tr>
             <tr>
-                <th rowspan="2" class="border border-black text-center">
+                <th class="border border-black text-center">
                     編號
                 </th>
-                <th rowspan="2" class="border border-black text-center">
+                <th class="border border-black text-center">
                     職別
                 </th>
-                <th rowspan="2" class="border border-black text-center">
+                <th class="border border-black text-center">
                     姓名
                 </th>
-                <th colspan="3" class="border border-black text-center">
-                    在校年資
+                <th class="border border-black text-center">
+                    在校年
                 </th>
-                <th colspan="3" class="border border-black text-center">
-                    校外年資
+                <th class="border border-black text-center">
+                    在校月
                 </th>
-                <th rowspan="2" class="border border-black text-center">
+                <th class="border border-black text-center">
+                    在校積分
+                </th>
+                <th class="border border-black text-center">
+                    校外年
+                </th>
+                <th class="border border-black text-center">
+                    校外月
+                </th>
+                <th class="border border-black text-center">
+                    校外積分
+                </th>
+                <th class="border border-black text-center">
                     備註
-                </th>
-            </tr>
-            <tr>
-                <th class="border border-black text-center">
-                    年
-                </th>
-                <th class="border border-black text-center">
-                    月
-                </th>
-                <th class="border border-black text-center">
-                    積分
-                </th>
-                <th class="border border-black text-center">
-                    年
-                </th>
-                <th class="border border-black text-center">
-                    月
-                </th>
-                <th class="border border-black text-center">
-                    積分
                 </th>
             </tr>
             </thead>

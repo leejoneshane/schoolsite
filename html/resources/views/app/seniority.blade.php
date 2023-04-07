@@ -4,6 +4,9 @@
 <div class="text-2xl font-bold leading-normal pb-5">
     年資統計
     @if ($year == $current)
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seniority.future') }}">
+        <i class="fa-solid fa-file-export"></i>自動產生年資並下載校對稿
+    </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seniority.import') }}">
         <i class="fa-solid fa-file-import"></i>匯入年資 Excel
     </a>
@@ -11,20 +14,39 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seniority.export', ['year' => $year]) }}">
         <i class="fa-solid fa-file-export"></i>匯出本學期總表
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seniority.future') }}">
-        <i class="fa-solid fa-file-export"></i>產生下年度校正稿
-    </a>
 </div>
 <label for="years">請選擇學年度：</label>
 <select id="years" class="inline w-16 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="query()">
     @foreach ($years as $y)
-    <option value="{{ $y }}"{{ ($y == $year) ? ' selected' : '' }}>{{ $y }}</option>
+    <option value="{{ $y }}"{{ ($year == $y) ? ' selected' : '' }}>{{ $y }}</option>
     @endforeach
 </select>
+<label for="unit" class="inline p-2">行政單位：</label>
+<select id="unit" class="inline rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+    onchange="query('unit')">
+    <option value=""></option>
+    @foreach ($units as $u)
+    <option value="{{ $u->id }}"{{ ($unit == $u->id) ? ' selected' : '' }}>{{ $u->name }}</option>
+    @endforeach
+</select>
+<label for="domain" class="inline p-2">隸屬領域：</label>
+<select id="domain" class="inline rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+    onchange="query('domain')">
+    <option value=""></option>
+    @foreach ($domains as $d)
+    <option value="{{ $d->id }}"{{ ($domain == $d->id) ? ' selected' : '' }}>{{ $d->name }}</option>
+    @endforeach
+</select>
+<label for="idno" class="inline p-2">身份證字號：</label>
+<input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+    type="text" id="idno" value="{{ $idno }}" onchange="query()">
 <label for="name" class="inline p-2">姓名：</label>
 <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
     type="text" id="name" value="{{ $realname }}" onchange="query()">
+<label for="email" class="inline p-2">電子郵件：</label>
+<input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+    type="text" id="email" value="{{ $email }}" onchange="query()">
 <i class="fa-solid fa-magnifying-glass" onclick="query()"></i>
 <table class="w-full py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
@@ -85,10 +107,13 @@
             積分
         </th>
     </tr>
-    @forelse ($teachers as $seniority)
+    @forelse ($teachers as $teacher)
+    @php
+        $seniority = $teacher->seniority($year);
+    @endphp
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
-        <td class="p-2">{{ ($seniority->teacher->tutor) ?: $seniority->teacher->role_name }}</td>
-        <td class="p-2">{{ $seniority->teacher->realname }}</td>
+        <td class="p-2">{{ ($teacher->tutor) ?: (($teacher->unit_id == 25 && $teacher->domain) ? $teacher->domain->name : $teacher->role_name) }}</td>
+        <td class="p-2">{{ $teacher->realname }}</td>
         <td id="osy{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority->school_year }}</td>
         <td id="osm{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority->school_month }}</td>
         <td id="oty{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority->teach_year }}</td>
@@ -129,7 +154,7 @@
                 <i class="fa-solid fa-floppy-disk"></i>
             </button>
             <label for="ok{{ $loop->iteration }}" class="inline-flex relative items-center cursor-pointer">
-                <input type="checkbox" id="ok{{ $loop->iteration }}" name="{{ $seniority->uuid }}" value="yes" class="sr-only peer"{{ $seniority->ok ? ' checked' : '' }} onclick="checkit('{{ $loop->iteration }}')">
+                <input type="checkbox" id="ok{{ $loop->iteration }}" name="{{ $teacher->uuid }}" value="yes" class="sr-only peer"{{ $seniority->ok ? ' checked' : '' }} onclick="checkit('{{ $loop->iteration }}')">
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span class="ml-3 text-gray-900 dark:text-gray-300">正確無誤</span>
             </label>
@@ -278,21 +303,37 @@
         btn2.classList.add('hidden');
     }
 
-    function query() {
+    function query(main) {
         var search = '';
         var year = document.getElementById('years').value;
         if (year) {
             search = search + 'year=' + year + '&';
         }
+        if (main == 'unit') {
+            var unit = document.getElementById('unit').value;
+            search = search + 'unit=' + unit + '&';
+        }
+        if (main == 'domain') {
+            var domain = document.getElementById('domain').value;
+            search = search + 'domain=' + domain + '&';
+        }
+        var idno = document.getElementById('idno').value;
+        if (idno) {
+            search = search + 'idno=' + idno + '&';
+        }
         var myname = document.getElementById('name').value;
         if (myname) {
             search = search + 'name=' + myname + '&';
         }
+        var email = document.getElementById('email').value;
+        if (email) {
+            search = search + 'email=' + email + '&';
+        }
         search = search.slice(0, -1);
         if (search) {
-            window.location.replace('{{ route('seniority') }}' + '?' + search);
+            window.location.replace('{{ route('seniority') }}' + '/' + search);
         } else {
-            window.location.replace('{{ route('seniority') }}');
+            window.location.replace('{{ route('seniority') }}' + '/year=' + year);
         }
     }
 </script>

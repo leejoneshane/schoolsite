@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid');
             $table->integer('syear');
-            $table->integer('no');
             $table->integer('school_year');
             $table->integer('school_month');
             $table->float('school_score');

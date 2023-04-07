@@ -35,7 +35,7 @@
     <span class="p-2">
         @if (!$flow)
         <span class="text-red-700">尚未設定時程，請洽教務處詢問！</span>
-        @elseif (!$teacher->seniority)
+        @elseif (!$teacher->seniority())
         <span class="text-red-700">尚未統計年資，請洽教務處詢問！</span>
         @else
         目前進度：
@@ -50,7 +50,7 @@
         @endif
     </span>
 </div>
-@if ($year == $current && $teacher->seniority && $flow && ($flow->onSurvey() || $flow->onFirstStage() || $flow->onSecondStage()))
+@if ($year == $current && $teacher->seniority() && $flow && ($flow->onSurvey() || $flow->onFirstStage() || $flow->onSecondStage()))
     @if ($reserved)
 <div class="w-full p-4 text-center text-3xl font-semibold">
     您的職務並未開缺，無需填寫意願調查表！
@@ -96,16 +96,17 @@
 
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">貳、年資積分</div>
     @php
-    $school_year = $teacher->seniority->new_school_year;
-    if ($school_year < 1) $school_year = $teacher->seniority->school_year;
-    $school_month = $teacher->seniority->new_school_month;
-    if ($school_month < 1) $school_month = $teacher->seniority->school_month;
-    $teach_year = $teacher->seniority->new_teach_year;
-    if ($teach_year < 1) $teach_year = $teacher->seniority->teach_year;
-    $teach_month = $teacher->seniority->new_teach_month;
-    if ($teach_month < 1) $teach_month = $teacher->seniority->teach_month;
-    $score = $teacher->seniority->newscore;
-    if ($score < 1) $score = $teacher->seniority->score;
+    $seniority = $teacher->seniority();
+    $school_year = $seniority->new_school_year;
+    if ($school_year < 1) $school_year = $seniority->school_year;
+    $school_month = $seniority->new_school_month;
+    if ($school_month < 1) $school_month = $seniority->school_month;
+    $teach_year = $seniority->new_teach_year;
+    if ($teach_year < 1) $teach_year = $seniority->teach_year;
+    $teach_month = $seniority->new_teach_month;
+    if ($teach_month < 1) $teach_month = $seniority->teach_month;
+    $score = $seniority->newscore;
+    if ($score < 1) $score = $seniority->score;
     $high = false;
     if (!empty($teacher->tutor_class)) {
         $grade = substr($teacher->tutor_class, 0, 1); 

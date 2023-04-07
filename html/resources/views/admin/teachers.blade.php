@@ -4,10 +4,7 @@
 <div class="text-2xl font-bold leading-normal pb-5">教職員</div>
 <label for="unit" class="inline p-2">行政單位：</label>
 <select id="unit" class="inline rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-    onchange="
-        var unit_id = this.value;
-        window.location.replace('{{ route('teachers') }}' + '/unit=' + unit_id);
-">
+    onchange="query('unit')">
     <option value=""></option>
     @foreach ($units as $u)
     <option value="{{ $u->id }}"{{ ($current == $u->id) ? ' selected' : '' }}>{{ $u->name }}</option>
@@ -15,10 +12,7 @@
 </select>
 <label for="domain" class="inline p-2">隸屬領域：</label>
 <select id="domain" class="inline rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-    onchange="
-        var domain_id = this.value;
-        window.location.replace('{{ route('teachers') }}' + '/domain=' + domain_id);
-">
+    onchange="query('domain')">
     <option value=""></option>
     @foreach ($domains as $d)
     <option value="{{ $d->id }}"{{ ($domain == $d->id) ? ' selected' : '' }}>{{ $d->name }}</option>
@@ -64,7 +58,7 @@
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">{{ $t->uuid }}</td>
         @if (empty($current))
-        <td class="p-2">{{ $t->mainunit->name }}</td>
+        <td class="p-2">{{ ($t->mainunit) ? $t->mainunit->name : '' }}</td>
         @endif
         <td class="p-2">{{ $t->role_name }}</td>
         <td class="p-2">{{ $t->realname }}</td>
@@ -99,8 +93,16 @@
     </form>
 </table>
 <script>
-    function query() {
+    function query(main) {
         var search = '';
+        if (main == 'unit') {
+            var unit = document.getElementById('unit').value;
+            search = search + 'unit=' + unit + '&';
+        }
+        if (main == 'domain') {
+            var domain = document.getElementById('domain').value;
+            search = search + 'domain=' + domain + '&';
+        }
         var idno = document.getElementById('idno').value;
         if (idno) {
             search = search + 'idno=' + idno + '&';
@@ -118,7 +120,7 @@
             window.location.replace('{{ route('teachers') }}' + '/' + search);
         } else {
             var unit_id = document.getElementById('unit').value;
-            window.location.replace('{{ route('teachers') }}' + '/unit=' + unit_id);
+            window.location.replace('{{ route('teachers', ['search' => 'unit=' . $current ]) }}');
         }
     }
 </script>

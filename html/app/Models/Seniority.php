@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\Teacher;
 
 class Seniority extends Model
 {
@@ -109,10 +110,27 @@ class Seniority extends Model
         })->toArray();
     }
 
+    //取得最後一筆紀錄的學年，靜態函式
+    public static function latest_year()
+    {
+        $last = Seniority::query()->latest()->get();
+        return ($last) ? $last->syear : null;
+    }
+
+    //篩選當前學年度所有的教師和年資積分，靜態函式
+    public static function year_teachers($year = null)
+    {
+        if (!$year) $year = current_year();
+        $uuids = Seniority::where('syear', $year)->get()->map(function ($item) {
+            return $item->uuid;
+        })->toArray();
+        return Teacher::whereIn('teachers.uuid', $uuids);
+    }
+
     //篩選當前學年度所有的年資積分物件，靜態函式
     public static function current()
     {
-        return Seniority::where('syear', current_year())->orderBy('no')->get();
+        return Seniority::where('syear', current_year())->get();
     }
 
     //取得此年資積分的擁有教師

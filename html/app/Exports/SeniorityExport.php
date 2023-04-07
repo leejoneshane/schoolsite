@@ -15,15 +15,17 @@ class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatt
     use Exportable;
 
     public $year;
+    public $no;
 
     public function __construct($year)
     {
         $this->year = $year;
+        $this->no = 0;
     }
 
     public function collection()
     {
-        return Seniority::where('syear', $this->year)->orderBy('no')->get();
+        return Seniority::year_teachers($this->year)->orderBy('tutor_class')->orderBy('unit_id')->get();
     }
 
     public function headings(): array
@@ -39,18 +41,20 @@ class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatt
 
     public function map($row): array
     {
+        $this->no ++;
+        $seniority = $row->seniority($this->year);
         return [
-            $row->no,
-            ($row->teacher->tutor) ?: $row->teacher->role_name,
-            $row->teacher->realname,
-            ($row->new_school_year) ?: $row->school_year,
-            ($row->new_school_month) ?: $row->school_month,
-            ($row->new_school_score) ?: $row->school_score,
-            ($row->new_teach_year) ?: $row->teach_year,
-            ($row->new_teach_month) ?: $row->teach_month,
-            ($row->new_teach_score) ?: $row->teach_score,
-            ($row->newyears > 0) ? $row->newyears : $row->years,
-            ($row->newscore > 0) ? $row->newscore : $row->score,
+            $this->no,
+            ($row->tutor) ?: $row->role_name,
+            $row->realname,
+            ($seniority->new_school_year) ?: $seniority->school_year,
+            ($seniority->new_school_month) ?: $seniority->school_month,
+            ($seniority->new_school_score) ?: $seniority->school_score,
+            ($seniority->new_teach_year) ?: $seniority->teach_year,
+            ($seniority->new_teach_month) ?: $seniority->teach_month,
+            ($seniority->new_teach_score) ?: $seniority->teach_score,
+            ($seniority->newyears > 0) ? $seniority->newyears : $seniority->years,
+            ($seniority->newscore > 0) ? $seniority->newscore : $seniority->score,
             '',
         ];
     }

@@ -232,30 +232,38 @@ class SchoolDataController extends Controller
         $units = Unit::main();
         $domains = Domain::all();
         $query = Teacher::query();
-        if (!empty($idno) || !empty($realname) || !empty($email)) {
-            if (!empty($idno)) {
-                $query = $query->where('idno', 'like', '%'.$idno.'%');
-            }
-            if (!empty($realname)) {
-                $query = $query->where('realname', 'like', '%'.$realname.'%');
-            }
-            if (!empty($email)) {
-                $query = $query->where('email', 'like', '%'.$email.'%');
-            }
-        } elseif (!empty($unit_id)) {
+        if (!empty($unit_id)) {
             $unit = Unit::find($unit_id);
             $keys = Unit::subkeys($unit->unit_no);
             $query = Teacher::whereIn('unit_id', $keys);
-        } elseif (!empty($domain_id)) {
+            $domain_id = $idno = $realname = $email = '';
+            $main = 'unit';
+        }
+        if (!empty($domain_id)) {
             $query = Teacher::leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.domain_id', $domain_id);
-        } else {
-            $unit_id = $units->first()->id;
-            $unit = Unit::find($unit_id);
-            $keys = Unit::subkeys($unit->unit_no);
-            $query = Teacher::whereIn('unit_id', $keys);
+            $unit_id = $idno = $realname = $email = '';
+            $main = 'domain';
+        }
+        if (empty($main)) {
+            if (!empty($idno) || !empty($realname) || !empty($email)) {
+                if (!empty($idno)) {
+                    $query = $query->where('idno', 'like', '%'.$idno.'%');
+                }
+                if (!empty($realname)) {
+                    $query = $query->where('realname', 'like', '%'.$realname.'%');
+                }
+                if (!empty($email)) {
+                    $query = $query->where('email', 'like', '%'.$email.'%');
+                }
+            } else {
+                $unit_id = $units->first()->id;
+                $unit = Unit::find($unit_id);
+                $keys = Unit::subkeys($unit->unit_no);
+                $query = Teacher::whereIn('unit_id', $keys);
+            }    
         }
         $teachers = $query->orderBy('realname')->get()->sortBy(function ($t) {
-            return $t->mainunit->id;
+            return ($t->mainunit) ? $t->mainunit->id : null;
         });
         return view('admin.teachers', ['current' => $unit_id, 'domain' => $domain_id, 'idno' => $idno, 'realname' => $realname, 'email' => $email, 'units' => $units, 'domains' => $domains, 'teachers' => $teachers]);
     }

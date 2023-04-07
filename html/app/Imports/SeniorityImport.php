@@ -17,7 +17,7 @@ class SeniorityImport implements ToCollection, WithStartRow
 
     public function startRow(): int
     {
-        return 4;
+        return 3;
     }
 
     public function collection(Collection $rows)
@@ -44,13 +44,12 @@ class SeniorityImport implements ToCollection, WithStartRow
                 Seniority::updateOrCreate([
                     'uuid' => $uuid,
                 ],[
-                    'no' => $row[0],
                     'school_year' => $row[3],
                     'school_month' => $row[4] ?: 0,
-                    'school_score' => ($row[3] * 12 + $row[4]) / 12 * 0.7,
+                    'school_score' => round(($row[3] * 12 + $row[4]) / 12 * 0.7, 2),
                     'teach_year' => $row[6],
                     'teach_month' => $row[7] ?: 0,
-                    'teach_score' => ($row[6] * 12 + $row[7]) / 12 * 0.3,
+                    'teach_score' => round(($row[6] * 12 + $row[7]) / 12 * 0.3, 2),
                 ]);
             }
         }

@@ -11,6 +11,7 @@ use App\Models\Unit;
 use App\Models\Role;
 use App\Models\Domain;
 use App\Models\Classroom;
+use App\Models\Seniority;
 
 class Teacher extends Model
 {
@@ -104,8 +105,8 @@ class Teacher extends Model
     public function getDomainAttribute()
     {
         $domain = DB::table('belongs')->where('uuid', $this->uuid)->where('year', current_year())->first();
-        if ($domain && $domain->id) {
-            return Domain::find($domain->id);
+        if ($domain) {
+            return Domain::find($domain->domain_id);
         }
         return false;
     }
@@ -278,9 +279,10 @@ class Teacher extends Model
     }
 
     //取得教師的年資積分
-    public function seniority()
+    public function seniority($year = null)
     {
-        return $this->hasOne('App\Models\Seniority', 'uuid', 'uuid')->where('syear', current_year());
+        if (!$year) $year = current_year();
+        return Seniority::where('uuid', $this->uuid)->where('syear', $year)->first();
     }
 
     //取得教師的職編意願調查表
