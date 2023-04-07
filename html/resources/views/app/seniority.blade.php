@@ -85,7 +85,7 @@
         <th scope="col" class="w-16 text-center">
             積分
         </th>
-        <th scope="col" class="w-16 text-center">
+        <th scope="col" class="w-8 text-center">
             校正
         </th>
         <th scope="col" class="w-16 text-center">
@@ -122,11 +122,11 @@
         <td id="os{{ $loop->iteration }}" class="text-center text-green-700 dark:text-green-300">{{ $seniority->score }}</td>
         <td class="p-2">
             @if (($manager))
-            <button id="edit{{ $loop->iteration }}" class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+            <button id="oedit{{ $loop->iteration }}" class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 title="編輯" onclick="edit_default('{{ $loop->iteration }}')">
                 <i class="fa-solid fa-pen"></i>
             </button>
-            <button id="save{{ $loop->iteration }}" class="hidden py-2 pr-6 text-blue-300 hover:text-blue-600"
+            <button id="osave{{ $loop->iteration }}" class="hidden py-2 pr-6 text-blue-300 hover:text-blue-600"
                 title="儲存" onclick="save_default('{{ $loop->iteration }}')">
                 <i class="fa-solid fa-floppy-disk"></i>
             </button>
@@ -139,7 +139,7 @@
         <td id="ny{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newyears }}</td>
         <td id="ns{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newscore }}</td>
         <td class="p-2">
-        @if (Auth::user()->uuid == $seniority->uuid)
+        @if ($manager || Auth::user()->uuid == $seniority->uuid)
             @if ($seniority->ok)
             <button class="py-2 pr-6 text-blue-500">
                 <i class="fa-solid fa-check"></i>
@@ -170,6 +170,40 @@
 </table>
 {{ $teachers->links('pagination::tailwind') }}
 <script>
+    function query(main) {
+        var search = '';
+        var year = document.getElementById('years').value;
+        if (year) {
+            search = search + 'year=' + year + '&';
+        }
+        if (main == 'unit') {
+            var unit = document.getElementById('unit').value;
+            search = search + 'unit=' + unit + '&';
+        }
+        if (main == 'domain') {
+            var domain = document.getElementById('domain').value;
+            search = search + 'domain=' + domain + '&';
+        }
+        var idno = document.getElementById('idno').value;
+        if (idno) {
+            search = search + 'idno=' + idno + '&';
+        }
+        var myname = document.getElementById('name').value;
+        if (myname) {
+            search = search + 'name=' + myname + '&';
+        }
+        var email = document.getElementById('email').value;
+        if (email) {
+            search = search + 'email=' + email + '&';
+        }
+        search = search.slice(0, -1);
+        if (search) {
+            window.location.replace('{{ route('seniority') }}' + '/' + search);
+        } else {
+            window.location.replace('{{ route('seniority') }}' + '/year=' + year);
+        }
+    }
+
     var input = false;
     function checkit(target) {
         box = document.getElementById('ok' + target);
@@ -279,6 +313,7 @@
         nty_value = nty.firstChild.value;
         ntm_value = ntm.firstChild.value;
         window.axios.post('{{ route('seniority.update') }}', {
+            main: 'new',
             uuid: box.name,
             year: {{ $year }},
             new_school_year: nsy_value,
@@ -303,38 +338,92 @@
         btn2.classList.add('hidden');
     }
 
-    function query(main) {
-        var search = '';
-        var year = document.getElementById('years').value;
-        if (year) {
-            search = search + 'year=' + year + '&';
-        }
-        if (main == 'unit') {
-            var unit = document.getElementById('unit').value;
-            search = search + 'unit=' + unit + '&';
-        }
-        if (main == 'domain') {
-            var domain = document.getElementById('domain').value;
-            search = search + 'domain=' + domain + '&';
-        }
-        var idno = document.getElementById('idno').value;
-        if (idno) {
-            search = search + 'idno=' + idno + '&';
-        }
-        var myname = document.getElementById('name').value;
-        if (myname) {
-            search = search + 'name=' + myname + '&';
-        }
-        var email = document.getElementById('email').value;
-        if (email) {
-            search = search + 'email=' + email + '&';
-        }
-        search = search.slice(0, -1);
-        if (search) {
-            window.location.replace('{{ route('seniority') }}' + '/' + search);
-        } else {
-            window.location.replace('{{ route('seniority') }}' + '/year=' + year);
-        }
+    function edit_default(target) {
+        input = true;
+        box = document.getElementById('ok' + target);
+        btn1 = document.getElementById('oedit' + target);
+        btn2 = document.getElementById('osave' + target);
+        osy = document.getElementById('osy' + target);
+        osm = document.getElementById('osm' + target);
+        oty = document.getElementById('oty' + target);
+        otm = document.getElementById('otm' + target);
+        oy = document.getElementById('oy' + target);
+        os = document.getElementById('os' + target);
+        osy_value = osy.innerText;
+        osy.innerHTML = '';
+        const elem_osy = document.createElement('input');
+        elem_osy.classList.add('w-16','border','border-gray-300','focus:border-blue-700','focus:ring-1','focus:ring-blue-700','focus:outline-none','active:outline-none','dark:border-gray-400','dark:focus:border-blue-600','bg-opacity-100','text-black','dark:text-gray-200');
+        elem_osy.type = 'text';
+        elem_osy.name = 'school_year';
+        elem_osy.value = osy_value;
+        osy.appendChild(elem_osy);
+        osm_value = osm.innerText;
+        osm.innerHTML = '';
+        const elem_osm = document.createElement('input');
+        elem_osm.classList.add('w-16','border','border-gray-300','focus:border-blue-700','focus:ring-1','focus:ring-blue-700','focus:outline-none','active:outline-none','dark:border-gray-400','dark:focus:border-blue-600','bg-opacity-100','text-black','dark:text-gray-200');
+        elem_osm.type = 'text';
+        elem_osm.name = 'school_month';
+        elem_osm.value = osm_value;
+        osm.appendChild(elem_osm);
+        oty_value = oty.innerText;
+        oty.innerHTML = '';
+        const elem_oty = document.createElement('input');
+        elem_oty.classList.add('w-16','border','border-gray-300','focus:border-blue-700','focus:ring-1','focus:ring-blue-700','focus:outline-none','active:outline-none','dark:border-gray-400','dark:focus:border-blue-600','bg-opacity-100','text-black','dark:text-gray-200');
+        elem_oty.type = 'text';
+        elem_oty.name = 'teach_year';
+        elem_oty.value = oty_value;
+        oty.appendChild(elem_oty);
+        otm_value = otm.innerText;
+        otm.innerHTML = '';
+        const elem_otm = document.createElement('input');
+        elem_otm.classList.add('w-16','border','border-gray-300','focus:border-blue-700','focus:ring-1','focus:ring-blue-700','focus:outline-none','active:outline-none','dark:border-gray-400','dark:focus:border-blue-600','bg-opacity-100','text-black','dark:text-gray-200');
+        elem_otm.type = 'text';
+        elem_otm.name = 'teach_month';
+        elem_otm.value = otm_value;
+        otm.appendChild(elem_otm);
+        btn1.classList.add('hidden');
+        btn2.classList.remove('hidden');
+    }
+
+    function save_default(target) {
+        input = false;
+        box = document.getElementById('ok' + target);
+        btn1 = document.getElementById('oedit' + target);
+        btn2 = document.getElementById('osave' + target);
+        osy = document.getElementById('osy' + target);
+        osm = document.getElementById('osm' + target);
+        oty = document.getElementById('oty' + target);
+        otm = document.getElementById('otm' + target);
+        oy = document.getElementById('oy' + target);
+        os = document.getElementById('os' + target);
+        osy_value = osy.firstChild.value;
+        osm_value = osm.firstChild.value;
+        oty_value = oty.firstChild.value;
+        otm_value = otm.firstChild.value;
+        window.axios.post('{{ route('seniority.update') }}', {
+            main: 'default',
+            uuid: box.name,
+            year: {{ $year }},
+            school_year: osy_value,
+            school_month: osm_value,
+            teach_year: oty_value,
+            teach_month: otm_value,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then(function (response) {
+            var seniority = response.data;
+            osy.innerHTML = seniority.school_year;
+            osm.innerHTML = seniority.school_month;
+            oty.innerHTML = seniority.teach_year;
+            otm.innerHTML = seniority.teach_month;
+            oy.innerHTML = seniority.years;
+            os.innerHTML = seniority.score;
+        });
+        btn1.classList.remove('hidden');
+        btn2.classList.add('hidden');
     }
 </script>
 @endsection

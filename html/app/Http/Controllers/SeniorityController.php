@@ -191,23 +191,42 @@ class SeniorityController extends Controller
 
     public function update(Request $request)
     {
+        $main = $request->input('main');
         $uuid = $request->input('uuid');
         $year = $request->input('year') ?: current_year();
         $score = Seniority::findBy($uuid, $year);
-        $nsy = $request->input('new_school_year');
-        $nsm = $request->input('new_school_month');
-        $nss = round(($nsy * 12 + $nsm) / 12 * 0.7, 2); 
-        $nty = $request->input('new_teach_year');
-        $ntm = $request->input('new_teach_month');
-        $nts = round(($nty * 12 + $ntm) / 12 * 0.3, 2);
-        $score->new_school_year = $nsy;
-        $score->new_school_month = $nsm;
-        $score->new_school_score = $nss;
-        $score->new_teach_year = $nty;
-        $score->new_teach_month = $ntm;
-        $score->new_teach_score = $nts;
-        $score->save();
-        Watchdog::watch($request, '修正年資：' . $score->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+    if ($main == 'default') {
+            $osy = $request->input('school_year');
+            $osm = $request->input('school_month');
+            $oss = round(($osy * 12 + $osm) / 12 * 0.7, 2); 
+            $oty = $request->input('teach_year');
+            $otm = $request->input('teach_month');
+            $ots = round(($oty * 12 + $otm) / 12 * 0.3, 2);
+            $score->school_year = $osy;
+            $score->school_month = $osm;
+            $score->school_score = $oss;
+            $score->teach_year = $oty;
+            $score->teach_month = $otm;
+            $score->teach_score = $ots;
+            $score->save();
+            Watchdog::watch($request, '依人事室資料校正年資：' . $score->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));    
+        }
+        if ($main == 'new') {
+            $nsy = $request->input('new_school_year');
+            $nsm = $request->input('new_school_month');
+            $nss = round(($nsy * 12 + $nsm) / 12 * 0.7, 2); 
+            $nty = $request->input('new_teach_year');
+            $ntm = $request->input('new_teach_month');
+            $nts = round(($nty * 12 + $ntm) / 12 * 0.3, 2);
+            $score->new_school_year = $nsy;
+            $score->new_school_month = $nsm;
+            $score->new_school_score = $nss;
+            $score->new_teach_year = $nty;
+            $score->new_teach_month = $ntm;
+            $score->new_teach_score = $nts;
+            $score->save();
+            Watchdog::watch($request, '修正年資：' . $score->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));                
+        }
         return response()->json($score);
     }
 
