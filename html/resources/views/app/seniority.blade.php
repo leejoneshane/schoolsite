@@ -7,7 +7,7 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seniority.future') }}">
         <i class="fa-solid fa-file-export"></i>自動產生年資並下載校對稿
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seniority.import') }}">
+    <a class="text-sm py-2 pl-6 rounded text-red-300 hover:text-red-600" href="{{ route('seniority.import') }}">
         <i class="fa-solid fa-file-import"></i>匯入年資 Excel
     </a>
     @endif

@@ -43,6 +43,7 @@ class SeniorityImport implements ToCollection, WithStartRow
                 if (!$uuid) $uuid = $another;
                 Seniority::updateOrCreate([
                     'uuid' => $uuid,
+                    'syear' => current_year(),
                 ],[
                     'school_year' => $row[3],
                     'school_month' => $row[4] ?: 0,
