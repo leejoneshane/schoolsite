@@ -19,6 +19,7 @@ return new class extends Migration
             $table->timestamp('survey_at')->nullable();
             $table->timestamp('expired_at')->nullable();
             $table->text('description')->nullable();
+            $table->string('qrcode')->nullable();
         });
     }
 

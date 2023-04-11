@@ -87,14 +87,14 @@ class LunchSurvey extends Model
     public static function section_survey($section = null)
     {
         if (!$section) $section = current_section();
-        return LunchSurvey::where('section', $section)->orderBy('class_id')->orderBy('seat');
+        return LunchSurvey::where('section', $section)->orderBy('class_id')->orderBy('seat')->get();
     }
 
     //篩選指定班級所有學生的午餐調查表，靜態函式
     public static function class_survey($class, $section = null)
     {
         if (!$section) $section = current_section();
-        return LunchSurvey::where('section', $section)->where('class_id', $class)->orderBy('seat');
+        return LunchSurvey::where('section', $section)->where('class_id', $class)->orderBy('seat')->get();
     }
 
     //計算本學期已調查班級數

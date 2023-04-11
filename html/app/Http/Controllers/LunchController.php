@@ -8,13 +8,14 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Student;
+use App\Models\Classroom;
 use App\Models\LunchSurvey;
 use App\Models\Watchdog;
 
 class LunchController extends Controller
 {
 
-    public function index($section = null)
+    public function index(Request $request, $section = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
@@ -23,17 +24,20 @@ class LunchController extends Controller
         $sections = LunchSurvey::sections();
         if (!in_array($section, $sections)) $sections[] = $section;
         $count = (object) ['classes' => LunchSurvey::count_classes($section), 'students' => LunchSurvey::count($section)];
-        $survey = $surveys = null;
+        $survey = $surveys = $classes = null;
+        $classes = Classroom::all();
         if ($user->user_type == 'Student') {
             $survey = LunchSurvey::findBy($user->uuid, $section);
         } elseif ($manager) {
-            $surveys = LunchSurvey::section_survey($section)->paginate(16);
+            $class_id = $request->input('class');
+            if (!$class_id) $class_id = '101';
+            $surveys = LunchSurvey::class_survey($class_id, $section);
         } elseif ($user->user_type == 'Teacher') {
             $teacher = Teacher::find($user->uuid);
             $class_id = $teacher->tutor_class;
-            $surveys = LunchSurvey::class_survey($class_id, $section)->paginate(16);
+            $surveys = LunchSurvey::class_survey($class_id, $section);
         }
-        return view('app.lunch_survey', ['user' => $user, 'manager' => $manager, 'section' => $section, 'sections' => $sections, 'settings' => $settings, 'count' => $count, 'survey' => $survey, 'surveys' => $surveys]);
+        return view('app.lunch_survey', ['user' => $user, 'manager' => $manager, 'section' => $section, 'sections' => $sections, 'settings' => $settings, 'count' => $count, 'survey' => $survey, 'class_id' => $class_id, 'classes' => $classes, 'surveys' => $surveys]);
     }
 
     public function setting()
@@ -61,6 +65,7 @@ class LunchController extends Controller
             'survey_at' => $request->input('survey'),
             'expired_at' => $request->input('expire'),
             'description' => $request->input('desc'),
+            'qrcode' => $request->input('qrcode'),
         ],[
             'section',
         ]);
