@@ -8,6 +8,7 @@ use App\Providers\TpeduServiceProvider as SSO;
 use Carbon\Carbon;
 use App\Models\Grade;
 use App\Models\ClubEnroll;
+use App\Models\LunchSurvey;
 
 class Student extends Model
 {
@@ -124,11 +125,8 @@ class Student extends Model
     //取得此學生指定學年的所有社團報名資訊
     public function section_enrolls($section = null)
     {
-        if ($section) {
-            return $this->enrolls()->where('section', $section)->get();
-        } else {
-            return $this->enrolls()->where('section', current_section())->get();
-        }
+        if (!$section) $section = current_section();
+        return $this->enrolls()->where('section', $section)->get();
     }
 
     //取得此學生指定分類的所有社團報名資訊
@@ -151,6 +149,12 @@ class Student extends Model
     {
         $rec = ClubEnroll::findBy($this->uuid, $club_id);
         return ($rec) ? true : false;
+    }
+
+    //取得此學生的午餐調查表
+    public function get_lunch_survey($section = null)
+    {
+        return LunchSurvey::findBy($this->uuid, $section);
     }
 
     //重新從 LDAP 同步學生個資

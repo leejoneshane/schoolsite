@@ -58,7 +58,7 @@ class Dayoff extends Model
         return $this->belongsTo('App\Models\Teacher', 'uuid', 'uuid');
     }
 
-    //取得此座位表上的所有學生
+    //取得此公假單的所有學生
     public function students()
     {
         return $this->belongsToMany('App\Models\Student', 'dayoff_students', 'dayoff_id', 'uuid')
@@ -66,25 +66,25 @@ class Dayoff extends Model
             ->orderBy('class_id');
     }
 
-    //取得不在此座位表上的所有學生
+    //取得此公假單上指定班級的所有學生
     public function class_students($class)
     {
         return $this->students()->where('class_id', $class)->get();
     }
 
-    //計算此座位表上的所有學生人數
+    //計算此公假單上的所有學生人數
     public function count_students()
     {
         return $this->students()->count();
     }
 
-    //計算此座位表上的所有學生人數
+    //檢查指定 UUID 是否為公假單建立者
     public function is_creater($uuid)
     {
         return $this->uuid == $uuid;
     }
 
-    //計算此座位表上的所有學生人數
+    //檢查指定 UUID 是否已經在公假單中
     public function student_occupy($uuid)
     {
         return DB::table('dayoff_students')->where('dayoff_id', $this->id)->where('uuid', $uuid)->exists();

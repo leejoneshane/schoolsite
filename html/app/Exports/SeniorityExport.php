@@ -15,12 +15,10 @@ class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatt
     use Exportable;
 
     public $year;
-    public $no;
 
     public function __construct($year)
     {
         $this->year = $year;
-        $this->no = 0;
     }
 
     public function collection()
@@ -34,17 +32,16 @@ class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatt
             [
                 '臺北市國語實驗國民小學'.$this->year.'學年度教師教學年資統計  '.date('Y-m-d').'匯出',
             ],[
-                '編號', '職別', '姓名', '在校年', '在校月', '在校積分', '校外年', '校外月', '校外積分', '教學年資', '總積分', '備註',
+                '唯一編號', '職別', '姓名', '在校年', '在校月', '在校積分', '校外年', '校外月', '校外積分', '教學年資', '總積分', '備註',
             ]
         ];
     }
 
     public function map($row): array
     {
-        $this->no ++;
         $seniority = $row->seniority($this->year);
         return [
-            $this->no,
+            $row->uuid,
             ($row->tutor) ?: $row->role_name,
             $row->realname,
             ($seniority->new_school_year) ?: $seniority->school_year,
@@ -62,7 +59,7 @@ class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatt
     public function columnFormats(): array
     {
         return [
-            'A' => NumberFormat::FORMAT_NUMBER,
+            'A' => NumberFormat::FORMAT_TEXT,
             'B' => NumberFormat::FORMAT_TEXT,
             'C' => NumberFormat::FORMAT_TEXT,
             'D' => NumberFormat::FORMAT_NUMBER,

@@ -58,13 +58,22 @@ class HomeController extends Controller
                 'weight' => 20,
             ]);
         }
+        if (!Menu::find('lunch')) {
+            Menu::create([
+                'id' => 'lunch',
+                'parent_id' => 'parenting',
+                'caption' => '午餐調查',
+                'url' => 'route.lunch',
+                'weight' => 30,
+            ]);
+        }
         if (!Menu::find('writing')) {
             Menu::create([
                 'id' => 'writing',
                 'parent_id' => 'parenting',
                 'caption' => '明日小作家',
                 'url' => 'route.writing',
-                'weight' => 30,
+                'weight' => 40,
             ]);
         }
         if (!Menu::find('subscriber')) {
@@ -73,7 +82,7 @@ class HomeController extends Controller
                 'parent_id' => 'parenting',
                 'caption' => '訂閱電子報',
                 'url' => 'route.subscriber',
-                'weight' => 40,
+                'weight' => 50,
             ]);
         }
         if (!Menu::find('meeting')) {

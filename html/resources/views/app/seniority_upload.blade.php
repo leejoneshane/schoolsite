@@ -18,7 +18,7 @@
             </tr>
             <tr>
                 <th class="border border-black text-center">
-                    編號
+                    唯一編號
                 </th>
                 <th class="border border-black text-center">
                     職別

@@ -7,7 +7,7 @@
         <i class="fa-solid fa-backward"></i>前一天
     </a>
     <span class="pl-6">
-        <input class="inline w-36 rounded px-2 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+        <input class="w-36 rounded p-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="date" name="date" value="{{ $date }}" onchange="window.location.replace('{{ route('meeting') }}' + '/' + this.value);">
     </span>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('meeting', ['date' => date("Y-m-d", strtotime('+1 day', strtotime($date)))]) }}">
