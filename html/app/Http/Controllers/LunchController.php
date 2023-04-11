@@ -11,6 +11,7 @@ use App\Models\Student;
 use App\Models\Classroom;
 use App\Models\LunchSurvey;
 use App\Models\Watchdog;
+use App\Exports\LunchExport;
 
 class LunchController extends Controller
 {
@@ -96,6 +97,14 @@ class LunchController extends Controller
 
     public function download($section = null)
     {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('lunch.manager');
+        if (!$manager) {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+        if (!$section) $section = current_section();
+        $filename = substr($section, 0, -1) . '學年度' . ((substr($section, -1) == '1') ? '上' : '下') . '學期午餐調查結果彙整';
+        return (new LunchExport($section))->download("$filename.xlsx");
     }
 
 }

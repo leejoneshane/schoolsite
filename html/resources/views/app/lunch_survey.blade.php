@@ -8,7 +8,7 @@
         <i class="fa-regular fa-clock"></i>設定調查期程
     </a>
     @endif
-    @if ($user->user_type == 'Teacher' || $manager)
+    @if ($manager)
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch.download') }}">
         <i class="fa-solid fa-file-export"></i>匯出調查結果
     </a>
