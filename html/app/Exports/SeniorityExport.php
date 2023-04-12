@@ -23,7 +23,7 @@ class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatt
 
     public function collection()
     {
-        return Seniority::year_teachers($this->year)->orderBy('tutor_class')->orderBy('unit_id')->get();
+        return Seniority::year_teachers($this->year)->orderByRaw('unit_id = 25')->orderBy('tutor_class')->get();
     }
 
     public function headings(): array
@@ -42,7 +42,7 @@ class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatt
         $seniority = $row->seniority($this->year);
         return [
             $row->uuid,
-            ($row->tutor) ?: $row->role_name,
+            ($row->tutor) ?: (($row->unit_id == 25 && $row->domain) ? $row->domain->name : $row->role_name),
             $row->realname,
             ($seniority->new_school_year) ?: $seniority->school_year,
             ($seniority->new_school_month) ?: $seniority->school_month,

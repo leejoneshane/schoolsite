@@ -2,16 +2,14 @@
 
 namespace App\Exports\Sheets;
 
-use App\Models\Classroom;
 use App\Models\LunchSurvey;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
-use Maatwebsite\Excel\Concerns\WithMapping;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use Illuminate\Contracts\View\View;
 
-class LunchPerClassSheet implements FromCollection, WithHeadings, WithColumnFormatting, WithMapping, WithTitle
+class LunchPerClassSheet implements FromView,  WithColumnFormatting, WithTitle
 {
 
     public $section;
@@ -23,38 +21,10 @@ class LunchPerClassSheet implements FromCollection, WithHeadings, WithColumnForm
         $this->class_id = $class_id;
     }
 
-    public function collection()
+    public function view(): View
     {
-        return LunchSurvey::class_survey($this->class_id, $this->section);
-    }
-
-    public function headings(): array
-    {
-        return [
-            [
-                '臺北市國語實驗國民小學'.substr($this->section, 0, -1).'學年度'.(substr($this->section, -1) == '1') ? '上' : '下'.'學期午餐調查結果彙整  '.date('Y-m-d').'匯出',
-            ],[
-                '班級', '座號', '姓名', '參加午餐', '', '乳品', '', '不參加午餐', '',
-            ],[
-                '', '', '', '葷食', '素食', '要飲用', '改成水果', '家長親送', '蒸飯設備',
-            ],
-        ];
-    }
-
-    public function map($row): array
-    {
-        $class_name = Classroom::find($row->class_id)->name;
-        return [
-            $class_name,
-            $row->seat,
-            $row->teacher->realname,
-            ($row->by_school && !($row->vegen)) ? 1 : 0,
-            ($row->by_school && $row->vegen) ? 1 : 0,
-            ($row->by_school && $row->milk) ? 1 : 0,
-            ($row->by_school && !($row->milk)) ? 1 : 0,
-            ($row->by_parent) ? 1 : 0,
-            ($row->boxed_meal) ? 1 : 0,
-        ];
+        $surveys = LunchSurvey::class_survey($this->class_id, $this->section);
+        return view('components.lunch_survey_sheet', [ 'surveys' => $surveys ]);
     }
 
     public function columnFormats(): array

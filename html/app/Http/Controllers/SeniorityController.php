@@ -77,7 +77,7 @@ class SeniorityController extends Controller
         if (!empty($email)) {
             $query = $query->where('email', 'like', '%'.$email.'%');
         }
-        $teachers = $query->orderBy('tutor_class')->orderBy('unit_id')->paginate(16);
+        $teachers = $query->orderByRaw('unit_id = 25')->orderBy('tutor_class')->paginate(16);
         return view('app.seniority', ['current' => $current, 'manager' => $manager, 'year' => $year, 'unit' => $unit_id, 'domain' => $domain_id, 'idno' => $idno, 'realname' => $realname, 'email' => $email, 'years' => $years, 'units' => $units, 'domains' => $domains, 'teachers' => $teachers]);
     }
 
