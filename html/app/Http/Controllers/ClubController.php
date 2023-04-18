@@ -92,7 +92,8 @@ class ClubController extends Controller
 
     public function kindUpdate(Request $request, $kid)
     {
-        $k = ClubKind::find($kid)->update([
+        $k = ClubKind::find($kid);
+        $k->update([
             'name' => $request->input('title'),
             'single' => $request->boolean('single'),
             'stop_enroll' => $request->boolean('stop'),

@@ -10,9 +10,9 @@
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
         不重複報名：指該類別的社團只允許一個學生報名一個社團。<br>
-		人工審核：由管理員錄取報名學生，若要讓系統自動錄取學生，請勿勾選。<br>
-		暫停報名：開啟此選項將讓所有該類社團全部無法報名。<br>
-		報名和截止日期將統一在社團分類設置，報名時間與休息時間是指在報名期間系統每天開啟報名功能的時段。<br>
+        人工審核：由管理員錄取報名學生，若要讓系統自動錄取學生，請勿勾選。<br>
+        暫停報名：開啟此選項將讓所有該類社團全部無法報名。<br>
+        報名和截止日期將統一在社團分類設置，報名時間與休息時間是指在報名期間系統每天開啟報名功能的時段。<br>
     </p>
 </div>
 <form id="edit-kind" action="{{ route('clubs.editkind', ['kid' => $kind->id]) }}" method="POST">
@@ -45,16 +45,16 @@
     </div></p>
     <p><div class="p-3">
         <label class="inline">報名與截止日期：</label>
-        <input class="inline w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+        <input class="w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="date" id="enroll" name="enroll" value="{{ $kind->enrollDate }}">到
-        <input class="inline w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+        <input class="w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="date" id="expire" name="expire" value="{{ substr($kind->expireDate, 0, 10) }}">
     </div></p>
     <p><div id="part_time" class="p-3">
         <label class="inline">每日報名時間：</label>
-        <input class="inline w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+        <input class="w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="time" id="work" name="work" value="{{ $kind->workTime }}" step="300">到
-        <input class="inline w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+        <input class="w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="time" id="rest" name="rest" value="{{ substr($kind->restTime, 0, 10) }}" step="300">
     </div></p>
     <p><div class="p-3">
@@ -65,9 +65,9 @@
     <p class="p-6">
         <div class="inline">
             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                新增
+                修改
             </button>
-        </div>    
+        </div>
     </p>
 </form>
 @endsection

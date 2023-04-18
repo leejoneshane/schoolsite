@@ -45,8 +45,10 @@ class DayoffController extends Controller
         $dates = $request->input('dates');
         $from = $request->input('from');
         $to = $request->input('to');
-        foreach ($dates as $k => $d) {
-            $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
+        if (!empty($dates)) {
+            foreach ($dates as $k => $d) {
+                $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
+            }    
         }
         if (empty($datetimes) && empty($request->input('rdate'))) {
             return back()->withInput()->with('error', '「自訂時間字串」或「公假時間」至少要有一項有資料！');

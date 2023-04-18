@@ -26,27 +26,27 @@
     
             <div class="relative mb-6">
                 <label for="survey_at" class="inline mb-2 text-sm font-medium text-gray-900">填寫學經歷及積分：</label>
-                <input id="survey_at" class="inline rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none input active:outline-none"
+                <input id="survey_at" class="rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none input active:outline-none"
                     type="date" name="survey_at" value="{{ $settings ? $settings->survey_at->format('Y-m-d') : '' }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}" required autofocus>
             </div>
             <div class="relative mb-6">
                 <label for="first_stage" class="inline mb-2 text-sm font-medium text-gray-900">第一階段意願調查：</label>
-                <input id="first_stage" class="inline rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none input active:outline-none"
+                <input id="first_stage" class="rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none input active:outline-none"
                     type="date" name="first_stage" value="{{ $settings ? $settings->first_stage->format('Y-m-d') : '' }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}" required autofocus>
             </div>
             <div class="relative mb-6">
                 <label for="pause_at" class="inline mb-2 text-sm font-medium text-gray-900">第一階段截止日期：</label>
-                <input id="pause_at" class="inline rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none input active:outline-none"
+                <input id="pause_at" class="rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none input active:outline-none"
                     type="date" name="pause_at" value="{{ $settings ? $settings->pause_at->format('Y-m-d') : '' }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}" required autofocus>
             </div>
             <div class="relative mb-6">
                 <label for="second_stage" class="inline mb-2 text-sm font-medium text-gray-900">第二階段意願調查：</label>
-                <input id="second_stage" class="inline rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none input active:outline-none"
+                <input id="second_stage" class="rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none input active:outline-none"
                     type="date" name="second_stage" value="{{ $settings ? $settings->second_stage->format('Y-m-d') : '' }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}" required autofocus>
             </div>
             <div class="relative mb-6">
                 <label for="close_at" class="inline mb-2 text-sm font-medium text-gray-900">意願調查截止日期：</label>
-                <input id="close_at" class="inline rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none input active:outline-none"
+                <input id="close_at" class="rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none input active:outline-none"
                     type="date" name="close_at" value="{{ $settings ? $settings->close_at->format('Y-m-d') : '' }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}" required autofocus>
             </div>
             <div class="mb-6">
