@@ -1,5 +1,6 @@
 {
     "recommendations": [
-        "onecentlin.laravel-blade"
+        "onecentlin.laravel-blade",
+        "bito.bito"
     ]
 }
