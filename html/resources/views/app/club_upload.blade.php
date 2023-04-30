@@ -14,11 +14,11 @@
     </p>
     <table class="m-3">
         <tr class="border-b border-blue-500 transition duration-300 ease-in-out hover:bg-teal-100 dark:hover:bg-teal-500">
-            <th scope="row" class="text-sm font-bold">dep</th>
+            <th scope="row" class="text-sm font-bold">name</th>
             <td class="text-sm">課外社團全名，請不要包含學年學期資訊，系統會自動將學生報名資訊依學年度分開管理。</td>
         </tr>
         <tr class="border-b border-blue-500 transition duration-300 ease-in-out hover:bg-teal-100 dark:hover:bg-teal-500">
-            <th scope="row" class="text-sm font-bold">name</th>
+            <th scope="row" class="text-sm font-bold">dep</th>
             <td class="text-sm">負責單位，請輸入處室名稱。</td>
         </tr>
         <tr class="border-b border-blue-500 transition duration-300 ease-in-out hover:bg-teal-100 dark:hover:bg-teal-500">
