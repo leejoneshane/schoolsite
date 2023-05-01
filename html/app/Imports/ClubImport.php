@@ -9,6 +9,7 @@ use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
 
 class ClubImport implements ToCollection, WithHeadingRow
 {
@@ -54,14 +55,25 @@ class ClubImport implements ToCollection, WithHeadingRow
             if (isset($row['lunch']) && $row['lunch'] == '1') {
                 $has_lunch = true;
             }
-            $sdate = str_replace('/', '-', $row['sdate']);
-            $edate = str_replace('/', '-', $row['edate']);
-            if (strlen($row['stime']) > 5) {
-                $stime = substr($row['stime'], 0, 2).':'.substr($row['stime'], 3, 2);
-                $etime = substr($row['etime'], 0, 2).':'.substr($row['etime'], 3, 2);
+            if (is_string($row['sdate'])) {
+                $sdate = $row['sdate'];
             } else {
-                $stime = substr($row['stime'], 0, 2).':'.substr($row['stime'], -2);
-                $etime = substr($row['etime'], 0, 2).':'.substr($row['etime'], -2);
+                $sdate = ExcelDate::excelToDateTimeObject($row['sdate'])->format('Y-m-d');
+            }
+            if (is_string($row['edate'])) {
+                $edate = $row['edate'];
+            } else {
+                $edate = ExcelDate::excelToDateTimeObject($row['edate'])->format('Y-m-d');
+            }
+            if ($row['stime'] > 1) {
+                $stime = substr($row['stime'], 0, 2) . ':' . substr($row['stime'], -2);
+            } else {
+                $stime = ExcelDate::excelToDateTimeObject($row['stime'])->format('H:i');
+            }
+            if ($row['etime'] > 1) {
+                $etime = substr($row['etime'], 0, 2) . ':' . substr($row['etime'], -2);
+            } else {
+                $etime = ExcelDate::excelToDateTimeObject($row['etime'])->format('H:i');
             }
             $club = Club::updateOrCreate([
                 'name' => $row['name'],

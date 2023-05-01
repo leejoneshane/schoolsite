@@ -56,9 +56,9 @@
     <p><div class="p-3">
         <label class="inline">起迄日期：</label>
         <input class="w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" name="start_date" value="{{ $current }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}">到
+            type="date" name="start_date" value="{{ $seme->mindate }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}">到
         <input class="w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" name="end_date" value="{{ $current }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}">
+            type="date" name="end_date" value="{{ $seme->mindate }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}">
     </div></p>
     <p><div class="p-3">
         <label for="all_day" class="inline-flex relative items-center cursor-pointer">

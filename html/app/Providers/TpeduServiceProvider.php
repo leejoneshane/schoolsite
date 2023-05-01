@@ -328,13 +328,15 @@ class TpeduServiceProvider extends ServiceProvider
                 if (isset($user->tpTeachClass)) {
                     foreach ($user->tpTeachClass as $assign_pair) {
                         $a = explode(',', $assign_pair);
-                        $s = Subject::where('name', mb_substr($a[2], 4))->first();
-                        DB::table('assignment')->insertOrIgnore([
-                            'year' => current_year(),
-                            'uuid' => $uuid,
-                            'class_id' => $a[1],
-                            'subject_id' => $s->id,
-                        ]);
+                        $s = Subject::where('name', 'like', '%' . mb_substr($a[2], 4) . '%')->first();
+                        if ($s && $s->id) {
+                            DB::table('assignment')->insertOrIgnore([
+                                'year' => current_year(),
+                                'uuid' => $uuid,
+                                'class_id' => $a[1],
+                                'subject_id' => $s->id,
+                            ]);    
+                        }
                     }
                 }
             }

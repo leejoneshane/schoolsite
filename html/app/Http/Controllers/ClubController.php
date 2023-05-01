@@ -364,7 +364,7 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
             $kind_id = $club->kind_id;
-            if ($club->enrolls) {
+            if ($club->enrolls->isNotEmpty()) {
                 return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('error', '此課外社團已經錄取學生，因此無法移除！');
             } else {
                 Watchdog::watch($request, '移除學生社團：' . $club->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));

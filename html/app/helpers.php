@@ -81,8 +81,15 @@ function current_between_date() {
     return (object) array('min' => $min, 'max' => $max, 'mindate' => $mindate, 'maxdate' => $maxdate);
 }
 
-function between_date($syear, $seme) {
-    if ($seme == 1) {
+function between_date($syear, $seme = null) {
+    if (!$seme) {
+        $syear = $syear + 1911;
+        $eyear = $syear + 1;
+        $min = "$syear-08-01T00:00:00+08:00";
+        $mindate = "$syear-08-01";
+        $max = "$eyear-01-31T00:00:00+08:00";
+        $maxdate = "$eyear-07-31";
+    } elseif ($seme == 1) {
         $syear = $syear + 1911;
         $eyear = $syear + 1;
         $min = "$syear-08-01T00:00:00+08:00";

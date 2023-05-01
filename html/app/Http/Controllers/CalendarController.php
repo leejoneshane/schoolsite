@@ -90,7 +90,7 @@ class CalendarController extends Controller
     {
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
-        $seme = current_between_date();
+        $seme = (object) array('mindate' => Carbon::tomorrow()->format('Y-m-d'), 'maxdate' => (date('Y')+1).'-12-31');
         $calendars = IcsCalendar::all();
         $user = $request->user();
         $units = [];
@@ -139,7 +139,7 @@ class CalendarController extends Controller
         $event = IcsEvent::find($event_id);
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
-        $seme = current_between_date();
+        $seme = (object) array('mindate' => Carbon::tomorrow()->format('Y-m-d'), 'maxdate' => (date('Y')+1).'-12-31');
         $calendars = IcsCalendar::all();
         $user = $request->user();
         $units = [];
