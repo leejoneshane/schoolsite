@@ -214,7 +214,7 @@ class TpeduServiceProvider extends ServiceProvider
                 $sys_user->forceFill([
                     'password' => Hash::make(substr($user->cn, -6))
                 ])->setRememberToken(Str::random(60));
-                $sys_user->save();;
+                $sys_user->save();
             }
             $birth = date('Y-m-d', strtotime($user->birthDate));
             $stu = ($user->employeeType == '學生') ? true : false; 
@@ -325,17 +325,17 @@ class TpeduServiceProvider extends ServiceProvider
                 if (!empty($user->tpTutorClass)) {
                     $emp->tutor_class = $user->tpTutorClass;
                 }
-                if (isset($user->tpTeachClass)) {
-                    foreach ($user->tpTeachClass as $assign_pair) {
-                        $a = explode(',', $assign_pair);
-                        $s = Subject::where('name', 'like', '%' . mb_substr($a[2], 4) . '%')->first();
+                if (isset($user->teachClass) && is_array($user->teachClass->{$o})) {
+                    foreach ($user->teachClass->{$o} as $assign) {
+                        $a = explode(',', $assign->key);
+                        $s = Subject::where('name', mb_substr($a[2], 4))->first();
                         if ($s && $s->id) {
                             DB::table('assignment')->insertOrIgnore([
                                 'year' => current_year(),
                                 'uuid' => $uuid,
                                 'class_id' => $a[1],
                                 'subject_id' => $s->id,
-                            ]);    
+                            ]);
                         }
                     }
                 }

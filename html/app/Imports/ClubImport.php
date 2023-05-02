@@ -56,12 +56,12 @@ class ClubImport implements ToCollection, WithHeadingRow
                 $has_lunch = true;
             }
             if (is_string($row['sdate'])) {
-                $sdate = $row['sdate'];
+                $sdate = str_replace('/', '-', $row['sdate']);
             } else {
                 $sdate = ExcelDate::excelToDateTimeObject($row['sdate'])->format('Y-m-d');
             }
             if (is_string($row['edate'])) {
-                $edate = $row['edate'];
+                $edate = str_replace('/', '-', $row['edate']);
             } else {
                 $edate = ExcelDate::excelToDateTimeObject($row['edate'])->format('Y-m-d');
             }
