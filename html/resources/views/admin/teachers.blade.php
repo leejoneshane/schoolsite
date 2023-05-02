@@ -41,6 +41,16 @@
         <th scope="col" class="p-2">
             職稱
         </th>
+        @if ($current == 24)
+        <th scope="col" class="p-2">
+            導師班級
+        </th>
+        @endif
+        @if ($current == 25)
+        <th scope="col" class="p-2">
+            隸屬領域
+        </th>
+        @endif
         <th scope="col" class="p-2">
             姓名
         </th>
@@ -61,6 +71,12 @@
         <td class="p-2">{{ ($t->mainunit) ? $t->mainunit->name : '' }}</td>
         @endif
         <td class="p-2">{{ $t->role_name }}</td>
+        @if ($current == 24)
+        <td class="p-2">{{ ($t->tutor) ?: '' }}</td>
+        @endif
+        @if ($current == 25)
+        <td class="p-2">{{ ($t->domain) ? $t->domain->name : '' }}</td>
+        @endif
         <td class="p-2">{{ $t->realname }}</td>
         <td class="p-2">{{ $t->account }}</td>
         <td class="p-2">{{ $t->email }}</td>

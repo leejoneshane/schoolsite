@@ -235,16 +235,16 @@ class SchoolDataController extends Controller
         if (!empty($unit_id)) {
             $unit = Unit::find($unit_id);
             $keys = Unit::subkeys($unit->unit_no);
-            $query = Teacher::whereIn('unit_id', $keys);
-            $domain_id = $idno = $realname = $email = '';
-            $main = 'unit';
-        }
-        if (!empty($domain_id)) {
-            $query = Teacher::leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.domain_id', $domain_id);
-            $unit_id = $idno = $realname = $email = '';
-            $main = 'domain';
-        }
-        if (empty($main)) {
+            if ($unit_id == 24) {
+                $teachers = Teacher::whereIn('unit_id', $keys)->orderBy('tutor_class')->get();
+            } elseif ($unit_id == 25) {
+                $teachers = Teacher::whereIn('unit_id', $keys)->orderBy('realname')->get();
+            } else {
+                $teachers = Teacher::leftJoin('roles', 'roles.id', 'teachers.role_id')->whereIn('teachers.unit_id', $keys)->orderBy('role_no')->orderBy('roles.name')->get();
+            }
+        } elseif (!empty($domain_id)) {
+            $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.domain_id', $domain_id)->orderBy('realname')->get();
+        } else {
             if (!empty($idno) || !empty($realname) || !empty($email)) {
                 if (!empty($idno)) {
                     $query = $query->where('idno', 'like', '%'.$idno.'%');
@@ -260,11 +260,9 @@ class SchoolDataController extends Controller
                 $unit = Unit::find($unit_id);
                 $keys = Unit::subkeys($unit->unit_no);
                 $query = Teacher::whereIn('unit_id', $keys);
-            }    
+            }
+            $teachers = $query->orderBy('realname')->get();
         }
-        $teachers = $query->orderBy('realname')->get()->sortBy(function ($t) {
-            return ($t->mainunit) ? $t->mainunit->id : null;
-        });
         return view('admin.teachers', ['current' => $unit_id, 'domain' => $domain_id, 'idno' => $idno, 'realname' => $realname, 'email' => $email, 'units' => $units, 'domains' => $domains, 'teachers' => $teachers]);
     }
 
