@@ -38,7 +38,7 @@ class IcsCalendar extends Model
     //取得此行事曆對應的 Google 連結
     public function url()
     {
-        return 'https://calendar.google.com/calendar/embed?src='.urlencode($this->id).'&ctz=Asia%2FTaipei';
+        return 'https://calendar.google.com/calendar/ical/'.urlencode($this->id).'/public/basic.ics';
     }
 
     //將此行事曆轉換為標準 ICS 格式
