@@ -74,7 +74,7 @@
             <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">全天</span>
         </label>
     </div></p>
-    <p><div id="part_time" class="p-3">
+    <p><div id="part_time" class="p-3{{ $event->all_day ? ' hidden' : '' }}">
         <label class="inline">起迄時間：</label>
         <input class="w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="time" id="stime" name="start_time" value="{{ $event->startTime }}" min="07:00" max="18:00" step="300">到
@@ -99,7 +99,7 @@
     <p class="p-6">
         <div class="inline">
             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                新增
+                修改
             </button>
         </div>
     </p>

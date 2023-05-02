@@ -41,8 +41,8 @@
 <table class="w-full text-sm text-left">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
         <th scope="col" class="p-2">負責單位</th>
-        <th scope="col" class="p-2">起訖日期</th>
-        <th scope="col" class="p-2">起訖時間</th>
+        <th scope="col" class="p-2">開始日期</th>
+        <th scope="col" class="p-2">截止日期</th>
         <th scope="col" class="p-2">事件摘要</th>
         <th scope="col" class="p-2">補充說明</th>
         <th scope="col" class="p-2">地點</th>
@@ -50,26 +50,26 @@
     @foreach ($events as $event)
     <tr class="even:bg-white odd:bg-gray-100 hover:bg-blue-100 dark:hover:bg-blue-600 dark:even:bg-gray-700 dark:odd:bg-gray-600">
         <td class="p-2">{{ $event->unit->name }}</td>
-        <td class="p-2">{{ $event->startDate }}{{ ($event->startDate == $event->endDate) ? '' : '～'.$event->endDate }}</td>
-        <td class="p-2">{{ ($event->all_day) ? '全天' : $event->startTime.'～'.$event->endTime }}</td>
+        <td class="p-2">{{ $event->startDate->format('Y-m-d') }} {{ ($event->all_day) ? '全天' : $event->startTime.'～'.$event->endTime }}</td>
+        <td class="p-2">{{ ($event->startDate == $event->endDate) ? '' : $event->endDate->format('Y-m-d') }}</td>
         <td class="p-2">{{ $event->summary }}</td>
         <td class="p-2">{{ $event->description }}</td>
         <td class="p-2">{{ $event->location }}
         @if ($editable[$event->id])
         <a class="py-2 pl-6 text-blue-300 hover:text-blue-600"
-            href="{{ route('calendar.editEvent', ['event' => $event->id]) }}">
+            href="{{ route('calendar.editEvent', ['event' => $event->id]) }}?current={{ $current }}">
             <i class="fa-solid fa-pen"></i>
         </a>
         @endif
         @if ($deleteable[$event->id])
-        <a class="py-2 pl-6 text-blue-300 hover:text-blue-600" href="void()"
+        <button class="py-2 pl-6 text-blue-300 hover:text-blue-600"
             onclick="
                 const myform = document.getElementById('remove');
-                myform.action = '{{ route('calendar.removeEvent', ['event' => $event->id]) }}';
+                myform.action = '{{ route('calendar.removeEvent', ['event' => $event->id]) }}?current={{ $current }}';
                 myform.submit();
         ">
             <i class="fa-solid fa-trash"></i>
-        </a>
+        </button>
         @endif
         </td>
     </tr>

@@ -46,7 +46,7 @@
     <p><div class="p-3">
         <label class="inline">報名與截止日期：</label>
         <input class="w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" id="enroll" name="enroll" value="{{ $kind->enrollDate }}">到
+            type="date" id="enroll" name="enroll" value="{{ substr($kind->enrollDate, 0, 10) }}">到
         <input class="w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="date" id="expire" name="expire" value="{{ substr($kind->expireDate, 0, 10) }}">
     </div></p>
@@ -55,7 +55,7 @@
         <input class="w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="time" id="work" name="work" value="{{ $kind->workTime }}" step="300">到
         <input class="w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="time" id="rest" name="rest" value="{{ substr($kind->restTime, 0, 10) }}" step="300">
+            type="time" id="rest" name="rest" value="{{ $kind->restTime }}" step="300">
     </div></p>
     <p><div class="p-3">
         <label for="style" class="inline">Tailwind 樣式：</label>

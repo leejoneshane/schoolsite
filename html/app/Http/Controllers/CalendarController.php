@@ -126,12 +126,17 @@ class CalendarController extends Controller
         if ($request->has('all_day')) {
             $event->all_day = true;
         } else {
-            $event->startTime = $request->input('start_time');
-            $event->endTime = $request->input('end_time');
+            $start = $request->input('start_time');
+            if (strlen($start) == 5) $start .= ':00';
+            $event->startTime = $start;
+            $end = $request->input('end_time');
+            if (strlen($end) == 5) $end .= ':00';
+            $event->endTime = $end;
         }
         $event->save();
         Watchdog::watch($request, '新增行事曆事件：' . $event->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return redirect()->route('calendar')->withInput();
+        $link = route('calendar') . '?current=' . $request->input('current');
+        return redirect($link);
     }
 
     public function eventEdit(Request $request, $event_id)
@@ -174,12 +179,18 @@ class CalendarController extends Controller
         if ($request->has('all_day')) {
             $event->all_day = true;
         } else {
-            $event->startTime = $request->input('start_time');
-            $event->endTime = $request->input('end_time');
+            $event->all_day = false;
+            $start = $request->input('start_time');
+            if (strlen($start) == 5) $start .= ':00';
+            $event->startTime = $start;
+            $end = $request->input('end_time');
+            if (strlen($end) == 5) $end .= ':00';
+            $event->endTime = $end;
         }
         $event->save();
         Watchdog::watch($request, '更新行事曆事件：' . $event->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return redirect()->route('calendar')->withInput();
+        $link = route('calendar') . '?current=' . $request->input('current');
+        return redirect($link);
     }
 
     public function eventRemove(Request $request, $event_id)
@@ -187,7 +198,8 @@ class CalendarController extends Controller
         $e = IcsEvent::find($event_id);
         Watchdog::watch($request, '移除行事曆事件：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $e->delete();
-        return redirect()->route('calendar')->withInput();
+        $link = route('calendar') . '?current=' . $request->input('current');
+        return redirect($link);
     }
 
     public function seme(Request $request)

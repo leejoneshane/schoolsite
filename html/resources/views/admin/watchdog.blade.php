@@ -3,7 +3,7 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">瀏覽歷程</div>
 <label for="date" class="inline p-2">日期：</label>
-<input type="date" id="date" class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+<input type="date" id="date" class="rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
     value="{{ $date->format('Y-m-d') }}" onchange="
         var mydate = this.value;
         window.location.replace('{{ route('watchdog') }}' + '?date=' + mydate);

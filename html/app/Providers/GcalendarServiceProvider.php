@@ -3,10 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\Log;
-use Carbon\CarbonPeriod;
 use Illuminate\Support\ServiceProvider;
 use App\Models\IcsCalendar;
 use App\Models\IcsEvent;
+use Carbon\Carbon;
 
 class GcalendarServiceProvider extends ServiceProvider
 {
@@ -26,8 +26,8 @@ class GcalendarServiceProvider extends ServiceProvider
         $user_to_impersonate = config('services.gsuite.calendar');
         $scopes = [
             \Google_Service_Calendar::CALENDAR,
-            \Google_Service_Calendar::CALENDAR_EVENTS,		];
-
+            \Google_Service_Calendar::CALENDAR_EVENTS,
+        ];
         $client = new \Google_Client();
         $client->setAuthConfig($path);
         $client->setApplicationName('School Web Site');
@@ -204,9 +204,10 @@ class GcalendarServiceProvider extends ServiceProvider
     {
         $calendar_id = $ics->calendar_id;
         $event_id = $ics->event_id;
-        if (!is_null($event_id)) {
+        if (!empty($event_id)) {
             $event = $this->get_event($calendar_id, $event_id);
             if (!$event) {
+                $event_id = '';
                 $event = new \Google_Service_Calendar_Event();
             } else {
                 if ($event->getStatus() == 'cancelled') {
@@ -227,21 +228,24 @@ class GcalendarServiceProvider extends ServiceProvider
         $organizer->setEmail(config('services.gsuite.calendar'));
         $organizer->setDisplayName($ics->unit->name);
         $event->setOrganizer($organizer);
-        $period = CarbonPeriod::create($ics->startDate, $ics->endDate);
-        foreach ($period as $date) {
-            $event_start = new \Google_Service_Calendar_EventDateTime();
-            $event_end = new \Google_Service_Calendar_EventDateTime();
-            $event_start->setTimeZone(env('TZ'));
-            $event_end->setTimeZone(env('TZ'));
-            if ($ics->all_day) {
-                $event_start->setDate($date->format('Y-m-d'));
-                $event_end->setDate($date->format('Y-m-d'));
-            } else {
-                $event_start->setDateTime($date->format('Y-m-d').'T'.$ics->startTime.'.000+08:00');
-                $event_end->setDateTime($date->format('Y-m-d').'T'.$ics->endTime.'.000+08:00');
-            }
+        $event_start = new \Google_Service_Calendar_EventDateTime();
+        $event_end = new \Google_Service_Calendar_EventDateTime();
+        $event_start->setTimeZone(env('TZ'));
+        $event_end->setTimeZone(env('TZ'));
+        if ($ics->all_day) {
+            $event_start->setDate($ics->startDate->format('Y-m-d'));
+            $event_end->setDate($ics->endDate->format('Y-m-d'));
             $event->setStart($event_start);
             $event->setEnd($event_end);	
+        } else {
+            $event_start->setDateTime($ics->startDate->format('Y-m-d').'T'.$ics->startTime.'+08:00');
+            $event_end->setDateTime($ics->startDate->format('Y-m-d').'T'.$ics->endTime.'+08:00');
+            $event->setStart($event_start);
+            $event->setEnd($event_end);
+            $days = $ics->endDate->diff($ics->startDate)->format('%a');
+            if ($days > 0) {
+                $event->setRecurrence([ 'RRULE:FREQ=DAILY;COUNT=' . $days+1 ]);
+            }
         }
         if (!empty($event_id)) {
             $event = $this->update_event($calendar_id, $event_id, $event);
