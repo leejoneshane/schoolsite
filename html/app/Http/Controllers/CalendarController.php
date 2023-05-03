@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Unit;
 use App\Models\Teacher;
 use App\Models\IcsCalendar;
@@ -368,7 +369,7 @@ class CalendarController extends Controller
 
     public function download(Request $request)
     {
-        if ($request->user()->user_type == 'Student') {
+        if (Auth::check() && $request->user()->user_type == 'Student') {
             $calendar = IcsCalendar::forStudent();
         } else {
             $calendar = IcsCalendar::main();
@@ -378,7 +379,7 @@ class CalendarController extends Controller
 
     public function import(Request $request)
     {
-        if ($request->user()->user_type == 'Student') {
+        if (Auth::check() && $request->user()->user_type == 'Student') {
             $calendar = IcsCalendar::forStudent();
         } else {
             $calendar = IcsCalendar::main();

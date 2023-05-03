@@ -206,19 +206,21 @@ class DayoffController extends Controller
             $class_id = substr($stdno, 0, 3);
             $seat = (integer) substr($stdno, -2);
             $student = Student::findByStdno($class_id, $seat);
-            if ($dayoff->student_occupy($student->uuid)) {
-                $message .= $stdno.$student->realname.'已經在公假名單中，不用再輸入！';
-                continue;
+            if ($student) {
+                if ($dayoff->student_occupy($student->uuid)) {
+                    $message .= $stdno.$student->realname.'已經在公假名單中，不用再輸入！';
+                    continue;
+                }
+                $record = DB::table('dayoff_students')->insertOrIgnore([
+                    'uuid' => $student->uuid,
+                    'dayoff_id' => $id,
+                ]);
+                if ($record) {
+                    $message .= $stdno.$student->realname.'已經新增到公假單中！';
+                    continue;
+                }
+                Watchdog::watch($request, '快速新增學生名單到公假單「' . $dayoff->reason . '」中，學生：' . $stdno.$student->realname);    
             }
-            $record = DB::table('dayoff_students')->insertOrIgnore([
-                'uuid' => $student->uuid,
-                'dayoff_id' => $id,
-            ]);
-            if ($record) {
-                $message .= $stdno.$student->realname.'已經新增到公假單中！';
-                continue;
-            }
-            Watchdog::watch($request, '快速新增學生名單到公假單「' . $dayoff->reason . '」中，學生：' . $stdno.$student->realname);
         }
         return redirect()->route('dayoff.students', ['id' => $id])->with('success', $message);
     }

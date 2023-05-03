@@ -28,14 +28,14 @@ class LunchController extends Controller
         $survey = $surveys = $classes = null;
         $classes = Classroom::all();
         if ($user->user_type == 'Student') {
+            $class_id = $user->profile->class_id;
             $survey = LunchSurvey::findBy($user->uuid, $section);
         } elseif ($manager) {
             $class_id = $request->input('class');
             if (!$class_id) $class_id = '101';
             $surveys = LunchSurvey::class_survey($class_id, $section);
         } elseif ($user->user_type == 'Teacher') {
-            $teacher = Teacher::find($user->uuid);
-            $class_id = $teacher->tutor_class;
+            $class_id = $user->profile->tutor_class;
             $surveys = LunchSurvey::class_survey($class_id, $section);
         }
         return view('app.lunch_survey', ['user' => $user, 'manager' => $manager, 'section' => $section, 'sections' => $sections, 'settings' => $settings, 'count' => $count, 'survey' => $survey, 'class_id' => $class_id, 'classes' => $classes, 'surveys' => $surveys]);
