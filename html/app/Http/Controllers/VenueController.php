@@ -214,19 +214,14 @@ class VenueController extends Controller
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
-        $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
-        if ($manager) {
-            $reserve = VenueReserve::find($request->input('id'));
-            $header = '場地/設備預約紀錄';
-            if (!$reserve) {
-                $body = '找不到預約記錄！';
-            } else {
-                $body = view('app.venue_log', ['reserve' => $reserve])->render();
-            }
-            return response()->json((object) [ 'header' => $header, 'body' => $body]);
+        $reserve = VenueReserve::find($request->input('id'));
+        $header = '場地/設備預約紀錄';
+        if (!$reserve) {
+            $body = '找不到預約記錄！';
         } else {
-            return redirect()->route('venues')->with('error', '只有管理員才能管理場地或設備！');
+            $body = view('app.venue_log', ['reserve' => $reserve])->render();
         }
+        return response()->json((object) [ 'header' => $header, 'body' => $body]);
     }
 
     public function reserveAdd(Request $request)
@@ -235,19 +230,14 @@ class VenueController extends Controller
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
-        $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
-        if ($manager) {
-            $venue_id = $request->input('id');
-            $venue = Venue::find($venue_id);
-            $reserve_date = substr($request->input('date'), 0, 10);
-            $weekday = intval($request->input('weekday'));
-            $session = intval($request->input('session'));
-            $sessionStr = self::$sessionMap[$session];
-            $max = intval($request->input('max'));
-            return view('app.venue_booking', ['date' => $reserve_date, 'venue' => $venue, 'weekday' => $weekday, 'session' => $session, 'session_name' => $sessionStr ,'max' => $max]);
-        } else {
-            return redirect()->route('venues')->with('error', '只有管理員才能管理場地或設備！');
-        }
+        $venue_id = $request->input('id');
+        $venue = Venue::find($venue_id);
+        $reserve_date = substr($request->input('date'), 0, 10);
+        $weekday = intval($request->input('weekday'));
+        $session = intval($request->input('session'));
+        $sessionStr = self::$sessionMap[$session];
+        $max = intval($request->input('max'));
+        return view('app.venue_booking', ['date' => $reserve_date, 'venue' => $venue, 'weekday' => $weekday, 'session' => $session, 'session_name' => $sessionStr ,'max' => $max]);
     }
 
     public function reserveInsert(Request $request)
@@ -256,24 +246,19 @@ class VenueController extends Controller
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
-        $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
-        if ($manager) {
-            $venue_id = $request->input('venue_id');
-            $date = $request->input('date');
-            $r = VenueReserve::create([
-                'venue_id' => $venue_id,
-                'uuid' => $user->uuid,
-                'reserved_at' => $date,
-                'weekday' => $request->input('weekday'),
-                'session' => $request->input('session'),
-                'length' => $request->input('length'),
-                'reason' => $request->input('reason'),
-            ]);
-            Watchdog::watch($request, '新增場地或設備預約紀錄：' . $r->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('venue.reserve', ['id' => $venue_id, 'date' => $date])->with('success', '已經為您預約場地或設備！');
-        } else {
-            return redirect()->route('venues')->with('error', '只有管理員才能管理場地或設備！');
-        }
+        $venue_id = $request->input('venue_id');
+        $date = $request->input('date');
+        $r = VenueReserve::create([
+            'venue_id' => $venue_id,
+            'uuid' => $user->uuid,
+            'reserved_at' => $date,
+            'weekday' => $request->input('weekday'),
+            'session' => $request->input('session'),
+            'length' => $request->input('length'),
+            'reason' => $request->input('reason'),
+        ]);
+        Watchdog::watch($request, '新增場地或設備預約紀錄：' . $r->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        return redirect()->route('venue.reserve', ['id' => $venue_id, 'date' => $date])->with('success', '已經為您預約場地或設備！');
     }
 
     public function reserveEdit(Request $request)
@@ -298,7 +283,7 @@ class VenueController extends Controller
             }
             return view('app.venue_editbooking', ['reserve' => $reserve, 'session_name' => $session_name, 'max' => $max]);
         } else {
-            return redirect()->route('venues')->with('error', '只有管理員才能管理場地或設備！');
+            return redirect()->route('venues')->with('error', '只有預約者才能管理場地或設備！');
         }
     }
 
@@ -325,7 +310,7 @@ class VenueController extends Controller
                 return redirect()->route('venue.reserve', ['id' => $reserve->venue->id, 'date' => substr($reserve->reserved_at, 0, 10)])->with('success', '已經為您取消預約！');
             }
         } else {
-            return redirect()->route('venues')->with('error', '只有管理員才能管理場地或設備！');
+            return redirect()->route('venues')->with('error', '只有預約者才能管理場地或設備！');
         }
     }
 

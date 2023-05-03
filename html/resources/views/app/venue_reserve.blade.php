@@ -86,9 +86,9 @@
                 <td class="w-32 border-t border-l border-slate-300 bg-gray-200 text-center">尚未開放</td>
                     @elseif ($result->map[$i][$key] != '-')
                     @php
-                        $reserve = $result->map[0][$key];
+                        $reserve = $result->map[$i][$key];
                     @endphp
-                <td class="w-32 border-t border-l border-slate-300 bg-blue-200 text-center"{{ ($reserve->length > 1) ? ' rowspan='.$reserve->length : ''}}>
+                <td class="w-32 border-t border-l border-slate-300 bg-blue-200 text-center"{{ ($reserve['length'] > 1) ? ' rowspan='.$reserve['length'] : ''}}>
                     @if ($reserve->subscriber->uuid == Auth::user()->uuid)
                     <button id="{{ $reserve->id }}" class="viewit w-full py-2 bg-blue-200 text-sm text-center test-blue-700" onclick="editReserve(this)">
                         {{ $reserve->subscriber->realname }}
