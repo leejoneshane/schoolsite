@@ -34,6 +34,7 @@ class DayoffExport
         $section->addFooter()->addPreserveText('第 {PAGE} 頁，共 {NUMPAGES} 頁', null, ['alignment' => 'center']);
         $members = [];
         $old = $students->first()->class_id;
+        $old_name = $students->first()->classroom->name;
         $first = true;
         foreach ($students as $stu) {
             if ($stu->class_id != $old) { //new page
@@ -43,13 +44,19 @@ class DayoffExport
                     $section->addPageBreak();
                 }
                 $stu_list = implode('、', $members);
-                $this->make_page($section, $dayoff, $stu->classroom->name, $stu_list);
+                $this->make_page($section, $dayoff, $old_name, $stu_list);
                 $members = [];
                 $members[] =  $stu->seat . $stu->realname;
                 $old = $stu->class_id;
+                $old_name = $stu->classroom->name;
             } else { //same page
                 $members[] =  $stu->seat . $stu->realname;
             }
+        }
+        if (!empty($members)) {
+            $section->addPageBreak();
+            $stu_list = implode('、', $members);
+            $this->make_page($section, $dayoff, $old_name, $stu_list);    
         }
         $objWriter = IOFactory::createWriter($phpWord, $type);
         $objWriter->save($filename);
