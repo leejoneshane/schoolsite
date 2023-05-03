@@ -59,6 +59,8 @@ class CalendarController extends Controller
         if (!$today) $today = $request->old('current');
         if (!$today) $today = date('Y-m-d');
         $current = Carbon::parse($today, env('TZ'));
+        $notyet = false;
+        if ($current > Carbon::now()) $notyet = true;
         $create = false;
         $edit = [];
         $delete = [];
@@ -72,8 +74,8 @@ class CalendarController extends Controller
                 $events = IcsEvent::inTime($today);
             }
             foreach ($events as $event) {
-                $edit[$event->id] = $request->user()->can('update', $event);
-                $delete[$event->id] = $request->user()->can('delete', $event);
+                $edit[$event->id] = $notyet && $request->user()->can('update', $event);
+                $delete[$event->id] = $notyet && $request->user()->can('delete', $event);
             }
         } else {
             $calendar = IcsCalendar::forStudent();
