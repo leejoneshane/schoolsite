@@ -41,6 +41,7 @@ class Venue extends Model
         'availability',
         'unavailable_at',
         'unavailable_until',
+        'schedule_start',
         'schedule_limit',
         'open',
     ];
@@ -201,14 +202,14 @@ class Venue extends Model
                     }
                 }
             }
-            if ($sdate <= Carbon::today()) {
+            if ($sdate < Carbon::today()->addDays($this->schedule_start)) {
                 for ($j=0; $j<10; $j++) {
                     if ($whole->map[$i][$j] === true) {
-                        $whole->map[$i][$j] = 'Z'; //如果時間已經結束，設為 'Z'
+                        $whole->map[$i][$j] = 'Z'; //如果未達預約時程，設為 'Z'
                     }
                 }
             }
-            if ($sdate > Carbon::today()->addDays($this->schedule_limit)) {
+            if ($this->schedule_limit && $this->schedule_limit > 0 && $sdate > Carbon::today()->addDays($this->schedule_limit)) {
                 for ($j=0; $j<10; $j++) {
                     $whole->map[$i][$j] = 'X'; //如果超過預約時程，設為 'X'
                 }

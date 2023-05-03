@@ -80,6 +80,12 @@ class VenueController extends Controller
                 }
             }
             $venue->availability = $schedule;
+            $start = $request->integer('start');
+            if ($start) {
+                $venue->schedule_start = $start;
+            } else {
+                $venue->schedule_start = 0;
+            }
             $limit = $request->integer('limit');
             if ($limit) {
                 $venue->schedule_limit = $limit;
@@ -145,6 +151,12 @@ class VenueController extends Controller
                 }
             }
             $venue->availability = $schedule;
+            $start = $request->integer('start');
+            if ($start) {
+                $venue->schedule_start = $start;
+            } else {
+                $venue->schedule_start = 0;
+            }
             $limit = $request->integer('limit');
             if ($limit) {
                 $venue->schedule_limit = $limit;

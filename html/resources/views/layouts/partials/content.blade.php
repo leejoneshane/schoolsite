@@ -33,6 +33,7 @@
     </div>
 </main>
 <script>
+@auth
     function reply(uid) {
         var me = {{ auth()->user()->id }};
         var tell = prompt('您要告訴對方什麼？');
@@ -49,6 +50,7 @@
             });
         }
     }
+@endauth
 
     document.addEventListener("DOMContentLoaded", function(event) { 
         window.Echo.channel('public').listen('PublicMessage', (e) => {

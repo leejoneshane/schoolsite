@@ -21,6 +21,7 @@ return new class extends Migration
             $table->json('availability')->nullable();
             $table->date('unavailable_at')->nullable();
             $table->date('unavailable_until')->nullable();
+            $table->integer('schedule_start')->default(0);
             $table->integer('schedule_limit')->default(30);
             $table->boolean('open')->default(0);
             $table->timestamps();

@@ -86,7 +86,7 @@ class Club extends Model
             ->whereDate('club_kinds.enrollDate', '<=', $today)
             ->whereDate('club_kinds.expireDate', '>=', $today)
             ->where('clubs.stop_enroll', false)
-            ->whereJsonContains('clubs.for_grade', $grade)
+            ->whereJsonContains('clubs.for_grade', (integer) $grade)
             ->orderBy('clubs.kind_id')
             ->get();
         } else {
