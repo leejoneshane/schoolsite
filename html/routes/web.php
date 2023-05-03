@@ -51,7 +51,7 @@ Route::post('email/resend', 'App\Http\Controllers\Auth\VerificationController@re
 Route::group(['prefix' => 'subscriber'], function () {
     Route::get('/list/{email?}', 'App\Http\Controllers\SubscriberController@index')->name('subscriber');
     Route::post('add/{news?}', 'App\Http\Controllers\SubscriberController@subscription')->name('subscriber.subscription');
-    Route::get('delete/{news?}', 'App\Http\Controllers\SubscriberController@remove')->name('subscriber.cancel');
+    Route::post('delete/{news?}', 'App\Http\Controllers\SubscriberController@remove')->name('subscriber.cancel');
     Route::get('verify/{id}/{hash}', 'App\Http\Controllers\SubscriberController@verify')->name('subscriber.verify');
 });
 

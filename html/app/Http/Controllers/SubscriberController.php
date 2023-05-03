@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use App\Models\Subscriber;
@@ -16,6 +17,11 @@ class SubscriberController extends Controller
         $subscriber = null;
         if ($email) {
             $subscriber = Subscriber::findByEmail($email);
+        } else {
+            if (Auth::check()) {
+                $email = Auth::user()->email;
+                $subscriber = Subscriber::findByEmail($email);
+            }
         }
         $news = News::all();
         $this->removeUnverify();
