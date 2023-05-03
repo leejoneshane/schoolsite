@@ -58,7 +58,7 @@ class CalendarController extends Controller
         $today = $request->input('current');
         if (!$today) $today = $request->old('current');
         if (!$today) $today = date('Y-m-d');
-        $seme = current_between_date();
+        $current = Carbon::parse($today, env('TZ'));
         $create = false;
         $edit = [];
         $delete = [];
@@ -83,7 +83,7 @@ class CalendarController extends Controller
                 $delete[$event->id] = false;
             }
         }
-        return view('app.calendar', ['create' => $create, 'calendar' => $calendar, 'current' => $today, 'seme' => $seme, 'events' => $events, 'editable' => $edit, 'deleteable' => $delete]);
+        return view('app.calendar', ['create' => $create, 'calendar' => $calendar, 'current' => $current, 'events' => $events, 'editable' => $edit, 'deleteable' => $delete]);
     }
 
     public function eventAdd(Request $request)

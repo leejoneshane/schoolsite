@@ -33,6 +33,23 @@
     </div>
 </main>
 <script>
+    function reply(uid) {
+        var me = {{ auth()->user()->id }};
+        var tell = prompt('您要告訴對方什麼？');
+        if (tell) {
+            window.axios.post('{{ route('messager.send') }}', {
+                from: me,
+                to: uid,
+                message: tell,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+        }
+    }
+
     document.addEventListener("DOMContentLoaded", function(event) { 
         window.Echo.channel('public').listen('PublicMessage', (e) => {
             let rnd = Math.floor(Math.random() * 100000);
@@ -72,14 +89,22 @@
             let info = document.createElement('div');
             info.classList.add('ml-3', 'text-sm', 'font-normal');
             info.innerText = e.message;
+            let btns = document.createElement('div');
+            btns.classList.add('flex');
+            let reply = document.createElement('button');
+            reply.classList.add('ml-auto', '-mx-1.5', '-my-1.5', 'text-xl', 'bg-white', 'text-gray-400', 'hover:text-gray-900', 'rounded-lg', 'focus:ring-2', 'focus:ring-gray-300', 'p-1.5', 'hover:bg-gray-100', 'inline-flex', 'h-8', 'w-8', 'dark:text-gray-500', 'dark:hover:text-white', 'dark:bg-gray-800', 'dark:hover:bg-gray-700');
+            reply.addEventListener('click', reply(e.from));
+            reply.innerHTML = '<i class="fa-solid fa-reply"></i>';
+            btns.appendChild(reply);
             let btn = document.createElement('button');
             btn.classList.add('ml-auto', '-mx-1.5', '-my-1.5', 'text-xl', 'bg-white', 'text-gray-400', 'hover:text-gray-900', 'rounded-lg', 'focus:ring-2', 'focus:ring-gray-300', 'p-1.5', 'hover:bg-gray-100', 'inline-flex', 'h-8', 'w-8', 'dark:text-gray-500', 'dark:hover:text-white', 'dark:bg-gray-800', 'dark:hover:bg-gray-700');
             btn.setAttribute('data-dismiss-target', '#messager_' + rnd);
             btn.setAttribute('aria-label', 'Close');
             btn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+            btns.appendChild(btn);
             popup.appendChild(from);
             popup.appendChild(info);
-            popup.appendChild(btn);
+            popup.appendChild(btns);
             let parent = document.getElementById('messager');
             parent.appendChild(popup);
             document.getElementById('received').play();

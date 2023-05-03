@@ -192,13 +192,8 @@ class VenueController extends Controller
         }
         $venue = Venue::find($id);
         if (!$venue) return redirect()->route('venues')->with('error', '找不到此場地/設備，因此無法預約！');
-        $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
-        if ($manager) {
-            $result = $venue->weekly($date);
-            return view('app.venue_reserve', ['date' => $date, 'venue' => $venue, 'result' => $result]);
-        } else {
-            return redirect()->route('venues')->with('error', '只有管理員才能管理場地或設備！');
-        }
+        $result = $venue->weekly($date);
+        return view('app.venue_reserve', ['date' => $date, 'venue' => $venue, 'result' => $result]);
     }
 
     public function show(Request $request)

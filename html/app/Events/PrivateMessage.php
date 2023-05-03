@@ -15,14 +15,18 @@ class PrivateMessage implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
+    public int $from;
+    public int $to;
     public string $from_user;
-    public int $to_user;
+    public string $to_user;
     public string $message;
 
     public function __construct($from, $to, $message)
     {
+        $this->from = $from;
+        $this->to = $to;
         $this->from_user = User::find($from)->profile->realname;
-        $this->to_user = User::find($to)->id;
+        $this->to_user = User::find($to)->profile->realname;
         $this->message = $message;
     }
 
@@ -33,6 +37,6 @@ class PrivateMessage implements ShouldBroadcastNow
      */
     public function broadcastOn() : Channel
     {
-        return new PrivateChannel('private.' . $this->to_user);
+        return new PrivateChannel('private.' . $this->to);
     }
 }

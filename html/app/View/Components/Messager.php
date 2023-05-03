@@ -20,9 +20,8 @@ class Messager extends Component
             $manager = $user->hasPermission('messager.broadcast');
             if ($user->is_admin || $manager) {
                 return view('components.messager', ['broadcast' => true]);
-            }
-        } else {
-            return view('components.messager', ['broadcast' => false]);
+            }            
         }
+        return view('components.messager', ['broadcast' => false]);
     }
 }

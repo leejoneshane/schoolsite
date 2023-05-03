@@ -11,45 +11,47 @@
     </select>
     <div class="inline">
         <button class="text-white bg-blue-500 hover:bg-blue-700 focus:outline-none rounded-full text-sm px-2 py-1 text-center mr-2"
-            onclick="
-            var uid = document.getElementById('user_id').value;
-            if (uid) {
-                var me = {{ auth()->user()->id }};
-                var tell = prompt('您要告訴對方什麼？');
-                if (tell) {
-                    window.axios.post('{{ route('messager.send') }}', {
-                        from: me,
-                        to: uid,
-                        message: tell,
-                    }, {
-                        headers: {
-                            'Content-Type': 'application/json;charset=utf-8',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    });
-                }
-            }
-            @if ($broadcast)
-            if (!uid) {
-                var tell = prompt('要廣播什麼訊息？');
-                if (tell) {
-                    window.axios.post('{{ route('messager.broadcast') }}', {
-                        message: tell,
-                    }, {
-                        headers: {
-                            'Content-Type': 'application/json;charset=utf-8',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        }
-                    });
-                }
-            }
-            @endif
-        ">
+            onclick="send()">
             傳送
         </button>
     </div>
 </div>
 <script>
+function send() {
+    var uid = document.getElementById('user_id').value;
+    if (uid) {
+        var me = {{ auth()->user()->id }};
+        var tell = prompt('您要告訴對方什麼？');
+        if (tell) {
+            window.axios.post('{{ route('messager.send') }}', {
+                from: me,
+                to: uid,
+                message: tell,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+        }
+    }
+@if ($broadcast)
+    if (!uid) {
+        var tell = prompt('要廣播什麼訊息？');
+        if (tell) {
+            window.axios.post('{{ route('messager.broadcast') }}', {
+                message: tell,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+        }
+    }
+@endif
+}
+
 function doRefresh() {
     window.axios.get('{{ route("messager.list") }}')
         .then( (response) => {
