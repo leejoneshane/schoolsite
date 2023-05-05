@@ -112,6 +112,7 @@ class CalendarController extends Controller
     public function eventInsert(Request $request)
     {
         $event = IcsEvent::create([
+            'uuid' => $request->user()->uuid,
             'unit_id' => $request->input('unit_id'),
             'startDate' => $request->input('start_date'),
             'endDate' => $request->input('end_date'),

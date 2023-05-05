@@ -137,7 +137,7 @@ class ClubController extends Controller
                 $kind->save();
             }
             Watchdog::watch($request, '修改社團類別的權重：' . $kind->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('clubs.club_kinds');
+            return redirect()->route('clubs.kinds');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -157,7 +157,7 @@ class ClubController extends Controller
                 $kind->save();
             }
             Watchdog::watch($request, '修改社團類別的權重：' . $kind->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('clubs.club_kinds');
+            return redirect()->route('clubs.kinds');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -678,7 +678,7 @@ class ClubController extends Controller
             $enroll = ClubEnroll::find($enroll_id);
             $enroll->update(['accepted' => true]);
             Watchdog::watch($request, '將報名資訊設定為錄取：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id]);
+            return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id])->with('success', '已錄取學生'.$enroll->student->realname.'！');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -692,7 +692,7 @@ class ClubController extends Controller
             $enroll = ClubEnroll::find($enroll_id);
             $enroll->update(['accepted' => false]);
             Watchdog::watch($request, '將報名資訊設定為不錄取：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id]);
+            return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id])->with('success', '已將學生'.$enroll->student->realname.'除名！');;
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }

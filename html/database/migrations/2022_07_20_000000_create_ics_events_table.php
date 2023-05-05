@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('ics_events', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->index();
             $table->string('unit_id')->index();
             $table->boolean('important')->default(0);
             $table->boolean('training')->default(0);

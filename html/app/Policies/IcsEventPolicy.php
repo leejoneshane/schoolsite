@@ -1,14 +1,14 @@
 <?php
- 
+
 namespace App\Policies;
- 
+
 use App\Models\IcsEvent;
 use App\Models\User;
 use App\Models\Unit;
 use App\Models\Role;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Auth\Access\HandlesAuthorization;
- 
+
 class IcsEventPolicy
 {
     use HandlesAuthorization;
@@ -73,6 +73,10 @@ class IcsEventPolicy
             $unit_no = Unit::find($event->unit_id)->unit_no;
             if ($unit_no == substr($role->unit->unit_no, 0, 3) &&
                 $role->role_no == 'C02') {
+                return true;
+            }
+            if ($unit_no == substr($role->unit->unit_no, 0, 3) &&
+                $user->uuid == $event->uuid) {
                 return true;
             }
         }

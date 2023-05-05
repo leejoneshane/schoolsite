@@ -273,12 +273,14 @@ class ClubEnroll extends Model
             } else {
                 $weekdays_new = $new->weekdays;
             }
-            $overlap = array_intersect($weekdays_new, $weekdays_old);
-            if (!empty($overlap)) {
-                $time_period_old = new CarbonPeriod($old->startTime, $old->endTime);
-                $time_period_new = new CarbonPeriod($new->startTime, $new->endTime);
-                if ($time_period_old->overlaps($time_period_new)) {
-                    return true;
+            if ($weekdays_new) {
+                $overlap = array_intersect($weekdays_new, $weekdays_old);
+                if (!empty($overlap)) {
+                    $time_period_old = new CarbonPeriod($old->startTime, $old->endTime);
+                    $time_period_new = new CarbonPeriod($new->startTime, $new->endTime);
+                    if ($time_period_old->overlaps($time_period_new)) {
+                        return true;
+                    }
                 }
             }
         }

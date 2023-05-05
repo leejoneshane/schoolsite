@@ -42,6 +42,7 @@ class IcsEvent extends Model implements Subscribeable
 
     //以下屬性可以批次寫入
     protected $fillable = [
+        'uuid',
         'unit_id',
         'all_day',
         'important',
@@ -182,6 +183,12 @@ class IcsEvent extends Model implements Subscribeable
         return IcsEvent::with('unit')
             ->whereRaw('calendar_id = ? and ((startDate >= ? and startDate <= ?) or (endDate >= ? and endDate <= ?))', [$cal_id, $min, $max, $min, $max])
             ->get();
+    }
+
+    //取得此事件的建立者
+    public function creater()
+    {
+        return $this->belongsTo('App\Models\Teacher', 'uuid', 'uuid');
     }
 
     //取得登載此事件的行事曆物件

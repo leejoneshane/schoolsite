@@ -231,16 +231,16 @@ class SchoolDataController extends Controller
         }
         $units = Unit::main();
         $domains = Domain::all();
-        $query = Teacher::query();
+        $query = Teacher::withTrashed();
         if (!empty($unit_id)) {
             $unit = Unit::find($unit_id);
             $keys = Unit::subkeys($unit->unit_no);
             if ($unit_id == 24) {
-                $teachers = Teacher::whereIn('unit_id', $keys)->orderBy('tutor_class')->get();
+                $teachers = $query->whereIn('unit_id', $keys)->orderBy('tutor_class')->get();
             } elseif ($unit_id == 25) {
-                $teachers = Teacher::whereIn('unit_id', $keys)->orderBy('realname')->get();
+                $teachers = $query->whereIn('unit_id', $keys)->orderBy('realname')->get();
             } else {
-                $teachers = Teacher::leftJoin('roles', 'roles.id', 'teachers.role_id')->whereIn('teachers.unit_id', $keys)->orderBy('role_no')->orderBy('roles.name')->get();
+                $teachers = $query->leftJoin('roles', 'roles.id', 'teachers.role_id')->whereIn('teachers.unit_id', $keys)->orderBy('role_no')->orderBy('roles.name')->get();
             }
         } elseif (!empty($domain_id)) {
             $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.domain_id', $domain_id)->orderBy('realname')->get();
@@ -259,7 +259,7 @@ class SchoolDataController extends Controller
                 $unit_id = $units->first()->id;
                 $unit = Unit::find($unit_id);
                 $keys = Unit::subkeys($unit->unit_no);
-                $query = Teacher::whereIn('unit_id', $keys);
+                $query = $query->whereIn('unit_id', $keys);
             }
             $teachers = $query->orderBy('realname')->get();
         }
@@ -393,9 +393,27 @@ class SchoolDataController extends Controller
     {
         $referer = $request->headers->get('referer');
         $t = Teacher::find($uuid);
-        Watchdog::watch($request, '將離職教師標註為移除：' . $t->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        Watchdog::watch($request, '將教師標註為移除：' . $t->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $t->delete();
-        return redirect(urldecode($referer))->with('success', '離職教師已經標註為移除！');
+        return redirect(urldecode($referer))->with('success', '教師已經標註為移除！');
+    }
+
+    public function teacherRestore(Request $request, $uuid)
+    {
+        $referer = $request->headers->get('referer');
+        $t = Teacher::withTrashed()->where('uuid' , $uuid)->first();
+        $t->restore();
+        Watchdog::watch($request, '回復已刪除之教師：' . $t->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        return redirect(urldecode($referer))->with('success', '已經將教師資料救回！');
+    }
+
+    public function teacherDestroy(Request $request, $uuid)
+    {
+        $referer = $request->headers->get('referer');
+        $t = Teacher::withTrashed()->where('uuid' , $uuid)->first();
+        $t->forceDelete();
+        Watchdog::watch($request, '已經徹底刪除教師資料：' . $t->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        return redirect(urldecode($referer))->with('success', '教師已從資料庫移除！');
     }
 
     public function studentList($search = '')
@@ -425,7 +443,7 @@ class SchoolDataController extends Controller
             }
         }
         $classes = Classroom::all();
-        $query = Student::query();
+        $query = Student::withTrashed();
         if (!empty($idno) || !empty($id) || !empty($realname) || !empty($email)) {
             if (!empty($idno)) {
                 $query = $query->where('idno', 'like', '%'.$idno.'%');
@@ -495,9 +513,27 @@ class SchoolDataController extends Controller
     {
         $referer = $request->headers->get('referer');
         $s = Student::find($uuid);
-        Watchdog::watch($request, '將轉學生標註為移除：' . $s->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        Watchdog::watch($request, '將學生標註為移除：' . $s->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $s->delete();
-        return redirect(urldecode($referer))->with('success', '轉學生已經標註為移除！');
+        return redirect(urldecode($referer))->with('success', '學生已經標註為移除！');
+    }
+
+    public function studentRestore(Request $request, $uuid)
+    {
+        $referer = $request->headers->get('referer');
+        $s = Student::withTrashed()->where('uuid' , $uuid)->first();
+        $s->restore();
+        Watchdog::watch($request, '回復已刪除之學生：' . $s->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        return redirect(urldecode($referer))->with('success', '已經將學生資料救回！');
+    }
+
+    public function studentDestroy(Request $request, $uuid)
+    {
+        $referer = $request->headers->get('referer');
+        $s = Student::withTrashed()->where('uuid' , $uuid)->first();
+        $s->forceDelete();
+        Watchdog::watch($request, '已經徹底刪除學生資料：' . $s->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        return redirect(urldecode($referer))->with('success', '學生已從資料庫移除！');
     }
 
 }

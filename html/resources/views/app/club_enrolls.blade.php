@@ -159,25 +159,25 @@
         <td class="p-2">
         @if ($current == $section)
         @if ($enroll->accepted)
-            <a class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" href="void()" 
+            <button class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" title="除名"
                 onclick="
                 const myform = document.getElementById('remove');
                 myform.action = '{{ route('clubs.deny', ['enroll_id' => $enroll->id]) }}';
                 myform.submit();
             ">
-                除名
-            </a>
+                <i class="fa-solid fa-person-circle-xmark"></i>
+            </button>
         @else
-            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" href="void()" 
+            <button class="py-2 pr-6 text-blue-300 hover:text-blue-600" title="錄取"
                 onclick="
                 const myform = document.getElementById('remove');
                 myform.action = '{{ route('clubs.valid', ['enroll_id' => $enroll->id]) }}';
                 myform.submit();
             ">
-                錄取
-            </a>
+                <i class="fa-solid fa-person-circle-check"></i>
+            </button>
         @endif
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600"
+            <a class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
             onclick="
                 const myform = document.getElementById('remove');
                 myform.action = '{{ route('clubs.delenroll', ['enroll_id' => $enroll->id]) }}';

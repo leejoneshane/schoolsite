@@ -65,7 +65,7 @@
         </th>
     </tr>
     @foreach ($teachers as $t)
-    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600{{ ($t->trashed() ? ' text-red-700' : '')}}">
         <td class="p-2">{{ $t->uuid }}</td>
         @if (empty($current))
         <td class="p-2">{{ ($t->mainunit) ? $t->mainunit->name : '' }}</td>
@@ -81,11 +81,11 @@
         <td class="p-2">{{ $t->account }}</td>
         <td class="p-2">{{ $t->email }}</td>
         <td class="p-2">
-            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" title="編輯"
                 href="{{ route('teachers.edit', ['uuid' => $t->uuid]) }}">
                 <i class="fa-solid fa-user-pen"></i>
             </a>
-            <button class="py-2 pr-6 text-green-300 hover:text-green-600"
+            <button class="py-2 pr-6 text-green-300 hover:text-green-600" title="同步"
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('teachers.sync', ['uuid' => $t->uuid]) }}';
@@ -93,14 +93,33 @@
             ">
                 <i class="fa-solid fa-rotate"></i>
             </button>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="void()"
+            @if ($t->trashed())
+            <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="回復"
+                onclick="
+                    const myform = document.getElementById('remove');
+                    myform.action = '{{ route('teachers.restore', ['uuid' => $t->uuid]) }}';
+                    myform.submit();
+            ">
+                <i class="fa-solid fa-trash-arrow-up"></i>
+            </button>
+            <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="徹底刪除"
+                onclick="
+                    const myform = document.getElementById('remove');
+                    myform.action = '{{ route('teachers.destroy', ['uuid' => $t->uuid]) }}';
+                    myform.submit();
+            ">
+                <i class="fa-solid fa-burst"></i>
+            </button>
+            @else
+            <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('teachers.remove', ['uuid' => $t->uuid]) }}';
                     myform.submit();
             ">
                 <i class="fa-solid fa-trash"></i>
-            </a>
+            </button>
+            @endif
         </td>
     </tr>
     @endforeach
