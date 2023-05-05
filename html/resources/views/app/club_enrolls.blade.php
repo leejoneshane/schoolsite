@@ -128,35 +128,35 @@
     @forelse ($enrolls as $order => $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">
-            <span class="text-sm">{{ $order + 1 }}</span>
+            <span>{{ $order + 1 }}</span>
         </td>
         <td class="p-2">
-            <span class="text-sm">{{ $enroll->student->class_id }}{{ ($enroll->student->seat < 10) ? '0'.$enroll->student->seat : $enroll->student->seat }}</span>
+            <span>{{ $enroll->student->class_id }}{{ ($enroll->student->seat < 10) ? '0'.$enroll->student->seat : $enroll->student->seat }}</span>
         </td>
         @if ($club->self_defined)
         <td class="p-2">
-            <span class="text-sm">{{ $enroll->weekday }}</span>
+            <span>{{ $enroll->weekday }}</span>
         </td>
         @endif
         <td class="p-2">
-            <span class="text-sm">{{ $enroll->student->realname }}</span>
+            <span>{{ $enroll->student->realname }}</span>
         </td>
         <td class="p-2">
-            <span class="text-sm">{{ $enroll->parent }}</span>
+            <span>{{ $enroll->parent }}</span>
         </td>
         <td class="p-2">
-            <span class="text-sm">{{ $enroll->email }}</span>
+            <span>{{ $enroll->email }}</span>
         </td>
         <td class="p-2">
-            <span class="text-sm">{{ $enroll->mobile }}</span>
+            <span>{{ $enroll->mobile }}</span>
         </td>
         <td class="p-2">
-            <span class="text-sm">{{ $enroll->created_at }}</span>
+            <span>{{ $enroll->created_at }}</span>
         </td>
         <td class="p-2">
-            <span class="text-sm">{{ $enroll->mark }}</span>
+            <span>{{ $enroll->mark }}</span>
         </td>
-        <td class="p-2">
+        <td class="p-2 text-lg">
         @if ($current == $section)
         @if ($enroll->accepted)
             <button class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" title="除名"
@@ -177,14 +177,14 @@
                 <i class="fa-solid fa-person-circle-check"></i>
             </button>
         @endif
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
+            <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
             onclick="
                 const myform = document.getElementById('remove');
                 myform.action = '{{ route('clubs.delenroll', ['enroll_id' => $enroll->id]) }}';
                 myform.submit();
             ">
                 <i class="fa-solid fa-trash"></i>
-            </a>
+            </button>
         @endif
         </td>
     </tr>

@@ -44,11 +44,19 @@ class TpeduController extends Controller
                 if ($user) { //user exists
                     if ($user->user_type == 'Teacher') {
                         $tpuser = Teacher::find($uuid);
-                        if ($tpuser->expired()) $this->sso->fetch_user($uuid);
+                        if (!$tpuser) {
+                            return redirect()->route('home')->with('error', '您已經從本校離職，因此無法登入！');
+                        } else {
+                            if ($tpuser->expired()) $this->sso->fetch_user($uuid);
+                        }
                     }
                     if ($user->user_type == 'Student') {
                         $tpuser = Student::find($uuid);
-                        if ($tpuser->expired()) $this->sso->fetch_user($uuid);
+                        if (!$tpuser) {
+                            return redirect()->route('home')->with('error', '只有目前就讀本校的學生才能登入！');
+                        } else {
+                            if ($tpuser->expired()) $this->sso->fetch_user($uuid);
+                        }
                     }
                     if ($user->email != $user->profile->email) {
                         $user->email = $user->profile->email;
