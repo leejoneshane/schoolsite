@@ -202,11 +202,11 @@ class IcsEvent extends Model implements Subscribeable
         $event = Event::create($this->summary)
             ->organizer(config('services.gsuite.calendar'), $this->unit->name)
             ->createdAt(Carbon::createFromTimestamp($this->updated_at, env('TZ')));
-        $start_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->format('Y-m-d').' '.$this->startTime, env('TZ'));
-        $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->format('Y-m-d').' '.$this->endTime, env('TZ'));
         if ($this->all_day) {
             $event->startsAt($this->startDate)->fullDay();
         } else {
+            $start_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->format('Y-m-d').' '.$this->startTime, env('TZ'));
+            $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->format('Y-m-d').' '.$this->endTime, env('TZ'));
             $event->period($start_time, $end_time);
         }
         if ($this->startDate->format('Y-m-d') != $this->endDate->format('Y-m-d')) {
@@ -215,7 +215,7 @@ class IcsEvent extends Model implements Subscribeable
             $nextday = $nextday->addDay();
             $period = CarbonPeriod::create($nextday, $this->endDate);
             foreach ($period as $date) {
-                $days[] = Carbon::createFromFormat('Y-m-d H:i:s', $date->format('Y-m-d').' '.$this->startTime);
+                $days[] = Carbon::createFromFormat('Y-m-d H:i:s', $date->format('Y-m-d').' '.$this->startTime, env('TZ'));
             }
             $event->repeatOn($days); 
         }

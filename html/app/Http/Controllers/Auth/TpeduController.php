@@ -78,10 +78,12 @@ class TpeduController extends Controller
                             'email' => $tpuser->email,
                             'password' => Hash::make(substr($tpuser->idno, -6)),
                         ]);
-                        $characters = explode(',', $tpuser->character);
-                        if (in_array('TPECadmin1', $characters)) {
-                            $user->is_admin = true;
-                            $user->save();
+                        if ($tpuser->character) {
+                            $characters = explode(',', $tpuser->character);
+                            if (in_array('TPECadmin1', $characters)) {
+                                $user->is_admin = true;
+                                $user->save();
+                            }    
                         }
                         Auth::login($user);
                         event(new Registered($user));

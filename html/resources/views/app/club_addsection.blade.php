@@ -3,11 +3,11 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     課外社團開班
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.sections', ['club_id' => $section->club->id]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.sections', ['club_id' => $club->id]) }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-section" action="{{ route('clubs.addsection', ['club_id' => $section->club_id]) }}" method="POST">
+<form id="add-section" action="{{ route('clubs.addsection', ['club_id' => $club->id]) }}" method="POST">
     @csrf
     <p><div class="p-3">
         <label for="kind" class="inline">社團分類：{{ $club->kind->name }}</label>

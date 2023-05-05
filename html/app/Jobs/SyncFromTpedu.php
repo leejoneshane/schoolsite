@@ -71,19 +71,19 @@ class SyncFromTpedu implements ShouldQueue
                 $logs[] = $sso->sync_students_for_grade($grade, $this->only_expired, $this->reset_password, $this->remove_leave);
             } else {
                 $logs[] = $sso->sync_students_for_class($this->sync_target, $this->only_expired, $this->reset_password, $this->remove_leave);
-            }    
+            }
         }
         $detail_log = [];
         for ($i = 0; $i < count($logs); $i++) {
             if (isset($logs[$i]) && !empty($logs[$i])) {
                 for ($j = 0; $j < count($logs[$i]); $j++) {
                     $detail_log[] = $logs[$i][$j];
-                  }        
+                  }
             }
         }
         $end_time = Carbon::now()->format('Y-m-d H:m:s');
         $admins = User::admins();
-        Notification::sendNow($admins, new SyncCompletedNotification('SyncFromTpedu', $start_time, $end_time, $detail_log));
         broadcast(new AdminMessage("資料庫同步作業於 $start_time 開始進行，已經於 $end_time 順利完成！"));
+        Notification::sendNow($admins, new SyncCompletedNotification('SyncFromTpedu', $start_time, $end_time, $detail_log));
     }
 }

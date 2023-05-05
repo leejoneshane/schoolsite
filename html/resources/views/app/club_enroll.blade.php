@@ -26,6 +26,9 @@
             授課地點
         </th>
         <th scope="col" class="p-2">
+            費用
+        </th>
+        <th scope="col" class="p-2">
             招生人數
         </th>
         <th scope="col" class="p-2">
@@ -45,6 +48,7 @@
         <td class="p-2">{{ $club->grade }}</td>
         <td class="p-2">{{ $club->section()->studytime }}</td>
         <td class="p-2">{{ $club->section()->location }}</td>
+        <td class="p-2">{{ $club->section()->cash }}</td>
         <td class="p-2">{{ $club->section()->total }}</td>
         <td class="p-2">{{ $club->section()->maximum }}</td>
         <td class="p-2">{{ $club->count_enrolls() }}</td>

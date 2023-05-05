@@ -60,7 +60,7 @@ class SyncToGoogle implements ShouldQueue
         }
         $end_time = Carbon::now()->format('Y-m-d H:m:s');
         $admins = User::admins();
-        Notification::sendNow($admins, new SyncCompletedNotification('SyncToGoogle', $start_time, $end_time, $logs));
         broadcast(new AdminMessage("Gsuite 同步作業於 $start_time 開始進行，已經於 $end_time 順利完成！"));
+        Notification::sendNow($admins, new SyncCompletedNotification('SyncToGoogle', $start_time, $end_time, $logs));
     }
 }
