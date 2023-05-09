@@ -54,8 +54,8 @@
         <td class="p-2">{{ ($k->single) ? '是' : '否' }}</td>
         <td class="p-2">{{ ($k->manual_auditing) ? '是' : '否' }}</td>
         <td class="p-2">{{ ($k->stop_enroll) ? '是' : '否' }}</td>
-        <td class="p-2">{{ $k->enrollDate }}</td>
-        <td class="p-2">{{ $k->expireDate }}</td>
+        <td class="p-2">{{ $k->enrollDate->format('Y-m-d') }}</td>
+        <td class="p-2">{{ $k->expireDate->format('Y-m-d') }}</td>
         <td class="p-2">{{ $k->workTime }}</td>
         <td class="p-2">{{ $k->restTime }}</td>
         <td class="p-2">

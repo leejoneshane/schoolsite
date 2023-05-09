@@ -47,9 +47,9 @@ class ClubImport implements ToCollection, WithHeadingRow
                     }
                 }
             }
-            $self_remove = false;
+            $self_remove = true;
             if (isset($row['remove']) && $row['remove'] == '1') {
-                $self_remove = true;
+                $self_remove = false;
             }
             $has_lunch = false;
             if (isset($row['lunch']) && $row['lunch'] == '1') {
