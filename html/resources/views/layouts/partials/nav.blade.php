@@ -36,7 +36,7 @@
     </span>
     <span class="inline-block mt-2 lg:mt-0 px-4 lg:px-2 py-1 leading-none border rounded border-white hover:border-transparent text-white hover:text-teal-500 hover:bg-white">    
       <i class="fa-solid fa-door-open"></i>
-      <a href="void()" onclick="document.getElementById('logout-form').submit();" class="text-sm">登出</a>
+      <button onclick="document.getElementById('logout-form').submit();" class="text-sm">登出</button>
     </span>
     <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
       @csrf

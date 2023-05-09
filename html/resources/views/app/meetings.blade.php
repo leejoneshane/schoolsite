@@ -28,14 +28,14 @@
             <a class="text-sm py-2 pl-6 rounded text-gray-300 hover:text-gray-100" href="{{ route('meeting.edit', ['id' => $meet->id]) }}">
                 <i class="fa-solid fa-pen"></i>編輯
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-100" href="void()" title="刪除"
+            <button class="py-2 pr-6 text-red-300 hover:text-red-100" title="刪除"
             onclick="
                 const myform = document.getElementById('remove');
                 myform.action = '{{ route('meeting.remove', ['id' => $meet->id]) }}';
                 myform.submit();
             ">
                 <i class="fa-solid fa-trash"></i>刪除
-            </a>
+            </button>
             @endif
         </th>
     </tr>

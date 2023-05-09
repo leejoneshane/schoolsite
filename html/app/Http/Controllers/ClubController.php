@@ -637,12 +637,14 @@ class ClubController extends Controller
             return back()->with('success', '報名資訊已經刪除！');
         } else {
             $enroll = ClubEnroll::find($enroll_id);
-            if ($enroll && $enroll->uuid != $user->uuid) {
-                return redirect()->route('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
+            if (!$enroll) {
+                return back()->with('error', '找不到您的報名紀錄，因此無法移除！');
+            } 
+            if ($enroll->uuid != $user->uuid) {
+                return back()->with('error', '這不是您的報名紀錄，因此無法移除！');
             }
-            $e = ClubEnroll::find($enroll_id);
-            Watchdog::watch($request, '取消報名：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            $e->delete();
+            Watchdog::watch($request, '取消報名：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            $enroll->delete();
             return back()->with('success', '已為您取消報名！');
         }
         return back();
@@ -654,6 +656,9 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
+            if (!$club) {
+                return redirect()->route('clubs.admin')->with('error', '找不到要管理的社團！');
+            }
             $current = current_section();
             $sections = ClubEnroll::sections();
             if (!$section) {

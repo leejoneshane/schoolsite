@@ -57,6 +57,7 @@ class TpeduServiceProvider extends ServiceProvider
             $this->expires_in = time() + $data->expires_in;
             $this->access_token = $data->access_token;
             $this->refresh_token = $data->refresh_token;
+            return true;
         } else {
             $this->error = $response->getBody();
             Log::error('oauth2 token response =>'.$this->error);

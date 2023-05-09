@@ -37,15 +37,24 @@ class TpeduController extends Controller
     {
         try {
             $auth_code = $request->input('code');
+            if (!$auth_code) {
+                return redirect()->route('login')->with('error', '無法取得介接驗證碼，因此無法登入！');
+            }
             if ($auth_code) {
-                $this->sso->get_tokens($auth_code);
+                $result = $this->sso->get_tokens($auth_code);
+                if (!$result) {
+                    return redirect()->route('login')->with('error', '無法從單一身份驗證取得存取金鑰，因此無法登入！');
+                }
                 $uuid = $this->sso->who();
+                if (!$uuid) {
+                    return redirect()->route('login')->with('error', '無法從單一身份驗證取得您的唯一編號，因此無法登入！');
+                }
                 $user = User::where('uuid', $uuid)->first();
                 if ($user) { //user exists
                     if ($user->user_type == 'Teacher') {
                         $tpuser = Teacher::find($uuid);
                         if (!$tpuser) {
-                            return redirect()->route('home')->with('error', '您已經從本校離職，因此無法登入！');
+                            return redirect()->route('login')->with('error', '您已經從本校離職，因此無法登入！');
                         } else {
                             if ($tpuser->expired()) $this->sso->fetch_user($uuid);
                         }
@@ -53,7 +62,7 @@ class TpeduController extends Controller
                     if ($user->user_type == 'Student') {
                         $tpuser = Student::find($uuid);
                         if (!$tpuser) {
-                            return redirect()->route('home')->with('error', '只有目前就讀本校的學生才能登入！');
+                            return redirect()->route('login')->with('error', '只有目前就讀本校的學生才能登入！');
                         } else {
                             if ($tpuser->expired()) $this->sso->fetch_user($uuid);
                         }
@@ -79,11 +88,15 @@ class TpeduController extends Controller
                         }
                     }
                     if ($tpuser) {
+                        $email = $tpuser->email; 
+                        if (!$email) {
+                            $email = 'meps' . $tpuser->id . '@tc.meps.tp.edu.tw';
+                        }
                         $user = User::create([
                             'uuid' => $uuid,
                             'user_type' => $user_type,
                             'name' => $tpuser->account,
-                            'email' => $tpuser->email,
+                            'email' => $email,
                             'password' => Hash::make(substr($tpuser->idno, -6)),
                         ]);
                         if ($tpuser->character) {

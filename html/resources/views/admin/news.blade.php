@@ -42,14 +42,14 @@
                 href="{{ route('news.edit', ['news' => $i->id]) }}" title="編輯">
                 <i class="fa-solid fa-pen"></i>
             </a>
-            <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="void()" title="刪除"
+            <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
                 onclick="
                     const myform = document.getElementById('remove');
                     myform.action = '{{ route('news.remove', ['news' => $i->id]) }}';
                     myform.submit();
             ">
                 <i class="fa-solid fa-trash"></i>
-            </a>
+            </button>
         </td>
     </tr>
     @endforeach

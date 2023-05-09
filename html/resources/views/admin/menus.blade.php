@@ -99,14 +99,14 @@
             </td>
             <td class="p-2">
                 @if ($i->top != 'admin')
-                <a class="py-2 pr-6 text-red-300 hover:text-red-600" href="void()"
+                <button class="py-2 pr-6 text-red-300 hover:text-red-600"
                     onclick="
                         const myform = document.getElementById('remove');
                         myform.action = '{{ route('menus.remove', ['menu' => $i->id]) }}';
                         myform.submit();
                 ">
                     <i class="fa-solid fa-trash"></i>
-                </a>
+                </button>
                 @endif
             </td>
             @endif
