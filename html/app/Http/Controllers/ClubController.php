@@ -310,6 +310,9 @@ class ClubController extends Controller
             return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('error', '該課外社團已經存在，無法再新增！');
         }
         $grades = $request->input('grades');
+        foreach ($grades as $k => $g) {
+            $grades[$k] = (integer) $g;
+        }
         $c = Club::create([
             'name' => $title,
             'short_name' => $request->input('short'),
@@ -343,11 +346,15 @@ class ClubController extends Controller
         $club = Club::find($club_id);
         $kind_id =$club->kind_id;
         $grades = $request->input('grades');
+        foreach ($grades as $k => $g) {
+            $grades[$k] = (integer) $g;
+        }
         $club->update([
             'name' => $request->input('title'),
             'short_name' => $request->input('short'),
             'kind_id' => $kind_id,
             'unit_id' => $request->input('unit'),
+            'for_grade' => $grades ?: [],
             'self_defined' => $request->has('selfdefine') ? true : false,
             'self_remove' => $request->has('remove') ? true : false,
             'has_lunch' => $request->has('lunch') ? true : false,

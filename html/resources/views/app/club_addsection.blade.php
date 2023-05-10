@@ -48,6 +48,8 @@
         <label class="inline">上課時段：每週</label>
         <div id="weekdays" class="inline">
             <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="checkbox" name="weekdays[]" value="0"><span class="text-sm" onclick="check_self(this)">日　</span>
+            <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
                 type="checkbox" name="weekdays[]" value="1"><span class="text-sm" onclick="check_self(this)">一　</span>
             <input class="pl-3 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
                 type="checkbox" name="weekdays[]" value="2"><span class="text-sm" onclick="check_self(this)">二　</span>
@@ -57,6 +59,8 @@
                 type="checkbox" name="weekdays[]" value="4"><span class="text-sm" onclick="check_self(this)">四　</span>
             <input class="pl-3 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
                 type="checkbox" name="weekdays[]" value="5"><span class="text-sm" onclick="check_self(this)">五　</span>
+            <input class="pl-3 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="checkbox" name="weekdays[]" value="6"><span class="text-sm" onclick="check_self(this)">六　</span>
             <input class="pl-3 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
                 type="checkbox" id="selfdefine" name="selfdefine" value="yes" onclick="
                     if (this.checked) {

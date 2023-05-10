@@ -80,14 +80,17 @@ class ClubEnroll extends Model
     //提供上課日中文字串（包含家長自訂上課日）
     public function getWeekdayAttribute()
     {
-        if (!($this->club)) return '';
+        $section = $this->club_section();
         $str = '週';
-        if ($this->club_section()->self_defined) {
-            foreach ($this->weekdays as $d) {
-                $str .= self::$weekMap[$d];
+        if ($section->self_defined) {
+            if (is_array($this->weekdays)) {
+                foreach ($this->weekdays as $d) {
+                    $str .= self::$weekMap[$d];
+                }
+            } else {
+                return '';
             }
         } else {
-            $section = $this->club->section($this->section); 
             foreach ($section->weekdays as $d) {
                 $str .= self::$weekMap[$d];
             }
@@ -98,24 +101,29 @@ class ClubEnroll extends Model
     //提供學生上課時間完整中文字串（包含家長自訂上課日）
     public function getStudytimeAttribute()
     {
+        $section = $this->club_section();
         $str ='';
-        $str .= substr($this->club->section($this->section)->startDate, 0, 10);
+        $str .= substr($section->startDate, 0, 10);
         $str .= '～';
-        $str .= substr($this->club->section($this->section)->endDate, 0, 10);
+        $str .= substr($section->endDate, 0, 10);
         $str .= ' 週';
-        if ($this->club_section()->self_defined) {
-            foreach ($this->weekdays as $d) {
-                $str .= self::$weekMap[$d];
+        if ($section->self_defined) {
+            if (is_array($this->weekdays)) {
+                foreach ($this->weekdays as $d) {
+                    $str .= self::$weekMap[$d];
+                }
+            } else {
+                return '';
             }
         } else {
-            foreach ($this->club->section($this->section)->weekdays as $d) {
+            foreach ($section->weekdays as $d) {
                 $str .= self::$weekMap[$d];
             }
         }
         $str .= ' ';
-        $str .= $this->club->section($this->section)->startTime;
+        $str .= $section->startTime;
         $str .= '～';
-        $str .= $this->club->section($this->section)->endTime;
+        $str .= $section->endTime;
         return $str;
     }
 
@@ -152,7 +160,7 @@ class ClubEnroll extends Model
     //取得此報名資訊的學生社團
     public function club_section()
     {
-        return $this->club->section();
+        return $this->club->section($this->section);
     }
 
     //取得此報名資訊的社團分類
