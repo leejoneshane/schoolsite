@@ -82,7 +82,7 @@ class ClubEnroll extends Model
     {
         if (!($this->club)) return '';
         $str = '週';
-        if ($this->section()->self_defined) {
+        if ($this->club_section()->self_defined) {
             foreach ($this->weekdays as $d) {
                 $str .= self::$weekMap[$d];
             }
@@ -103,7 +103,7 @@ class ClubEnroll extends Model
         $str .= '～';
         $str .= substr($this->club->section($this->section)->endDate, 0, 10);
         $str .= ' 週';
-        if ($this->section()->self_defined) {
+        if ($this->club_section()->self_defined) {
             foreach ($this->weekdays as $d) {
                 $str .= self::$weekMap[$d];
             }
@@ -150,7 +150,7 @@ class ClubEnroll extends Model
     }
 
     //取得此報名資訊的學生社團
-    public function section()
+    public function club_section()
     {
         return $this->club->section();
     }

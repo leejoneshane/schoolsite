@@ -625,7 +625,8 @@ class ClubController extends Controller
         if ($enroll->uuid != $user->uuid) {
             return redirect()->route('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
         }
-        if ($enroll->club->section()->self_defined && $request->has('weekdays')) {
+        $weekdays = [];
+        if ($enroll->club_section()->self_defined && $request->has('weekdays')) {
             $weekdays = $request->input('weekdays');
             foreach ($weekdays as $k => $w) {
                 $weekdays[$k] = (integer) $w;
@@ -754,7 +755,7 @@ class ClubController extends Controller
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '很抱歉，該學生社團已經額滿！');
         }
         $enrolls = Student::find($uuid)->section_enrolls();
-        $weekdays = null;
+        $weekdays = [];
         if ($club->section()->self_defined && $request->has('weekdays')) {
             $weekdays = $request->input('weekdays');
             foreach ($weekdays as $k => $w) {
@@ -832,7 +833,7 @@ class ClubController extends Controller
                 continue;
             }
             $enrolls = $student->section_enrolls();
-            $weekdays = null;
+            $weekdays = [];
             if ($club->section()->self_defined && $request->has('weekdays')) {
                 $weekdays = $request->input('weekdays');
                 foreach ($weekdays as $k => $w) {

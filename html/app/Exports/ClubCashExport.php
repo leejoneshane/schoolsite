@@ -32,7 +32,7 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
         $record = new \stdClass;
         $record->clubs = [];
         foreach ($enrolls as $enroll) {
-            $sec = $enroll->club->section();
+            $sec = $enroll->club_section();
             if (!$old) { //first
                 $old = $enroll->uuid;
                 $record->student = $enroll->student;

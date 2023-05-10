@@ -51,7 +51,7 @@ class ClubTimeExport
             $next = $enroll->student->section_enrolls()->reject($enroll);
             $cells = array([],[],[]);
             foreach ($next as $en) {
-                $sec = $en->club->section();
+                $sec = $en->club_section();
                 if ($sec->startTime < '16:00:00') {
                     $cells[0][] = $en;
                 } elseif ($sec->startTime < '17:00:00') {
@@ -65,7 +65,7 @@ class ClubTimeExport
                 foreach ($cell as $en) {
                     $short = $en->club->short_name;
                     $weekday = $en->weekday;
-                    $sec = $en->club->section();
+                    $sec = $en->club_section();
                     $time = str_replace(':', '', $sec->startTime);
                     $time = substr($time, 0, 4);
                     $col->addText("$short($weekday$time)");
