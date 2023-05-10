@@ -80,6 +80,7 @@ class ClubEnroll extends Model
     //提供上課日中文字串（包含家長自訂上課日）
     public function getWeekdayAttribute()
     {
+        if (!($this->club)) return '';
         $str = '週';
         if ($this->club->self_defined) {
             foreach ($this->weekdays as $d) {

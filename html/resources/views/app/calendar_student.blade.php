@@ -15,6 +15,11 @@
     </a>
     @endadminorteacher
 </div>
+<div class="p-3">
+    <span class="text-xl font-bold">{{ substr($section,0 , -1) }}學年{{ (substr($section, -1) == '1') ? '上' : '下' }}學期學生行事曆</span>
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.student').'?current='.$current.'&section='.$prev }}"><i class="fa-solid fa-angles-left"></i>上一學期</a>
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('calendar.student').'?current='.$current.'&section='.$next }}">下一學期<i class="fa-solid fa-angles-right"></i></a>
+</div>
 <table class="w-full text-sm text-left">
     <tr class="bg-gray-300 font-semibold text-lg">
         <th scope="col" class="p-2 w-8">月</th>

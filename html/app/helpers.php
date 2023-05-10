@@ -31,17 +31,6 @@ function current_year() {
     return $year;
 }
 
-function current_years() {
-    if (date('m') > 7) {
-        $years = [ date('Y'), date('Y') + 1 ];
-    } elseif (date('m') < 2) {
-        $years = [ date('Y') - 1, date('Y') ];
-    } else {
-        $years = [ date('Y') ];
-    }
-    return $years;
-}
-
 function current_seme() {
     if (date('m') > 1 || date('m') < 8) {
         $seme = 2;

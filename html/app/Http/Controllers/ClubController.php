@@ -410,7 +410,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            ClubEnroll::where('club_id', $club_id)->where('year', current_year())->delete();
+            ClubEnroll::where('club_id', $club_id)->where('section', current_section())->delete();
             $kind_id = $club->kind_id;
             Watchdog::watch($request, '移除學生社團' . $club->name . '所有報名資訊');
             return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '已經移除此課外社團本年度報名資訊，可以重新開始報名！');
@@ -660,16 +660,15 @@ class ClubController extends Controller
                 return redirect()->route('clubs.admin')->with('error', '找不到要管理的社團！');
             }
             $current = current_section();
-            $sections = ClubEnroll::sections();
             if (!$section) {
-                if (!empty($sections)) {
-                    $section = $sections->first()->section;
+                if (!empty($club->sections)) {
+                    $section = $club->sections->first()->section;
                 } else {
                     $section = $current;
                 }
             }
             $enrolls = $club->section_enrolls($section);
-            return view('app.club_enrolls', ['club' => $club, 'current' => $current, 'section' => $section, 'sections' => $sections, 'enrolls' => $enrolls]);
+            return view('app.club_enrolls', ['club' => $club, 'current' => $current, 'section' => $section, 'enrolls' => $enrolls]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }

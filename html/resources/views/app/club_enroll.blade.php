@@ -56,7 +56,7 @@
             @if ($enroll = $student->get_enroll($club->id))
                 已報名
             @else
-                @if ($club->count_enrolls() <= $club->section()->maximum)
+                @if ($club->count_enrolls() < $club->section()->maximum)
                 <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                     href="{{ route('clubs.addenroll', ['club_id' => $club->id]) }}">
                     我要報名

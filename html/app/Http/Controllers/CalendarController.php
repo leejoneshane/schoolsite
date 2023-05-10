@@ -210,162 +210,240 @@ class CalendarController extends Controller
     {
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
-        $event_list = [];
-        $year = current_years();
-        if (current_seme() == 1) {
-            $month = [ 8, 9, 10, 11, 12, 1 ];
+        $section = $request->input('section');
+        if (!$section) {
+            $year = current_year();
+            $seme = current_seme();
+            $section = $year . $seme;
         } else {
-            $month = [ 2, 3, 4, 5, 6, 7 ];
+            $year = (integer) substr($section, 0, -1);
+            $seme = (integer) substr($section, -1);
         }
-        foreach ($year as $y) {
-            foreach ($month as $m) {
-                $min = Carbon::parse($y.'-'.$m)->startOfMonth();
-                $max = Carbon::parse($y.'-'.$m)->endOfMonth();
-                $period = CarbonPeriod::create($min, $max);
-                foreach ($period as $sd) {
-                    $events = IcsEvent::inTime($sd);
-                    $important = $events->where('important', true);
-                    $events = $events->where('important', false);
-                    $content = '';
-                    if ($important->count() > 0) $content .= '【學校重要活動】';
-                    foreach ($important as $i) {
-                        $content .= '　'.$i->summary;
-                        if (!empty($i->location)) $content .= ' 地點：'.$i->location;
-                        if (!($i->all_day)) $content .= ' 時間：'.$i->startTime.'到'.$i->endTime;
-                        if ($i->startDate != $i->endDate) $content .= '(至'.$i->endDate.'止)';
+        if ($seme == 1) {
+            $y = $year+1911;
+            $month = [
+                (object) ['y' => $y, 'm' => 8],
+                (object) ['y' => $y, 'm' => 9],
+                (object) ['y' => $y, 'm' => 10],
+                (object) ['y' => $y, 'm' => 11],
+                (object) ['y' => $y, 'm' => 12],
+                (object) ['y' => $y + 1, 'm' => 1],
+            ];
+            $prev = ($year - 1).'2';
+            $next = $year.'2';
+        } else {
+            $y = $year+1912;
+            $month = [
+                (object) ['y' => $y, 'm' => 2],
+                (object) ['y' => $y, 'm' => 3],
+                (object) ['y' => $y, 'm' => 4],
+                (object) ['y' => $y, 'm' => 5],
+                (object) ['y' => $y, 'm' => 6],
+                (object) ['y' => $y, 'm' => 7],
+            ];
+            $prev = $year.'1';
+            $next = ($year + 1).'1';
+        }
+        $event_list = [];
+        foreach ($month as $t) {
+            $min = Carbon::parse($t->y.'-'.$t->m)->startOfMonth();
+            $max = Carbon::parse($t->y.'-'.$t->m)->endOfMonth();
+            $period = CarbonPeriod::create($min, $max);
+            foreach ($period as $sd) {
+                $events = IcsEvent::inTime($sd);
+                $important = $events->where('important', true);
+                $events = $events->where('important', false);
+                $content = '';
+                if ($important->count() > 0) $content .= '【學校重要活動】';
+                foreach ($important as $i) {
+                    $content .= '　'.$i->summary;
+                    if (!empty($i->location)) $content .= ' 地點：'.$i->location;
+                    if (!($i->all_day)) $content .= ' 時間：'.$i->startTime.'到'.$i->endTime;
+                    if ($i->startDate != $i->endDate) $content .= '(至'.$i->endDate.'止)';
+                }
+                $last = '';
+                foreach ($events as $e) {
+                    if ($last != $e->unit_id) {
+                        $uname = Unit::find($e->unit_id)->name;
+                        $content .= '【'.$uname.'】';
+                        $last = $e->unit_id;
                     }
-                    $last = '';
-                    foreach ($events as $e) {
-                        if ($last != $e->unit_id) {
-                            $uname = Unit::find($e->unit_id)->name;
-                            $content .= '【'.$uname.'】';
-                            $last = $e->unit_id;
-                        }
-                        $content .= '　'.$e->summary;
-                        if (!empty($e->location)) $content .= ' 地點：'.$e->location;
-                        if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
-                        if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate.'止)';
-                    }
-                    if ($content) {
-                        $obj = new \stdClass;
-                        $obj->month = self::$monthMap[$m];
-                        $obj->day = $sd->day;
-                        $obj->weekday = self::$weekMap[$sd->dayOfWeek];
-                        $obj->content = $content;
-                        $event_list[] = $obj;    
-                    }
+                    $content .= '　'.$e->summary;
+                    if (!empty($e->location)) $content .= ' 地點：'.$e->location;
+                    if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
+                    if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate->format('Y-m-d').'止)';
+                }
+                if ($content) {
+                    $obj = new \stdClass;
+                    $obj->month = self::$monthMap[$t->m];
+                    $obj->day = $sd->day;
+                    $obj->weekday = self::$weekMap[$sd->dayOfWeek];
+                    $obj->content = $content;
+                    $event_list[] = $obj;    
                 }
             }
         }
-        return view('app.calendar_seme', ['current' => $today, 'events' => $event_list]);
+        return view('app.calendar_seme', ['current' => $today, 'section' => $section, 'prev' => $prev, 'next' => $next, 'events' => $event_list]);
     }
 
     public function training(Request $request)
     {
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
-        $event_list = [];
-        $year = current_years();
-        if (current_seme() == 1) {
-            $month = [ 8, 9, 10, 11, 12, 1 ];
+        $section = $request->input('section');
+        if (!$section) {
+            $year = current_year();
+            $seme = current_seme();
+            $section = $year . $seme;
         } else {
-            $month = [ 2, 3, 4, 5, 6, 7 ];
+            $year = (integer) substr($section, 0, -1);
+            $seme = (integer) substr($section, -1);
         }
-        foreach ($year as $y) {
-            foreach ($month as $m) {
-                $min = Carbon::parse($y.'-'.$m)->startOfMonth();
-                $max = Carbon::parse($y.'-'.$m)->endOfMonth();
-                $period = CarbonPeriod::create($min, $max);
-                foreach ($period as $sd) {
-                    $events = IcsEvent::inTimeForTraining($sd);
-                    $important = $events->where('important', true);
-                    $events = $events->where('important', false);
-                    $content = '';
-                    if ($important->count() > 0) $content .= '【學校重要活動】';
-                    foreach ($important as $i) {
-                        $content .= '　'.$i->summary;
-                        if (!empty($i->location)) $content .= ' 地點：'.$i->location;
-                        if (!($i->all_day)) $content .= ' 時間：'.$i->startTime.'到'.$i->endTime;
-                        if ($i->startDate != $i->endDate) $content .= '(至'.$i->endDate.'止)';
+        if ($seme == 1) {
+            $y = $year+1911;
+            $month = [
+                (object) ['y' => $y, 'm' => 8],
+                (object) ['y' => $y, 'm' => 9],
+                (object) ['y' => $y, 'm' => 10],
+                (object) ['y' => $y, 'm' => 11],
+                (object) ['y' => $y, 'm' => 12],
+                (object) ['y' => $y + 1, 'm' => 1],
+            ];
+            $prev = ($year - 1).'2';
+            $next = $year.'2';
+        } else {
+            $y = $year+1912;
+            $month = [
+                (object) ['y' => $y, 'm' => 2],
+                (object) ['y' => $y, 'm' => 3],
+                (object) ['y' => $y, 'm' => 4],
+                (object) ['y' => $y, 'm' => 5],
+                (object) ['y' => $y, 'm' => 6],
+                (object) ['y' => $y, 'm' => 7],
+            ];
+            $prev = $year.'1';
+            $next = ($year + 1).'1';
+        }
+        $event_list = [];
+        foreach ($month as $t) {
+            $min = Carbon::parse($t->y.'-'.$t->m)->startOfMonth();
+            $max = Carbon::parse($t->y.'-'.$t->m)->endOfMonth();
+            $period = CarbonPeriod::create($min, $max);
+            foreach ($period as $sd) {
+                $events = IcsEvent::inTimeForTraining($sd);
+                $important = $events->where('important', true);
+                $events = $events->where('important', false);
+                $content = '';
+                if ($important->count() > 0) $content .= '【學校重要活動】';
+                foreach ($important as $i) {
+                    $content .= '　'.$i->summary;
+                    if (!empty($i->location)) $content .= ' 地點：'.$i->location;
+                    if (!($i->all_day)) $content .= ' 時間：'.$i->startTime.'到'.$i->endTime;
+                    if ($i->startDate != $i->endDate) $content .= '(至'.$i->endDate.'止)';
+                }
+                $last = '';
+                foreach ($events as $e) {
+                    if ($last != $e->unit_id) {
+                        $uname = Unit::find($e->unit_id)->name;
+                        $content .= '【'.$uname.'】';
+                        $last = $e->unit_id;
                     }
-                    $last = '';
-                    foreach ($events as $e) {
-                        if ($last != $e->unit_id) {
-                            $uname = Unit::find($e->unit_id)->name;
-                            $content .= '【'.$uname.'】';
-                            $last = $e->unit_id;
-                        }
-                        $content .= '　'.$e->summary;
-                        if (!empty($e->location)) $content .= ' 地點：'.$e->location;
-                        if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
-                        if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate.'止)';
-                    }
-                    if ($content) {
-                        $obj = new \stdClass;
-                        $obj->month = self::$monthMap[$m];
-                        $obj->day = $sd->day;
-                        $obj->weekday = self::$weekMap[$sd->dayOfWeek];
-                        $obj->content = $content;
-                        $event_list[] = $obj;    
-                    }
+                    $content .= '　'.$e->summary;
+                    if (!empty($e->location)) $content .= ' 地點：'.$e->location;
+                    if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
+                    if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate->format('Y-m-d').'止)';
+                }
+                if ($content) {
+                    $obj = new \stdClass;
+                    $obj->month = self::$monthMap[$t->m];
+                    $obj->day = $sd->day;
+                    $obj->weekday = self::$weekMap[$sd->dayOfWeek];
+                    $obj->content = $content;
+                    $event_list[] = $obj;    
                 }
             }
         }
-        return view('app.calendar_training', ['current' => $today, 'events' => $event_list]);
+        return view('app.calendar_training', ['current' => $today, 'section' => $section, 'prev' => $prev, 'next' => $next, 'events' => $event_list]);
     }
 
     public function student(Request $request)
     {
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
-        $event_list = [];
-        $year = current_years();
-        if (current_seme() == 1) {
-            $month = [ 8, 9, 10, 11, 12, 1 ];
+        $section = $request->input('section');
+        if (!$section) {
+            $year = current_year();
+            $seme = current_seme();
+            $section = $year . $seme;
         } else {
-            $month = [ 2, 3, 4, 5, 6, 7 ];
+            $year = (integer) substr($section, 0, -1);
+            $seme = (integer) substr($section, -1);
         }
-        foreach ($year as $y) {
-            foreach ($month as $m) {
-                $min = Carbon::parse($y.'-'.$m)->startOfMonth();
-                $max = Carbon::parse($y.'-'.$m)->endOfMonth();
-                $period = CarbonPeriod::create($min, $max);
-                foreach ($period as $sd) {
-                    $events = IcsEvent::inTimeForStudent($sd);
-                    $important = $events->where('important', true);
-                    $events = $events->where('important', false);
-                    $content = '';
-                    if ($important->count() > 0) $content .= '【學校重要活動】';
-                    foreach ($important as $i) {
-                        $content .= '　'.$i->summary;
-                        if (!empty($i->location)) $content .= ' 地點：'.$i->location;
-                        if (!($i->all_day)) $content .= ' 時間：'.$i->startTime.'到'.$i->endTime;
-                        if ($i->startDate != $i->endDate) $content .= '(至'.$i->endDate.'止)';
+        if ($seme == 1) {
+            $y = $year+1911;
+            $month = [
+                (object) ['y' => $y, 'm' => 8],
+                (object) ['y' => $y, 'm' => 9],
+                (object) ['y' => $y, 'm' => 10],
+                (object) ['y' => $y, 'm' => 11],
+                (object) ['y' => $y, 'm' => 12],
+                (object) ['y' => $y + 1, 'm' => 1],
+            ];
+            $prev = ($year - 1).'2';
+            $next = $year.'2';
+        } else {
+            $y = $year+1912;
+            $month = [
+                (object) ['y' => $y, 'm' => 2],
+                (object) ['y' => $y, 'm' => 3],
+                (object) ['y' => $y, 'm' => 4],
+                (object) ['y' => $y, 'm' => 5],
+                (object) ['y' => $y, 'm' => 6],
+                (object) ['y' => $y, 'm' => 7],
+            ];
+            $prev = $year.'1';
+            $next = ($year + 1).'1';
+        }
+        $event_list = [];
+        foreach ($month as $t) {
+            $min = Carbon::parse($t->y.'-'.$t->m)->startOfMonth();
+            $max = Carbon::parse($t->y.'-'.$t->m)->endOfMonth();
+            $period = CarbonPeriod::create($min, $max);
+            foreach ($period as $sd) {
+                $events = IcsEvent::inTimeForStudent($sd);
+                $important = $events->where('important', true);
+                $events = $events->where('important', false);
+                $content = '';
+                if ($important->count() > 0) $content .= '【學校重要活動】';
+                foreach ($important as $i) {
+                    $content .= '　'.$i->summary;
+                    if (!empty($i->location)) $content .= ' 地點：'.$i->location;
+                    if (!($i->all_day)) $content .= ' 時間：'.$i->startTime.'到'.$i->endTime;
+                    if ($i->startDate != $i->endDate) $content .= '(至'.$i->endDate.'止)';
+                }
+                $last = '';
+                foreach ($events as $e) {
+                    if ($last != $e->unit_id) {
+                        $uname = Unit::find($e->unit_id)->name;
+                        $content .= '【'.$uname.'】';
+                        $last = $e->unit_id;
                     }
-                    $last = '';
-                    foreach ($events as $e) {
-                        if ($last != $e->unit_id) {
-                            $uname = Unit::find($e->unit_id)->name;
-                            $content .= '【'.$uname.'】';
-                            $last = $e->unit_id;
-                        }
-                        $content .= '　'.$e->summary;
-                        if (!empty($e->location)) $content .= ' 地點：'.$e->location;
-                        if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
-                        if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate.'止)';
-                    }
-                    if ($content) {
-                        $obj = new \stdClass;
-                        $obj->month = self::$monthMap[$m];
-                        $obj->day = $sd->day;
-                        $obj->weekday = self::$weekMap[$sd->dayOfWeek];
-                        $obj->content = $content;
-                        $event_list[] = $obj;    
-                    }
+                    $content .= '　'.$e->summary;
+                    if (!empty($e->location)) $content .= ' 地點：'.$e->location;
+                    if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
+                    if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate->format('Y-m-d').'止)';
+                }
+                if ($content) {
+                    $obj = new \stdClass;
+                    $obj->month = self::$monthMap[$t->m];
+                    $obj->day = $sd->day;
+                    $obj->weekday = self::$weekMap[$sd->dayOfWeek];
+                    $obj->content = $content;
+                    $event_list[] = $obj;    
                 }
             }
         }
-        return view('app.calendar_student', ['current' => $today, 'events' => $event_list]);
+        return view('app.calendar_student', ['current' => $today, 'section' => $section, 'prev' => $prev, 'next' => $next, 'events' => $event_list]);
     }
 
     public function download(Request $request)

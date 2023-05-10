@@ -9,7 +9,7 @@ use Carbon\Carbon;
 class Club extends Model
 {
 
-	protected $table = 'clubs';
+    protected $table = 'clubs';
 
     protected static $weekMap = [
         0 => '日',
@@ -53,7 +53,7 @@ class Club extends Model
 
     //以下為透過程式動態產生之屬性
     protected $appends = [
-		'grade',
+        'grade',
         'style',
     ];
 
@@ -83,8 +83,10 @@ class Club extends Model
             ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
             ->where('clubs_section.section', current_section())
             ->where('club_kinds.stop_enroll', false)
-            ->whereDate('club_kinds.enrollDate', '<=', $today)
-            ->whereDate('club_kinds.expireDate', '>=', $today)
+            ->whereDate('club_kinds.enrollDate', '<=', $today->format('Y-m-d'))
+            ->whereDate('club_kinds.expireDate', '>=', $today->format('Y-m-d'))
+            ->whereTime('club_kinds.workTime', '<=', $today->format('H:i:s'))
+            ->whereTime('club_kinds.restTime', '>=', $today->format('H:i:s'))
             ->where('clubs.stop_enroll', false)
             ->whereJsonContains('clubs.for_grade', (integer) $grade)
             ->orderBy('clubs.kind_id')
@@ -95,8 +97,10 @@ class Club extends Model
             ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
             ->where('clubs_section.section', current_section())
             ->where('club_kinds.stop_enroll', false)
-            ->whereDate('club_kinds.enrollDate', '<=', $today)
-            ->whereDate('club_kinds.expireDate', '>=', $today)
+            ->whereDate('club_kinds.enrollDate', '<=', $today->format('Y-m-d'))
+            ->whereDate('club_kinds.expireDate', '>=', $today->format('Y-m-d'))
+            ->whereTime('club_kinds.workTime', '<=', $today->format('H:i:s'))
+            ->whereTime('club_kinds.restTime', '>=', $today->format('H:i:s'))
             ->where('clubs.stop_enroll', false)
             ->orderBy('clubs.kind_id')
             ->get();
