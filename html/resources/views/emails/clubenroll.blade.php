@@ -78,7 +78,7 @@
                         </td>
                     </tr>
                     @endif
-                    @if ($enroll->club->self_defined)
+                    @if ($enroll->club->section()->self_defined)
                     <tr>
                         <th scope="row" class="p-2 bg-green-100">
                             自選上課日

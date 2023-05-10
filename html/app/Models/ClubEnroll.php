@@ -82,7 +82,7 @@ class ClubEnroll extends Model
     {
         if (!($this->club)) return '';
         $str = '週';
-        if ($this->club->self_defined) {
+        if ($this->section()->self_defined) {
             foreach ($this->weekdays as $d) {
                 $str .= self::$weekMap[$d];
             }
@@ -103,7 +103,7 @@ class ClubEnroll extends Model
         $str .= '～';
         $str .= substr($this->club->section($this->section)->endDate, 0, 10);
         $str .= ' 週';
-        if ($this->club->self_defined) {
+        if ($this->section()->self_defined) {
             foreach ($this->weekdays as $d) {
                 $str .= self::$weekMap[$d];
             }
@@ -147,6 +147,12 @@ class ClubEnroll extends Model
     public function club()
     {
         return $this->belongsTo('App\Models\Club', 'club_id');
+    }
+
+    //取得此報名資訊的學生社團
+    public function section()
+    {
+        return $this->club->section();
     }
 
     //取得此報名資訊的社團分類
@@ -274,7 +280,7 @@ class ClubEnroll extends Model
             } else {
                 $weekdays_new = $new->weekdays;
             }
-            if ($weekdays_new) {
+            if ($weekdays_new && $weekdays_old) {
                 $overlap = array_intersect($weekdays_new, $weekdays_old);
                 if (!empty($overlap)) {
                     $time_period_old = new CarbonPeriod($old->startTime, $old->endTime);

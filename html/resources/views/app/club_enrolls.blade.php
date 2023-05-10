@@ -101,7 +101,7 @@
         <th scope="col" class="p-2">
             學生姓名
         </th>
-        @if ($club->self_defined)
+        @if ($club->section()->self_defined)
         <th scope="col" class="p-2">
             自選上課日
         </th>
@@ -133,7 +133,7 @@
         <td class="p-2">
             <span>{{ $enroll->student->class_id }}{{ ($enroll->student->seat < 10) ? '0'.$enroll->student->seat : $enroll->student->seat }}</span>
         </td>
-        @if ($club->self_defined)
+        @if ($club->section()->self_defined)
         <td class="p-2">
             <span>{{ $enroll->weekday }}</span>
         </td>

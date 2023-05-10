@@ -65,7 +65,7 @@ class ClubEnrolledExport
             $table->addCell(Converter::cmToTwip(1.25), ['bgColor' => 'cccccc', 'valign' => 'center'])
                 ->addText('營養午餐', ['bold' => true], ['alignment' => 'center']);
         }
-        if ($club->self_defined) {
+        if ($club->section()->self_defined) {
             $table->addCell(Converter::cmToTwip(3), ['bgColor' => 'cccccc', 'valign' => 'center'])
                 ->addText('自選上課日', ['bold' => true], ['alignment' => 'center']);
         }
@@ -85,7 +85,7 @@ class ClubEnrolledExport
             if ($club->has_lunch) {
                 $table->addCell()->addText($enroll->lunch);
             }
-            if ($club->self_defined) {
+            if ($club->section()->self_defined) {
                 $table->addCell()->addText($enroll->weekday);
             }
             $table->addCell()->addText($enroll->parent);
