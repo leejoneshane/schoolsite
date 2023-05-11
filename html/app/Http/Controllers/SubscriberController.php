@@ -28,6 +28,22 @@ class SubscriberController extends Controller
         return view('app.subscriber', ['email' => $email, 'subscriber' => $subscriber, 'news' => $news]);
     }
 
+    public function resent(Request $request, $email = null)
+    {
+        $subscriber = null;
+        if ($email) {
+            $subscriber = Subscriber::findByEmail($email);
+        } else {
+            if (Auth::check()) {
+                $email = Auth::user()->email;
+                $subscriber = Subscriber::findByEmail($email);
+            }
+        }
+        $subscriber->sendEmailVerificationNotification();
+        Watchdog::watch($request, '寄送郵件信箱確認信到 ' . $subscriber->email);
+        return redirect()->route('subscriber')->with('success', '驗證信已經寄送到您的電子郵件信箱，請收信並進行驗證！');
+    }
+
     public function subscription(Request $request, $news = null)
     {
         if (!$news) return redirect()->route('subscriber');

@@ -10,6 +10,11 @@
     <button type="button" class="inline text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick="refresh()">
         查詢訂閱情形
     </button>
+    @if ($subscriber && !($subscriber->verified))
+    <button type="button" class="inline text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick="resent()">
+        寄送驗證信
+    </button>
+    @endif
     <div id="notice" class="hidden text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>偵測到 email 已變更，請務必按「查閱訂閱情形」按鈕，重新整理頁面！</div>
 </div></p>
 <table class="w-full py-4 text-left font-normal">
@@ -49,6 +54,10 @@
     function refresh() {
         const email = document.getElementById('email').value;
         window.location.replace('{{ route('subscriber') }}' + '/' + email);
+    }
+    function resent() {
+        const email = document.getElementById('email').value;
+        window.location.replace('{{ route('subscriber.resent') }}' + '/' + email);
     }
     function subscribe(obj, id) {
         if (obj.checked) {
