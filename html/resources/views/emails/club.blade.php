@@ -13,7 +13,7 @@
             </div>            
             <h3 class="text-2xl">敬愛的家長{{ $enroll->parent }}，您好：</h3>
             <div class="mt-4">
-                貴子弟（{{ $student->classroom->name }}{{ $student->seat }}號{{ $student->realname }}），因報名參加{{ $club->studytime }}上課的{{ $club->name }}，以下注意事項提醒您：
+                貴子弟（{{ $student->classroom->name }}{{ $student->seat }}號{{ $student->realname }}），因報名參加{{ $club->section()->studytime }}上課的{{ $club->name }}，以下注意事項提醒您：
             </div>
             <div class="mt-4">
                 <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">

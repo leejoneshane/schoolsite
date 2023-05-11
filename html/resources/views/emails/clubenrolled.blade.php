@@ -30,7 +30,7 @@
                             上課時間
                         </th>
                         <td class="p-2">
-                            {{ $enroll->club->studytime }}
+                            {{ $enroll->club_section()->studytime }}
                         </td>
                     </tr>
                     <tr>
@@ -38,7 +38,7 @@
                             指導老師
                         </th>
                         <td class="p-2">
-                            {{ $enroll->club->teacher }}
+                            {{ $enroll->club_section()->teacher }}
                         </td>
                     </tr>
                     <tr>
@@ -46,7 +46,7 @@
                             授課地點
                         </th>
                         <td class="p-2">
-                            {{ $enroll->club->location }}
+                            {{ $enroll->club_section()->location }}
                         </td>
                     </tr>
                     <tr>
@@ -54,7 +54,7 @@
                             招生人數
                         </th>
                         <td class="p-2">
-                            {{ $enroll->club->total }}
+                            {{ $enroll->club_section()->total }}
                         </td>
                     </tr>
                     <tr>
