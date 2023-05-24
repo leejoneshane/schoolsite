@@ -102,29 +102,32 @@ class ClubEnroll extends Model
     public function getStudytimeAttribute()
     {
         $section = $this->club_section();
-        $str ='';
-        $str .= substr($section->startDate, 0, 10);
-        $str .= '～';
-        $str .= substr($section->endDate, 0, 10);
-        $str .= ' 週';
-        if ($section->self_defined) {
-            if (is_array($this->weekdays)) {
-                foreach ($this->weekdays as $d) {
-                    $str .= self::$weekMap[$d];
+        if ($section) {
+            $str ='';
+            $str .= substr($section->startDate, 0, 10);
+            $str .= '～';
+            $str .= substr($section->endDate, 0, 10);
+            $str .= ' 週';
+            if ($section->self_defined) {
+                if (is_array($this->weekdays)) {
+                    foreach ($this->weekdays as $d) {
+                        $str .= self::$weekMap[$d];
+                    }
+                } else {
+                    return '';
                 }
             } else {
-                return '';
+                foreach ($section->weekdays as $d) {
+                    $str .= self::$weekMap[$d];
+                }
             }
-        } else {
-            foreach ($section->weekdays as $d) {
-                $str .= self::$weekMap[$d];
-            }
+            $str .= ' ';
+            $str .= $section->startTime;
+            $str .= '～';
+            $str .= $section->endTime;
+            return $str;    
         }
-        $str .= ' ';
-        $str .= $section->startTime;
-        $str .= '～';
-        $str .= $section->endTime;
-        return $str;
+        return '';
     }
 
     //提供學生用餐選擇字串
@@ -160,7 +163,10 @@ class ClubEnroll extends Model
     //取得此報名資訊的學生社團
     public function club_section()
     {
-        return $this->club->section($this->section);
+        if ($this->club) {
+            return $this->club->section($this->section);
+        }
+        return null;
     }
 
     //取得此報名資訊的社團分類

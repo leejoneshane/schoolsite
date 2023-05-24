@@ -25,12 +25,21 @@
             上課時間
         </th>
     </tr>
+    @php
+      $section = $club->section();
+      $teacher = $location = $studytime = '';
+      if ($section) {
+        $teacher = $section->teacher;
+        $location = $section->location;
+        $studytime = $section->studytime;
+      }
+    @endphp
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2 {{ $club->kind->style }}">{{ $club->name }}</td>
         <td class="p-2">{{ $club->grade }}</td>
-        <td class="p-2">{{ $club->section()->teacher }}</td>
-        <td class="p-2">{{ $club->section()->location }}</td>
-        <td class="p-2">{{ $club->section()->studytime }}</td>
+        <td class="p-2">{{ $teacher }}</td>
+        <td class="p-2">{{ $location }}</td>
+        <td class="p-2">{{ $studytime }}</td>
     </tr>
 </table>
 <form id="mail-club" action="{{ route('clubs.mail', ['club_id' => $club->id]) }}" method="POST">

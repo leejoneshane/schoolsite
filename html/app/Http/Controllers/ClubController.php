@@ -687,7 +687,12 @@ class ClubController extends Controller
             $current = current_section();
             if (!$section) {
                 if (!empty($club->sections)) {
-                    $section = $club->sections->first()->section;
+                    $section_obj = $club->sections->first();
+                    if ($section_obj) {
+                        $section = $section_obj->section;
+                    } else {
+                        $section = $current;
+                    }
                 } else {
                     $section = $current;
                 }
