@@ -844,7 +844,7 @@ class ClubController extends Controller
                 }
             }
             $order = $club->count_enrolls() + 1;
-            if ($order > $club->section()->maximum) {
+            if ($club->section()->maximum != 0 && $order > $club->section()->maximum) {
                 $message .= $stdno.$student->realname.'因該社團已經額滿，無法報名！';
                 continue;
             }

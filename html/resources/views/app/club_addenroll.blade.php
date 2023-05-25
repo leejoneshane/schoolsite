@@ -53,17 +53,17 @@
             <div class="p-3">
                 <label for="parent" class="inline">聯絡人：</label>
                 <input class="inline w-48 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    type="text" name="parent">
+                    type="text" name="parent" minlength="2" required>
             </div>
             <div class="p-3">
                 <label for="email" class="inline">電子郵件地址：</label>
                 <input class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    type="text" name="email">
+                    type="email" name="email">
             </div>
             <div class="p-3">
                 <label for="mobile" class="inline">行動電話號碼：</label>
                 <input class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    type="text" name="mobile">
+                    type="tel" name="mobile" pattern="[0-9]{10}">
             </div>
             <div class="p-3">
                 <label for="identity" class="inline">特殊身份註記：</label>
