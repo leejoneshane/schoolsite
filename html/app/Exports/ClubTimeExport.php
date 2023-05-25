@@ -3,104 +3,173 @@
 namespace App\Exports;
 
 use App\Models\Club;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\Shared\Converter;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
 
-class ClubTimeExport
+class ClubTimeExport implements FromCollection, WithHeadings, WithStyles, WithMapping
 {
-    public $club_id;
+    use Exportable;
+
+    public $club;
+    public $rows = [];
+    public $total = 4;
 
     public function __construct($club_id)
     {
-        $this->club_id = $club_id;
+        $this->club = Club::find($club_id);
     }
 
-    public function export($title, $filename, $type)
+    public function collection()
     {
-        $club = Club::find($this->club_id);
-        $enrolls = $club->section_accepted()->sortBy(function ($en) {
+        $enrolls = $this->club->section_accepted()->sortBy(function ($en) {
             return $en->student->stdno;
         });
-        $phpWord = new PhpWord();
-        $phpWord->setDefaultFontSize(11);
-        $section = $phpWord->addSection(['orientation' => 'landscape', 'pageNumberingStart' => 1]);
-        $section->addHeader()->addText(config('app.name') . ' - ' . $title, null, ['alignment' => 'center']);
-        $section->addFooter()->addPreserveText('第 {PAGE} 頁/共 {NUMPAGES} 頁', null, ['alignment' => 'center']);
-        $section->addText('課後照顧班與社團時間序列表', ['bold' => true, 'color' => '3333FF', 'size' => 18], ['alignment' => 'center', 'lineHeight' => 1.5]);
-        $section->addTextBreak(1);
-        $section->addText('社團全名：'.$club->name.'　　指導老師簽名：　　　　　　', ['bold' => true, 'size' => 14], ['alignment' => 'left', 'lineHeight' => 1]);
-        $table = $section->addTable(['borderSize' => 2, 'borderColor' => '999999', 'cellMargin' => 50]);
-        $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(1), ['bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('編號', ['bold' => true], ['alignment' => 'center']);
-        $table->addCell(Converter::cmToTwip(1), ['bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('年班', ['bold' => true], ['alignment' => 'center']);
-        $table->addCell(Converter::cmToTwip(1), ['bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('座號', ['bold' => true], ['alignment' => 'center']);
-        $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('姓名', ['bold' => true], ['alignment' => 'center']);
-        $table->addCell(null, ['gridSpan' => 3,'bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('課後與社團活動一覽表', ['bold' => true], ['alignment' => 'center']);
-        foreach ($enrolls as $key => $enroll) {
-            $table->addRow();
-            $table->addCell()->addText($key + 1);
-            $table->addCell()->addText($enroll->student->class_id);
-            $table->addCell()->addText($enroll->student->seat);
-            $table->addCell()->addText($enroll->student->realname);
-            $next = $enroll->student->section_enrolls()->reject($enroll);
-            $cells = array([],[],[]);
+        return $enrolls;
+    }
+
+    public function headings(): array
+    {
+        return [
+            [ '臺北市國語實驗國民小學學生社團【'.$this->club->name.'】課後照顧班與社團時間序列表' ],
+            [ '月份：', '', '指導老師簽名：', '' ],
+            [ '編號', '年班', '座號', '姓名', '課後與社團活動一覽表', '', '' ],
+            [ '', '', '', '', '中午', '下午', '晚上']
+        ];
+    }
+
+    public function prepareRows($rows)
+    {
+        $i = 1;
+        foreach ($rows as $k => $row) {
+            $rows[$k]->no = $i;
+            $clubs = [];
+            $next = $row->student->section_enrolls()->reject($row);
             foreach ($next as $en) {
                 $sec = $en->club_section();
                 if ($sec->startTime < '16:00:00') {
-                    $cells[0][] = $en;
+                    $rows[$k]->period0[] = $en;
                 } elseif ($sec->startTime < '17:00:00') {
-                    $cells[1][] = $en;
+                    $rows[$k]->period1[] = $en;
                 } else {
-                    $cells[2][] = $en;
+                    $rows[$k]->period2[] = $en;
                 }
             }
-            foreach ($cells as $cell) {
-                $col = $table->addCell();
-                foreach ($cell as $en) {
-                    $short = $en->club->short_name;
-                    $weekday = $en->weekday;
-                    $sec = $en->club_section();
-                    $time = str_replace(':', '', $sec->startTime);
-                    $time = substr($time, 0, 4);
-                    $col->addText("$short($weekday$time)");
-                }
-            }
+            $num = max(count($clubs[0]), count($clubs[1]), count($clubs[2]));
+            $rows[$k]->count = $num;
+            $this->rows[$i] = $num;
+            $this->total += $num;
+            $i++;
         }
-        $objWriter = IOFactory::createWriter($phpWord, $type);
-        $objWriter->save($filename);
-        return public_path($filename);
+        return $rows;
     }
 
-    public function download($title, $type = null, $headers = [])
+    public function map($row): array
     {
-        if (!$type) {
-            $type = 'Word2007';
+        $num = $row->count;
+        $map[0] = [
+            $row->no,
+            $row->student->class_id,
+            $row->student->seat,
+            $row->student->realname,
+            '',
+            '',
+            '',
+        ];
+        for ($i=1;$i<$num;$i++) {
+            $map[$i] = [ '', '', '', '', '', '', '' ];
         }
-        switch ($type) {
-            case 'Word2007':
-                $filename = "$title.docx";
-                break;
-            case 'MsDoc':
-                $filename = "$title.doc";
-                break;
-            case 'ODText':
-                $filename = "$title.odt";
-                break;
-            case 'HTML':
-                $filename = "$title.html";
-                break;
+        for ($i=0;$i<$num;$i++) {
+            if (isset($clubs[0][$i])) {
+                $en = $clubs[0][$i];
+                $short = $en->club->short_name;
+                $weekday = $en->weekday;
+                $sec = $en->club_section();
+                $time = str_replace(':', '', $sec->startTime);
+                $time = substr($time, 0, 4);
+                $map[$i][4] = "$short($weekday$time)";
+            }
+            if (isset($clubs[1][$i])) {
+                $en = $clubs[1][$i];
+                $short = $en->club->short_name;
+                $weekday = $en->weekday;
+                $sec = $en->club_section();
+                $time = str_replace(':', '', $sec->startTime);
+                $time = substr($time, 0, 4);
+                $map[$i][5] = "$short($weekday$time)";
+            }
+            if (isset($clubs[2][$i])) {
+                $en = $clubs[2][$i];
+                $short = $en->club->short_name;
+                $weekday = $en->weekday;
+                $sec = $en->club_section();
+                $time = str_replace(':', '', $sec->startTime);
+                $time = substr($time, 0, 4);
+                $map[$i][6] = "$short($weekday$time)";
+            }
         }
-        return response()->download(
-            $this->export($title, $filename, $type),
-            $filename,
-            $headers
-        )->deleteFileAfterSend(true);
+        return $map;
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        $sheet->mergeCells('A1:G1')->getStyle('A1:G1')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+        ]);
+        $sheet->mergeCells('A3:A4')->getStyle('A3:A4')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+            'vertical'     => Alignment::VERTICAL_CENTER,
+        ]);
+        $sheet->mergeCells('B3:B4')->getStyle('B3:B4')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+            'vertical'     => Alignment::VERTICAL_CENTER,
+        ]);
+        $sheet->mergeCells('C3:C4')->getStyle('C3:C4')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+            'vertical'     => Alignment::VERTICAL_CENTER,
+        ]);
+        $sheet->mergeCells('D3:D4')->getStyle('D3:D4')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+            'vertical'     => Alignment::VERTICAL_CENTER,
+        ]);
+        $sheet->mergeCells('E3:G3')->getStyle('E3:G3')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+        ]);
+        $start = 5;
+        for ($i=0;$i<count($this->rows);$i++) {
+            $num = $this->rows[$i + 1];
+            $sheet->mergeCells('A'.$start.':A'.$start + $num - 1)->getStyle('A'.$start.':A'.$start + $num - 1)->getAlignment()->applyFromArray([
+                'horizontal'   => Alignment::HORIZONTAL_CENTER,
+                'vertical'     => Alignment::VERTICAL_CENTER,
+            ]);
+            $sheet->mergeCells('B'.$start.':B'.$start + $num - 1)->getStyle('B'.$start.':B'.$start + $num - 1)->getAlignment()->applyFromArray([
+                'horizontal'   => Alignment::HORIZONTAL_CENTER,
+                'vertical'     => Alignment::VERTICAL_CENTER,
+            ]);
+            $sheet->mergeCells('C'.$start.':C'.$start + $num - 1)->getStyle('C'.$start.':C'.$start + $num - 1)->getAlignment()->applyFromArray([
+                'horizontal'   => Alignment::HORIZONTAL_CENTER,
+                'vertical'     => Alignment::VERTICAL_CENTER,
+            ]);
+            $sheet->mergeCells('D'.$start.':D'.$start + $num - 1)->getStyle('D'.$start.':D'.$start + $num - 1)->getAlignment()->applyFromArray([
+                'horizontal'   => Alignment::HORIZONTAL_CENTER,
+                'vertical'     => Alignment::VERTICAL_CENTER,
+            ]);
+            $start += $num;
+        }
+        $sheet->getStyle('A3:G'.$this->total)->getBorders()->applyFromArray([
+            'allBorders' => [
+                'borderStyle' => Border::BORDER_THIN,
+                'color' => [
+                    'rgb' => '808080',
+                ],
+            ],
+        ]);
     }
 
 }

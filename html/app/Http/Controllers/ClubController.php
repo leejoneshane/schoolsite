@@ -234,7 +234,7 @@ class ClubController extends Controller
             $uuids = ClubEnroll::repetition();
             $students = [];
             foreach ($uuids as $uuid) {
-                $students[] = Student::find($uuid);
+                $students[] = Student::find($uuid)->first();
             }
             return view('app.club_repetition', ['kind' => $kid, 'students' => $students]);
         } else {
@@ -960,7 +960,7 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             $filename = Club::find($club_id)->name.'點名表';
             $exporter = new ClubRollExport($club_id);
-            return $exporter->download($filename);
+            return $exporter->download("$filename.xlsx");
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -973,7 +973,7 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             $filename = Club::find($club_id)->name.'時序表';
             $exporter = new ClubTimeExport($club_id);
-            return $exporter->download($filename);
+            return $exporter->download("$filename.xlsx");
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }

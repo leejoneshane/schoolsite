@@ -9,6 +9,7 @@ use App\Notifications\ClubNotification;
 use App\Notifications\ClubEnrollNotification;
 use App\Notifications\ClubEnrolledNotification;
 use Carbon\CarbonPeriod;
+use App\Models\ClubSection;
 
 class ClubEnroll extends Model
 {
@@ -81,21 +82,23 @@ class ClubEnroll extends Model
     public function getWeekdayAttribute()
     {
         $section = $this->club_section();
-        $str = '週';
-        if ($section->self_defined) {
-            if (is_array($this->weekdays)) {
-                foreach ($this->weekdays as $d) {
-                    $str .= self::$weekMap[$d];
+        if ($section) {
+            $str = '週';
+            if ($section->self_defined) {
+                if (is_array($this->weekdays)) {
+                    foreach ($this->weekdays as $d) {
+                        $str .= self::$weekMap[$d];
+                    }
+                } else {
+                    return '';
                 }
             } else {
-                return '';
+                foreach ($section->weekdays as $d) {
+                    $str .= self::$weekMap[$d];
+                }
             }
-        } else {
-            foreach ($section->weekdays as $d) {
-                $str .= self::$weekMap[$d];
-            }
+            return $str;
         }
-        return $str;
     }
 
     //提供學生上課時間完整中文字串（包含家長自訂上課日）
@@ -163,10 +166,9 @@ class ClubEnroll extends Model
     //取得此報名資訊的學生社團
     public function club_section()
     {
-        if ($this->club) {
-            return $this->club->section($this->section);
-        }
-        return null;
+        return ClubSection::where('club_id', $this->club_id)
+            ->where('section', $this->section)
+            ->first();
     }
 
     //取得此報名資訊的社團分類

@@ -131,7 +131,7 @@ class Club extends Model
         return $this->hasMany('App\Models\ClubSection', 'club_id')->orderBy('section', 'desc');
     }
 
-    //提供目前的學期資訊
+    //提供指定學期或目前的學期資訊
     public function section($section = null)
     {
         if ($section) {

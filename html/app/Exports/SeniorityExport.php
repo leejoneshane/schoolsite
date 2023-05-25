@@ -3,14 +3,17 @@
 namespace App\Exports;
 
 use App\Models\Seniority;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
 
-class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatting, WithMapping
+class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatting, WithStyles, WithMapping
 {
     use Exportable;
 
@@ -32,8 +35,10 @@ class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatt
             [
                 '臺北市國語實驗國民小學'.$this->year.'學年度教師教學年資統計  '.date('Y-m-d').'匯出',
             ],[
-                '唯一編號', '職別', '姓名', '在校年', '在校月', '在校積分', '校外年', '校外月', '校外積分', '教學年資', '總積分', '備註',
-            ]
+                '唯一編號', '職別', '姓名', '在校年資', '', '', '校外年資', '', '', '教學年資', '總積分', '備註',
+            ],[
+                '', '', '', '在校年', '在校月', '在校積分', '校外年', '校外月', '校外積分', '', '', '',
+            ],
         ];
     }
 
@@ -72,6 +77,43 @@ class SeniorityExport implements FromCollection, WithHeadings, WithColumnFormatt
             'K' => NumberFormat::FORMAT_NUMBER_00,
             'L' => NumberFormat::FORMAT_TEXT,
         ];
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        $sheet->mergeCells('A1:L1')->getStyle('A1:L1')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+        ]);
+        $sheet->mergeCells('D2:F2')->getStyle('D2:F2')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+        ]);
+        $sheet->mergeCells('G2:I2')->getStyle('G2:I2')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+        ]);
+        $sheet->mergeCells('A2:A3')->getStyle('A2:A3')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+            'vertical'     => Alignment::VERTICAL_CENTER,
+        ]);
+        $sheet->mergeCells('B2:B3')->getStyle('B2:B3')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+            'vertical'     => Alignment::VERTICAL_CENTER,
+        ]);
+        $sheet->mergeCells('C2:C3')->getStyle('C2:C3')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+            'vertical'     => Alignment::VERTICAL_CENTER,
+        ]);
+        $sheet->mergeCells('J2:J3')->getStyle('J2:J3')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+            'vertical'     => Alignment::VERTICAL_CENTER,
+        ]);
+        $sheet->mergeCells('K2:K3')->getStyle('K2:K3')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+            'vertical'     => Alignment::VERTICAL_CENTER,
+        ]);
+        $sheet->mergeCells('L2:L3')->getStyle('L2:L3')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+            'vertical'     => Alignment::VERTICAL_CENTER,
+        ]);
     }
 
 }

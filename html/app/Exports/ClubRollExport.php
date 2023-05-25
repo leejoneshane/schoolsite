@@ -3,111 +3,118 @@
 namespace App\Exports;
 
 use App\Models\Club;
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\Shared\Converter;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithStyles;
 
-class ClubRollExport
+class ClubRollExport implements FromCollection, WithHeadings, WithStyles, WithMapping
 {
-    public $club_id;
+    use Exportable;
+
+    public $club;
+    public $rows;
 
     public function __construct($club_id)
     {
-        $this->club_id = $club_id;
+        $this->club = Club::find($club_id);
     }
 
-    public function export($title, $filename, $type)
+    public function collection()
     {
-        $club = Club::find($this->club_id);
-        $enrolls = $club->section_accepted()->sortBy(function ($en) {
+        $enrolls = $this->club->section_accepted()->sortBy(function ($en) {
             return $en->student->stdno;
         });
-        $phpWord = new PhpWord();
-        $phpWord->setDefaultFontSize(10);
-        $section = $phpWord->addSection(['orientation' => 'landscape', 'pageNumberingStart' => 1]);
-        $section->addHeader()->addText(config('app.name') . ' - ' . $title, null, ['alignment' => 'center']);
-        $section->addFooter()->addPreserveText('第 {PAGE} 頁/共 {NUMPAGES} 頁', null, ['alignment' => 'center']);
-        $section->addText('學生社團點名表', ['bold' => true, 'color' => '3333FF', 'size' => 18], ['alignment' => 'center', 'lineHeight' => 1.5]);
-        $section->addTextBreak(1);
-        $section->addText('月份：　　社團全名：'.$club->name.'　　指導老師簽名：　　　　　　', ['bold' => true, 'size' => 14], ['lineHeight' => 1]);
-        $table = $section->addTable(['unit' => 'pct', 'width' => 100 * 50, 'borderSize' => 2, 'borderColor' => '999999', 'cellMargin' => 50]);
-        $table->addRow(null, ['tblHeader' => false]);
-        $table->addCell(Converter::cmToTwip(3.75), ['gridSpan' => 4, 'bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('學生\日期', ['bold' => true], ['alignment' => 'right']);
-        if ($club->has_lunch) {
-            for ($i=0; $i<20; $i++) {
-                $table->addCell(Converter::cmToTwip(0.7), ['gridSpan' => 2]);
-            }
-        } else {
-            for ($i=0; $i<30; $i++) {
-                $table->addCell(Converter::cmToTwip(0.7));
-            }
-        }
-        $table->addRow();
-        $table->addCell(Converter::cmToTwip(0.7), ['bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('編號', ['bold' => true], ['alignment' => 'center']);
-        $table->addCell(Converter::cmToTwip(0.77), ['bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('年班', ['bold' => true], ['alignment' => 'center']);
-        $table->addCell(Converter::cmToTwip(0.7), ['bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('座號', ['bold' => true], ['alignment' => 'center']);
-        $table->addCell(Converter::cmToTwip(1.59), ['bgColor' => 'cccccc', 'valign' => 'center'])
-            ->addText('姓名', ['bold' => true], ['alignment' => 'center']);
-        if ($club->has_lunch) {
-            for ($i=0; $i<20; $i++) {
-                $table->addCell()->addText('出席', ['bold' => true], ['alignment' => 'center']);
-                $table->addCell()->addText('午餐', ['bold' => true], ['alignment' => 'center']);
-            }
-        } else {
-            for ($i=0; $i<30; $i++) {
-                $table->addCell()->addText('出席', ['bold' => true], ['alignment' => 'center']);
-            }
-        }
-        $j = 1;
-        foreach ($enrolls as $enroll) {
-            $table->addRow();
-            $table->addCell()->addText($j++);
-            $table->addCell()->addText($enroll->student->class_id);
-            $table->addCell()->addText($enroll->student->seat);
-            $table->addCell()->addText($enroll->student->realname);
-            if ($club->has_lunch) {
-                for ($i=0; $i<40; $i++) {
-                    $table->addCell();
-                }
-            } else {
-                for ($i=0; $i<30; $i++) {
-                    $table->addCell();
-                }    
-            }
-        }
-        $objWriter = IOFactory::createWriter($phpWord, $type);
-        $objWriter->save($filename);
-        return public_path($filename);
+        return $enrolls;
     }
 
-    public function download($title, $type = null, $headers = [])
+    public function headings(): array
     {
-        if (!$type) {
-            $type = 'Word2007';
+        $header = [];
+        $header[0] = [ '臺北市國語實驗國民小學學生社團【'.$this->club->name.'】點名表' ];
+        $header[1] = [ '月份：', '', '指導老師簽名：', '' ];
+        $header[2] = [ '學生\日期' ];
+        $header[3] = [ '編號', '年班', '座號', '姓名' ];
+        if ($this->club->has_lunch) {
+            for ($i=0; $i<30; $i++) {
+                $header[3][] = '出席';
+                $header[3][] = '午餐';
+            }
+        } else {
+            for ($i=0; $i<30; $i++) {
+                $header[3][] = '出席';
+            }
         }
-        switch ($type) {
-            case 'Word2007':
-                $filename = "$title.docx";
-                break;
-            case 'MsDoc':
-                $filename = "$title.doc";
-                break;
-            case 'ODText':
-                $filename = "$title.odt";
-                break;
-            case 'HTML':
-                $filename = "$title.html";
-                break;
+        return $header;
+    }
+
+    public function prepareRows($rows)
+    {
+        $i = 1;
+        foreach ($rows as $k => $r) {
+            $rows[$k]->no = $i;
+            $i++;
         }
-        return response()->download(
-            $this->export($title, $filename, $type),
-            $filename,
-            $headers
-        )->deleteFileAfterSend(true);
+        $this->rows = $i + 3;
+        return $rows;
+    }
+
+    public function map($row): array
+    {
+        return [
+            $row->no,
+            $row->student->class_id,
+            $row->student->seat,
+            $row->student->realname,
+        ];
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        if ($this->club->has_lunch) {
+            $cols = 60;
+            $last = 'BL';
+        } else {
+            $cols = 30;
+            $last = 'AH';
+        }
+        $sheet->mergeCells('A1:'.$last.'1')->getStyle('A1:'.$last.'1')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_CENTER,
+        ]);
+        $sheet->mergeCells('A3:D3')->getStyle('A3:D3')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_RIGHT,
+        ]);
+        $sheet->getRowDimension('3')->setRowHeight(30);
+        $sheet->getStyle('A3:'.$last.$this->rows)->getBorders()->applyFromArray([
+            'allBorders' => [
+                'borderStyle' => Border::BORDER_THIN,
+                'color' => [
+                    'rgb' => '808080',
+                ],
+            ],
+        ]);
+        $c = ord('A');
+        for ($i=0;$i<$cols;$i++) {
+            if ($i < 22) {
+                $char = chr($c + 4 + $i);
+            } elseif ($i > 21 && $i < 48) {
+                $char = 'A' . chr($c + $i - 22);
+            } elseif ($i > 47) {
+                $char = 'B' . chr($c + $i - 48);
+            }
+            $sheet->getColumnDimension($char)->setWidth(2.67);
+            $sheet->getStyle($char . '4')->getNumberFormat()->applyFromArray([
+                'formatCode' => NumberFormat::FORMAT_TEXT,
+            ]);
+            $sheet->getStyle($char . '4')->getAlignment()->applyFromArray([
+                'horizontal'   => Alignment::HORIZONTAL_CENTER,
+            ])->setWrapText(true);
+        }
     }
 
 }
