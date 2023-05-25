@@ -50,7 +50,7 @@
         <td class="p-2">{{ $club->section()->location }}</td>
         <td class="p-2">{{ $club->section()->cash }}</td>
         <td class="p-2">{{ $club->section()->total }}</td>
-        <td class="p-2">{{ $club->section()->maximum }}</td>
+        <td class="p-2">{{ ($club->section()->maximum == 0) ? '—' : $club->section()->maximum}}</td>
         <td class="p-2">{{ $club->count_enrolls() }}</td>
         <td class="p-2">
             @if ($enroll = $student->get_enroll($club->id))

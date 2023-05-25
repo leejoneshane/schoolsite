@@ -498,8 +498,10 @@ class ClubController extends Controller
     {
         $section = ClubSection::find($section_id);
         $weekdays = $request->input('weekdays');
-        foreach ($weekdays as $k => $w) {
-            $weekdays[$k] = (integer) $w;
+        if (!empty($weekdays)) {
+            foreach ($weekdays as $k => $w) {
+                $weekdays[$k] = (integer) $w;
+            }    
         }
         $section->update([
             'weekdays' => $weekdays,
@@ -657,9 +659,11 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $e = ClubEnroll::find($enroll_id);
-            Watchdog::watch($request, '刪除報名資訊：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            $e->delete();
-            return back()->with('success', '報名資訊已經刪除！');
+            if ($e) {
+                Watchdog::watch($request, '刪除報名資訊：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                $e->delete();
+                return back()->with('success', '報名資訊已經刪除！');    
+            }
         } else {
             $enroll = ClubEnroll::find($enroll_id);
             if (!$enroll) {

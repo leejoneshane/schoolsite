@@ -38,7 +38,7 @@ class ClubTimeExport implements FromCollection, WithHeadings, WithStyles, WithMa
     {
         return [
             [ '臺北市國語實驗國民小學學生社團【'.$this->club->name.'】課後照顧班與社團時間序列表' ],
-            [ '月份：', '', '指導老師簽名：', '' ],
+            [ '月份：　　　　指導老師簽名：　　　　　　　　' ],
             [ '編號', '年班', '座號', '姓名', '課後與社團活動一覽表', '', '' ],
             [ '', '', '', '', '中午', '下午', '晚上']
         ];
@@ -51,17 +51,21 @@ class ClubTimeExport implements FromCollection, WithHeadings, WithStyles, WithMa
             $rows[$k]->no = $i;
             $clubs = [];
             $next = $row->student->section_enrolls()->reject($row);
+            $period0 = $period1 = $period2 = [];
             foreach ($next as $en) {
                 $sec = $en->club_section();
                 if ($sec->startTime < '16:00:00') {
-                    $rows[$k]->period0[] = $en;
+                    $period0[] = $en;
                 } elseif ($sec->startTime < '17:00:00') {
-                    $rows[$k]->period1[] = $en;
+                    $period1[] = $en;
                 } else {
-                    $rows[$k]->period2[] = $en;
+                    $period2[] = $en;
                 }
             }
-            $num = max(count($clubs[0]), count($clubs[1]), count($clubs[2]));
+            $num = max(count($period0), count($period1), count($period2));
+            $rows[$k]->period0 = $period0;
+            $rows[$k]->period1 = $period1;
+            $rows[$k]->period2 = $period2;
             $rows[$k]->count = $num;
             $this->rows[$i] = $num;
             $this->total += $num;
@@ -86,8 +90,8 @@ class ClubTimeExport implements FromCollection, WithHeadings, WithStyles, WithMa
             $map[$i] = [ '', '', '', '', '', '', '' ];
         }
         for ($i=0;$i<$num;$i++) {
-            if (isset($clubs[0][$i])) {
-                $en = $clubs[0][$i];
+            if (isset($row->period0[$i])) {
+                $en = $row->period0[$i];
                 $short = $en->club->short_name;
                 $weekday = $en->weekday;
                 $sec = $en->club_section();
@@ -95,8 +99,8 @@ class ClubTimeExport implements FromCollection, WithHeadings, WithStyles, WithMa
                 $time = substr($time, 0, 4);
                 $map[$i][4] = "$short($weekday$time)";
             }
-            if (isset($clubs[1][$i])) {
-                $en = $clubs[1][$i];
+            if (isset($row->period1[$i])) {
+                $en = $row->period1[$i];
                 $short = $en->club->short_name;
                 $weekday = $en->weekday;
                 $sec = $en->club_section();
@@ -104,8 +108,8 @@ class ClubTimeExport implements FromCollection, WithHeadings, WithStyles, WithMa
                 $time = substr($time, 0, 4);
                 $map[$i][5] = "$short($weekday$time)";
             }
-            if (isset($clubs[2][$i])) {
-                $en = $clubs[2][$i];
+            if (isset($row->period2[$i])) {
+                $en = $row->period2[$i];
                 $short = $en->club->short_name;
                 $weekday = $en->weekday;
                 $sec = $en->club_section();
@@ -119,8 +123,18 @@ class ClubTimeExport implements FromCollection, WithHeadings, WithStyles, WithMa
 
     public function styles(Worksheet $sheet)
     {
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getColumnDimension('C')->setAutoSize(true);
+        $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
+        $sheet->getColumnDimension('F')->setAutoSize(true);
+        $sheet->getColumnDimension('G')->setAutoSize(true);
         $sheet->mergeCells('A1:G1')->getStyle('A1:G1')->getAlignment()->applyFromArray([
             'horizontal'   => Alignment::HORIZONTAL_CENTER,
+        ]);
+        $sheet->mergeCells('A2:G2')->getStyle('A2:G2')->getAlignment()->applyFromArray([
+            'horizontal'   => Alignment::HORIZONTAL_LEFT,
         ]);
         $sheet->mergeCells('A3:A4')->getStyle('A3:A4')->getAlignment()->applyFromArray([
             'horizontal'   => Alignment::HORIZONTAL_CENTER,
