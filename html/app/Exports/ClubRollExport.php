@@ -105,7 +105,7 @@ class ClubRollExport implements FromCollection, WithHeadings, WithStyles, WithMa
                 ],
             ],
         ]);
-        $c = ord('A');
+        $c = $odd = ord('A');
         for ($i=0;$i<$cols;$i++) {
             if ($i < 22) {
                 $char = chr($c + 4 + $i);
@@ -113,6 +113,11 @@ class ClubRollExport implements FromCollection, WithHeadings, WithStyles, WithMa
                 $char = 'A' . chr($c + $i - 22);
             } elseif ($i > 47) {
                 $char = 'B' . chr($c + $i - 48);
+            }
+            if ($i % 2 == 1) {
+                $sheet->mergeCells($odd.'3:'.$char.'3');
+            } else {
+                $odd = $char;
             }
             $sheet->getColumnDimension($char)->setWidth(2.67);
             $sheet->getStyle($char . '4')->getNumberFormat()->applyFromArray([
