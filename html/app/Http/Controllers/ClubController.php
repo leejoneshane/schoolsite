@@ -573,7 +573,7 @@ class ClubController extends Controller
             if ($same_kind->isNotEmpty()) return redirect()->route('clubs.enroll')->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
         }
         $order = $club->count_enrolls() + 1;
-        if ($order > $club->section()->maximum) {
+        if ($club->section()->maximum != 0 && $order > $club->section()->maximum) {
             return redirect()->route('clubs.enroll')->with('error', '很抱歉，該學生社團已經額滿！');
         }
         $enrolls = Student::find($user->uuid)->section_enrolls();
@@ -769,7 +769,7 @@ class ClubController extends Controller
             if ($same_kind->isNotEmpty()) return redirect()->route('clubs.enroll')->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
         }
         $order = $club->count_enrolls() + 1;
-        if ($order > $club->section()->maximum) {
+        if ($club->section()->maximum != 0 && $order > $club->section()->maximum) {
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '很抱歉，該學生社團已經額滿！');
         }
         $enrolls = Student::find($uuid)->section_enrolls();
