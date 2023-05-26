@@ -411,16 +411,18 @@ class ClubController extends Controller
         return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('message', '因為沒有寄送對象，已經取消郵寄作業！');
     }
 
-    public function clubPrune(Request $request, $club_id)
+    public function clubPrune(Request $request, $club_id, $section = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            ClubEnroll::where('club_id', $club_id)->where('section', current_section())->delete();
+            if (!$section) $section = current_section();
+            ClubEnroll::where('club_id', $club_id)->where('section', $section)->delete();
             $kind_id = $club->kind_id;
-            Watchdog::watch($request, '移除學生社團' . $club->name . '所有報名資訊');
-            return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '已經移除此課外社團本年度報名資訊，可以重新開始報名！');
+            $str = substr($section, 0, -1) . '學年'. ((substr($section, -1) == 1) ? '上' : '下') .'學期';
+            Watchdog::watch($request, '移除學生社團' . $club->name . $str . '所有報名資訊');
+            return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '已經移除此課外社團' . $str . '報名資訊，可以重新開始報名！');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }

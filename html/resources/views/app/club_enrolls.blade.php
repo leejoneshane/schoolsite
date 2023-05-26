@@ -31,6 +31,13 @@
             點名表
         </a>
     </div>
+    <button class="text-sm py-2 pl-6 rounded text-red-300 hover:text-red-600" onclick="
+        const myform = document.getElementById('remove');
+        myform.action = '{{ route('clubs.prune', [ 'club_id' => $club->id, 'section' => $section ]) }}';
+        myform.submit();
+    ">
+        <i class="fa-solid fa-file-import"></i>清空報名紀錄
+    </button>
     @endif
 </div>
 <table class="w-full py-4 text-left font-normal">

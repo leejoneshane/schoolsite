@@ -78,7 +78,7 @@
         <td class="p-2">{{ $club->section()->studytime }}</td>
         <td class="p-2">{{ $club->section()->location }}</td>
         <td class="p-2">{{ $club->section()->total }}</td>
-        <td class="p-2">{{ $club->section()->maximum }}</td>
+        <td class="p-2">{{ ($club->section()->maximum == 0) ? '—' : $club->section()->maximum}}</td>
         <td class="p-2">{{ $club->count_enrolls() }}</td>
         @else
         <td colspan="6" class="p-2">本學期未開班</td>
