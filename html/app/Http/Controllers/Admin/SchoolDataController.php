@@ -503,7 +503,7 @@ class SchoolDataController extends Controller
     public function studentSync(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');
-        $s = Student::find($uuid);
+        $s = Student::withTrashed()->find($uuid);
         $s->sync();
         Watchdog::watch($request, '同步學生資訊：' . $s->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect(urldecode($referer))->with('success', '學生資訊已經重新同步！');

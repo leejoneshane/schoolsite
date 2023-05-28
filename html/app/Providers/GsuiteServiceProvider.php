@@ -304,7 +304,7 @@ class GsuiteServiceProvider extends ServiceProvider
         if ($user_type == 'Student') {
             $neworg = new \Google_Service_Directory_UserOrganization();
             $neworg->setType('school');
-            $neworg->setCustomType('Student');
+            $neworg->setDescription('Student');
             $neworg->setDepartment(substr($t->id, 0, 3));
             $neworg->setTitle($t->classroom->name . $t->seat . '號');
             $neworg->setPrimary(true);
@@ -317,7 +317,7 @@ class GsuiteServiceProvider extends ServiceProvider
             foreach ($jobs as $job) {
                 $neworg = new \Google_Service_Directory_UserOrganization();
                 $neworg->setType('school');
-                $neworg->setCustomType('Teacher');
+                $neworg->setDescription('Teacher');
                 $neworg->setDepartment($job->unit->name);
                 $neworg->setTitle($job->name);
                 if ($job->id == $t->role_id) {
