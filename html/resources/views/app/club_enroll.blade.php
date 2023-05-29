@@ -42,15 +42,18 @@
         </th>
     </tr>
     @forelse ($clubs as $club)
+    @php
+        $section = $club->section();   
+    @endphp
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $club->style }}">
         <td class="p-2">{{ $club->name }}</td>
-        <td class="p-2">{{ $club->section()->teacher }}</td>
+        <td class="p-2">{{ $section->teacher }}</td>
         <td class="p-2">{{ $club->grade }}</td>
-        <td class="p-2">{{ $club->section()->studytime }}</td>
-        <td class="p-2">{{ $club->section()->location }}</td>
-        <td class="p-2">{{ $club->section()->cash }}</td>
-        <td class="p-2">{{ $club->section()->total }}</td>
-        <td class="p-2">{{ ($club->section()->maximum == 0) ? '—' : $club->section()->maximum}}</td>
+        <td class="p-2">{{ $section->studytime }}</td>
+        <td class="p-2">{{ $section->location }}</td>
+        <td class="p-2">{{ $section->cash }}</td>
+        <td class="p-2">{{ ($section->total == 0) ? '—' : $section->total }}</td>
+        <td class="p-2">{{ ($section->maximum == 0) ? '—' : $section->maximum}}</td>
         <td class="p-2">{{ $club->count_enrolls() }}</td>
         <td class="p-2">
             @if ($enroll = $student->get_enroll($club->id))
