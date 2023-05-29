@@ -780,12 +780,14 @@ class ClubController extends Controller
                 $weekdays[$k] = (integer) $w;
             }
         }
+/*
         $conflict = false;
         foreach ($enrolls as $en) {
             $conflict = $en->conflict($club, $weekdays);
             if ($conflict) break;
         }
         if ($conflict) return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '很抱歉，此社團與其他已報名的社團上課時段重疊，因此無法報名！');
+*/
         $enroll = ClubEnroll::create([
             'uuid' => $uuid,
             'club_id' => $club_id,
@@ -858,6 +860,7 @@ class ClubController extends Controller
                     $weekdays[$k] = (integer) $w;
                 }
             }
+/*
             $conflict = false;
             foreach ($enrolls as $en) {
                 $conflict = $en->conflict($club, $weekdays);
@@ -867,6 +870,7 @@ class ClubController extends Controller
                 $message .= $stdno.$student->realname.'，因上課時段重疊，因此無法報名！';
                 continue;
             }
+*/
             $enroll = ClubEnroll::create([
                 'uuid' => $student->uuid,
                 'club_id' => $club_id,
