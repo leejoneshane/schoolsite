@@ -170,6 +170,7 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             if ($kid) {
                 $kind = ClubKind::find($kid);
+                if (!$kind) return back()->with('error', '查無此類別！');
             } else {
                 $kind = ClubKind::first();
             }
@@ -620,6 +621,7 @@ class ClubController extends Controller
             return redirect()->route('home')->with('error', '您不是學生，因此無法修改報名資訊！');
         }
         $enroll = ClubEnroll::find($enroll_id);
+        if (!$enroll) return back()->with('error', '此報名紀錄已經不存在，請重整頁面後再試一次！');
         if ($enroll->uuid != $user->uuid) {
             return redirect()->route('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
         }
