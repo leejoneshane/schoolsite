@@ -353,7 +353,7 @@ class ClubController extends Controller
         $club->update([
             'name' => $request->input('title'),
             'short_name' => $request->input('short'),
-            'kind_id' => $kind_id,
+            'kind_id' => $request->input('kind'),
             'unit_id' => $request->input('unit'),
             'for_grade' => $grades ?: [],
             'self_defined' => $request->has('selfdefine') ? true : false,
