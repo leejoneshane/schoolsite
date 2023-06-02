@@ -223,7 +223,7 @@ class IcsEvent extends Model implements Subscribeable
             $period = CarbonPeriod::create($nextday, $this->endDate);
             foreach ($period as $date) {
                 if ($this->all_day) {
-                    $days[] = Carbon::createFromFormat('Y-m-d H:i:s', $date->format('Y-m-d'), env('TZ'));
+                    $days[] = Carbon::createFromFormat('Y-m-d', $date->format('Y-m-d'), env('TZ'));
                 } else {
                     $days[] = Carbon::createFromFormat('Y-m-d H:i:s', $date->format('Y-m-d').' '.$this->startTime, env('TZ'));
                 }
