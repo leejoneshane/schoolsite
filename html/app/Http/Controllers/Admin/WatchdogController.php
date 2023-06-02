@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Watchdog;
+use App\Exports\WatchdogExport;
 use Carbon\Carbon;
 
 class WatchdogController extends Controller
@@ -39,6 +40,17 @@ class WatchdogController extends Controller
         }
         $teachers = Teacher::orderBy('realname')->get();
         return view('admin.watchdog', ['date' => $date, 'ip' => $ip, 'uuid' => $uuid, 'stdid' => $stdid, 'stdno' => $stdno, 'teachers' => $teachers, 'logs' => $logs]);
+    }
+
+    function export(Request $request) {
+        if ($request->input('period') == 1) {
+            $date = Carbon::now()->subYear(1)->lastOfYear()->toDateString();
+        } else {
+            $date = section_between_date(prev_section())->maxdate;
+        }
+        $exporter = new WatchdogExport($date);
+        Watchdog::watch($request, '匯出' . $date . '以前的瀏覽歷程紀錄，並將舊紀錄從資料庫移除！');
+        return $exporter->download("使用者瀏覽紀錄截至$date.xlsx");
     }
 
 }

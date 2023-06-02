@@ -1,12 +1,32 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="text-2xl font-bold leading-normal pb-5">瀏覽歷程</div>
+<div class="flex text-2xl font-bold leading-normal pb-5">
+    瀏覽歷程
+    <label for="period" class="py-2 pl-6 text-sm">
+        備份
+    </label>
+    <select id="period" class="text-sm text-gray-500 border border-gray-200 dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700">
+        <option value="0">上學期</option>
+        <option value="1">去年</option>
+    </select>
+    <label for="period" class="py-2 pr-6 text-sm">
+        以前的紀錄並從資料庫移除
+    </label>
+    <button type="submit" class="text-sm rounded text-blue-300 hover:text-blue-600" onclick="
+        const myform = document.getElementById('remove');
+        var period = document.getElementById('period').value;
+        myform.action = '{{ route('watchdog.export') }}?period=' + period;
+        myform.submit();
+    ">
+        <i class="fa-solid fa-file-export"></i>開始備份
+    </button>
+</div>
 <label for="date" class="inline p-2">日期：</label>
 <input type="date" id="date" class="rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
     value="{{ $date->format('Y-m-d') }}" onchange="
         var mydate = this.value;
-        window.location.replace('{{ route('watchdog') }}' + '?date=' + mydate);
+        window.location.replace('{{ route('watchdog') }}?date=' + mydate);
 ">
 <label for="idno" class="inline p-2">用戶IP：</label>
 <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
@@ -113,4 +133,7 @@
     @endforeach
 </table>
 {{ $logs->links('pagination::tailwind') }}
+<form class="hidden" id="remove" method="POST" action="{{ route('watchdog.export') }}">
+    @csrf
+</form>
 @endsection
