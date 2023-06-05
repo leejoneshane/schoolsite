@@ -48,9 +48,11 @@ class WatchdogController extends Controller
         } else {
             $date = section_between_date(prev_section())->maxdate;
         }
+        $older = Watchdog::orderBy('created_at')->first();
+        $odate = $older->created_at->format('Y-m-d');
         $exporter = new WatchdogExport($date);
-        Watchdog::watch($request, '匯出' . $date . '以前的瀏覽歷程紀錄，並將舊紀錄從資料庫移除！');
-        return $exporter->download("使用者瀏覽紀錄截至$date.xlsx");
+        Watchdog::watch($request, '匯出' . $odate . '~' . $date . '的瀏覽歷程紀錄，並將舊紀錄從資料庫移除！');
+        return $exporter->download('使用者瀏覽紀錄' . $odate . '~' . $date . '.xlsx');
     }
 
 }
