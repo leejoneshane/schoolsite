@@ -281,22 +281,26 @@ class DayoffController extends Controller
         $message = '';
         $dayoff = Dayoff::find($id);
         $roster = Roster::find($request->input('roster'));
-        foreach ($roster->section_students() as $stu) {
-            if ($dayoff->student_occupy($stu->uuid)) {
-                $message .= $stu->stdno.$stu->realname.'已經在公假名單中，不用再輸入！';
-                continue;
-            }
-            $record = DB::table('dayoff_students')->insertOrIgnore([
-                'uuid' => $stu->uuid,
-                'dayoff_id' => $id,
-            ]);
-            if ($record) {
-                $message .= $stu->stdno.$stu->realname.'已經新增到公假單中！';
-                continue;
-            }
-            Watchdog::watch($request, '匯入已填報學生名單到公假單「' . $dayoff->reason . '」中，學生：' . $stu->stdno.$stu->realname);
+        if ($roster) {
+            foreach ($roster->section_students() as $stu) {
+                if ($dayoff->student_occupy($stu->uuid)) {
+                    $message .= $stu->stdno.$stu->realname.'已經在公假名單中，不用再輸入！';
+                    continue;
+                }
+                $record = DB::table('dayoff_students')->insertOrIgnore([
+                    'uuid' => $stu->uuid,
+                    'dayoff_id' => $id,
+                ]);
+                if ($record) {
+                    $message .= $stu->stdno.$stu->realname.'已經新增到公假單中！';
+                    continue;
+                }
+                Watchdog::watch($request, '匯入已填報學生名單到公假單「' . $dayoff->reason . '」中，學生：' . $stu->stdno.$stu->realname);
+            }    
+            return redirect()->route('dayoff.students', ['id' => $id])->with('success', $message);
+        } else {
+            return redirect()->route('dayoff.students', ['id' => $id])->with('error', '沒有名單可以匯入！');
         }
-        return redirect()->route('dayoff.students', ['id' => $id])->with('success', $message);
     }
 
     public function removeStudent(Request $request, $id)
