@@ -119,7 +119,7 @@
                 href="{{ route('clubs.editenroll', ['enroll_id' => $enroll->id]) }}">
                 修改報名資訊
             </a>
-            @if ($enroll->club->self_remove && !($enroll->accepted) && $enroll->kind()->expireDate >= date_create(date('Y-m-d'), env('TZ')))
+            @if ($enroll->club->self_remove && !($enroll->accepted) && $enroll->kind()->expireDate >= date_create('today', env('TZ')))
             <button class="py-2 pr-6 text-red-300 hover:text-red-600"
                 onclick="
                 const myform = document.getElementById('remove');

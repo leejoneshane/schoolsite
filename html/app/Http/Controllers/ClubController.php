@@ -24,6 +24,7 @@ use App\Exports\ClubEnrolledExport;
 use App\Exports\ClubRollExport;
 use App\Exports\ClubTimeExport;
 use App\Models\Watchdog;
+use Carbon\Carbon;
 
 class ClubController extends Controller
 {
@@ -718,7 +719,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
-            $enroll->update(['accepted' => true]);
+            $enroll->update(['accepted' => true, 'audited_at' => Carbon::now()]);
             Watchdog::watch($request, '將報名資訊設定為錄取：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id])->with('success', '已錄取學生'.$enroll->student->realname.'！');
         } else {
@@ -732,7 +733,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
-            $enroll->update(['accepted' => false]);
+            $enroll->update(['accepted' => false, 'audited_at' => Carbon::now()]);
             Watchdog::watch($request, '將報名資訊設定為不錄取：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id])->with('success', '已將學生'.$enroll->student->realname.'除名！');;
         } else {
