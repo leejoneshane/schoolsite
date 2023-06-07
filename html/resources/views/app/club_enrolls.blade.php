@@ -32,9 +32,12 @@
         </a>
     </div>
     <button class="text-sm py-2 pl-6 rounded text-red-300 hover:text-red-600" onclick="
+    var result = confirm('確定要清空所有報名記錄嗎？');
+    if (result) {
         const myform = document.getElementById('remove');
         myform.action = '{{ route('clubs.prune', [ 'club_id' => $club->id, 'section' => $section ]) }}';
         myform.submit();
+    }
     ">
         <i class="fa-solid fa-file-import"></i>清空報名紀錄
     </button>
