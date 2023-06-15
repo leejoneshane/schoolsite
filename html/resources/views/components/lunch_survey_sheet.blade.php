@@ -11,7 +11,7 @@
         <th style="font-weight:700;background-color:#f3f4f6;text-align:center;">葷食</th>
         <th style="font-weight:700;background-color:#f3f4f6;text-align:center;">素食</th>
         <th style="font-weight:700;background-color:#f3f4f6;text-align:center;">要飲用</th>
-        <th style="font-weight:700;background-color:#f3f4f6;text-align:center;">改成水果</th>
+        <th style="font-weight:700;background-color:#f3f4f6;text-align:center;">改成豆乳</th>
         <th style="font-weight:700;background-color:#f3f4f6;text-align:center;">家長親送</th>
         <th style="font-weight:700;background-color:#f3f4f6;text-align:center;">蒸飯設備</th>
     </tr>

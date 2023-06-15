@@ -50,7 +50,7 @@ class LunchSurvey extends Model
         parent::boot();
         self::creating(function($model) {
             if (empty($model->section)) {
-                $model->section = current_section();
+                $model->section = next_section();
             }
         });
     }
@@ -58,14 +58,14 @@ class LunchSurvey extends Model
     //根據 uuid 和學期篩選午餐調查表，靜態函式
     public static function findBy($uuid, $section = null)
     {
-        if (!$section) $section = current_section();
+        if (!$section) $section = next_section();
         return LunchSurvey::where('uuid', $uuid)->where('section', $section)->first();
     }
 
     //取得午餐調查設定，傳回物件，靜態函式
     public static function settings($section = null)
     {
-        if (!$section) $section = current_section();
+        if (!$section) $section = next_section();
         return DB::table('lunch')->where('section', $section)->first();
     }
 
@@ -86,28 +86,28 @@ class LunchSurvey extends Model
     //篩選指定學期所有學生的午餐調查表，靜態函式
     public static function section_survey($section = null)
     {
-        if (!$section) $section = current_section();
+        if (!$section) $section = next_section();
         return LunchSurvey::where('section', $section)->orderBy('class_id')->orderBy('seat')->get();
     }
 
     //篩選指定班級所有學生的午餐調查表，靜態函式
     public static function class_survey($class, $section = null)
     {
-        if (!$section) $section = current_section();
+        if (!$section) $section = next_section();
         return LunchSurvey::where('section', $section)->where('class_id', $class)->orderBy('seat')->get();
     }
 
     //計算本學期已調查班級數
     public static function count_classes($section = null)
     {
-        if (!$section) $section = current_section();
+        if (!$section) $section = next_section();
         return LunchSurvey::query()->distinct('class_id')->where('section', $section)->count();
     }
 
     //檢查本學期已調查學生數
     public static function count($section = null)
     {
-        if (!$section) $section = current_section();
+        if (!$section) $section = next_section();
         return LunchSurvey::query()->where('section', $section)->count();
     }
 
@@ -124,7 +124,7 @@ class LunchSurvey extends Model
             if ($this->milk) {
                 $str .= '可食用牛奶！';
             } else {
-                $str .= '以水果取代牛奶！';
+                $str .= '以豆乳取代牛奶！';
             }
         }
         return $str;

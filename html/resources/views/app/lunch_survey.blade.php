@@ -3,7 +3,7 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     午餐調查表
-    @if ($manager && $section == current_section())
+    @if ($manager && $section == next_section())
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch.config') }}">
         <i class="fa-regular fa-clock"></i>設定調查期程
     </a>
@@ -24,14 +24,19 @@
     <option value="{{ $s }}"{{ ($s == $section) ? ' selected' : '' }}>{{ substr($s, 0, -1) . '學年第' . substr($s, -1) . '學期' }}</option>
     @endforeach
 </select>
-@if (empty($settings) || time() < strtotime($settings->survey_at))
-<div class="flex justify-center">
-    <div class="w-full border-red-500 bg-red-100 dark:bg-red-700 border-b-2 mb-5" role="alert">
-        <p>午餐調查尚未開始，請稍候再試或聯絡學務處處理！</p>
+@if ($settings)
+<span class="inline">最近一次調查：{{ substr($settings->survey_at, 0, 10) }}～{{ substr($settings->expired_at, 0, 10) }}</span>
+@else
+<span class="inline">未設定調查期程</span>
+@endif
+@if ($user->user_type == 'Student')
+    @if (empty($settings) || time() < strtotime($settings->survey_at))
+    <div class="flex justify-center">
+        <div class="w-full border-red-500 bg-red-100 dark:bg-red-700 border-b-2 mb-5" role="alert">
+            <p>午餐調查尚未開始，請稍候再試或聯絡學務處處理！</p>
+        </div>
     </div>
-</div>
-@elseif ($user->user_type == 'Student')
-    @if (time() > strtotime($settings->expired_at))
+    @elseif (time() > strtotime($settings->expired_at))
     <div class="flex justify-center">
         <div class="w-full border-green-500 bg-green-100 dark:bg-green-700 border-b-2 mb-5" role="alert">
             @if ($survey)
@@ -91,7 +96,7 @@
                                     <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
                                     type="radio" name="milk" value="yes"{{ ($survey && $survey->milk) ? ' checked' : '' }}>是　　
                                     <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                                    type="radio" name="milk" value="no"{{ ($survey && !($survey->milk)) ? ' checked' : '' }}>否，水果取代鮮奶（乳糖不耐症學童可選擇水果）
+                                    type="radio" name="milk" value="no"{{ ($survey && !($survey->milk)) ? ' checked' : '' }}>否，豆乳取代鮮奶（乳糖不耐症學童可選擇豆乳）
                                 </div>
                             </div>
                         </div>
@@ -134,6 +139,7 @@
     <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
         <p>已調查班級數：{{ $count->classes }}　累計調查人數：{{ $count->students }}</p>
     </div>
+    @if ($manager)
     <div>
         <label for="classes" class="inline">請選擇班級：</label>
         <select id="classes" class="inline rounded w-32 py-2 mr-6 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
@@ -143,10 +149,15 @@
         ">
             <option></option>
             @foreach ($classes as $cls)
-            <option value="{{ $cls->id }}"{{ ($class_id == $cls->id) ? ' selected' : '' }}>{{ $cls->name }}</option>
+            <option value="{{ $cls->id }}"{{ ($classroom->id == $cls->id) ? ' selected' : '' }}>{{ $cls->name }}</option>
             @endforeach
         </select>    
     </div>
+    @else
+    <div>
+        班級：{{ $classroom->name }}
+    </div>
+    @endif
     <table class="border border-1 p-3 w-3/4">
         <tr>
             <th scope="col" rowspan="2" class="border border-1 text-sm font-bold bg-gray-100 dark:bg-gray-500">班級</th>
@@ -160,7 +171,7 @@
             <th scope="col" class="border border-1 text-sm font-bold bg-gray-100 dark:bg-gray-500">葷食</th>
             <th scope="col" class="border border-1 text-sm font-bold bg-gray-100 dark:bg-gray-500">素食</th>
             <th scope="col" class="border border-1 text-sm font-bold bg-gray-100 dark:bg-gray-500">要飲用</th>
-            <th scope="col" class="border border-1 text-sm font-bold bg-gray-100 dark:bg-gray-500">改成水果</th>
+            <th scope="col" class="border border-1 text-sm font-bold bg-gray-100 dark:bg-gray-500">改成豆乳</th>
             <th scope="col" class="border border-1 text-sm font-bold bg-gray-100 dark:bg-gray-500">家長親送</th>
             <th scope="col" class="border border-1 text-sm font-bold bg-gray-100 dark:bg-gray-500">蒸飯設備</th>
         </tr>

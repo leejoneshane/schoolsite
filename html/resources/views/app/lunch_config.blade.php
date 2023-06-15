@@ -21,7 +21,7 @@
                 type="text" name="qrcode" value="{{ isset($settings->qrcode) ? $settings->qrcode : '' }}">
         </div>
         <div class="p-3">
-            <label class="inline">報名與截止日期：</label>
+            <label class="inline">調查與截止日期：</label>
             <input class="w-36 rounded p-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
              type="date" id="survey" name="survey" value="{{ isset($settings->survey_at) ? substr($settings->survey_at, 0, 10) : date('Y-m-d') }}">到
             <input class="w-36 rounded p-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"

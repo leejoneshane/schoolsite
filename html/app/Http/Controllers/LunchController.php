@@ -20,10 +20,11 @@ class LunchController extends Controller
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
-        $settings = LunchSurvey::settings($section);
-        if (!$section) $section = current_section();
         $sections = LunchSurvey::sections();
-        if (!in_array($section, $sections)) $sections[] = $section;
+        $next = next_section();
+        if (!in_array($next, $sections)) $sections[] = $next;
+        if (!$section) $section = next_section();
+        $settings = LunchSurvey::settings($section);
         $count = (object) ['classes' => LunchSurvey::count_classes($section), 'students' => LunchSurvey::count($section)];
         $survey = $surveys = $classes = null;
         $classes = Classroom::all();
@@ -33,12 +34,14 @@ class LunchController extends Controller
         } elseif ($manager) {
             $class_id = $request->input('class');
             if (!$class_id) $class_id = '101';
+            $classroom = Classroom::find($class_id);
             $surveys = LunchSurvey::class_survey($class_id, $section);
         } elseif ($user->user_type == 'Teacher') {
             $class_id = $user->profile->tutor_class;
+            $classroom = Classroom::find($class_id);
             $surveys = LunchSurvey::class_survey($class_id, $section);
         }
-        return view('app.lunch_survey', ['user' => $user, 'manager' => $manager, 'section' => $section, 'sections' => $sections, 'settings' => $settings, 'count' => $count, 'survey' => $survey, 'class_id' => $class_id, 'classes' => $classes, 'surveys' => $surveys]);
+        return view('app.lunch_survey', ['user' => $user, 'manager' => $manager, 'section' => $section, 'sections' => $sections, 'settings' => $settings, 'count' => $count, 'survey' => $survey, 'classroom' => $classroom, 'classes' => $classes, 'surveys' => $surveys]);
     }
 
     public function setting()
@@ -61,7 +64,7 @@ class LunchController extends Controller
             return redirect()->route('home')->with('error', '只有管理員才能設定午餐調查期程！');
         }
         DB::table('lunch')->upsert([
-            'section' => current_section(),
+            'section' => next_section(),
             'money' => $request->input('money'),
             'survey_at' => $request->input('survey'),
             'expired_at' => $request->input('expire'),
@@ -102,9 +105,13 @@ class LunchController extends Controller
         if (!$manager) {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
-        if (!$section) $section = current_section();
-        $filename = substr($section, 0, -1) . '學年度' . ((substr($section, -1) == '1') ? '上' : '下') . '學期午餐調查結果彙整';
-        return (new LunchExport($section))->download("$filename.xlsx");
+        if (!$section) $section = next_section();
+        if (LunchSurvey::count($section) == 0) {
+            return redirect()->route('lunch')->with('error', '沒有調查結果可以匯出！');
+        } else {
+            $filename = substr($section, 0, -1) . '學年度' . ((substr($section, -1) == '1') ? '上' : '下') . '學期午餐調查結果彙整';
+            return (new LunchExport($section))->download("$filename.xlsx");    
+        }
     }
 
 }
