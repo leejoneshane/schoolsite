@@ -23,13 +23,14 @@ class LunchController extends Controller
         $sections = LunchSurvey::sections();
         $next = next_section();
         if (!in_array($next, $sections)) $sections[] = $next;
-        if (!$section) $section = next_section();
+        if (!$section) $section = $next;
         $settings = LunchSurvey::settings($section);
         $count = (object) ['classes' => LunchSurvey::count_classes($section), 'students' => LunchSurvey::count($section)];
         $survey = $surveys = $classes = null;
         $classes = Classroom::all();
         if ($user->user_type == 'Student') {
             $class_id = $user->profile->class_id;
+            $classroom = Classroom::find($class_id);
             $survey = LunchSurvey::findBy($user->uuid, $section);
         } elseif ($manager) {
             $class_id = $request->input('class');
@@ -83,7 +84,7 @@ class LunchController extends Controller
         $user = User::find(Auth::user()->id);
         $student = Student::find($user->uuid);
         $survey = LunchSurvey::updateOrCreate([
-            'section' => current_section(),
+            'section' => next_section(),
             'uuid' => $student->uuid,
         ],[
             'class_id' => $student->class_id,
