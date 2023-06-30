@@ -23,7 +23,7 @@ class ClubEnrolledExport
             return $en->student->stdno;
         });
         $phpWord = new PhpWord();
-        $phpWord->setDefaultFontSize(11);
+        $phpWord->setDefaultFontSize(9);
         $section = $phpWord->addSection(['pageNumberingStart' => 1]);
         $section->addHeader()->addText(config('app.name') . ' - ' . $title, null, ['alignment' => 'center']);
         $section->addFooter()->addPreserveText('第 {PAGE} 頁/共 {NUMPAGES} 頁', null, ['alignment' => 'center']);
