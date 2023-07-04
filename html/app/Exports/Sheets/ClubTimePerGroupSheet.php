@@ -197,7 +197,11 @@ class ClubTimePerGroupSheet implements FromCollection, WithHeadings, WithStyles,
 
     public function title(): string
     {
-        return '第' . $this->devide . '組';
+        if ($this->devide == 'all') {
+            return '全部';
+        } else {
+            return '第' . $this->devide . '組';
+        }
     }
 
 }
