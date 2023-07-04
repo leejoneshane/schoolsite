@@ -323,6 +323,7 @@ class ClubController extends Controller
             'for_grade' => $grades ?: [],
             'self_remove' => $request->has('remove') ? true : false,
             'has_lunch' => $request->has('lunch') ? true : false,
+            'devide' => $request->has('devide') ? true : false,
             'stop_enroll' => $request->has('stop') ? true : false,
         ]);
         Watchdog::watch($request, '新增學生社團：' . $c->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -360,6 +361,7 @@ class ClubController extends Controller
             'self_defined' => $request->has('selfdefine') ? true : false,
             'self_remove' => $request->has('remove') ? true : false,
             'has_lunch' => $request->has('lunch') ? true : false,
+            'devide' => $request->has('devide') ? true : false,
             'stop_enroll' => $request->has('stop') ? true : false,
         ]);
         Watchdog::watch($request, '更新學生社團：' . $club->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -667,7 +669,7 @@ class ClubController extends Controller
             if ($e) {
                 Watchdog::watch($request, '刪除報名資訊：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                 $e->delete();
-                return back()->with('success', '報名資訊已經刪除！');    
+                return back()->with('success', '報名資訊已經刪除！');
             }
         } else {
             $enroll = ClubEnroll::find($enroll_id);
@@ -684,7 +686,7 @@ class ClubController extends Controller
         return back();
     }
 
-    public function enrollList($club_id, $section = null)
+    public function enrollList(Request $request, $club_id, $section = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
@@ -706,8 +708,37 @@ class ClubController extends Controller
                     $section = $current;
                 }
             }
-            $enrolls = $club->section_enrolls($section);
-            return view('app.club_enrolls', ['club' => $club, 'current' => $current, 'section' => $section, 'enrolls' => $enrolls]);
+            $order = $request->input('order');
+            $groups = [];
+            if ($club->devide) {
+                $mygroup = $request->input('group'); 
+                if (!$mygroup) $mygroup = 'all';
+                $groups = $club->section_groups($section);
+                if (in_array($mygroup, $groups)) {
+                    if ($order && $order == 'stdno') {
+                        $enrolls = $club->section_devide($mygroup, $section)->sortBy(function ($enroll) {
+                            return $enroll->student->stdno;
+                        });
+                    } elseif ($order && $order != 'created_at') {
+                        $enrolls = $club->section_devide($mygroup, $section)->sortBy($order);
+                    } else {
+                        $enrolls = $club->section_devide($mygroup, $section);
+                    }
+                }
+            }
+            if (!isset($mygroup) || $mygroup == 'all') {
+                if ($order && $order == 'stdno') {
+                    $enrolls = $club->section_enrolls($section)->sortBy(function ($enroll) {
+                        return $enroll->student->stdno;
+                    });
+                } elseif ($order && $order != 'created_at') {
+                    $enrolls = $club->section_enrolls($section)->sortBy($order);
+                } else {
+                    $enrolls = $club->section_enrolls($section);
+                }
+                $mygroup = 'all';
+            }
+            return view('app.club_enrolls', ['club' => $club, 'current' => $current, 'section' => $section, 'group' => $mygroup, 'groups' => $groups, 'enrolls' => $enrolls, 'order' => $order]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -721,7 +752,7 @@ class ClubController extends Controller
             $enroll = ClubEnroll::find($enroll_id);
             $enroll->update(['accepted' => true, 'audited_at' => Carbon::now()]);
             Watchdog::watch($request, '將報名資訊設定為錄取：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id])->with('success', '已錄取學生'.$enroll->student->realname.'！');
+            return redirect()->back()->with('success', '已錄取學生'.$enroll->student->realname.'！');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -735,7 +766,117 @@ class ClubController extends Controller
             $enroll = ClubEnroll::find($enroll_id);
             $enroll->update(['accepted' => false, 'audited_at' => Carbon::now()]);
             Watchdog::watch($request, '將報名資訊設定為不錄取：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('clubs.enrolls', ['club_id' => $enroll->club_id])->with('success', '已將學生'.$enroll->student->realname.'除名！');;
+            return redirect()->back()->with('success', '已將學生'.$enroll->student->realname.'除名！');
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function enrollDevide(Request $request, $club_id, $section)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $club = Club::find($club_id);
+            if (!$club) {
+                return redirect()->route('clubs.admin')->with('error', '找不到要管理的社團！');
+            }
+            $enrolls = $club->section_accepted($section)->sortBy(function (ClubEnroll $enroll) {
+                return $enroll->student->stdno;
+            });
+            $all = $all_temp = $enrolls->count();
+            if ($all == 0) {
+                return redirect()->route('clubs.admin')->with('error', '尚未錄取學生，因此無法分組！');
+            }
+            $counter = [];
+            $classes = [];
+            foreach ($enrolls as $enroll) {
+                $cls = $enroll->student->class_id;
+                if (!isset($classes[$cls])) $classes[$cls] = 0;
+                $classes[$cls] ++;
+                if (!isset($counter[$cls])) $counter[$cls] = [];
+                if (!isset($counter[$cls]['total'])) $counter[$cls]['total'] = 0;
+                $counter[$cls]['total']++;
+                if ($club->section($section)->self_defined) {
+                    for ($i=1; $i<6; $i++) {
+                        if (in_array($i, $enroll->weekdays)) {
+                            if (!isset($counter[$cls]["w$i"])) $counter[$cls]["w$i"] = 0;
+                            $counter[$cls]["w$i"]++;
+                        } else {
+                            if (!isset($counter[$cls]["w.$i"])) $counter[$cls]["w$i"] = 0;
+                        }
+                    }
+                }
+            }
+            if ($club->section($section)->self_defined) {
+                foreach ($counter as $cls => $sumary) {
+                    $max = 0;
+                    for ($i=1; $i<6; $i++) {
+                        if ($sumary["w$i"] > $max) $max = $sumary["w$i"];
+                    }
+                    $classes[$cls] = $max;
+                }
+            }
+            $result = [];
+            arsort($classes);
+            $limit = $request->input('limit');
+            if (empty($limit)) $limit = 20;
+            $devide_num = $devide_temp = ceil($all / $limit);
+            $mean = round($all / $devide_num);
+            while (count($result) < $devide_num) {
+                $solutions = find_solutions($classes, $mean);
+                $last = 0;
+                $d = $mean;
+                foreach ($solutions as $k => $so) {
+                    if (abs($mean - $so['sum']) < $d) {
+                        $d = abs($mean - $so['sum']);
+                        $last = $k;
+                    }
+                }
+                $result[] = $solutions[$last];
+                $classes = array_slice_assoc_inverse($classes, $solutions[$last]['classes']);
+                if ($devide_num > count($result)) {
+                    $all_temp -= $solutions[$last]['sum'];
+                    $devide_temp--;
+                    $mean = round($all_temp / $devide_temp);
+                }
+            }
+            if (count($classes) > 0) {
+                $result[] = [ 'classes' => implode(',', $classes), 'sum' => array_sum($classes)  ];
+            }
+            return view('app.club_devide', ['club' => $club, 'section' => $section, 'all' => $all, 'limit' => $limit, 'devide_num' => $devide_num, 'counter' => $counter, 'result' => $result]);
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function enrollConquer(Request $request, $club_id, $section)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $club = Club::find($club_id);
+            if (!$club) {
+                return redirect()->route('clubs.admin')->with('error', '找不到要管理的社團！');
+            }
+            $enrolls = $club->section_accepted($section)->sortBy(function (ClubEnroll $enroll) {
+                return $enroll->student->stdno;
+            });
+            $classes = [];
+            $devide_to = $request->input('devide');
+            for ($i=1; $i<=$devide_to; $i++) {
+                $devide_classes = explode(',', $request->input('group'.$i));
+                foreach ($devide_classes as $cls) {
+                    $classes[$cls] = $i;
+                }
+            }
+            foreach ($enrolls as $enroll) {
+                $cls = $enroll->student->class_id;
+                $enroll->groupBy = $classes[$cls];
+                $enroll->save();
+            }
+            Watchdog::watch($request, '將報名資訊自動分組：' . $enrolls->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            return redirect()->back()->with('success', '已將錄取學生自動分組！');
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }

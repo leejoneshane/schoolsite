@@ -86,6 +86,9 @@
         注意事項：<br>
         　　1. 本社團{{ ($club->kind->manual_auditing) ? '採用人工審核，請透過管理介面進行錄取作業！' : '將會由系統依照報名順序自動錄取！' }}<br>
         　　2. 錄取作業不會自動郵寄通知，待錄取作業完成後，請透過上方連結統一寄發錄取通知。<br>
+        @if ($club->devide)
+        　　3. 學生分組後，在下載各式表單時會自動依照組別分頁！<br>
+        @endif
     </p>
 </div>
 <div class="p-3">
@@ -98,7 +101,25 @@
         @foreach ($club->sections as $s)
         <option value="{{ $s->section }}"{{ ($s->section == $section) ? ' selected' : '' }}>{{ substr($s->section, 0, -1) }}學年{{ (substr($s->section, -1) == 1) ? '上學期' : '下學期' }}</option>
         @endforeach
-    </select>    
+    </select>
+@if ($club->devide)
+    @if (count($groups) > 1)
+    <label for="groups">請選擇組別：</label>
+    <select id="groups" class="inline w-48 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
+        onchange="
+        var mygroup = this.value;
+        window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id, 'section' => $section]) }}?order={{ $order }}&group=' + mygroup);
+        ">
+        <option value="all"{{ ($group == 'all') ? ' selected' : '' }}>全部</option>
+        @foreach ($groups as $g)
+        <option value="{{ $g }}"{{ ($g == $group) ? ' selected' : '' }}>{{ $g }}</option>
+        @endforeach
+    </select>
+    <a class="text-red-300 hover:text-red-600" href="{{ route('clubs.devide', [ 'club_id' => $club->id, 'section' => $section ]) }}">重新分組</a>
+    @else
+    <a class="text-red-300 hover:text-red-600" href="{{ route('clubs.devide', [ 'club_id' => $club->id, 'section' => $section ]) }}">請點擊這裡，進行學生分組！</a>
+    @endif
+@endif
 </div>
 <table class="w-full py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
@@ -107,6 +128,9 @@
         </th>
         <th scope="col" class="p-2">
             年班座號
+            <a class="text-sm py-2 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enrolls', ['club_id' => $club->id, 'section' => $section]) }}?order=stdno">
+                <i class="fa-solid fa-arrow-down-short-wide"></i>
+            </a>
         </th>
         <th scope="col" class="p-2">
             學生姓名
@@ -127,6 +151,9 @@
         </th>
         <th scope="col" class="p-2">
             報名時間
+            <a class="text-sm py-2 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enrolls', ['club_id' => $club->id, 'section' => $section]) }}?order=created_at">
+                <i class="fa-solid fa-arrow-down-short-wide"></i>
+            </a>
         </th>
         <th scope="col" class="p-2">
             身份註記
@@ -135,13 +162,16 @@
             管理
         </th>
     </tr>
-    @forelse ($enrolls as $order => $enroll)
+    @php
+        $no = 1;
+    @endphp
+    @forelse ($enrolls as $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">
-            <span>{{ $order + 1 }}</span>
+            <span>{{ $no++ }}</span>
         </td>
         <td class="p-2">
-            <span>{{ $enroll->student->class_id }}{{ ($enroll->student->seat < 10) ? '0'.$enroll->student->seat : $enroll->student->seat }}</span>
+            <span>{{ $enroll->student->stdno }}</span>
         </td>
         <td class="p-2">
             <span>{{ $enroll->student->realname }}</span>

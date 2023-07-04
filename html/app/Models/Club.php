@@ -30,6 +30,7 @@ class Club extends Model
         'for_grade',
         'self_remove',
         'has_lunch',
+        'devide',
         'stop_enroll',
     ];
 
@@ -48,6 +49,7 @@ class Club extends Model
         'for_grade' => 'array',
         'self_remove' => 'boolean',
         'has_lunch' => 'boolean',
+        'devide' => 'boolean',
         'stop_enroll' => 'boolean',
     ];
 
@@ -178,6 +180,7 @@ class Club extends Model
             return $this->enrolls()->where('section', current_section())->get();
         }
     }
+
     //取得此社團指定學年或本學年所有已錄取的報名資訊，依報名時間排序
     public function section_accepted($section = null)
     {
@@ -185,6 +188,24 @@ class Club extends Model
             return $this->accepted_enrolls()->where('section', $section)->get();
         } else {
             return $this->accepted_enrolls()->where('section', current_section())->get();
+        }
+    }
+
+    //取得此社團指定學年或本學年所有的學生分組
+    public function section_groups($section = null)
+    {
+        return $this->section_accepted($section)->unique('groupBy')->map(function (ClubEnroll $item) {
+            return $item->groupBy;
+        })->sort()->toArray();
+    }
+
+    //取得此社團指定學年、組別所有已錄取的報名資訊，依報名時間排序
+    public function section_devide($group, $section = null)
+    {
+        if ($section) {
+            return $this->accepted_enrolls()->where('section', $section)->where('groupBy', $group)->get();
+        } else {
+            return $this->accepted_enrolls()->where('section', current_section())->where('groupBy', $group)->get();
         }
     }
 
@@ -214,6 +235,7 @@ class Club extends Model
                 'parent',
                 'mobile',
                 'accepted',
+                'groupBy',
                 'audited_at',
                 'created_at',
                 'updated_at',

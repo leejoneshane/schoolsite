@@ -127,3 +127,63 @@ function section_between_date($section = null) {
         return between_date($year, $seme);
     }
 }
+
+function find_solutions(Array $assoc, int $mean) {
+    $solution = [];
+    $k = array_key_first($assoc);
+    $v = $assoc[$k];
+    $mod = $mean - $v;
+    unset($assoc[$k]);
+    if (count($assoc) < 1) {
+        $solution[] = [ 'classes' => [ $k ], 'sum' => $v ];
+    } else {
+        list($p, $q, $keys) = near_search($assoc, $mod);
+        if ($p != 'none') {
+            $solution[] = [ 'classes' => [ $k, $p ], 'sum' => $v + $assoc[$p] ];
+        }
+        if ($q != 'none') {
+            if ($assoc[$q] == $mod) {
+                $solution[] = [ 'classes' => [ $k, $q ], 'sum' => $v + $assoc[$q] ];
+            } else {
+                if (empty($keys)) {
+                    $sub_solution = find_solutions($assoc, $mod);
+                    foreach ($sub_solution as $sub) {
+                        $solution[] = [ 'classes' => array_merge([$k], $sub['classes']), 'sum' => $v + $sub['sum'] ];
+                    }
+                } else {
+                    $assoc = array_slice_assoc_inverse($assoc, $keys);
+                    if (!empty($assoc)) {
+                        $sub_solution = find_solutions($assoc, $mod);
+                        foreach ($sub_solution as $sub) {
+                            $solution[] = [ 'classes' => array_merge([$k], $sub['classes']), 'sum' => $v + $sub['sum'] ];
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return $solution;
+}
+
+function near_search(Array $assoc, int $x) {
+    $p = $q = 'none';
+    $keys = [];
+    foreach ($assoc as $k => $v) {
+        if ($v > $x) {
+            $p = $k;
+            $keys[] = $p;
+        } else {
+            $q = $k;
+            break;
+        }
+    }
+    return [ $p, $q, $keys ];
+}
+
+function array_slice_assoc($array, $keys) {
+    return array_intersect_key($array, array_flip($keys));
+}
+
+function array_slice_assoc_inverse($array, $keys) {
+    return array_diff_key($array, array_flip($keys));
+}

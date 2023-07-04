@@ -42,6 +42,7 @@ class ClubEnroll extends Model
         'parent',
         'mobile',
         'accepted',
+        'groupBy',
         'audited_at',
     ];
 

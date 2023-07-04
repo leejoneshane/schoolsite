@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('parent')->nullable();
             $table->string('mobile')->nullable();
             $table->boolean('accepted')->default(0);
+            $table->string('groupBy', 2)->nullable();
             $table->timestamp('audited_at')->nullable();
             $table->timestamps();
         });
