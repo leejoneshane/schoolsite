@@ -128,7 +128,7 @@
         </th>
         <th scope="col" class="p-2">
             年班座號
-            <a class="text-sm py-2 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enrolls', ['club_id' => $club->id, 'section' => $section]) }}?order=stdno">
+            <a class="text-sm py-2 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enrolls', ['club_id' => $club->id, 'section' => $section]) }}?order=stdno{{ ($club->devide) ? '&group='.$group : '' }}">
                 <i class="fa-solid fa-arrow-down-short-wide"></i>
             </a>
         </th>
@@ -151,7 +151,7 @@
         </th>
         <th scope="col" class="p-2">
             報名時間
-            <a class="text-sm py-2 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enrolls', ['club_id' => $club->id, 'section' => $section]) }}?order=created_at">
+            <a class="text-sm py-2 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enrolls', ['club_id' => $club->id, 'section' => $section]) }}?order=created_at{{ ($club->devide) ? '&group='.$group : '' }}">
                 <i class="fa-solid fa-arrow-down-short-wide"></i>
             </a>
         </th>

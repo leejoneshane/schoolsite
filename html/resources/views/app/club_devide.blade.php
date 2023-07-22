@@ -9,13 +9,16 @@
 </div>
 <p><div class="p-3">
     <label for="limit" class="inline">每組人數上限：</label>
-    <input type="number" id="limit" name="limit" value="{{ $limit }}" class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" onchange="redo()" required>
+    <input type="number" id="limit" name="limit" value="{{ $limit }}" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" onchange="redo()" required>
     <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>改變上限將會重新分組，您可以試試看哪一種組合最好！</span>
 </div></p>
 <p><div class="p-3">
     <label class="inline">錄取總人數：<span class="text-blue-700">{{ $all }}</span>，</label>
     <label class="inline">建議分成 <span id="groups" class="text-blue-700">{{ $devide_num }}</span> 組。</label>
 </div></p>
+<form id="save" action="{{ route('clubs.devide', [ 'club_id' => $club->id, 'section' => $section ]) }}" method="POST">
+@csrf
+
 <p><div class="p-3">
     <table class="w-full py-4 text-left font-normal">
         <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
@@ -43,7 +46,7 @@
             </th>
             @endif
             <th scope="col" class="p-2">
-                建議組別
+                手動分組
             </th>
         </tr>
         @foreach ($counter as $cls => $sum)
@@ -52,25 +55,30 @@
                 {{ $cls }}
             </td>
             <td class="p-2">
-                {{ $counter[$cls]['total'] }}
+                {{ $sum['total'] }}
             </td>
             @if ($club->section($section)->self_defined)
             @for ($i=1; $i<6; $i++)
             <td class="p-2">
-                {{ $counter[$cls][$i] }}
+                {{ $sum["w$i"] }}
             </td>
             @endfor
-            <td class="p-2">
-                <span id="class{{ $cls }}"></span>
-            </td>
             @endif
+            <td class="p-2">
+                <select name="classes[{{ $cls }}]" id="classes[{{ $cls }}]">
+                    @for ($i=1; $i<=$devide_num; $i++)
+                    <option value="{{ $i }}"{{ ($i == $sum['group']) ? 'selected' : '' }}>{{ $i }}</option>
+                    @endfor
+                </select>
+            </td>
         </tr>
         @endforeach
     </table>
 </div></p>
 <p><div class="p-3">
+    <span class="w-full py-4 text-left font-normal">自動分組結果：以實際上課最多人數統計。</span>
+    <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>若您手動分組，請務必自行核算人數！</span>
     <table id="summary" class="w-full py-4 text-left font-normal">
-        <caption>分組結果：以實際上課最多人數統計</caption>
         <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
             <th scope="col" class="p-2">
                 組別
@@ -99,37 +107,16 @@
 </div></p>
 <p class="p-6">
     <div class="inline">
-        <button type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick="done()">
+        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             分組完成，請寫入資料庫！
         </button>
     </div>
 </p>
-<form class="hidden" id="save" action="{{ route('clubs.devide', [ 'club_id' => $club->id, 'section' => $section ]) }}" method="POST">
-    @csrf
-    <input type="hidden" id="devide" name="devide">
-    <input type="hidden" id="group1" name="group1">
-    <input type="hidden" id="group2" name="group2">
-    <input type="hidden" id="group3" name="group3">
-    <input type="hidden" id="group4" name="group4">
-    <input type="hidden" id="group5" name="group5">
-    <input type="hidden" id="group6" name="group6">
-    <input type="hidden" id="group7" name="group7">
-    <input type="hidden" id="group8" name="group8">
-    <input type="hidden" id="group9" name="group9">
 </form>
 <script>
 function redo() {
     var limit = document.getElementById('limit').value;
     window.location.replace("{{ route('clubs.devide', [ 'club_id' => $club->id, 'section' => $section ]) }}?limit=" + limit);
-}
-
-function done() {
-    const myform = document.getElementById('save');
-    document.getElementById('devide').value = '{{ $devide_num }}';
-@foreach ($result as $n => $re)
-    document.getElementById('group{{ $n + 1 }}').value = '{{ implode(',', $re['classes']) }}';
-@endforeach
-    myform.submit();
 }
 </script>
 @endsection

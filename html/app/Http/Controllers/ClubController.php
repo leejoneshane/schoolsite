@@ -803,7 +803,7 @@ class ClubController extends Controller
                             if (!isset($counter[$cls]["w$i"])) $counter[$cls]["w$i"] = 0;
                             $counter[$cls]["w$i"]++;
                         } else {
-                            if (!isset($counter[$cls]["w.$i"])) $counter[$cls]["w$i"] = 0;
+                            if (!isset($counter[$cls]["w$i"])) $counter[$cls]["w$i"] = 0;
                         }
                     }
                 }
@@ -823,6 +823,7 @@ class ClubController extends Controller
             if (empty($limit)) $limit = 20;
             $devide_num = $devide_temp = ceil($all / $limit);
             $mean = round($all / $devide_num);
+            $n = 1;
             while (count($result) < $devide_num) {
                 $solutions = find_solutions($classes, $mean);
                 $last = 0;
@@ -833,13 +834,13 @@ class ClubController extends Controller
                         $last = $k;
                     }
                 }
+                $devide_classes = $solutions[$last]['classes'];
+                foreach ($devide_classes as $cls) {
+                    $counter[$cls]['group'] = $n;
+                }
                 $result[] = $solutions[$last];
                 $classes = array_slice_assoc_inverse($classes, $solutions[$last]['classes']);
-                if ($devide_num > count($result)) {
-                    $all_temp -= $solutions[$last]['sum'];
-                    $devide_temp--;
-                    $mean = round($all_temp / $devide_temp);
-                }
+                $n ++;
             }
             if (count($classes) > 0) {
                 $result[] = [ 'classes' => implode(',', $classes), 'sum' => array_sum($classes)  ];
@@ -862,14 +863,7 @@ class ClubController extends Controller
             $enrolls = $club->section_accepted($section)->sortBy(function (ClubEnroll $enroll) {
                 return $enroll->student->stdno;
             });
-            $classes = [];
-            $devide_to = $request->input('devide');
-            for ($i=1; $i<=$devide_to; $i++) {
-                $devide_classes = explode(',', $request->input('group'.$i));
-                foreach ($devide_classes as $cls) {
-                    $classes[$cls] = $i;
-                }
-            }
+            $classes = $request->input('classes');
             foreach ($enrolls as $enroll) {
                 $cls = $enroll->student->class_id;
                 $enroll->groupBy = $classes[$cls];
