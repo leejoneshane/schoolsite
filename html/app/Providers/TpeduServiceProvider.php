@@ -508,7 +508,11 @@ class TpeduServiceProvider extends ServiceProvider
             foreach ($uuids as $uuid) {
                 $this->fetch_user($uuid, $only, $password);
                 $t = Teacher::find($uuid);
-                $detail_log[] = '教師'.$t->idno.' '.$t->realname.'已同步完成！';
+                if (isset($t->idno)) {
+                    $detail_log[] = '教師'.$t->idno.' '.$t->realname.'已同步完成！';
+                } else {
+                    $detail_log[] = '教師'.$uuid.'無法從單一身份驗證 API 取得資料，略過不處理！';
+                }
             }
         }
         if ($remove) {
