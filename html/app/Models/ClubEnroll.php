@@ -181,7 +181,7 @@ class ClubEnroll extends Model
     //取得此報名資訊的報名學生
     public function student()
     {
-        return $this->belongsTo('App\Models\Student', 'uuid');
+        return $this->belongsTo('App\Models\Student', 'uuid')->withTrashed();
     }
 
     //篩選本學年所有的報名資訊，靜態函式

@@ -10,17 +10,19 @@ use PhpOffice\PhpWord\Shared\Converter;
 class ClubEnrolledExport
 {
     public $club_id;
+    public $section;
 
-    public function __construct($club_id)
+    public function __construct($club_id, $section)
     {
         $this->club_id = $club_id;
+        $this->section = $section;
     }
 
     public function export($title, $filename, $type)
     {
         $club = Club::find($this->club_id);
         if ($club->devide) {
-            $groups = $club->section_groups();
+            $groups = $club->section_groups($this->section);
             if (count($groups) <= 1) $groups = ['all'];
         } else {
             $groups = ['all'];
@@ -33,11 +35,11 @@ class ClubEnrolledExport
         $first = true;
         foreach ($groups as $n => $grp) {
             if ($grp == 'all') {
-                $enrolls = $club->section_accepted()->sortBy(function ($en) {
+                $enrolls = $club->section_accepted($this->section)->sortBy(function ($en) {
                     return $en->student->stdno;
                 });
             } else {
-                $enrolls = $club->section_devide($grp)->sortBy(function ($en) {
+                $enrolls = $club->section_devide($grp, $this->section)->sortBy(function ($en) {
                     return $en->student->stdno;
                 });
             }
@@ -68,12 +70,12 @@ class ClubEnrolledExport
             $table->addCell()->addText($club->kind->name);
             $table->addCell()->addText($club->unit->name);
             $table->addCell()->addText($club->grade);
-            $table->addCell()->addText($club->section()->teacher);
-            $table->addCell()->addText($club->section()->location);
-            $table->addCell()->addText($club->section()->studytime);
+            $table->addCell()->addText($club->section($this->section)->teacher);
+            $table->addCell()->addText($club->section($this->section)->location);
+            $table->addCell()->addText($club->section($this->section)->studytime);
             $section->addTextBreak(1);
             $table = $section->addTable(['borderSize' => 2, 'borderColor' => '999999', 'cellMargin' => 50]);
-            if ($club->section()->self_defined) {
+            if ($club->section($this->section)->self_defined) {
                 $counter = [];
                 foreach ($enrolls as $enroll) {
                     for ($i=1; $i<6; $i++) {
@@ -154,7 +156,7 @@ class ClubEnrolledExport
                 if ($club->has_lunch) {
                     $table->addCell()->addText($enroll->lunch);
                 }
-                if ($club->section()->self_defined) {
+                if ($club->section($this->section)->self_defined) {
                     for ($i=1; $i<6; $i++) {
                         if (in_array($i, $enroll->weekdays)) {
                             $table->addCell()->addText('1');

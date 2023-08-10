@@ -19,24 +19,26 @@ class ClubTimePerGroupSheet implements FromCollection, WithHeadings, WithStyles,
     use Exportable;
 
     public $club;
+    public $section;
     public $devide;
     public $rows = [];
     public $total = 4;
 
-    public function __construct($club, $group)
+    public function __construct($club, $section, $group)
     {
         $this->club = $club;
+        $this->section = $section;
         $this->devide = $group;
     }
 
     public function collection()
     {
         if ($this->devide == 'all') {
-            $enrolls = $this->club->section_accepted()->sortBy(function ($en) {
+            $enrolls = $this->club->section_accepted($this->section)->sortBy(function ($en) {
                 return $en->student->stdno;
             });
         } else {
-            $enrolls = $this->club->section_devide($this->devide)->sortBy(function ($en) {
+            $enrolls = $this->club->section_devide($this->devide, $this->section)->sortBy(function ($en) {
                 return $en->student->stdno;
             });
         }
@@ -59,7 +61,7 @@ class ClubTimePerGroupSheet implements FromCollection, WithHeadings, WithStyles,
         foreach ($rows as $k => $row) {
             $rows[$k]->no = $i;
             $clubs = [];
-            $next = $row->student->section_enrolls()->reject($row);
+            $next = $row->student->section_enrolls($this->section)->reject($row);
             $period0 = $period1 = $period2 = [];
             foreach ($next as $en) {
                 $sec = $en->club_section();

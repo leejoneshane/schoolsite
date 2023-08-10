@@ -76,14 +76,15 @@ class Club extends Model
     }
 
     //篩選可報名的社團（可依年級篩選），靜態函式
-    public static function can_enroll($grade = null)
+    public static function can_enroll($grade = null, $section = null)
     {
         $today = Carbon::now();
+        if (!$section) $section = current_section();
         if ($grade) {
             return Club::select('clubs.*', 'club_kinds.style')
             ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
-            ->where('clubs_section.section', current_section())
+            ->where('clubs_section.section', $section)
             ->where('club_kinds.stop_enroll', false)
             ->whereDate('club_kinds.enrollDate', '<=', $today->format('Y-m-d'))
             ->whereDate('club_kinds.expireDate', '>=', $today->format('Y-m-d'))
@@ -97,7 +98,7 @@ class Club extends Model
             return Club::select('clubs.*', 'club_kinds.style')
             ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
-            ->where('clubs_section.section', current_section())
+            ->where('clubs_section.section', $section)
             ->where('club_kinds.stop_enroll', false)
             ->whereDate('club_kinds.enrollDate', '<=', $today->format('Y-m-d'))
             ->whereDate('club_kinds.expireDate', '>=', $today->format('Y-m-d'))

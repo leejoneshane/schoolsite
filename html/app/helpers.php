@@ -32,7 +32,7 @@ function current_year() {
 }
 
 function current_seme() {
-    if (date('m') > 1 || date('m') < 8) {
+    if (date('m') > 1 && date('m') < 8) {
         $seme = 2;
     } else {
         $seme = 1;

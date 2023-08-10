@@ -20,17 +20,6 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.notify', ['club_id' => $club->id]) }}">
         <i class="fa-regular fa-envelope"></i>寄送錄取通知
     </a>
-    <div class="inline text-sm py-2 pl-6 rounded"><i class="fa-solid fa-download"></i>下載
-        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportenrolled', ['club_id' => $club->id]) }}">
-            錄取名冊
-        </a>、
-        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exporttimeseq', ['club_id' => $club->id]) }}">
-            時間序列表
-        </a>、
-        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportroll', ['club_id' => $club->id]) }}">
-            點名表
-        </a>
-    </div>
     <button class="text-sm py-2 pl-6 rounded text-red-300 hover:text-red-600" onclick="
     var result = confirm('確定要清空所有報名記錄嗎？');
     if (result) {
@@ -41,6 +30,19 @@
     ">
         <i class="fa-solid fa-file-import"></i>清空報名紀錄
     </button>
+    @endif
+    @if ($current == $section || $current = prev_section($section))
+    <div class="inline text-sm py-2 pl-6 rounded"><i class="fa-solid fa-download"></i>下載
+        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportenrolled', ['club_id' => $club->id, 'section' => $section]) }}">
+            錄取名冊
+        </a>、
+        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exporttimeseq', ['club_id' => $club->id, 'section' => $section]) }}">
+            時間序列表
+        </a>、
+        <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportroll', ['club_id' => $club->id, 'section' => $section]) }}">
+            點名表
+        </a>
+    </div>
     @endif
 </div>
 <table class="w-full py-4 text-left font-normal">
@@ -174,7 +176,7 @@
             <span>{{ $enroll->student->stdno }}</span>
         </td>
         <td class="p-2">
-            <span>{{ $enroll->student->realname }}</span>
+            <span>{{ $enroll->student->realname }}{{ $enroll->student->trashed() ? '（已轉學）' : '' }}</span>
         </td>
         @if ($club->section($section)->self_defined)
         <td class="p-2">
@@ -197,7 +199,7 @@
             <span>{{ $enroll->mark }}</span>
         </td>
         <td class="p-2 text-lg">
-        @if ($current == $section)
+        @if ($current == $section || $current = prev_section($section))
         @if ($enroll->accepted)
             <button class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" title="除名"
                 onclick="

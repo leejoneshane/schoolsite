@@ -1088,39 +1088,39 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollExport($club_id)
+    public function enrollExport($club_id, $section)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $filename = Club::find($club_id)->name.'錄取名冊';
-            $exporter = new ClubEnrolledExport($club_id);
+            $exporter = new ClubEnrolledExport($club_id, $section);
             return $exporter->download($filename);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function enrollExportRoll($club_id)
+    public function enrollExportRoll($club_id, $section)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $filename = Club::find($club_id)->name.'點名表';
-            $exporter = new ClubRollExport($club_id);
+            $exporter = new ClubRollExport($club_id, $section);
             return $exporter->download("$filename.xlsx");
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function enrollExportTime($club_id)
+    public function enrollExportTime($club_id, $section)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $filename = Club::find($club_id)->name.'時序表';
-            $exporter = new ClubTimeExport($club_id);
+            $exporter = new ClubTimeExport($club_id, $section);
             return $exporter->download("$filename.xlsx");
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
