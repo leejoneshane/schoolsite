@@ -111,21 +111,15 @@ class Club extends Model
     }
 
     //篩選本學年需進行收費統計的社團，靜態函式
-    public static function cash_enroll()
+    public static function cash_enroll($section)
     {
-        if (date('m') > 7) {
-            $min = date('Y').'-8-1';
-            $max = (date('Y') + 1).'-7-31';
-        } else {
-            $min = (date('Y') - 1).'-8-1';
-            $max = date('Y').'-7-31';
-        }
+        $dates = section_between_date($section);
         return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
-        ->select('clubs.*', 'club_kinds.style')
-        ->whereDate('club_kinds.enrollDate', '>=', $min)
-        ->whereDate('club_kinds.expireDate', '<=', $max)
-        ->orderBy('clubs.kind_id')
-        ->get();
+            ->select('clubs.*', 'club_kinds.style')
+            ->whereDate('club_kinds.enrollDate', '>=', $dates->mindate)
+            ->whereDate('club_kinds.expireDate', '<=', $dates->maxdate)
+            ->orderBy('clubs.kind_id')
+            ->get();
     }
 
     //取得此社團的學期資訊
@@ -137,15 +131,10 @@ class Club extends Model
     //提供指定學期或目前的學期資訊
     public function section($section = null)
     {
-        if ($section) {
-            return ClubSection::where('club_id', $this->id)
+        if (!$section) $section = current_section();
+        return ClubSection::where('club_id', $this->id)
             ->where('section', $section)
             ->first();
-        } else {
-            return ClubSection::where('club_id', $this->id)
-            ->where('section', current_section())
-            ->first();
-        }
     }
 
     //取得此社團的分類

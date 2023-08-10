@@ -36,7 +36,8 @@
         </th>
     </tr>
     @forelse ($students as $student)
-        @foreach ($student->section_enrolls() as $enroll)
+        @if ($student)
+        @foreach ($student->section_enrolls($section) as $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         @if($loop->first)
         <td class="p-2">{{ $student->class_id }}{{ $student->seat }}</td>
@@ -60,6 +61,7 @@
         </td>
     </tr>
         @endforeach
+        @endif
     @empty
     <tr>
         <td colspan="8" class="text-xl font-bold">目前查無重複報名的學生！</td>

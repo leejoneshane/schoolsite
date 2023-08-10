@@ -7,31 +7,19 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind_id]) }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
-    @if ($current == $section)
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.appendenroll', ['club_id' => $club->id]) }}">
+    @if ($current == $section || $current = prev_section($section))
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.appendenroll', ['club_id' => $club->id, 'section' => $section]) }}">
         <i class="fa-solid fa-circle-plus"></i>新增報名資訊
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.fastappend', ['club_id' => $club->id]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.fastappend', ['club_id' => $club->id, 'section' => $section]) }}">
         <i class="fa-solid fa-truck-fast"></i>快速輸入
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.importold', ['club_id' => $club->id]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.importold', ['club_id' => $club->id, 'section' => $section]) }}">
         <i class="fa-solid fa-file-import"></i>匯入舊生
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.notify', ['club_id' => $club->id]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.notify', ['club_id' => $club->id, 'section' => $section]) }}">
         <i class="fa-regular fa-envelope"></i>寄送錄取通知
     </a>
-    <button class="text-sm py-2 pl-6 rounded text-red-300 hover:text-red-600" onclick="
-    var result = confirm('確定要清空所有報名記錄嗎？');
-    if (result) {
-        const myform = document.getElementById('remove');
-        myform.action = '{{ route('clubs.prune', [ 'club_id' => $club->id, 'section' => $section ]) }}';
-        myform.submit();
-    }
-    ">
-        <i class="fa-solid fa-file-import"></i>清空報名紀錄
-    </button>
-    @endif
-    @if ($current == $section || $current = prev_section($section))
     <div class="inline text-sm py-2 pl-6 rounded"><i class="fa-solid fa-download"></i>下載
         <a class="text-blue-300 hover:text-blue-600" href="{{ route('clubs.exportenrolled', ['club_id' => $club->id, 'section' => $section]) }}">
             錄取名冊
@@ -43,6 +31,16 @@
             點名表
         </a>
     </div>
+    <button class="text-sm py-2 pl-6 rounded text-red-300 hover:text-red-600" onclick="
+        var result = confirm('確定要清空所有報名記錄嗎？');
+        if (result) {
+            const myform = document.getElementById('remove');
+            myform.action = '{{ route('clubs.prune', [ 'club_id' => $club->id, 'section' => $section ]) }}';
+            myform.submit();
+        }
+    ">
+        <i class="fa-solid fa-file-import"></i>清空報名紀錄
+    </button>
     @endif
 </div>
 <table class="w-full py-4 text-left font-normal">

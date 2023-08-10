@@ -86,13 +86,13 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('enroll/edit/{enroll_id}', 'App\Http\Controllers\ClubController@enrollEdit');
     Route::post('enroll/edit/{enroll_id}', 'App\Http\Controllers\ClubController@enrollUpdate')->name('clubs.editenroll');
     Route::post('enroll/remove/{enroll_id}', 'App\Http\Controllers\ClubController@enrollRemove')->name('clubs.delenroll');
-    Route::get('enroll/append/{club_id}/{class?}', 'App\Http\Controllers\ClubController@enrollAppend');
-    Route::post('enroll/append/{club_id}/{class?}', 'App\Http\Controllers\ClubController@enrollInsertAppend')->name('clubs.appendenroll');
-    Route::get('enroll/fast/{club_id}', 'App\Http\Controllers\ClubController@enrollFastAppend');
-    Route::post('enroll/fast/{club_id}', 'App\Http\Controllers\ClubController@enrollInsertFast')->name('clubs.fastappend');
-    Route::get('enroll/import/{club_id}', 'App\Http\Controllers\ClubController@enrollImport');
-    Route::post('enroll/import/{club_id}', 'App\Http\Controllers\ClubController@enrollImportOld')->name('clubs.importold');
-    Route::get('enroll/notify/{club_id}', 'App\Http\Controllers\ClubController@enrollNotify')->name('clubs.notify');
+    Route::get('enroll/append/{club_id}/{section}/{class?}', 'App\Http\Controllers\ClubController@enrollAppend');
+    Route::post('enroll/append/{club_id}/{section}/{class?}', 'App\Http\Controllers\ClubController@enrollInsertAppend')->name('clubs.appendenroll');
+    Route::get('enroll/fast/{club_id}/{section}', 'App\Http\Controllers\ClubController@enrollFastAppend');
+    Route::post('enroll/fast/{club_id}/{section}', 'App\Http\Controllers\ClubController@enrollInsertFast')->name('clubs.fastappend');
+    Route::get('enroll/import/{club_id}/{section}', 'App\Http\Controllers\ClubController@enrollImport');
+    Route::post('enroll/import/{club_id}/{section}', 'App\Http\Controllers\ClubController@enrollImportOld')->name('clubs.importold');
+    Route::get('enroll/notify/{club_id}/{section}', 'App\Http\Controllers\ClubController@enrollNotify')->name('clubs.notify');
     Route::get('enroll/export/{club_id}/{section}', 'App\Http\Controllers\ClubController@enrollExport')->name('clubs.exportenrolled');
     Route::post('enroll/valid/{enroll_id}', 'App\Http\Controllers\ClubController@enrollValid')->name('clubs.valid');
     Route::post('enroll/deny/{enroll_id}', 'App\Http\Controllers\ClubController@enrollDeny')->name('clubs.deny');
@@ -114,7 +114,7 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('edit/{club_id}', 'App\Http\Controllers\ClubController@clubEdit');
     Route::post('edit/{club_id}', 'App\Http\Controllers\ClubController@clubUpdate')->name('clubs.edit');
     Route::post('remove/{club_id}', 'App\Http\Controllers\ClubController@clubRemove')->name('clubs.remove');
-    Route::get('mail/{club_id}', 'App\Http\Controllers\ClubController@clubMail');
+    Route::get('mail/{club_id}/{section}', 'App\Http\Controllers\ClubController@clubMail');
     Route::post('mail/{club_id}', 'App\Http\Controllers\ClubController@clubNotify')->name('clubs.mail');
     Route::post('prune/{club_id}/{section?}', 'App\Http\Controllers\ClubController@clubPrune')->name('clubs.prune');
     Route::get('section/{club_id}', 'App\Http\Controllers\ClubController@sectionList')->name('clubs.sections');
@@ -126,11 +126,10 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('import/{kid?}', 'App\Http\Controllers\ClubController@clubUpload');
     Route::post('import/{kid?}', 'App\Http\Controllers\ClubController@clubImport')->name('clubs.import');
     Route::get('export/{kid}', 'App\Http\Controllers\ClubController@clubExport')->name('clubs.export');
-    Route::get('repeat/{kid}', 'App\Http\Controllers\ClubController@clubRepetition')->name('clubs.repeat');
-    Route::get('cash', 'App\Http\Controllers\ClubController@clubExportCash')->name('clubs.cash');
-    Route::get('classroom/{kid}/{class_id?}', 'App\Http\Controllers\ClubController@clubClassroom')->name('clubs.classroom');
-    Route::get('classroom/{kid}/export/{class_id}', 'App\Http\Controllers\ClubController@clubExportClass')->name('clubs.exportclass');
-
+    Route::get('repeat/{kid}/{section?}', 'App\Http\Controllers\ClubController@clubRepetition')->name('clubs.repeat');
+    Route::get('cash/{section?}', 'App\Http\Controllers\ClubController@clubExportCash')->name('clubs.cash');
+    Route::get('classroom/{kid}/{section?}/{class_id?}', 'App\Http\Controllers\ClubController@clubClassroom')->name('clubs.classroom');
+    Route::get('classroom/{kid}/{section}/export/{class_id}', 'App\Http\Controllers\ClubController@clubExportClass')->name('clubs.exportclass');
 });
 
 //午餐調查

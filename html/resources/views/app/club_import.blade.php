@@ -4,7 +4,7 @@
 <div class="text-slate-500 text-gray-500 text-zinc-500 text-neutral-500 text-stone-500 text-red-500 text-orange-500 text-amber-500 text-yellow-500 text-lime-500 text-green-500 text-emerald-500 text-teal-500 text-cyan-500 text-sky-500 text-blue-500 text-indigo-500 text-violet-500 text-purple-500 text-fuchsia-500 text-pink-500 text-rose-500"></div>
 <div class="text-2xl font-bold leading-normal pb-5">
     匯入舊生
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enrolls', ['club_id' => $club->id]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enrolls', ['club_id' => $club->id, 'section' => $section]) }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
@@ -37,13 +37,13 @@
     </tr>
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $club->style }}">
         <td class="p-2">{{ $club->name }}</td>
-        <td class="p-2">{{ $club->section()->teacher }}</td>
+        <td class="p-2">{{ $club->section($section)->teacher }}</td>
         <td class="p-2">{{ $club->grade }}</td>
-        <td class="p-2">{{ $club->section()->studytime }}</td>
-        <td class="p-2">{{ $club->section()->location }}</td>
-        <td class="p-2">{{ $club->section()->total }}</td>
-        <td class="p-2">{{ $club->section()->maximum }}</td>
-        <td class="p-2">{{ $club->count_enrolls() }}</td>
+        <td class="p-2">{{ $club->section($section)->studytime }}</td>
+        <td class="p-2">{{ $club->section($section)->location }}</td>
+        <td class="p-2">{{ $club->section($section)->total }}</td>
+        <td class="p-2">{{ $club->section($section)->maximum }}</td>
+        <td class="p-2">{{ $club->count_enrolls($section) }}</td>
     </tr>
 </table>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mt-5" role="alert">
@@ -58,12 +58,12 @@
     @if (empty($sections))
         <label>很抱歉，找不到可以匯入的舊生！</label>
     @else
-        <form method="POST" action="{{ route('clubs.importold', ['club_id' => $club->id]) }}">
+        <form method="POST" action="{{ route('clubs.importold', ['club_id' => $club->id, 'section' => $section]) }}">
             @csrf
-            <label for="year">請選擇要匯入的學期：</label>
-            <select id="year" class="inline py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700">
-                @foreach ($sections as $y)
-                <option value="{{ $y->section }}">{{ $y->name }}</option>
+            <label for="section">請選擇要匯入的學期：</label>
+            <select id="section" class="inline py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700">
+                @foreach ($sections as $sec)
+                <option value="{{ $sec->section }}">{{ $sec->name }}</option>
                 @endforeach
             </select>
             <p class="p-6">

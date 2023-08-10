@@ -10,15 +10,17 @@ use PhpOffice\PhpWord\Shared\Converter;
 class ClubClassExport
 {
     public $class_id;
+    public $section;
 
-    public function __construct($class_id)
+    public function __construct($class_id, $section)
     {
         $this->class_id = $class_id;
+        $this->section = $section;
     }
 
     public function export($title, $filename, $type)
     {
-        $enrolls = ClubEnroll::currentByClass($this->class_id)->groupBy('uuid');
+        $enrolls = ClubEnroll::acceptedByClass($this->class_id, $this->section)->groupBy('uuid');
         $phpWord = new PhpWord();
         $phpWord->setDefaultFontSize(11);
         $section = $phpWord->addSection(['pageNumberingStart' => 1]);

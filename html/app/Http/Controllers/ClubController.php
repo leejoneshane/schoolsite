@@ -228,56 +228,86 @@ class ClubController extends Controller
         }
     }
 
-    public function clubRepetition($kid)
+    public function clubRepetition($kid, $section = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
-            $uuids = ClubEnroll::repetition();
+            $sections = ClubEnroll::sections(); 
+            if (!$section) {
+                $section = current_section();
+                if (!empty($sections)) {
+                    $section_obj = $sections->first();
+                    if ($section_obj) {
+                        $section = $section_obj->section;
+                    }
+                }
+            }
+            $uuids = ClubEnroll::repetition($section);
             $students = [];
             foreach ($uuids as $uuid) {
                 $students[] = Student::find($uuid)->first();
             }
-            return view('app.club_repetition', ['kind' => $kid, 'students' => $students]);
+            return view('app.club_repetition', ['kind' => $kid, 'section' => $section, 'students' => $students]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function clubExportCash()
+    public function clubExportCash($section = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
+            if (!$section) {
+                $section = current_section();
+                $sections = ClubEnroll::sections(); 
+                if (!empty($sections)) {
+                    $section_obj = $sections->first();
+                    if ($section_obj) {
+                        $section = $section_obj->section;
+                    }
+                }
+            }
             $filename = '學生社團收費統計表';
-            $exporter = new ClubCashExport();
+            $exporter = new ClubCashExport($section);
             return $exporter->download("$filename.xlsx");
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function clubClassroom($kid, $class_id = null)
+    public function clubClassroom($kid, $section = null, $class_id = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
+            $sections = ClubEnroll::sections(); 
+            if (!$section) {
+                $section = current_section();
+                if (!empty($sections)) {
+                    $section_obj = $sections->first();
+                    if ($section_obj) {
+                        $section = $section_obj->section;
+                    }
+                }
+            }
             $classes = Classroom::all();
             if (!$class_id) $class_id = $classes->first()->id;
-            $enrolls = ClubEnroll::currentByClass($class_id)->groupBy('uuid');
-            return view('app.club_classroom', ['kind_id' => $kid, 'class_id' => $class_id, 'classes' => $classes, 'enrolls' => $enrolls]);
+            $enrolls = ClubEnroll::acceptedByClass($class_id, $section)->groupBy('uuid');
+            return view('app.club_classroom', ['kind_id' => $kid, 'class_id' => $class_id, 'section' => $section, 'sections' => $sections, 'classes' => $classes, 'enrolls' => $enrolls]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function clubExportClass($kid, $class_id)
+    public function clubExportClass($kid, $class_id, $section)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $filename = Classroom::find($class_id)->name.'學生社團錄取名冊';
-            $exporter = new ClubClassExport($class_id);
+            $exporter = new ClubClassExport($class_id, $section);
             return $exporter->download($filename);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -387,13 +417,13 @@ class ClubController extends Controller
         }
     }
 
-    public function clubMail($club_id)
+    public function clubMail($club_id, $section)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            $enrolls = $club->section_enrolls();
+            $enrolls = $club->section_enrolls($section);
             return view('app.club_mail', ['club' => $club, 'enrolls' => $enrolls]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -876,7 +906,7 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollAppend($club_id, $class = null)
+    public function enrollAppend($club_id, $section, $class = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
@@ -888,31 +918,31 @@ class ClubController extends Controller
             } else {
                 $students = $classes->first()->students;
             }
-            return view('app.club_appendenroll', ['club' => $club, 'current' => $class, 'classes' => $classes, 'students' => $students]);
+            return view('app.club_appendenroll', ['club' => $club, 'section' => $section, 'current' => $class, 'classes' => $classes, 'students' => $students]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function enrollInsertAppend(Request $request, $club_id, $class = null)
+    public function enrollInsertAppend(Request $request, $club_id, $section, $class = null)
     {
         $uuid = $request->input('student');
         $student = Student::find($uuid);
-        if ($student->has_enroll($club_id)) {
+        if ($student->has_enroll($club_id, $section)) {
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '該生已經報名此社團，無法再次報名！');
         }
         $club = Club::find($club_id);
         if ($club->kind->single) {
-            $same_kind = $student->current_enrolls_for_kind($club->kind_id);
+            $same_kind = $student->current_enrolls_for_kind($club->kind_id, $section);
             if ($same_kind->isNotEmpty()) return redirect()->route('clubs.enroll')->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
         }
         $order = $club->count_enrolls() + 1;
-        if ($club->section()->maximum != 0 && $order > $club->section()->maximum) {
+        if ($club->section($section)->maximum != 0 && $order > $club->section($section)->maximum) {
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '很抱歉，該學生社團已經額滿！');
         }
-        $enrolls = Student::find($uuid)->section_enrolls();
+        $enrolls = Student::find($uuid)->section_enrolls($section);
         $weekdays = [];
-        if ($club->section()->self_defined && $request->has('weekdays')) {
+        if ($club->section($section)->self_defined && $request->has('weekdays')) {
             $weekdays = $request->input('weekdays');
             foreach ($weekdays as $k => $w) {
                 $weekdays[$k] = (integer) $w;
@@ -927,6 +957,7 @@ class ClubController extends Controller
         if ($conflict) return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '很抱歉，此社團與其他已報名的社團上課時段重疊，因此無法報名！');
 */
         $enroll = ClubEnroll::create([
+            'section' => $section,
             'uuid' => $uuid,
             'club_id' => $club_id,
             'need_lunch' => $request->input('lunch') ?: 0,
@@ -944,24 +975,24 @@ class ClubController extends Controller
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
-        if ($order > $club->section()->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        if ($order > $club->section($section)->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
         Watchdog::watch($request, '新增報名資訊，學生社團：' . $club->name . '，學生：' . $student->class_id . $student->realname);
-        return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '已經完成報名手續，該生報名順位為'.$order.$message);
+        return redirect()->route('clubs.enrolls', ['club_id' => $club_id, 'section' => $section])->with('success', '已經完成報名手續，該生報名順位為'.$order.$message);
     }
 
-    public function enrollFastAppend($club_id)
+    public function enrollFastAppend($club_id, $section)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            return view('app.club_fastappend', ['club' => $club]);
+            return view('app.club_fastappend', ['club' => $club, 'section' => $section]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function enrollInsertFast(Request $request, $club_id)
+    public function enrollInsertFast(Request $request, $club_id, $section)
     {
         $club = Club::find($club_id);
         $message = '';
@@ -974,18 +1005,18 @@ class ClubController extends Controller
             $class_id = substr($stdno, 0, 3);
             $seat = (integer) substr($stdno, -2);
             $student = Student::findByStdno($class_id, $seat);
-            if ($student->has_enroll($club_id)) {
+            if ($student->has_enroll($club_id, $section)) {
                 $message .= $stdno.$student->realname.'已經報名此社團，無法再次報名！';
                 continue;
             }
             if ($club->kind->single) {
-                $same_kind = $student->current_enrolls_for_kind($club->kind_id);
+                $same_kind = $student->current_enrolls_for_kind($club->kind_id, $section);
                 if ($same_kind->isNotEmpty()) {
                     $message .= $stdno.$student->realname.'報名失敗，'.$club->kind->name.'只允許報名參加一個社團！';
                     continue;
                 }
             }
-            $order = $club->count_enrolls() + 1;
+            $order = $club->count_enrolls($section) + 1;
             if ($club->section()->maximum != 0 && $order > $club->section()->maximum) {
                 $message .= $stdno.$student->realname.'因該社團已經額滿，無法報名！';
                 continue;
@@ -1010,6 +1041,7 @@ class ClubController extends Controller
             }
 */
             $enroll = ClubEnroll::create([
+                'section' => $section,
                 'uuid' => $student->uuid,
                 'club_id' => $club_id,
             ]);
@@ -1019,42 +1051,42 @@ class ClubController extends Controller
             }
             $enroll->accepted = true;
             $enroll->save();
-            if ($order > $club->section()->total) {
+            if ($order > $club->section($section)->total) {
                 $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'，目前列為候補！';
             } else {
                 $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
             }
             Watchdog::watch($request, '快速新增報名資訊，學生社團：' . $club->name . '，學生：' . $stdno.$student->realname);
         }
-        return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', $message);
+        return redirect()->route('clubs.enrolls', ['club_id' => $club_id, 'section' => $section])->with('success', $message);
     }
 
-    public function enrollImport($club_id)
+    public function enrollImport($club_id, $section)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            $current = current_section();
             $sections = ClubEnroll::sections();
-            $sections = $sections->reject(function ($item) use ($current) {
-                return $item->section == $current;
+            $sections = $sections->reject(function ($item) use ($section) {
+                return $item->section == $section;
             });
-            return view('app.club_import', ['club' => $club, 'current' => $current, 'sections' => $sections]);
+            return view('app.club_import', ['club' => $club, 'section' => $section, 'sections' => $sections]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function enrollImportOld(Request $request, $club_id)
+    public function enrollImportOld(Request $request, $club_id, $section)
     {
         $club = Club::find($club_id);
-        $year = $request->input('year');
-        $enrolls = $club->section_enrolls($year);
+        $old_section = $request->input('section');
+        $enrolls = $club->section_enrolls($old_section);
         foreach ($enrolls as $old) {
             $check = ClubEnroll::findBy($old->uuid, $club_id);
             if (!$check) {
                 ClubEnroll::create([
+                    'section' => $section,
                     'uuid' => $old->uuid,
                     'club_id' => $club_id,
                     'need_lunch' => $old->lunch ?: 0,
@@ -1071,13 +1103,13 @@ class ClubController extends Controller
         return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '匯入完成！');
     }
 
-    public function enrollNotify(Request $request, $club_id)
+    public function enrollNotify(Request $request, $club_id, $section)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            $enrolled = $club->section_accepted()->filter(function ($enroll) {
+            $enrolled = $club->section_accepted($section)->filter(function ($enroll) {
                 return !is_null($enroll->email);
             });
             Notification::send($enrolled, new ClubEnrolledNotification());

@@ -15,16 +15,18 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
 {
     use Exportable;
 
+    public $section;
     public $clubs;
 
-    public function __construct()
+    public function __construct($section)
     {
-        $this->clubs = Club::cash_enroll();
+        $this->section = $section;
+        $this->clubs = Club::cash_enroll($section);
     }
 
     public function collection()
     {
-        $enrolls = ClubEnroll::current_accepted()->sortBy(function ($enroll) {
+        $enrolls = ClubEnroll::acceptedBySection($this->section)->sortBy(function ($enroll) {
             return $enroll->student->id;
         });
         $collection = [];

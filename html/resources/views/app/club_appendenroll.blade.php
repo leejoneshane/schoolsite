@@ -4,7 +4,7 @@
 <div class="text-slate-500 text-gray-500 text-zinc-500 text-neutral-500 text-stone-500 text-red-500 text-orange-500 text-amber-500 text-yellow-500 text-lime-500 text-green-500 text-emerald-500 text-teal-500 text-cyan-500 text-sky-500 text-blue-500 text-indigo-500 text-violet-500 text-purple-500 text-fuchsia-500 text-pink-500 text-rose-500"></div>
 <div class="text-2xl font-bold leading-normal pb-5">
     新增報名資訊
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enrolls', ['club_id' => $club->id]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.enrolls', ['club_id' => $club->id, 'section' => $section]) }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
@@ -37,25 +37,25 @@
     </tr>
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $club->style }}">
         <td class="p-2">{{ $club->name }}</td>
-        <td class="p-2">{{ $club->section()->teacher }}</td>
+        <td class="p-2">{{ $club->section($section)->teacher }}</td>
         <td class="p-2">{{ $club->grade }}</td>
-        <td class="p-2">{{ $club->section()->studytime }}</td>
-        <td class="p-2">{{ $club->section()->location }}</td>
-        <td class="p-2">{{ $club->section()->total }}</td>
-        <td class="p-2">{{ $club->section()->maximum }}</td>
-        <td class="p-2">{{ $club->count_enrolls() }}</td>
+        <td class="p-2">{{ $club->section($section)->studytime }}</td>
+        <td class="p-2">{{ $club->section($section)->location }}</td>
+        <td class="p-2">{{ $club->section($section)->total }}</td>
+        <td class="p-2">{{ $club->section($section)->maximum }}</td>
+        <td class="p-2">{{ $club->count_enrolls($section) }}</td>
     </tr>
 </table>
 <div class="flex flex-col gap-3 justify-center items-center">
     <div class="bg-white rounded p-10">
-        <form method="POST" action="{{ route('clubs.appendenroll', ['club_id' => $club->id]) }}">
+        <form method="POST" action="{{ route('clubs.appendenroll', ['club_id' => $club->id, 'section' => $section]) }}">
             @csrf
             <div class="p-3">
                 <label for="myclass" class="inline">請選擇班級：</label>
                 <select name="myclass" class="inline w-48 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                     onchange="
                     var myclass = this.value;
-                    window.location.replace('{{ route('clubs.appendenroll', ['club_id' => $club->id]) }}' + '/' + myclass);
+                    window.location.replace('{{ route('clubs.appendenroll', ['club_id' => $club->id, 'section' => $section]) }}' + '/' + myclass);
                     ">
                     @foreach ($classes as $cls)
                     <option value="{{ $cls->id }}"{{ ($current == $cls->id) ? ' selected' : '' }}>{{ $cls->name }}</option>
@@ -103,7 +103,7 @@
                 </select>
             </div>
             @endif
-            @if ($club->section()->self_defined)
+            @if ($club->section($section)->self_defined)
             <div class="p-3">
                 <label class="inline">自選上課日：每週</label>
                 <div id="weekdays" class="inline">

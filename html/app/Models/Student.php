@@ -130,24 +130,24 @@ class Student extends Model
     }
 
     //取得此學生指定分類的所有社團報名資訊
-    public function current_enrolls_for_kind($kind_id)
+    public function current_enrolls_for_kind($kind_id, $section = null)
     {
-        $filtered = $this->section_enrolls()->filter(function ($enroll) use ($kind_id) {
+        $filtered = $this->section_enrolls($section)->filter(function ($enroll) use ($kind_id) {
             return $enroll->club->kind_id == $kind_id;
         });
         return $filtered;
     }
 
     //取得此學生指定社團的報名資訊
-    public function get_enroll($club_id)
+    public function get_enroll($club_id, $section = null)
     {
-        return ClubEnroll::findBy($this->uuid, $club_id);
+        return ClubEnroll::findBy($this->uuid, $club_id, $section);
     }
 
     //檢查此學生是否報名指定社團
-    public function has_enroll($club_id)
+    public function has_enroll($club_id, $section = null)
     {
-        $rec = ClubEnroll::findBy($this->uuid, $club_id);
+        $rec = ClubEnroll::findBy($this->uuid, $club_id, $section);
         return ($rec) ? true : false;
     }
 

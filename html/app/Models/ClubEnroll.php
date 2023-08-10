@@ -184,35 +184,38 @@ class ClubEnroll extends Model
         return $this->belongsTo('App\Models\Student', 'uuid')->withTrashed();
     }
 
-    //篩選本學年所有的報名資訊，靜態函式
-    public static function current()
+     //篩選指定學期所有的報名資訊，靜態函式
+    public static function enrollsBySection($section = null)
     {
-        return ClubEnroll::where('section', current_section())->get();
+        if (!$section) $section = current_section();
+        return ClubEnroll::where('section', $section)->get();
     }
 
-    //篩選本學年所有已被錄取的報名資訊，靜態函式
-    public static function current_accepted()
+    //篩選指定學期所有已被錄取的報名資訊，靜態函式
+    public static function acceptedBySection($section = null)
     {
-        return ClubEnroll::where('section', current_section())->where('accepted', true)->get();
+        if (!$section) $section = current_section();
+        return ClubEnroll::where('section', $section)->where('accepted', true)->get();
     }
 
     //篩選指定班級本學年所有的報名資訊，靜態函式
-    public static function currentByClass($class_id)
+    public static function acceptedByClass($class_id, $section)
     {
         return ClubEnroll::leftJoin('students', 'clubs_students.uuid', '=', 'students.uuid')
             ->select('clubs_students.*')
+            ->where('clubs_students.section', $section)
             ->where('clubs_students.accepted', true)
-            ->where('clubs_students.section', current_section())
             ->where('students.class_id', $class_id)
             ->orderBy('students.seat')
             ->get();
     }
 
     //篩選本學年所有重複報名的學生 UUID，靜態函式
-    public static function repetition()
+    public static function repetition($section = null)
     {
+        if (!$section) $section = current_section();
         return ClubEnroll::select('uuid')
-            ->where('section', current_section())
+            ->where('section', $section)
             ->groupBy('uuid')
             ->havingRaw('count(*) > ?', [1])
             ->get();
