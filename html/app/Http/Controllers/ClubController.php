@@ -301,7 +301,7 @@ class ClubController extends Controller
         }
     }
 
-    public function clubExportClass($kid, $class_id, $section)
+    public function clubExportClass($kid, $section, $class_id)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
@@ -417,26 +417,46 @@ class ClubController extends Controller
         }
     }
 
-    public function clubMail($club_id, $section)
+    public function clubMail($club_id, $section = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
+            $sections = ClubEnroll::sections(); 
+            if (!$section) {
+                $section = current_section();
+                if (!empty($sections)) {
+                    $section_obj = $sections->first();
+                    if ($section_obj) {
+                        $section = $section_obj->section;
+                    }
+                }
+            }
             $club = Club::find($club_id);
             $enrolls = $club->section_enrolls($section);
-            return view('app.club_mail', ['club' => $club, 'enrolls' => $enrolls]);
+            return view('app.club_mail', ['club' => $club, 'section' => $section, 'enrolls' => $enrolls]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function clubNotify(Request $request, $club_id)
+    public function clubNotify(Request $request, $club_id, $section = null)
     {
         $club = Club::find($club_id);
         $kind_id = $club->kind_id;
         $enroll_ids = $request->input('enrolls');
         $message = $request->input('message');
         if (!empty($enroll_ids)) {
+            $sections = ClubEnroll::sections(); 
+            if (!$section) {
+                $section = current_section();
+                if (!empty($sections)) {
+                    $section_obj = $sections->first();
+                    if ($section_obj) {
+                        $section = $section_obj->section;
+                    }
+                }
+            }
             $enrolls = ClubEnroll::whereIn('id', $enroll_ids)->whereNotNull('email')->get();
             Notification::sendNow($enrolls, new ClubNotification($message));
             Watchdog::watch($request, '寄送郵件給學生社團：' . $club->name . '的錄取學生，郵件內容：' . $message);
@@ -451,7 +471,16 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            if (!$section) $section = current_section();
+            $sections = $club->sections(); 
+            if (!$section) {
+                $section = current_section();
+                if (!empty($sections)) {
+                    $section_obj = $sections->first();
+                    if ($section_obj) {
+                        $section = $section_obj->section;
+                    }
+                }
+            }
             ClubEnroll::where('club_id', $club_id)->where('section', $section)->delete();
             $kind_id = $club->kind_id;
             $str = substr($section, 0, -1) . '學年'. ((substr($section, -1) == 1) ? '上' : '下') .'學期';

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Collection;
 use App\Notifications\ClubNotification;
 use App\Notifications\ClubEnrollNotification;
 use App\Notifications\ClubEnrolledNotification;
@@ -210,12 +211,26 @@ class ClubEnroll extends Model
             ->get();
     }
 
+    //取得不可重複報名所有社團的ID，靜態函式
+    public static function single_clubs()
+    {
+        $kinds = ClubKind::where('single', true)->get();
+        $clubs = [];
+        foreach ($kinds as $kind) {
+            foreach ($kind->clubs as $club) {
+                $clubs[] = $club->id;
+            }
+        }
+        return $clubs;
+    }
+
     //篩選本學年所有重複報名的學生 UUID，靜態函式
     public static function repetition($section = null)
     {
         if (!$section) $section = current_section();
         return ClubEnroll::select('uuid')
             ->where('section', $section)
+            ->whereIn('club_id', self::single_clubs())
             ->groupBy('uuid')
             ->havingRaw('count(*) > ?', [1])
             ->get();

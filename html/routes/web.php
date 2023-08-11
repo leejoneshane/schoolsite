@@ -114,8 +114,8 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('edit/{club_id}', 'App\Http\Controllers\ClubController@clubEdit');
     Route::post('edit/{club_id}', 'App\Http\Controllers\ClubController@clubUpdate')->name('clubs.edit');
     Route::post('remove/{club_id}', 'App\Http\Controllers\ClubController@clubRemove')->name('clubs.remove');
-    Route::get('mail/{club_id}/{section}', 'App\Http\Controllers\ClubController@clubMail');
-    Route::post('mail/{club_id}', 'App\Http\Controllers\ClubController@clubNotify')->name('clubs.mail');
+    Route::get('mail/{club_id}/{section?}', 'App\Http\Controllers\ClubController@clubMail');
+    Route::post('mail/{club_id}/{section?}', 'App\Http\Controllers\ClubController@clubNotify')->name('clubs.mail');
     Route::post('prune/{club_id}/{section?}', 'App\Http\Controllers\ClubController@clubPrune')->name('clubs.prune');
     Route::get('section/{club_id}', 'App\Http\Controllers\ClubController@sectionList')->name('clubs.sections');
     Route::get('section/add/{club_id}', 'App\Http\Controllers\ClubController@sectionAdd');

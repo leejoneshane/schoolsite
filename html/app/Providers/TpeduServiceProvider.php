@@ -548,6 +548,12 @@ class TpeduServiceProvider extends ServiceProvider
                     $l->delete();
                 }
             }
+            $leaves = Student::whereRaw('LEFT(id, 3) <> '.$year)->get();
+            foreach ($leaves as $l) {
+                $detail_log[] = '轉學或畢業學生'.$l->idno.' '.$l->realname.'已刪除！';
+                User::destroy($l->uuid);
+                $l->delete();
+            }
         }
         return $detail_log;
     }
@@ -573,6 +579,12 @@ class TpeduServiceProvider extends ServiceProvider
                     User::destroy($l->uuid);
                     $l->delete();
                 }
+                $leaves = Student::whereRaw('LEFT(id, 3) <> '.$year)->get();
+                foreach ($leaves as $l) {
+                    $detail_log[] = '轉學或畢業學生'.$l->idno.' '.$l->realname.'已刪除！';
+                    User::destroy($l->uuid);
+                    $l->delete();
+                }
             }
         }
         return $detail_log;
@@ -593,6 +605,12 @@ class TpeduServiceProvider extends ServiceProvider
         }
         if ($remove) {
             $leaves = Student::where('class_id', $class_id)->whereNotIN('uuid', $uuids)->get();
+            foreach ($leaves as $l) {
+                $detail_log[] = '轉學或畢業學生'.$l->idno.' '.$l->realname.'已刪除！';
+                User::destroy($l->uuid);
+                $l->delete();
+            }
+            $leaves = Student::whereRaw('LEFT(id, 3) <> '.$year)->get();
             foreach ($leaves as $l) {
                 $detail_log[] = '轉學或畢業學生'.$l->idno.' '.$l->realname.'已刪除！';
                 User::destroy($l->uuid);
