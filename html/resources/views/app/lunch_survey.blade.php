@@ -9,8 +9,11 @@
     </a>
     @endif
     @if ($manager)
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch.download', ['section' => $section]) }}">
-        <i class="fa-solid fa-file-export"></i>匯出調查結果
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch.downloadAll', ['section' => $section]) }}">
+        <i class="fa-solid fa-file-export"></i>匯出調查結果(學期)
+    </a>
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch.download', ['section' => $section, 'class_id' => $classroom->id]) }}">
+        <i class="fa-solid fa-file-export"></i>匯出調查結果(班級)
     </a>
     @endif
 </div>

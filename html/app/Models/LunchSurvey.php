@@ -100,7 +100,7 @@ class LunchSurvey extends Model
         if (!$section) $section = next_section();
         $surveys = LunchSurvey::where('section', $section)->get()
             ->filter(function ($survey, $key) use ($class) {
-                return ($survey->student) ? $survey->student->class_id == $class : false;
+                return ($survey->classroom()) ? $survey->classroom()->id == $class : false;
             })->sortBy(function ($survey, $key) {
                 return ($survey->student) ? $survey->student->seat : false;
             });
@@ -119,6 +119,15 @@ class LunchSurvey extends Model
     {
         if (!$section) $section = next_section();
         return LunchSurvey::query()->where('section', $section)->count();
+    }
+
+    //檢查本學期指定班級已調查學生數
+    public static function countByClass($section, $class_id)
+    {
+        return LunchSurvey::where('section', $section)->get()
+            ->filter(function ($survey, $key) use ($class_id) {
+                return ($survey->classroom()) ? $survey->classroom()->id == $class_id : false;
+            })->count();
     }
 
     //提供午餐類型中文字串
@@ -149,7 +158,7 @@ class LunchSurvey extends Model
     //取得填寫此午餐調查的班級
     public function classroom()
     {
-        return $this->student->classroom;
+        return ($this->student) ? $this->student->classroom : null;
     }
 
 }

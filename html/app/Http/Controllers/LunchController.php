@@ -12,6 +12,7 @@ use App\Models\Classroom;
 use App\Models\LunchSurvey;
 use App\Models\Watchdog;
 use App\Exports\LunchExport;
+use App\Exports\LunchClassExport;
 
 class LunchController extends Controller
 {
@@ -99,7 +100,7 @@ class LunchController extends Controller
         return redirect()->route('lunch')->with('success', '已為您儲存午餐調查表！');
     }
 
-    public function download($section = null)
+    public function downloadAll($section = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
@@ -108,10 +109,26 @@ class LunchController extends Controller
         }
         if (!$section) $section = next_section();
         if (LunchSurvey::count($section) == 0) {
-            return redirect()->route('lunch')->with('error', '沒有調查結果可以匯出！');
+            return redirect()->route('lunch', ['section' => $section])->with('error', '沒有調查結果可以匯出！');
         } else {
             $filename = substr($section, 0, -1) . '學年度' . ((substr($section, -1) == '1') ? '上' : '下') . '學期午餐調查結果彙整';
             return (new LunchExport($section))->download("$filename.xlsx");    
+        }
+    }
+
+    public function download($section, $class_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('lunch.manager');
+        if (!$manager) {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+        if (!$section) $section = next_section();
+        if (LunchSurvey::countByClass($section, $class_id) == 0) {
+            return redirect()->route('lunch', ['section' => $section])->with('error', '沒有調查結果可以匯出！');
+        } else {
+            $filename = substr($section, 0, -1) . '學年度' . ((substr($section, -1) == '1') ? '上' : '下') . '學期午餐調查結果彙整';
+            return (new LunchClassExport($section, $class_id))->download("$filename.xlsx");    
         }
     }
 
