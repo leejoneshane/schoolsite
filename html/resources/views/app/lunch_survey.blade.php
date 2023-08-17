@@ -9,7 +9,7 @@
     </a>
     @endif
     @if ($manager)
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch.download') }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch.download', ['section' => $section]) }}">
         <i class="fa-solid fa-file-export"></i>匯出調查結果
     </a>
     @endif
@@ -18,7 +18,7 @@
 <select id="section" class="inline w-32 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="
     var section = this.value;
-    window.location.replace('{{ route('lunch') }}' + '/' + section);
+    window.location.replace('{{ route('lunch') }}' + '/' + section + '?class={{ $classroom->id }}');
     ">
     @foreach ($sections as $s)
     <option value="{{ $s }}"{{ ($s == $section) ? ' selected' : '' }}>{{ substr($s, 0, -1) . '學年第' . substr($s, -1) . '學期' }}</option>

@@ -87,14 +87,24 @@ class LunchSurvey extends Model
     public static function section_survey($section = null)
     {
         if (!$section) $section = next_section();
-        return LunchSurvey::where('section', $section)->orderBy('class_id')->orderBy('seat')->get();
+        $surveys = LunchSurvey::where('section', $section)->get()
+            ->sortBy(function ($survey, $key) {
+                return ($survey->student) ? $survey->student->class_id.$survey->student->seat : false;
+            });
+        return $surveys;
     }
 
     //篩選指定班級所有學生的午餐調查表，靜態函式
     public static function class_survey($class, $section = null)
     {
         if (!$section) $section = next_section();
-        return LunchSurvey::where('section', $section)->where('class_id', $class)->orderBy('seat')->get();
+        $surveys = LunchSurvey::where('section', $section)->get()
+            ->filter(function ($survey, $key) use ($class) {
+                return ($survey->student) ? $survey->student->class_id == $class : false;
+            })->sortBy(function ($survey, $key) {
+                return ($survey->student) ? $survey->student->seat : false;
+            });
+        return $surveys;
     }
 
     //計算本學期已調查班級數
@@ -139,7 +149,7 @@ class LunchSurvey extends Model
     //取得填寫此午餐調查的班級
     public function classroom()
     {
-        return $this->belongsTo('App\Models\Classroom', 'id', 'class_id');
+        return $this->student->classroom;
     }
 
 }

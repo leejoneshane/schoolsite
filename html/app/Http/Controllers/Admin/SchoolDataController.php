@@ -463,7 +463,7 @@ class SchoolDataController extends Controller
             $class_id = $classes->first()->id;
             $query = $query->where('class_id', $class_id);
         }
-        $students = $query->orderByRaw('class_id, cast(seat as unsigned)')->get();
+        $students = $query->orderByRaw('deleted_at, class_id, cast(seat as unsigned)')->get();
         return view('admin.students', ['current' => $class_id, 'idno' => $idno, 'id' => $id, 'realname' => $realname, 'email' => $email, 'classes' => $classes, 'students' => $students]);
     }
 
