@@ -3,12 +3,10 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     午餐調查表
-    @if ($manager && $section == next_section())
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch.config') }}">
+    @if ($manager)
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch.config', ['section' => $section]) }}">
         <i class="fa-regular fa-clock"></i>設定調查期程
     </a>
-    @endif
-    @if ($manager)
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch.downloadAll', ['section' => $section]) }}">
         <i class="fa-solid fa-file-export"></i>匯出調查結果(學期)
     </a>
@@ -81,6 +79,7 @@
                 <td>
                     <form id="lunch-survey" action="{{ route('lunch.survey') }}" method="POST">
                         @csrf
+                        <input type="hidden" name="section" value="{{ $section }}">
                         <div class="p-3">
                             <label for="school" class="inline-flex relative items-center cursor-pointer">
                                 <input type="radio" id="school" name="meal" value="by_school" class="sr-only peer" onchange="show(this)"{{ ($survey && $survey->by_school) ? ' checked' : '' }}>

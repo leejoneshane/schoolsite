@@ -3,13 +3,13 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     午餐調查期程
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch') }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('lunch', ['section' => $section]) }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
 <script src="/js/ckeditor.js"></script>
 <div class="flex justify-center">
-    <form id="lunch-config" action="{{ route('lunch.config') }}" method="POST">
+    <form id="lunch-config" action="{{ route('lunch.config', ['section' => $section]) }}" method="POST">
         @csrf
         <div class="p-3">
             <label for="desc" class="inline">詳細描述：</label>

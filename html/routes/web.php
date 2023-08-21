@@ -135,8 +135,8 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
 //午餐調查
 Route::group(['prefix' => 'lunch', 'middleware' => [ 'auth'] ], function () {
     Route::get('survey/{section?}', 'App\Http\Controllers\LunchController@index')->name('lunch');
-    Route::get('config', 'App\Http\Controllers\LunchController@setting');
-    Route::post('config', 'App\Http\Controllers\LunchController@save')->name('lunch.config');
+    Route::get('config/{section}', 'App\Http\Controllers\LunchController@setting');
+    Route::post('config/{section}', 'App\Http\Controllers\LunchController@save')->name('lunch.config');
     Route::post('save/survey', 'App\Http\Controllers\LunchController@survey')->name('lunch.survey');
     Route::get('download/{section?}', 'App\Http\Controllers\LunchController@downloadAll')->name('lunch.downloadAll');
     Route::get('class/download/{section}/{class_id}', 'App\Http\Controllers\LunchController@download')->name('lunch.download');

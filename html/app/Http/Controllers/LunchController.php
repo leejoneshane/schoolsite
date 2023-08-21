@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Classroom;
 use App\Models\LunchSurvey;
@@ -46,7 +45,7 @@ class LunchController extends Controller
         return view('app.lunch_survey', ['user' => $user, 'manager' => $manager, 'section' => $section, 'sections' => $sections, 'settings' => $settings, 'count' => $count, 'survey' => $survey, 'classroom' => $classroom, 'classes' => $classes, 'surveys' => $surveys]);
     }
 
-    public function setting()
+    public function setting($section)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
@@ -55,10 +54,10 @@ class LunchController extends Controller
         }
         $settings = LunchSurvey::settings();
         if (!$settings) $settings = LunchSurvey::latest_settings();
-        return view('app.lunch_config', ['settings' => $settings]);
+        return view('app.lunch_config', ['settings' => $settings, 'section' => $section]);
     }
 
-    public function save(Request $request)
+    public function save(Request $request, $section)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
@@ -66,7 +65,7 @@ class LunchController extends Controller
             return redirect()->route('home')->with('error', '只有管理員才能設定午餐調查期程！');
         }
         DB::table('lunch')->upsert([
-            'section' => next_section(),
+            'section' => $section,
             'money' => $request->input('money'),
             'survey_at' => $request->input('survey'),
             'expired_at' => $request->input('expire'),
@@ -85,7 +84,7 @@ class LunchController extends Controller
         $user = User::find(Auth::user()->id);
         $student = Student::find($user->uuid);
         $survey = LunchSurvey::updateOrCreate([
-            'section' => next_section(),
+            'section' => $request->input('section'),
             'uuid' => $student->uuid,
         ],[
             'class_id' => $student->class_id,
