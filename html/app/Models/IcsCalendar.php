@@ -19,16 +19,22 @@ class IcsCalendar extends Model
         'seq',
     ];
 
+    //篩選出主要行事曆
+    public static function main()
+    {
+        return IcsCalendar::find(config('services.gsuite.calendar'));
+    }
+
     //篩選出學生行事曆
     public static function forStudent()
     {
         return IcsCalendar::where('summary', 'like', '%學生%')->first();
     }
 
-    //篩選出主要行事曆
-    public static function main()
+    //篩選出公開課行事曆
+    public static function forTeacher()
     {
-        return IcsCalendar::find(config('services.gsuite.calendar'));
+        return IcsCalendar::where('summary', 'like', '%公開課%')->first();
     }
 
     //取得此行事曆所有事件
