@@ -14,7 +14,9 @@ class IcsCalendar extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
-        'id', 'summary',
+        'id',
+        'summary',
+        'seq',
     ];
 
     //篩選出學生行事曆

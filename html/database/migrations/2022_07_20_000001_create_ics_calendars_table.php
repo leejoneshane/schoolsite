@@ -14,8 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('ics_calendars', function (Blueprint $table) {
-			$table->string('id')->primary();
+            $table->string('id')->primary();
             $table->text('summary');
+            $table->integer('seq');
             $table->timestamps();
         });
     }

@@ -94,7 +94,7 @@ class CalendarController extends Controller
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
         $seme = (object) array('mindate' => Carbon::tomorrow()->format('Y-m-d'), 'maxdate' => (date('Y')+1).'-12-31');
-        $calendars = IcsCalendar::all();
+        $calendars = IcsCalendar::orderBy('seq')->get();
         $user = $request->user();
         $units = [];
         if ($user->is_admin) {
@@ -149,7 +149,7 @@ class CalendarController extends Controller
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
         $seme = (object) array('mindate' => Carbon::tomorrow()->format('Y-m-d'), 'maxdate' => (date('Y')+1).'-12-31');
-        $calendars = IcsCalendar::all();
+        $calendars = IcsCalendar::orderBy('seq')->get();
         $user = $request->user();
         $units = [];
         if ($user->is_admin) {
