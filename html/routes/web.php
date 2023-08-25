@@ -72,9 +72,11 @@ Route::group(['prefix' => 'calendar'], function () {
 });
 
 // 即時推播
-Route::get('messager/list/online', 'App\Http\Controllers\MessagerController@list')->middleware('auth')->name('messager.list');
-Route::post('messager/send', 'App\Http\Controllers\MessagerController@send')->middleware('auth')->name('messager.send');
-Route::post('messager/broadcast', 'App\Http\Controllers\MessagerController@broadcast')->middleware('auth')->name('messager.broadcast');
+Route::group(['prefix' => 'messager', 'middleware' => [ 'auth' ]], function () {
+    Route::get('list/online', 'App\Http\Controllers\MessagerController@list')->middleware('auth')->name('messager.list');
+    Route::post('send', 'App\Http\Controllers\MessagerController@send')->middleware('auth')->name('messager.send');
+    Route::post('broadcast', 'App\Http\Controllers\MessagerController@broadcast')->middleware('auth')->name('messager.broadcast');
+});
 
 // 學生課外社團
 Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
@@ -157,6 +159,23 @@ Route::group(['prefix' => 'writing', 'middleware' => [ 'auth'] ], function () {
     Route::post('edit/{id}', 'App\Http\Controllers\WritingController@update')->name('writing.edit');
     Route::post('remove/{id}', 'App\Http\Controllers\WritingController@remove')->name('writing.remove');
     Route::get('view/{id}', 'App\Http\Controllers\WritingController@show')->name('writing.view');
+});
+
+// 教師清單 JSON
+Route::group(['prefix' => 'teachers', 'middleware' => [ 'auth'] ], function () {
+    Route::get('all', 'App\Http\Controllers\DataController@all')->name('teachers.all');
+    Route::get('domain/{domain_id}', 'App\Http\Controllers\DataController@domain')->name('teachers.bydomain');
+    Route::get('class/{class_id}', 'App\Http\Controllers\DataController@class')->name('teachers.byclass');
+});
+
+// 公開課
+Route::group(['prefix' => 'public', 'middleware' => [ 'auth'] ], function () {
+    Route::get('list/{date?}', 'App\Http\Controllers\PublicController@index')->name('public');
+    Route::get('add', 'App\Http\Controllers\PublicController@add');
+    Route::post('add', 'App\Http\Controllers\PublicController@insert')->name('public.add');
+    Route::get('edit/{id}', 'App\Http\Controllers\PublicController@edit');
+    Route::post('edit/{id}', 'App\Http\Controllers\PublicController@update')->name('public.edit');
+    Route::post('remove/{id}', 'App\Http\Controllers\PublicController@remove')->name('public.remove');
 });
 
 // 網路朝會

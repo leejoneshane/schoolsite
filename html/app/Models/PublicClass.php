@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Teacher;
+use Carbon\Carbon;
 
 class PublicClass extends Model
 {
@@ -126,4 +127,49 @@ class PublicClass extends Model
     {
         return Teacher::whereIn('uuid', $this->partners)->get();
     }
+
+    //篩選指定學期所有公開課紀錄
+    public static function section($section = null)
+    {
+        if (!$section) $section = current_section();
+        return PublicClass::where('section', $section)->get();
+    }
+
+    //篩選指定學期，指定教師的所有公開課紀錄
+    public static function byUser($uuid, $section = null)
+    {
+        if (!$section) $section = current_section();
+        return PublicClass::where('section', $section)->where('uuid', $uuid)->get();
+    }
+
+    //取得指定日期的週間預約記錄
+    public static function week_reserved(Carbon $date)
+    {
+        $sdate = $date->copy()->startOfWeek();
+        $edate = $date->copy()->addDays(6)->format('Y-m-d');
+        return PublicClass::whereBetween('reserved_at', [$sdate, $edate])->get();
+    }
+
+    //提供本週或指定日期公開課節次陣列
+    public static function weekly($date = null)
+    {
+        if (is_null($date)) {
+            $date = Carbon::today();
+        } elseif (is_string($date)) {
+            $date = Carbon::createFromFormat('Y-m-d', $date);
+        }
+        $sdate = $date->copy()->startOfWeek();
+        $whole = new \stdClass;
+        $whole->start = $sdate; //此週開始日期
+        for ($i=1; $i<6; $i++) { // 1->星期一, 2->星期二, .....
+            for ($j=1; $j<9; $j++) { // 1->第一節, 2->第二節, ......
+                $whole->map[$i][$j] = [];
+            }
+        }
+        foreach (self::week_reserved($date) as $b) {
+            $whole->map[$b->weekday][$b->session][] = $b; //已被預約，將預約記錄置入陣列中
+        }
+        return $whole;
+    }
+
 }

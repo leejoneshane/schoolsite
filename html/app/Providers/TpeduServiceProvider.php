@@ -326,6 +326,7 @@ class TpeduServiceProvider extends ServiceProvider
                 if (!empty($user->tpTutorClass)) {
                     $emp->tutor_class = $user->tpTutorClass;
                 }
+                DB::table('assignment')->where('year', current_year())->where('uuid', $uuid)->delete();
                 if (isset($user->teachClass) && is_array($user->teachClass->{$o})) {
                     foreach ($user->teachClass->{$o} as $assign) {
                         $a = explode(',', $assign->key);

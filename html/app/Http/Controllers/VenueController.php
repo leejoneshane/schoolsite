@@ -183,7 +183,7 @@ class VenueController extends Controller
         $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
         if ($manager) {
             $venue = Venue::find($id);
-            Watchdog::watch($request, '更新可預約場地或設備：' . $venue->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            Watchdog::watch($request, '移除可預約場地或設備：' . $venue->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $venue->delete();
             return redirect()->route('venues')->with('success', '場地/設備已經移除！');
         } else {
