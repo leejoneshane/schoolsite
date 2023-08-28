@@ -172,7 +172,7 @@ Route::group(['prefix' => 'teachers', 'middleware' => [ 'auth'] ], function () {
 Route::group(['prefix' => 'public', 'middleware' => [ 'auth'] ], function () {
     Route::get('list/{section?}', 'App\Http\Controllers\PublicController@index')->name('public');
     Route::post('add', 'App\Http\Controllers\PublicController@add')->name('public.reserve');
-    Route::post('add', 'App\Http\Controllers\PublicController@insert')->name('public.add');
+    Route::post('insert', 'App\Http\Controllers\PublicController@insert')->name('public.add');
     Route::get('edit/{id}', 'App\Http\Controllers\PublicController@edit');
     Route::post('edit/{id}', 'App\Http\Controllers\PublicController@update')->name('public.edit');
     Route::post('remove/{id}', 'App\Http\Controllers\PublicController@remove')->name('public.remove');

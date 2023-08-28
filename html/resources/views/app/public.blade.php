@@ -109,11 +109,11 @@
     <div class="p-3 inline-block rounded-lg border shadow-2xl">
     <table class="border-collapse text-sm text-left">
         @php
-        $dates[0] = $schedule->start->copy(); 
-        $dates[1] = $dates[0]->copy()->addDay();
+        $dates[1] = $schedule->start->copy(); 
         $dates[2] = $dates[1]->copy()->addDay();
         $dates[3] = $dates[2]->copy()->addDay();
         $dates[4] = $dates[3]->copy()->addDay();
+        $dates[5] = $dates[4]->copy()->addDay();
         @endphp
         <thead>
             <tr class="font-semibold text-lg">
@@ -122,7 +122,7 @@
                         window.location.replace('{{ route('public', [ 'section' => $section ]) }}?date={{ $mydate->copy()->subWeek()->format('Y-m-d') }}');
                     "><i class="fa-solid fa-backward-step"></i>前一週</button>
                 </th>
-                <th colspan="2" class="w-1/3 text-center"><input type="date" value="{{ ($date) ? $date->format('Y-m-d') : today()->format('Y-m-d') }}" min="{{ current_between_date()->mindate }}"  max="{{ current_between_date()->maxdate }}" onchange="
+                <th colspan="2" class="w-1/3 text-center"><input type="date" value="{{ ($mydate) ? $mydate->format('Y-m-d') : today()->format('Y-m-d') }}" min="{{ current_between_date()->mindate }}"  max="{{ current_between_date()->maxdate }}" onchange="
                     window.location.replace('{{ route('public', [ 'section' => $section ]) }}?date=' + this.value );
                 "></th>
                 <th colspan="2" class="w-1/3 text-right">
@@ -133,11 +133,11 @@
             </tr>
             <tr class="font-semibold text-lg">
                 <th class="border-r bg-gray-200">日期</th>
-                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[0]->format('Y-m-d') }}</th>
                 <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[1]->format('Y-m-d') }}</th>
                 <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[2]->format('Y-m-d') }}</th>
                 <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[3]->format('Y-m-d') }}</th>
                 <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[4]->format('Y-m-d') }}</th>
+                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[5]->format('Y-m-d') }}</th>
             </tr>
             <tr class="font-semibold text-lg">
                 <th class="border-b border-r border-slate-300">星期</th>
@@ -194,7 +194,7 @@
 <form class="hidden" id="remove" action="" method="POST">
     @csrf
 </form>
-<form class="hidden" id="act" action="{{ route('public.reserve') }}" method="GET">
+<form class="hidden" id="act" action="{{ route('public.reserve') }}" method="POST">
     @csrf
     <input type="hidden" id="date" name="date">
     <input type="hidden" id="weekday" name="weekday">
