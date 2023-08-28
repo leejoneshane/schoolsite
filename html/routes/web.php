@@ -170,12 +170,16 @@ Route::group(['prefix' => 'teachers', 'middleware' => [ 'auth'] ], function () {
 
 // 公開課
 Route::group(['prefix' => 'public', 'middleware' => [ 'auth'] ], function () {
-    Route::get('list/{date?}', 'App\Http\Controllers\PublicController@index')->name('public');
-    Route::get('add', 'App\Http\Controllers\PublicController@add');
+    Route::get('list/{section?}', 'App\Http\Controllers\PublicController@index')->name('public');
+    Route::post('add', 'App\Http\Controllers\PublicController@add')->name('public.reserve');
     Route::post('add', 'App\Http\Controllers\PublicController@insert')->name('public.add');
     Route::get('edit/{id}', 'App\Http\Controllers\PublicController@edit');
     Route::post('edit/{id}', 'App\Http\Controllers\PublicController@update')->name('public.edit');
     Route::post('remove/{id}', 'App\Http\Controllers\PublicController@remove')->name('public.remove');
+    Route::post('view', 'App\Http\Controllers\PublicController@show')->name('public.view');
+    Route::get('perm', 'App\Http\Controllers\PublicController@perm');
+    Route::post('perm', 'App\Http\Controllers\PublicController@updatePerm')->name('public.permission');
+    Route::get('export/{section}', 'App\Http\Controllers\PublicController@export')->name('public.export');
 });
 
 // 網路朝會

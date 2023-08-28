@@ -66,6 +66,21 @@ function next_section($section = null) {
     }
 }
 
+function which_section($date) {
+    $m = $date->format('m');
+    if ($m > 7) {
+        $syear = $date->format('Y') - 1911;
+    } else {
+        $syear = $date->format('Y') - 1912;
+    }
+    if ($m > 1 && $m < 8) {
+        $seme = 2;
+    } else {
+        $seme = 1;
+    }
+    return $syear . $seme;
+}
+
 function current_between_date() {
     if (date('m') > 7) {
         $syear = date('Y');

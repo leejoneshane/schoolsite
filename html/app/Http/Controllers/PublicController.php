@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\PublicClass;
+use App\Models\IcsCalendar;
 use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Domain;
@@ -25,33 +26,47 @@ class PublicController extends Controller
         8 => '第七節',
     ];
 
-    public function index($date = null)
+    public function index(Request $request, $section = null)
     {
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能瀏覽公開課！');
         }
-        if (!$date) {
+        if (!$section) {
             $date = Carbon::today();
-        } else {
-            $date = Carbon::createFromFormat('Y-m-d', $date);
+            $section = current_section();
+        }
+        if ($request->has('date')) {
+            $date = Carbon::createFromFormat('Y-m-d', $request->input('date'));
+        } elseif (!isset($date)) {
+            $between = section_between_date($section);
+            $date = Carbon::createFromFormat('Y-m-d', $between->mindate);
         }
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
+        $domainmanager = $user->hasPermission('public.domain');
         if ($manager) {
-            $publics = PublicClass::section()->get();
+            $publics = PublicClass::section($section);
+        } elseif ($domainmanager) {
+            $domain = Teacher::find('uuid')->domains->first();
+            $publics = PublicClass::byDomain($domain->id, $section);
         } else {
-            $publics = PublicClass::byUser($user->uuid)->get();
+            $publics = PublicClass::byUser($user->uuid, $section);
         }
+        $calendar = IcsCalendar::forPublic();
+        $sections = PublicClass::sections();
         $schedule = PublicClass::weekly();
-        return view('app.venues', ['manager' => $manager, 'publics' => $publics, 'schedule' => $schedule]);
+        return view('app.public', ['manager' => $manager, 'domain_manager' => $domainmanager, 'calendar' => $calendar, 'section' => $section, 'sections' => $sections, 'mydate' => $date, 'publics' => $publics, 'sessions' => self::$sessionMap, 'schedule' => $schedule]);
     }
 
-    public function add()
+    public function add(Request $request)
     {
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能新增公開課！');
         }
+        $date = $request->input('date');
+        $weekday = $request->input('weekday');
+        $session = $request->input('session');
         $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain'));
         if ($manager) {
             $selections = [ 'all' => '全部'];
@@ -77,7 +92,7 @@ class PublicController extends Controller
                     $current = 'c'.$tclass->id;
                 }
             }
-            return view('app.public_add', ['current' => $current, 'selections' => $selections, 'teachers' => $teachers, 'sessions' => self::$sessionMap]);
+            return view('app.public_add', ['current' => $current, 'selections' => $selections, 'teachers' => $teachers, 'mydate' => $date, 'weekday' => $weekday, 'session' => $session, 'sessions' => self::$sessionMap]);
         } else {
             return redirect()->route('public')->with('error', '只有管理員或已授權的群召才能新增公開課！');
         }
@@ -101,7 +116,7 @@ class PublicController extends Controller
                 'reserved_at' => $request->input('date'),
                 'weekday' => $request->input('weekday'),
                 'session' => $request->input('session'),
-                'place'  => $request->input('place'),
+                'location'  => $request->input('location'),
                 'uuid' => $request->input('teacher'),
                 'partners' => $request->input('partners'),
             ]);
@@ -118,7 +133,7 @@ class PublicController extends Controller
                 $fileName = $public->id . '_discuss' . '.' . $extension;
                 $request->file('discuss')->move(public_path('public_class'), $fileName);
                 $url = asset('public_class/' . $fileName);
-                Watchdog::watch($request, '上傳觀課後社團：' . $url);
+                Watchdog::watch($request, '上傳觀課後會談：' . $url);
                 $public->discuss = $url;
             }
             $public->save();
@@ -165,7 +180,7 @@ class PublicController extends Controller
                 'reserved_at' => $request->input('date'),
                 'weekday' => $request->input('weekday'),
                 'session' => $request->input('session'),
-                'place'  => $request->input('place'),
+                'location'  => $request->input('location'),
             ]);
             if ($request->has('del_eduplan')) {
                 $path = public_path('public_class/' . $public->eduplan);
@@ -204,7 +219,7 @@ class PublicController extends Controller
                 $fileName = $public->id . '_discuss' . '.' . $extension;
                 $request->file('discuss')->move(public_path('public_class'), $fileName);
                 $url = asset('public_class/' . $fileName);
-                Watchdog::watch($request, '上傳觀課後社團：' . $url);
+                Watchdog::watch($request, '上傳觀課後會談：' . $url);
                 $public->discuss = $url;
             }
             $public->save();
@@ -230,6 +245,34 @@ class PublicController extends Controller
         } else {
             return redirect()->route('public')->with('error', '只有管理員才能刪除公開課資訊！');
         }
+    }
+
+    public function show(Request $request)
+    {
+        $user = User::find(Auth::user()->id);
+        if ($user->user_type == 'Student') {
+            return redirect()->route('home')->with('error', '只有教職員才能瀏覽公開課資訊！');
+        }
+        $reserve = PublicClass::find($request->input('id'));
+        $header = '公開課資訊';
+        if (!$reserve) {
+            $body = '找不到公開課記錄！';
+        } else {
+            $body = view('app.public_log', ['public' => $reserve])->render();
+        }
+        return response()->json((object) [ 'header' => $header, 'body' => $body]);
+    }
+
+    public function perm() {
+
+    }
+
+    public function updatePerm(Request $request) {
+
+    }
+
+    public function export($section) {
+
     }
 
 }

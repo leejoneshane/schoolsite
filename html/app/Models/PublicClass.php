@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Teacher;
+use App\Providers\GcalendarServiceProvider as GCAL;
 use Carbon\Carbon;
 
 class PublicClass extends Model
@@ -31,14 +32,14 @@ class PublicClass extends Model
     ];
 
     protected static $sessionTime = [
-        1 => (object)[ 'start' => '8:45', 'end' => '9:25' ],
-        2 => (object)[ 'start' => '9:35', 'end' => '10:15' ],
-        3 => (object)[ 'start' => '10:30', 'end' => '11:10' ],
-        4 => (object)[ 'start' => '11:20', 'end' => '12:00' ],
-        5 => (object)[ 'start' => '12:40', 'end' => '13:20' ],
-        6 => (object)[ 'start' => '13:30', 'end' => '14:10' ],
-        7 => (object)[ 'start' => '14:20', 'end' => '15:00' ],
-        8 => (object)[ 'start' => '15:20', 'end' => '16:00' ],
+        1 => [ 'start' => '8:45', 'end' => '9:25' ],
+        2 => [ 'start' => '9:35', 'end' => '10:15' ],
+        3 => [ 'start' => '10:30', 'end' => '11:10' ],
+        4 => [ 'start' => '11:20', 'end' => '12:00' ],
+        5 => [ 'start' => '12:40', 'end' => '13:20' ],
+        6 => [ 'start' => '13:30', 'end' => '14:10' ],
+        7 => [ 'start' => '14:20', 'end' => '15:00' ],
+        8 => [ 'start' => '15:20', 'end' => '16:00' ],
     ];
 
     //以下屬性可以批次寫入
@@ -52,11 +53,12 @@ class PublicClass extends Model
         'reserved_at',
         'weekday',
         'session',
-        'place',
+        'location',
         'uuid',
         'partners',
         'eduplan',
         'discuss',
+        'event_id',
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）
@@ -66,6 +68,7 @@ class PublicClass extends Model
         'teacher',
         'eduplan',
         'discuss',
+        'event_id',
     ];
 
     //以下屬性需進行資料庫欄位格式轉換
@@ -76,8 +79,10 @@ class PublicClass extends Model
 
     //以下為透過程式動態產生之屬性
     protected $appends = [
-        'weeksession',
+        'week_session',
         'timeperiod',
+        'period',
+        'summary',
     ];
 
     //建立公開課時，若省略學期，則預設為目前學期
@@ -89,10 +94,27 @@ class PublicClass extends Model
                 $model->section = current_section();
             }
         });
+        static::created(function($item)
+        {
+            $cal = new GCAL;
+            $cal->sync_public($item);
+        });
+        static::updated(function($item)
+        {
+            $cal = new GCAL;
+            $cal->sync_public($item);
+        });
+        static::deleted(function($item)
+        {
+            $cal = new GCAL;
+            if ($item->event_id) {
+                $cal->delete_event($item->calendar_id, $item->event_id);
+            }
+        });
     }
 
     //提供公開課節次中文字串
-    public function getWeeksessionAttribute()
+    public function getWeekSessionAttribute()
     {
         return self::$weekMap[$this->weekday] . self::$sessionMap[$this->session];
     }
@@ -101,7 +123,21 @@ class PublicClass extends Model
     public function getTimeperiodAttribute()
     {
         $period = self::$sessionTime[$this->session];
-        return $this->reserved_at . $period->start . '~' . $period->end;
+        return $this->reserved_at . $period['start'] . '~' . $period['end'];
+    }
+
+    //提供公開課時段
+    public function getPeriodAttribute()
+    {
+        return self::$sessionTime[$this->session];
+    }
+
+    //提供公開課摘要
+    public function getSummaryAttribute()
+    {
+        $summary = $this->teacher->realname . '老師公開課（';
+        $summary .= $this->classroom->name . $this->domain->name . $this->teach_unit . $this->week_session . $this->location . '）';
+        return $summary;
     }
 
     //取得此公開課的教學領域
@@ -129,10 +165,32 @@ class PublicClass extends Model
     }
 
     //篩選指定學期所有公開課紀錄
+    public static function sections()
+    {
+        return PublicClass::query()->selectRaw('DISTINCT(section)')->orderBy('section', 'desc')->get()->map(function ($item) {
+            $sec = $item->section;
+            $seme = substr($sec, -1);
+            if ($seme == 1) {
+                $strseme = '上學期';
+            } else {
+                $strseme = '下學期';
+            }
+            return (object) [ 'section' => $sec, 'name' => '第'.substr($sec, 0, -1).'學年'.$strseme ];
+        });
+    }
+
+    //篩選指定學期所有公開課紀錄
     public static function section($section = null)
     {
         if (!$section) $section = current_section();
         return PublicClass::where('section', $section)->get();
+    }
+
+    //篩選指定學期，指定領域所有教師的公開課紀錄
+    public static function byDomain($domain_id, $section = null)
+    {
+        if (!$section) $section = current_section();
+        return PublicClass::where('section', $section)->where('domain_id', $domain_id)->get();
     }
 
     //篩選指定學期，指定教師的所有公開課紀錄

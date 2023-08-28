@@ -39,9 +39,13 @@ class SubscriberController extends Controller
                 $subscriber = Subscriber::findByEmail($email);
             }
         }
-        $subscriber->sendEmailVerificationNotification();
-        Watchdog::watch($request, '寄送郵件信箱確認信到 ' . $subscriber->email);
-        return redirect()->route('subscriber')->with('success', '驗證信已經寄送到您的電子郵件信箱，請收信並進行驗證！');
+        if ($subscriber) {
+            $subscriber->sendEmailVerificationNotification();
+            Watchdog::watch($request, '寄送郵件信箱確認信到 ' . $subscriber->email);
+            return redirect()->route('subscriber')->with('success', '驗證信已經寄送到您的電子郵件信箱，請收信並進行驗證！');    
+        } else {
+            return redirect()->route('subscriber')->with('error', '找不到訂閱者的電子郵件，所以無法寄送驗證信！');
+        }
     }
 
     public function subscription(Request $request, $news = null)

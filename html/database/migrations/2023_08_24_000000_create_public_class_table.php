@@ -23,11 +23,13 @@ return new class extends Migration
             $table->date('reserved_at');
             $table->integer('weekday');
             $table->integer('session');
-            $table->string('place')->nullable();
+            $table->string('location')->nullable();
             $table->uuid('uuid');
             $table->json('partners')->nullable();
             $table->string('eduplan')->nullable();
             $table->string('discuss')->nullable();
+            $table->string('event_id')->nullable();
+            $table->timestamps();
         });
     }
 

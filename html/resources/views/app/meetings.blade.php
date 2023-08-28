@@ -23,7 +23,7 @@
     @forelse ($meets as $meet)
     <tr class="text-white bg-blue-700 font-semibold text-lg">
         <th class="p-2 w-full">
-            {{ $meet->role . $meet->reporter }}：{{ $meet->created_at . $meet->unit->name }}業務報告
+            {{ $meet->unit->name }}業務報告：{{ $meet->reporter . $meet->created_at}}
             @if ($create && $unit == $meet->unit_id)
             <a class="text-sm py-2 pl-6 rounded text-gray-300 hover:text-gray-100" href="{{ route('meeting.edit', ['id' => $meet->id]) }}">
                 <i class="fa-solid fa-pen"></i>編輯
@@ -40,7 +40,7 @@
         </th>
     </tr>
     <tr class="bg-white">
-        <td class="p-2">{{ $meet->words }}</td>
+        <td class="p-2">{!! $meet->words !!}</td>
     </tr>
     @empty
     <tr class="text-white bg-blue-700 font-semibold text-lg">

@@ -32,7 +32,7 @@ class IcsCalendar extends Model
     }
 
     //篩選出公開課行事曆
-    public static function forTeacher()
+    public static function forPublic()
     {
         return IcsCalendar::where('summary', 'like', '%公開課%')->first();
     }

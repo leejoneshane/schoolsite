@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('reporter');
             $table->text('words')->nullable();
             $table->boolean('inside')->default(0);
-            $table->timestamp('expired_at');
+            $table->timestamp('expired_at')->nullable();
             $table->timestamps();
         });
     }

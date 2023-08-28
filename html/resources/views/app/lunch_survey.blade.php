@@ -19,7 +19,7 @@
 <select id="section" class="inline w-32 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="
     var section = this.value;
-    window.location.replace('{{ route('lunch') }}' + '/' + section + '?class={{ $classroom->id }}');
+    window.location.replace('{{ route('lunch') }}' + '/' + section + '?class={{ ($classroom) ? $classroom->id : '' }}');
     ">
     @foreach ($sections as $s)
     <option value="{{ $s }}"{{ ($s == $section) ? ' selected' : '' }}>{{ substr($s, 0, -1) . '學年第' . substr($s, -1) . '學期' }}</option>

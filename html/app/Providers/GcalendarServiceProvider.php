@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use App\Models\IcsCalendar;
 use App\Models\IcsEvent;
+use App\Models\PublicClass;
 use Carbon\Carbon;
 
 class GcalendarServiceProvider extends ServiceProvider
@@ -247,6 +248,52 @@ class GcalendarServiceProvider extends ServiceProvider
                 $event->setRecurrence([ 'RRULE:FREQ=DAILY;COUNT=' . $days+1 ]);
             }
         }
+        if (!empty($event_id)) {
+            $event = $this->update_event($calendar_id, $event_id, $event);
+        } else {
+            $event = $this->create_event($calendar_id, $event);
+            if ($event) {
+                $ics->event_id = $event->getId();
+                $ics->save();
+            }
+        }
+
+        return $event;
+    }
+
+    public function sync_public(PublicClass $ics)
+    {
+        $calendar_id = IcsCalendar::forPublic()->id;
+        $event_id = $ics->event_id;
+        if (!empty($event_id)) {
+            $event = $this->get_event($calendar_id, $event_id);
+            if (!$event) {
+                $event_id = '';
+                $event = new \Google_Service_Calendar_Event();
+            } else {
+                if ($event->getStatus() == 'cancelled') {
+                    $event->setStatus('confirmed');
+                }
+            }
+        } else {
+            $event = new \Google_Service_Calendar_Event();
+        }
+        $event->setSummary($ics->summary);
+        if (!empty($ics->location)) {
+            $event->setLocation($ics->location);
+        }
+        $organizer = new \Google_Service_Calendar_EventOrganizer();
+        $organizer->setEmail(config('services.gsuite.calendar'));
+        $organizer->setDisplayName('研究處');
+        $event->setOrganizer($organizer);
+        $event_start = new \Google_Service_Calendar_EventDateTime();
+        $event_end = new \Google_Service_Calendar_EventDateTime();
+        $event_start->setTimeZone(env('TZ'));
+        $event_end->setTimeZone(env('TZ'));
+        $event_start->setDateTime($ics->reserved_at->format('Y-m-d').'T'.$ics->period['start'].'+08:00');
+        $event_end->setDateTime($ics->reserved_at->format('Y-m-d').'T'.$ics->period['end'].'+08:00');
+        $event->setStart($event_start);
+        $event->setEnd($event_end);
         if (!empty($event_id)) {
             $event = $this->update_event($calendar_id, $event_id, $event);
         } else {
