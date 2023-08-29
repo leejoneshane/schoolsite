@@ -243,7 +243,18 @@ class SchoolDataController extends Controller
                 $teachers = $query->leftJoin('roles', 'roles.id', 'teachers.role_id')->whereIn('teachers.unit_id', $keys)->orderBy('role_no')->orderBy('roles.name')->get();
             }
         } elseif (!empty($domain_id)) {
-            $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.domain_id', $domain_id)->orderBy('realname')->get();
+            $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.year', $this->year - 1)->where('belongs.domain_id', $domain_id)->orderBy('realname')->get();
+            foreach ($teachers as $teacher) {
+                $domain = DB::table('belongs')->where('uuid', $teacher->uuid)->where('year', $this->year)->first();
+                if (!$domain) {
+                    DB::table('belongs')->insert([
+                        'year' => $this->year,
+                        'uuid' => $teacher->uuid,
+                        'domain_id' => $domain_id,
+                    ]);
+                }
+            }
+            $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.year', $this->year)->where('belongs.domain_id', $domain_id)->orderBy('realname')->get();
         } else {
             if (!empty($idno) || !empty($realname) || !empty($email)) {
                 if (!empty($idno)) {
@@ -471,13 +482,14 @@ class SchoolDataController extends Controller
     {
         $referer = $request->headers->get('referer');
         $classes = Classroom::all();
-        $student = Student::with('classroom')->find($uuid);
+        $classes->push((object)[ 'id' => 'z', 'name' => '已畢業']);
+        $student = Student::withTrashed()->with('classroom')->find($uuid);
         return view('admin.studentedit', ['referer' => $referer, 'student' => $student, 'classes' => $classes]);
     }
 
     public function studentUpdate(Request $request, $uuid)
     {
-        $student = Student::find($uuid);
+        $student = Student::withTrashed()->find($uuid);
         $characters = $request->input('character');
         if (!empty($character)) {
             $student->character = implode(',', $characters);

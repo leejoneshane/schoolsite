@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use App\Models\PublicClass;
 use App\Models\IcsCalendar;
 use App\Models\User;
+use App\Models\Unit;
 use App\Models\Teacher;
 use App\Models\Domain;
 use App\Models\Classroom;
 use App\Models\Watchdog;
+use App\Models\Permission;
 use Carbon\Carbon;
 
 class PublicController extends Controller
@@ -264,11 +266,35 @@ class PublicController extends Controller
     }
 
     public function perm() {
-
+        $perm = Permission::findByName('public.domain');
+        $units = Unit::main();
+        $already = $perm->teachers()->orderBy('uuid')->get();
+        $teachers = Teacher::leftJoin('units', 'units.id', '=', 'unit_id')
+            ->leftJoin('roles', 'roles.id', '=', 'role_id')
+            ->orderBy('units.unit_no')
+            ->orderBy('roles.role_no')
+            ->get()
+            ->reject(function ($teacher) {
+                return $teacher->user->is_admin || $teacher->domains->isEmpty();
+            });
+        return view('app.public_grant', ['permission' => $perm, 'already' => $already, 'units' => $units, 'teachers' => $teachers]);
     }
 
     public function updatePerm(Request $request) {
-
+        $users = $request->input('teachers');
+        $perm = Permission::findByName('public.domain')->removeAll();
+        if (!empty($users)) {
+            $perm->assign($users);
+            foreach ($users as $u) {
+                $user_list[] = Teacher::find($u)->realname;
+            }
+            $log = '授予權限' . $perm->description . '給' . implode('、', $user_list);
+            Watchdog::watch($request, $log);
+        } else {
+            $log = '已經移除所有授權！';
+            Watchdog::watch($request, '移除' . $perm->description . '所有已授權人員！');
+        }
+        return back()->with('success', $log);
     }
 
     public function export($section) {

@@ -161,7 +161,17 @@ class Student extends Model
     public function sync()
     {
         $sso = new SSO;
-        $sso->fetch_user($this->uuid);
+        $year = current_year() - substr($this->class_id, 0, 1) + 1;
+        if ($year && substr($this->id, 0, 3) != $year) {
+            if ($this->class_id > '600') {
+                $this->class_id = 'z';
+                $this->save();
+            } else {
+                $this->delete();
+            }
+        } else {
+            $sso->fetch_user($this->uuid, false, false, $year);
+        }
         $this->refresh();
     }
 

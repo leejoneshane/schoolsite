@@ -8,7 +8,7 @@
         <i class="fa-solid fa-unlock-keyhole"></i>管理權限
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public.export', ['section' => $section]) }}">
-        <i class="fa-solid fa-unlock-keyhole"></i>PDF下載
+        <i class="fa-solid fa-file-export"></i>PDF 下載
     </a>
 @endif
 <button class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" onclick="
