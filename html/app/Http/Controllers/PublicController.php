@@ -269,10 +269,10 @@ class PublicController extends Controller
         $perm = Permission::findByName('public.domain');
         $units = Unit::main();
         $already = $perm->teachers()->orderBy('uuid')->get();
-        $teachers = Teacher::leftJoin('units', 'units.id', '=', 'unit_id')
-            ->leftJoin('roles', 'roles.id', '=', 'role_id')
-            ->orderBy('units.unit_no')
-            ->orderBy('roles.role_no')
+        $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', '=', 'teachers.uuid')
+            ->leftJoin('domains', 'domains.id', '=', 'belongs.domain_id')
+            ->where('belongs.year', current_year())
+            ->orderBy('belongs.domain_id')
             ->get()
             ->reject(function ($teacher) {
                 return $teacher->user->is_admin || $teacher->domains->isEmpty();

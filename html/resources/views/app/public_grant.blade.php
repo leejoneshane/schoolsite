@@ -60,11 +60,11 @@ function add_teacher() {
     @php
         $gap = '';
         $rname = '';
-        if ($t->role_name) $rname = $t->role_name;
+        if ($t->name) $rname = $t->name;
         for ($i=0;$i<6-mb_strlen($rname);$i++) {
             $gap .= '　';
         }
-        $display = $t->role_name . $gap . $t->realname;
+        $display = $t->name . $gap . $t->realname;
     @endphp
 	my_cls += '<option value="{{ $t->uuid }}">{{ $display }}</option>';
 	@endforeach
