@@ -47,7 +47,7 @@
                     領域
                 </th>
                 @endif
-                @if ($manager || $domainmanager)
+                @if ($manager || $domain_manager)
                 <th scope="col" class="p-2">
                     任教者
                 </th>
@@ -77,7 +77,7 @@
                 @if ($manager)
                 <td class="p-2">{{ $data->domain->name }}</td>
                 @endif
-                @if ($manager || $domainmanager)
+                @if ($manager || $domain_manager)
                 <td class="p-2">{{ $data->teacher->realname }}</td>
                 @endif
                 <td class="p-2">{{ $data->teach_unit }}</td>

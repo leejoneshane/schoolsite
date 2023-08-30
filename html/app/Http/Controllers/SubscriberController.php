@@ -84,10 +84,10 @@ class SubscriberController extends Controller
         if ($subscriber) {
             $subscriber->cancel($news->id);
             Watchdog::watch($request, $subscriber->email . '取消訂閱電子報：' . $news->name);
-        }
-        if (empty($subscriber->news)) {
-            Watchdog::watch($request, '移除訂閱戶：' . $subscriber->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            $subscriber->delete();
+            if (empty($subscriber->news)) {
+                Watchdog::watch($request, '移除訂閱戶：' . $subscriber->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                $subscriber->delete();
+            }
         }
         return redirect()->route('subscriber')->with('success', '您已經取消訂閱電子報：'.$news->name.'!');
     }

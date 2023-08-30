@@ -130,7 +130,7 @@ class PublicController extends Controller
         }
         $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain'));
         if ($manager) {
-            $class_id = $request->input('class');
+            $class_id = $request->input('classroom');
             $myclass = Classroom::find($class_id);
             $public = PublicClass::create([
                 'domain_id' => $request->input('domain'),
@@ -141,8 +141,8 @@ class PublicController extends Controller
                 'weekday' => $request->input('weekday'),
                 'session' => $request->input('session'),
                 'location'  => $request->input('location'),
-                'uuid' => $request->input('teacher'),
-                'partners' => $request->input('partners'),
+                'uuid' => $request->input('uuid'),
+                'partners' => $request->input('teachers'),
             ]);
             if ($request->hasFile('eduplan')) {
                 $extension = $request->file('eduplan')->getClientOriginalExtension();
@@ -178,7 +178,15 @@ class PublicController extends Controller
         if (!$public) return redirect()->route('public')->with('error', '找不到此公開課，因此無法編輯！');
         $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain') || $public->uuid == $user->uuid);
         if ($manager) {
-            return view('app.public_edit', ['public' => $public]);
+            $domains = Domain::all();
+            $classes = Classroom::all();
+            $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', '=', 'teachers.uuid')
+                ->leftJoin('domains', 'domains.id', '=', 'belongs.domain_id')
+                ->where('belongs.year', current_year())
+                ->orderBy('belongs.domain_id')
+                ->get();
+            return view('app.public_edit', ['public' => $public, 'domains' => $domains, 'teachers' => $teachers, 'classes' => $classes, 'sessions' => self::$sessionMap]);
+
         } else {
             return redirect()->route('public')->with('error', '只有管理員才能修改公開課資訊！');
         }
@@ -195,7 +203,7 @@ class PublicController extends Controller
         $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain') || $public->uuid == $user->uuid);
         if ($manager) {
             $public = PublicClass::find($id);
-            $class_id = $request->input('class');
+            $class_id = $request->input('classroom');
             $myclass = Classroom::find($class_id);
             $public->update([
                 'teach_unit' => $request->input('unit'),
@@ -205,8 +213,9 @@ class PublicController extends Controller
                 'weekday' => $request->input('weekday'),
                 'session' => $request->input('session'),
                 'location'  => $request->input('location'),
+                'partners' => $request->input('teachers'),
             ]);
-            if ($request->has('del_eduplan')) {
+            if ($request->input('del_eduplan') == 'yes') {
                 $path = public_path('public_class/' . $public->eduplan);
                 if (file_exists($path)) {
                     unlink($path);
@@ -226,7 +235,7 @@ class PublicController extends Controller
                 Watchdog::watch($request, '上傳教案：' . $url);
                 $public->eduplan = $fileName;
             }
-            if ($request->has('del_discuss')) {
+            if ($request->input('del_discuss') == 'yes') {
                 $path = public_path('public_class/' . $public->discuss);
                 if (file_exists($path)) {
                     unlink($path);

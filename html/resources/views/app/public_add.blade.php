@@ -53,9 +53,9 @@
         </select>
     </div></p>
     <p><div class="p-3">
-        <label for="teach_unit" class="inline">單元名稱：</label>
-        <input id="teach_unit" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="text" name="teach_unit" value="">
+        <label for="unit" class="inline">單元名稱：</label>
+        <input id="unit" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+            type="text" name="unit" value="">
     </div></p>
     <p><div class="p-3">
         <label for="location" class="inline">上課地點：</label>

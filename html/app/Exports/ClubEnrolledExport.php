@@ -76,7 +76,7 @@ class ClubEnrolledExport
             $section->addTextBreak(1);
             $table = $section->addTable(['borderSize' => 2, 'borderColor' => '999999', 'cellMargin' => 50]);
             if ($club->section($this->section)->self_defined) {
-                $counter = [];
+                $counter = [0,0,0,0,0,0];
                 foreach ($enrolls as $enroll) {
                     for ($i=1; $i<6; $i++) {
                         if (in_array($i, $enroll->weekdays)) {
