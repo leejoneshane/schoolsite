@@ -75,7 +75,7 @@
     </div></p>
     <p><div class="p-3">
         <label class="inline">{{ ($public->eduplan) ? '教案已上傳' : '尚未上傳教案' }}</label>
-        <button type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
+        <button id="btn_del1" type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="del_eduplan()">刪除
         </button>
         <button type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
@@ -88,7 +88,7 @@
     </div></p>
     <p><div class="p-3">
         <label class="inline">{{ ($public->eduplan) ? '教案已上傳' : '尚未上傳教案' }}</label>
-        <button type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
+        <button id="btn_del1" type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="del_discuss()">刪除
         </button>
         <button type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
@@ -139,5 +139,38 @@ function add_teacher() {
     target.parentNode.insertBefore(elemb, target);
     elemb.outerHTML = my_btn;
 }
+
+function upload_eduplan() {
+    var target = document.getElementById('show_eduplan');
+    target.classList.remove("hidden");
+    var btn = document.getElementById('btn_del1');
+    btn.setAttribute('disabled', true);
+    btn.innerHTML = '舊檔案將刪除';
+}
+
+function del_eduplan() {
+    var target = document.getElementById('del_eduplan');
+    target.value = 'yes';
+    var btn = document.getElementById('btn_del1');
+    btn.setAttribute('disabled', true);
+    btn.innerHTML = '舊檔案將刪除';
+}
+
+function upload_discuss() {
+    var target = document.getElementById('show_discuss');
+    target.classList.remove("hidden");
+    var btn = document.getElementById('btn_del2');
+    btn.setAttribute('disabled', true);
+    btn.innerHTML = '舊檔案將刪除';
+}
+
+function del_discuss() {
+    var target = document.getElementById('del_discuss');
+    target.value = 'yes';
+    var btn = document.getElementById('btn_del2');
+    btn.setAttribute('disabled', true);
+    btn.innerHTML = '舊檔案將刪除';
+}
+
 </script>
 @endsection
