@@ -27,4 +27,10 @@ class Grade extends Model
         return $this->hasMany('App\Models\Classroom');
     }
 
+    //取得此年級所有的導師
+    public function teachers()
+    {
+        return Teacher::whereRAW('LEFT(tutor_class, 1) = ?', [$this->id])->get();
+    }
+
 }

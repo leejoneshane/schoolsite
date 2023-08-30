@@ -83,8 +83,8 @@
                 <td class="p-2">{{ $data->teach_unit }}</td>
                 <td class="p-2">{{ $data->classroom->name }}</td>
                 <td class="p-2">{{ $data->location }}</td>
-                <td class="p-2"><a href="{{ $data->eduplan }}">教案</a></td>
-                <td class="p-2"><a href="{{ $data->discuss }}">觀課後會談</a></td>
+                <td class="p-2"><a href="{{ asset('public_class/' . $data->eduplan) }}">教案</a></td>
+                <td class="p-2"><a href="{{ asset('public_class/' . $data->discuss) }}">觀課後會談</a></td>
                 <td class="p-2">
                     <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                         href="{{ route('public.edit', ['id' => $data->id]) }}" title="編輯">
@@ -196,6 +196,7 @@
 </form>
 <form class="hidden" id="act" action="{{ route('public.reserve') }}" method="POST">
     @csrf
+    <input type="hidden" id="section" name="section">
     <input type="hidden" id="date" name="date">
     <input type="hidden" id="weekday" name="weekday">
     <input type="hidden" id="session" name="session">
@@ -203,6 +204,8 @@
 <script>
 function booking(date, weekday, session) {
     var myform = document.getElementById('act');
+    var section = document.getElementById('section');
+    section.value = '{{ $section }}';
     var mydate = document.getElementById('date');
     mydate.value = date;
     var mywk = document.getElementById('weekday');

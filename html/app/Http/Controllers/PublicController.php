@@ -8,11 +8,13 @@ use App\Models\PublicClass;
 use App\Models\IcsCalendar;
 use App\Models\User;
 use App\Models\Unit;
+use App\Models\Grade;
 use App\Models\Teacher;
 use App\Models\Domain;
 use App\Models\Classroom;
 use App\Models\Watchdog;
 use App\Models\Permission;
+use App\Exports\PublicExport;
 use Carbon\Carbon;
 
 class PublicController extends Controller
@@ -56,7 +58,27 @@ class PublicController extends Controller
         }
         $calendar = IcsCalendar::forPublic();
         $sections = PublicClass::sections();
-        $schedule = PublicClass::weekly();
+        $temp = current_section();
+        if (!$sections->contains('section', $temp)) {
+            $seme = substr($temp, -1);
+            if ($seme == 1) {
+                $strseme = '上學期';
+            } else {
+                $strseme = '下學期';
+            }
+            $sections->push((object)[ 'section' => $temp, 'name' => '第'.substr($temp, 0, -1).'學年'.$strseme ]);
+        }
+        $temp = next_section();
+        if (!$sections->contains('section', $temp)) {
+            $seme = substr($temp, -1);
+            if ($seme == 1) {
+                $strseme = '上學期';
+            } else {
+                $strseme = '下學期';
+            }
+            $sections->push((object)[ 'section' => $temp, 'name' => '第'.substr($temp, 0, -1).'學年'.$strseme ]);
+        }
+        $schedule = PublicClass::weekly($date);
         return view('app.public', ['manager' => $manager, 'domain_manager' => $domainmanager, 'calendar' => $calendar, 'section' => $section, 'sections' => $sections, 'mydate' => $date, 'publics' => $publics, 'sessions' => self::$sessionMap, 'schedule' => $schedule]);
     }
 
@@ -66,6 +88,7 @@ class PublicController extends Controller
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能新增公開課！');
         }
+        $section = $request->input('section');
         $date = $request->input('date');
         $weekday = $request->input('weekday');
         $session = $request->input('session');
@@ -76,25 +99,24 @@ class PublicController extends Controller
             foreach ($domains as $dom) {
                 $selections[] = [ 'd'.$dom->id => $dom->name ];
             }
-            $classes = Classroom::all();
-            foreach ($classes as $cls) {
-                $selections[] = [ 'c'.$cls->id => $cls->name ];
+            $grades = Grade::all();
+            foreach ($grades as $g) {
+                $selections[] = [ 'g'.$g->id => $g->name ];
             }
+            $classes = Classroom::all();
             $current = 'all';
-            $teachers = Teacher::all();
+            $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', '=', 'teachers.uuid')
+                ->leftJoin('domains', 'domains.id', '=', 'belongs.domain_id')
+                ->where('belongs.year', current_year())
+                ->orderBy('belongs.domain_id')
+                ->get();
             $teacher = $user->profile;
+            $domain = null;
             if ($teacher->domains->isNotEmpty()) {
                 $domain = $teacher->domains->first();
-                $teachers = $domain->teachers();
                 $current = 'd'.$domain->id;
-            } else {
-                if ($teacher->tutor_classroom->isNotEmpty()) {
-                    $tclass = $teacher->tutor_classroom;
-                    $teachers = $tclass->teachers();
-                    $current = 'c'.$tclass->id;
-                }
             }
-            return view('app.public_add', ['current' => $current, 'selections' => $selections, 'teachers' => $teachers, 'mydate' => $date, 'weekday' => $weekday, 'session' => $session, 'sessions' => self::$sessionMap]);
+            return view('app.public_add', ['current' => $current, 'selections' => $selections, 'section' => $section, 'domain' => $domain, 'domains' => $domains, 'teacher' => $teacher, 'teachers' => $teachers, 'classes' => $classes, 'mydate' => $date, 'weekday' => $weekday, 'session' => $session, 'sessions' => self::$sessionMap]);
         } else {
             return redirect()->route('public')->with('error', '只有管理員或已授權的群召才能新增公開課！');
         }
@@ -128,7 +150,7 @@ class PublicController extends Controller
                 $request->file('eduplan')->move(public_path('public_class'), $fileName);
                 $url = asset('public_class/' . $fileName);
                 Watchdog::watch($request, '上傳教案：' . $url);
-                $public->eduplan = $url;
+                $public->eduplan = $fileName;
             }
             if ($request->hasFile('discuss')) {
                 $extension = $request->file('discuss')->getClientOriginalExtension();
@@ -136,7 +158,7 @@ class PublicController extends Controller
                 $request->file('discuss')->move(public_path('public_class'), $fileName);
                 $url = asset('public_class/' . $fileName);
                 Watchdog::watch($request, '上傳觀課後會談：' . $url);
-                $public->discuss = $url;
+                $public->discuss = $fileName;
             }
             $public->save();
             Watchdog::watch($request, '新增公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -202,7 +224,7 @@ class PublicController extends Controller
                 $request->file('eduplan')->move(public_path('public_class'), $fileName);
                 $url = asset('public_class/' . $fileName);
                 Watchdog::watch($request, '上傳教案：' . $url);
-                $public->eduplan = $url;
+                $public->eduplan = $fileName;
             }
             if ($request->has('del_discuss')) {
                 $path = public_path('public_class/' . $public->discuss);
@@ -222,7 +244,7 @@ class PublicController extends Controller
                 $request->file('discuss')->move(public_path('public_class'), $fileName);
                 $url = asset('public_class/' . $fileName);
                 Watchdog::watch($request, '上傳觀課後會談：' . $url);
-                $public->discuss = $url;
+                $public->discuss = $fileName;
             }
             $public->save();
             Watchdog::watch($request, '更新公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -273,10 +295,7 @@ class PublicController extends Controller
             ->leftJoin('domains', 'domains.id', '=', 'belongs.domain_id')
             ->where('belongs.year', current_year())
             ->orderBy('belongs.domain_id')
-            ->get()
-            ->reject(function ($teacher) {
-                return $teacher->user->is_admin || $teacher->domains->isEmpty();
-            });
+            ->get();
         return view('app.public_grant', ['permission' => $perm, 'already' => $already, 'units' => $units, 'teachers' => $teachers]);
     }
 
@@ -298,7 +317,19 @@ class PublicController extends Controller
     }
 
     public function export($section) {
+    }
 
+    public function download($section, $domain_id) {
+        $user = User::find(Auth::user()->id);
+        $manager = ($user->is_admin || $user->hasPermission('public.manager'));
+        if ($manager) {
+            $domain = Domain::find($domain_id);
+            $filename = $domain->name . '公開課成果報告.pdf';
+            $exporter = new PublicExport($section, $domain_id);
+            return $exporter->download($filename);
+        } else {
+            return redirect()->route('home')->with('error', '只有管理員才能下載公開課成果報告！');
+        }
     }
 
 }

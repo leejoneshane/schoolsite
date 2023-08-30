@@ -9,6 +9,7 @@
 </div>
 <form id="add-club" action="{{ route('public.add') }}" method="POST">
     @csrf
+    <input type="hidden" name="section" value="{{ $section }}">
     <input type="hidden" name="date" value="{{ $mydate }}">
     <input type="hidden" name="weekday" value="{{ $weekday }}">
     <input type="hidden" name="session" value="{{ $session }}">
@@ -19,93 +20,63 @@
         <label class="inline">節次：週{{ $weekday }}{{ $sessions[$session]  }}</label>
     </div></p>
     <p><div class="p-3">
-        <label for="title" class="inline">領域：</label>
-        <input type="text" id="title" name="title" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
-    </div></p>
-    <p><div class="p-3">
-        <label for="manager" class="inline">管理員：</label>
-        <select id="manager" name="manager" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="uuid" class="inline">授課教師：</label>
+        <select id="uuid" name="uuid" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
         @foreach ($teachers as $t)
         @php
             $gap = '';
             $rname = '';
-            if ($t->role_name) $rname = $t->role_name;
+            if ($t->name) $rname = $t->name;
             for ($i=0;$i<6-mb_strlen($rname);$i++) {
                 $gap .= '　';
             }
-            $display = $t->role_name . $gap . $t->realname;
-        @endphp
-        <option value="{{ $t->uuid }}"{{ ($t->uuid == $teacher->uuid) ? ' selected' : '' }}>{{ $display }}</option>
+            $display = $t->name . $gap . $t->realname;
+            @endphp
+            <option {{ ($teacher->uuid == $t->uuid) ? 'selected' : ''}} value="{{ $t->uuid }}">{{ $display }}</option>
         @endforeach
         </select>
     </div></p>
     <p><div class="p-3">
-        <label for="description" class="inline">借用須知：</label>
-        <textarea id="description" name="description" rows="4" class="inline block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        ></textarea>
-        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入場地容留人數、可使用設備（如：單槍、大屏、麥克風、有無網路...等）、鑰匙保管方式，設備請輸入外觀、規格、配件、使用條件或限制...等資訊！</span>
+        <label for="classroom" class="inline">授課班級：</label>
+        <select id="classroom" name="classroom" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        @foreach ($classes as $cls)
+        <option value="{{ $cls->id }}"{{ ($cls->id == $teacher->tutor_class) ? ' selected' : '' }}>{{ $cls->name }}</option>
+        @endforeach
+        </select>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">不出借時段：</label>
-        <input type="checkbox" name="unavailable" value="yes" onclick="
-            const sdate = document.getElementById('sdate');
-            const edate = document.getElementById('edate');
-            if (this.checked) {
-                sdate.removeAttribute('disabled');
-                edate.removeAttribute('disabled');
-            } else {
-                sdate.setAttribute('disabled', '');
-                edate.setAttribute('disabled', '');
-            }
-        ">
-        <input class="w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" id="sdate" name="startdate" value="" disabled>　到　
-        <input class="w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" id="edate" name="enddate" value="" disabled>
+        <label for="domain" class="inline">教學領域：</label>
+        <select id="domain" name="domain" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+            @foreach ($domains as $d)
+            <option value="{{ $d->id }}"{{ ($d->id == $domain->id) ? ' selected' : '' }}>{{ $d->name }}</option>
+            @endforeach
+        </select>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">不出借節次：</label>
-        <table class="inline border-collapse text-sm text-left">
-            <thead>
-                <tr class="font-semibold text-lg">
-                    <th class="border border-slate-300">星期</th>
-                    <th class="border border-slate-300">一</th>
-                    <th class="border border-slate-300">二</th>
-                    <th class="border border-slate-300">三</th>
-                    <th class="border border-slate-300">四</th>
-                    <th class="border border-slate-300">五</th>
-                </tr>    
-            </thead>
-            <tbody>
-                @foreach ($sessions as $key => $se)
-                <tr>
-                    <th class="border border-slate-300 font-semibold text-lg">{{ $se }}</th>
-                    <td class="border border-slate-300"><input type="checkbox" name="map[0][{{ $key }}]" value="yes"></td>
-                    <td class="border border-slate-300"><input type="checkbox" name="map[1][{{ $key }}]" value="yes"></td>
-                    <td class="border border-slate-300"><input type="checkbox" name="map[2][{{ $key }}]" value="yes"></td>
-                    <td class="border border-slate-300"><input type="checkbox" name="map[3][{{ $key }}]" value="yes"></td>
-                    <td class="border border-slate-300"><input type="checkbox" name="map[4][{{ $key }}]" value="yes"></td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <label for="teach_unit" class="inline">單元名稱：</label>
+        <input id="teach_unit" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+            type="text" name="teach_unit" value="">
     </div></p>
     <p><div class="p-3">
-        <label for="start" class="inline">幾天後開始預約？</label>
-        <input type="number" id="start" name="start" value="1" min="0" max="180" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">天後
-        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入數字，0或留白代表當天可預約！</span>
+        <label for="location" class="inline">上課地點：</label>
+        <input id="location" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+            type="text" name="location" value="">
     </div></p>
     <p><div class="p-3">
-        <label for="limit" class="inline">可預約幾天內的空堂？</label>
-        <input type="number" id="limit" name="limit" value="30" min="0" max="180" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">天內
-        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入數字，0或留白代表無限制！</span>
+        <label for="nassign" class="inline">觀課夥伴：</label>
+        <div id="nassign">
+        </div>
+        <button id="nassign" type="button" class="py-2 px-6 rounded text-blue-300 hover:text-blue-600"
+            onclick="add_teacher()"><i class="fa-solid fa-circle-plus"></i>
+        </button>
     </div></p>
     <p><div class="p-3">
-        <label for="open" class="inline-flex relative items-center cursor-pointer">
-            <input type="checkbox" id="open" name="open" value="yes" class="sr-only peer">
-            <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-            <span class="ml-3 text-gray-900 dark:text-gray-300">開放預約</span>
-        </label>
+        <span class="sr-only">請上傳教案：</span>
+        <input type="file" name="eduplan" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" required>
+    </div></p>
+    <p><div class="p-3">
+        <span class="sr-only">請上傳觀課後會談紀錄：</span>
+        <input type="file" name="discuss" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" required>
     </div></p>
     <p class="p-6">
         <div class="inline">
@@ -115,4 +86,37 @@
         </div>
     </p>
 </form>
+<script>
+    function remove_teacher(elem) {
+    const parent = elem.parentNode;
+    const brother = elem.previousElementSibling;
+    parent.removeChild(brother);
+    parent.removeChild(elem);
+}
+
+function add_teacher() {
+    var target = document.getElementById('nassign');
+    var my_cls = '<select class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200" name="teachers[]">';
+	@foreach ($teachers as $t)
+    @php
+        $gap = '';
+        $rname = '';
+        if ($t->name) $rname = $t->name;
+        for ($i=0;$i<6-mb_strlen($rname);$i++) {
+            $gap .= '　';
+        }
+        $display = $t->name . $gap . $t->realname;
+    @endphp
+	my_cls += '<option value="{{ $t->uuid }}">{{ $display }}</option>';
+	@endforeach
+	my_cls += '</select>';
+    const elemc = document.createElement('select');
+    target.parentNode.insertBefore(elemc, target);
+    elemc.outerHTML = my_cls;
+	my_btn = '<button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_teacher(this);"><i class="fa-solid fa-circle-minus"></i></button>';
+    const elemb = document.createElement('button');
+    target.parentNode.insertBefore(elemb, target);
+    elemb.outerHTML = my_btn;
+}
+</script>
 @endsection

@@ -166,6 +166,7 @@ Route::group(['prefix' => 'teachers', 'middleware' => [ 'auth'] ], function () {
     Route::get('all', 'App\Http\Controllers\DataController@all')->name('teachers.all');
     Route::get('domain/{domain_id}', 'App\Http\Controllers\DataController@domain')->name('teachers.bydomain');
     Route::get('class/{class_id}', 'App\Http\Controllers\DataController@class')->name('teachers.byclass');
+    Route::get('grade/{grade_id}', 'App\Http\Controllers\DataController@grade')->name('teachers.bygrade');
 });
 
 // 公開課
@@ -180,6 +181,7 @@ Route::group(['prefix' => 'public', 'middleware' => [ 'auth'] ], function () {
     Route::get('perm', 'App\Http\Controllers\PublicController@perm');
     Route::post('perm', 'App\Http\Controllers\PublicController@updatePerm')->name('public.permission');
     Route::get('export/{section}', 'App\Http\Controllers\PublicController@export')->name('public.export');
+    Route::get('download/{section}/{domain_id}', 'App\Http\Controllers\PublicController@download')->name('public.download');
 });
 
 // 網路朝會
