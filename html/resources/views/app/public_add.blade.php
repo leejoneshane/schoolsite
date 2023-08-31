@@ -55,7 +55,7 @@
     <p><div class="p-3">
         <label for="unit" class="inline">單元名稱：</label>
         <input id="unit" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="text" name="unit" value="">
+            type="text" name="unit" value="" required>
     </div></p>
     <p><div class="p-3">
         <label for="location" class="inline">上課地點：</label>
@@ -72,11 +72,11 @@
     </div></p>
     <p><div class="p-3">
         <span class="sr-only">請上傳教案：</span>
-        <input type="file" name="eduplan" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" required>
+        <input type="file" name="eduplan" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
     </div></p>
     <p><div class="p-3">
         <span class="sr-only">請上傳觀課後會談紀錄：</span>
-        <input type="file" name="discuss" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" required>
+        <input type="file" name="discuss" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
     </div></p>
     <p class="p-6">
         <div class="inline">

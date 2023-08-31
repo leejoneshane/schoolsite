@@ -180,7 +180,7 @@ class PublicClass extends Model
     }
 
     //篩選指定學期所有公開課紀錄
-    public static function section($section = null)
+    public static function bySection($section = null)
     {
         if (!$section) $section = current_section();
         return PublicClass::where('section', $section)->get();
@@ -219,6 +219,7 @@ class PublicClass extends Model
         $sdate = $date->copy()->startOfWeek();
         $whole = new \stdClass;
         $whole->start = $sdate; //此週開始日期
+        $whole->today = Carbon::today();
         for ($i=1; $i<6; $i++) { // 1->星期一, 2->星期二, .....
             for ($j=1; $j<9; $j++) { // 1->第一節, 2->第二節, ......
                 $whole->map[$i][$j] = [];

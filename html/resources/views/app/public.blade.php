@@ -37,29 +37,29 @@
         <thead>
             <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
                 <th scope="col" class="p-2">
-                    上課時間
+                    授課時間
                 </th>
                 <th scope="col" class="p-2">
-                    節次
+                    週節次
                 </th>
                 @if ($manager)
                 <th scope="col" class="p-2">
-                    領域
+                    教學領域
                 </th>
                 @endif
                 @if ($manager || $domain_manager)
                 <th scope="col" class="p-2">
-                    任教者
+                    授課教師
                 </th>
                 @endif
                 <th scope="col" class="p-2">
-                    教學單元
+                    單元名稱
                 </th>
                 <th scope="col" class="p-2">
-                    班級
+                    授課班級
                 </th>
                 <th scope="col" class="p-2">
-                    地點
+                    授課地點
                 </th>
                 <th colspan="2" scope="col" class="p-2">
                     下載文件
@@ -83,8 +83,16 @@
                 <td class="p-2">{{ $data->teach_unit }}</td>
                 <td class="p-2">{{ $data->classroom->name }}</td>
                 <td class="p-2">{{ $data->location }}</td>
-                <td class="p-2"><a href="{{ asset('public_class/' . $data->eduplan) }}">教案</a></td>
-                <td class="p-2"><a href="{{ asset('public_class/' . $data->discuss) }}">觀課後會談</a></td>
+                <td class="p-2">
+                    @if (!empty($data->eduplan))
+                    <a href="{{ asset('public_class/' . $data->eduplan) }}">教案</a>
+                    @endif
+                </td>
+                <td class="p-2">
+                    @if (!empty($data->discuss))
+                    <a href="{{ asset('public_class/' . $data->discuss) }}">觀課後會談</a>
+                    @endif
+                </td>
                 <td class="p-2">
                     <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                         href="{{ route('public.edit', ['id' => $data->id]) }}" title="編輯">
@@ -152,20 +160,28 @@
             @foreach ($sessions as $key => $se)
             <tr class="h-6">
                 <th class="border-t border-r border-slate-300 font-semibold text-lg">{{ $se }}</th>
+                @php
+                    $sdate = $schedule->start->copy();
+                @endphp
                 @for ($i=1; $i<6; $i++)
-                <td class="w-32 border-t border-l border-slate-300 bg-green-200">
+                <td class="w-48 border-t border-l border-slate-300 bg-green-200">
                     @if (count($schedule->map[$i][$key]) > 0)
                         @foreach ($schedule->map[$i][$key] as $data)
-                            <button id="{{ $data->id }}" class="viewit w-full py-2 bg-blue-200 text-sm text-center" data-modal-toggle="defaultModal" onclick="showReserve(this)">
-                                {{ $data->teacher->realname . $data->teach_class . $data->domain->name }}
-                            </button>
+                    <button id="{{ $data->id }}" class="viewit w-full py-2 bg-blue-200 text-sm text-center" data-modal-toggle="defaultModal" onclick="showReserve(this)">
+                        {{ $data->teacher->realname . $data->teach_class . $data->domain->name }}
+                    </button>
                         @endforeach
                     @endif
+                    @if ($manager || ($domain_manager && $sdate > $schedule->today))
                     <button class="w-full py-2 bg-green-200 hover:bg-green-300 focus:ring-4 focus:ring-green-400 text-sm text-center"
                         onclick="booking('{{ $dates[$i]->format('Y-m-d') }}',{{ $i }},{{ $key }})">
                         我要預約
                     </button>
+                    @endif
                 </td>
+                @php
+                    $sdate->addDay();
+                @endphp
                 @endfor
             </tr>
             @endforeach

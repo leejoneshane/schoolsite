@@ -3,27 +3,27 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     編輯公開課
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public', ['section' => $section]) }}?date={{ $public->reserved_at }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public', ['section' => $public->section]) }}?date={{ $public->reserved_at->format('Y-m-d') }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="edit-club" action="{{ route('public.edit') }}" method="POST">
+<form id="edit-club" action="{{ route('public.edit', ['id' => $public->id]) }}" method="POST">
     @csrf
     <input type="hidden" id="del_eduplan" name="del_eduplan" value="no">
     <input type="hidden" id="del_discuss" name="del_discuss" value="no">
     <p><div class="p-3">
         <label for="date" class="inline">上課時間：</label>
-        <input id="date" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="text" name="date" value="{{ $public->reserved_at }}">
+        <input id="date" class="inline rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+            type="date" name="date" value="{{ $public->reserved_at }}" required>
     </div></p>
     <p><div class="p-3">
-        <label for="weekday" class="inline">週</label>
-        <select id="weekday" name="weekday" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="weekday" class="inline">週節次：週</label>
+        <select id="weekday" name="weekday" class="form-select w-16 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
             @for ($i=1; $i<6; $i++)
             <option value="{{ $i }}"{{ ($i == $public->weekday) ? ' selected' : '' }}>{{ $i }}</option>
             @endfor
         </select>
-        <select id="session" name="session" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <select id="session" name="session" class="form-select w-24 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
             @foreach ($sessions as $s => $name)
             <option value="{{ $s }}"{{ ($s == $public->session) ? ' selected' : '' }}>{{ $name }}</option>
             @endforeach
@@ -31,7 +31,7 @@
     </div></p>
     <p><div class="p-3">
         <label for="classroom" class="inline">授課班級：</label>
-        <select id="classroom" name="classroom" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <select id="classroom" name="classroom" class="form-select w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
         @foreach ($classes as $cls)
         <option value="{{ $cls->id }}"{{ ($cls->id == $public->teach_class) ? ' selected' : '' }}>{{ $cls->name }}</option>
         @endforeach
@@ -40,7 +40,7 @@
     <p><div class="p-3">
         <label for="unit" class="inline">單元名稱：</label>
         <input id="unit" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="text" name="unit" value="{{ $public->teach_unit }}">
+            type="text" name="unit" value="{{ $public->teach_unit }}" required>
     </div></p>
     <p><div class="p-3">
         <label for="location" class="inline">上課地點：</label>
@@ -50,7 +50,7 @@
     <p><div class="p-3">
         <label for="nassign" class="inline">觀課夥伴：</label>
         <div id="nassign">
-            @foreach ($publics->teachers() as $user)
+            @foreach ($public->teachers() as $user)
             <select class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             name="teachers[]">
                 @foreach ($teachers as $t)
@@ -83,7 +83,7 @@
         </button>
         <div id="show_eduplan" class="hidden">
             <span class="sr-only">請上傳檔案：</span>
-            <input type="file" id="eduplan" name="eduplan" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" required>
+            <input type="file" id="eduplan" name="eduplan" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
         </div>
     </div></p>
     <p><div class="p-3">
@@ -96,7 +96,7 @@
         </button>
         <div id="show_discuss" class="hidden">
             <span class="sr-only">請上傳觀課後會談紀錄：</span>
-            <input type="file" name="discuss" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100" required>
+            <input type="file" name="discuss" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
         </div>
     </div></p>
     <p class="p-6">

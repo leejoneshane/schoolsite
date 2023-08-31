@@ -36,20 +36,22 @@ class PublicController extends Controller
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能瀏覽公開課！');
         }
-        if (!$section) {
+        $date = null;
+        if (!$section || $section == current_section()) {
             $date = Carbon::today();
             $section = current_section();
         }
         if ($request->has('date')) {
             $date = Carbon::createFromFormat('Y-m-d', $request->input('date'));
-        } elseif (!isset($date)) {
+        }
+        if (!$date) {
             $between = section_between_date($section);
             $date = Carbon::createFromFormat('Y-m-d', $between->mindate);
         }
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
         $domainmanager = $user->hasPermission('public.domain');
         if ($manager) {
-            $publics = PublicClass::section($section);
+            $publics = PublicClass::bySection($section);
         } elseif ($domainmanager) {
             $domain = Teacher::find('uuid')->domains->first();
             $publics = PublicClass::byDomain($domain->id, $section);
@@ -133,6 +135,7 @@ class PublicController extends Controller
             $class_id = $request->input('classroom');
             $myclass = Classroom::find($class_id);
             $public = PublicClass::create([
+                'section' => $request->input('section'),
                 'domain_id' => $request->input('domain'),
                 'teach_unit' => $request->input('unit'),
                 'teach_grade'  => $myclass->grade_id,
