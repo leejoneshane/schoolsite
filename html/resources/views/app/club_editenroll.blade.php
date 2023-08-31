@@ -83,7 +83,7 @@
                 </select>
             </div>
             @endif
-            @if ($club->section()->self_defined)
+            @if ($club->section($enroll->section)->self_defined)
             <div class="p-3">
                 <label class="inline">自選上課日：每週</label>
                 <div id="weekdays" class="inline">
