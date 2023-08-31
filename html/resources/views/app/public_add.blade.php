@@ -22,7 +22,7 @@
     <p><div class="p-3">
         <label for="uuid" class="inline">授課教師：</label>
         <select id="uuid" name="uuid" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-        @foreach ($teachers as $t)
+        @foreach ($teacher_list as $t)
         @php
             $gap = '';
             $rname = '';

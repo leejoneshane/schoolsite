@@ -97,30 +97,21 @@ class PublicController extends Controller
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
         $domain_manager = $user->hasPermission('public.domain');
         if ($manager || $domain_manager) {
-            $selections = [ 'all' => '全部'];
             $domains = Domain::all();
-            foreach ($domains as $dom) {
-                $selections[] = [ 'd'.$dom->id => $dom->name ];
-            }
-            $grades = Grade::all();
-            foreach ($grades as $g) {
-                $selections[] = [ 'g'.$g->id => $g->name ];
-            }
             $classes = Classroom::all();
-            $current = 'all';
             $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', '=', 'teachers.uuid')
                 ->leftJoin('domains', 'domains.id', '=', 'belongs.domain_id')
                 ->where('belongs.year', current_year())
                 ->orderBy('belongs.domain_id')
                 ->get();
             $teacher = $user->profile;
+            $teacher_list = $teachers;
             $domain = null;
             if ($domain_manager && $teacher->domains->isNotEmpty()) {
                 $domain = $teacher->domains->first();
-                $teachers = $domain->teachers;
-                $current = 'd'.$domain->id;
+                $teacher_list = $domain->teachers;
             }
-            return view('app.public_add', ['current' => $current, 'selections' => $selections, 'section' => $section, 'domain' => $domain, 'domains' => $domains, 'teacher' => $teacher, 'teachers' => $teachers, 'classes' => $classes, 'mydate' => $date, 'weekday' => $weekday, 'session' => $session, 'sessions' => self::$sessionMap]);
+            return view('app.public_add', ['section' => $section, 'domain' => $domain, 'domains' => $domains, 'teacher' => $teacher, 'teacher_list' => $teacher_list, 'teachers' => $teachers, 'classes' => $classes, 'mydate' => $date, 'weekday' => $weekday, 'session' => $session, 'sessions' => self::$sessionMap]);
         } else {
             return redirect()->route('public')->with('error', '只有管理員或已授權的群召才能新增公開課！');
         }
