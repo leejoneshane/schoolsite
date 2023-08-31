@@ -105,10 +105,7 @@ class IcsEvent extends Model implements Subscribeable
         $min = 1;
         $max = (new Carbon('last day of this month'))->day;
         for ($day = $min; $day <= $max; $day++) {
-            $obj = new \stdClass;
             $sd = new Carbon($year.'-'.$month.'-'.$day);
-            $wd = self::$weekMap[$sd->dayOfWeek];
-            $obj->weekday = $wd;
             $events = self::inTimeForStudent($sd);
             $important = $events->where('important', true);
             $events = $events->where('important', false); 
@@ -132,8 +129,14 @@ class IcsEvent extends Model implements Subscribeable
                 if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
                 if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate.'止)';
             }
-            $obj->content = $content;
-            $event_list[$day] = $obj;
+            if ($content) {
+                $obj = new \stdClass;
+                $obj->month = $twmonth;
+                $obj->day = $sd->day;
+                $obj->weekday = self::$weekMap[$sd->dayOfWeek];
+                $obj->content = $content;
+                $event_list[] = $obj;
+            }
         }
         return ['year' => $year, 'month' => $twmonth, 'events' => $event_list];
     }

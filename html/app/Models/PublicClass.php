@@ -206,7 +206,7 @@ class PublicClass extends Model
     public static function week_reserved(Carbon $date)
     {
         $sdate = $date->copy()->startOfWeek();
-        $edate = $date->copy()->addDays(6)->format('Y-m-d');
+        $edate = $sdate->copy()->addDays(6)->format('Y-m-d');
         return PublicClass::whereBetween('reserved_at', [$sdate, $edate])->get();
     }
 

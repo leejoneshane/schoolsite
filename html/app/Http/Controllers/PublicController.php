@@ -53,7 +53,7 @@ class PublicController extends Controller
         if ($manager) {
             $publics = PublicClass::bySection($section);
         } elseif ($domainmanager) {
-            $domain = Teacher::find('uuid')->domains->first();
+            $domain = Teacher::find($user->uuid)->domains->first();
             $publics = PublicClass::byDomain($domain->id, $section);
         } else {
             $publics = PublicClass::byUser($user->uuid, $section);
