@@ -26,11 +26,11 @@
         @php
             $gap = '';
             $rname = '';
-            if ($t->name) $rname = $t->name;
+            if ($t->domain) $rname = $t->domain->name;
             for ($i=0;$i<6-mb_strlen($rname);$i++) {
                 $gap .= '　';
             }
-            $display = $t->name . $gap . $t->realname;
+            $display = $rname . $gap . $t->realname;
             @endphp
             <option {{ ($teacher->uuid == $t->uuid) ? 'selected' : ''}} value="{{ $t->uuid }}">{{ $display }}</option>
         @endforeach
@@ -48,7 +48,7 @@
         <label for="domain" class="inline">教學領域：</label>
         <select id="domain" name="domain" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
             @foreach ($domains as $d)
-            <option value="{{ $d->id }}"{{ ($d->id == $domain->id) ? ' selected' : '' }}>{{ $d->name }}</option>
+            <option value="{{ $d->id }}"{{ ($domain && $d->id == $domain->id) ? ' selected' : '' }}>{{ $d->name }}</option>
             @endforeach
         </select>
     </div></p>
@@ -101,11 +101,11 @@ function add_teacher() {
     @php
         $gap = '';
         $rname = '';
-        if ($t->name) $rname = $t->name;
+        if ($t->domain) $rname = $t->domain->name;
         for ($i=0;$i<6-mb_strlen($rname);$i++) {
             $gap .= '　';
         }
-        $display = $t->name . $gap . $t->realname;
+        $display = $rname . $gap . $t->realname;
     @endphp
 	my_cls += '<option value="{{ $t->uuid }}">{{ $display }}</option>';
 	@endforeach

@@ -14,7 +14,7 @@
     <p><div class="p-3">
         <label for="date" class="inline">上課時間：</label>
         <input id="date" class="inline rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" name="date" value="{{ $public->reserved_at }}" required>
+            type="date" name="date" value="{{ $public->reserved_at->format('Y-m-d') }}" required>
     </div></p>
     <p><div class="p-3">
         <label for="weekday" class="inline">週節次：週</label>
@@ -57,11 +57,11 @@
                 @php
                     $gap = '';
                     $rname = '';
-                    if ($t->name) $rname = $t->name;
+                    if ($t->domain) $rname = $t->domain->name;
                     for ($i=0;$i<6-mb_strlen($rname);$i++) {
                         $gap .= '　';
                     }
-                    $display = $t->name . $gap . $t->realname;
+                    $display = $rname . $gap . $t->realname;
                 @endphp
                 <option {{ ($user->uuid == $t->uuid) ? 'selected' : ''}} value="{{ $t->uuid }}">{{ $display }}</option>
                 @endforeach
@@ -75,9 +75,11 @@
     </div></p>
     <p><div class="p-3">
         <label class="inline">{{ ($public->eduplan) ? '教案已上傳' : '尚未上傳教案' }}</label>
+        @if ($public->eduplan)
         <button id="btn_del1" type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="del_eduplan()">刪除
         </button>
+        @endif
         <button type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="upload_eduplan()">重新上傳
         </button>
@@ -88,9 +90,11 @@
     </div></p>
     <p><div class="p-3">
         <label class="inline">{{ ($public->eduplan) ? '教案已上傳' : '尚未上傳教案' }}</label>
+        @if ($public->discuss)
         <button id="btn_del1" type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="del_discuss()">刪除
         </button>
+        @endif
         <button type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="upload_discuss()">重新上傳
         </button>
@@ -122,11 +126,11 @@ function add_teacher() {
     @php
         $gap = '';
         $rname = '';
-        if ($t->name) $rname = $t->name;
+        if ($t->domain) $rname = $t->domain->name;
         for ($i=0;$i<6-mb_strlen($rname);$i++) {
             $gap .= '　';
         }
-        $display = $t->name . $gap . $t->realname;
+        $display = $rname . $gap . $t->realname;
     @endphp
 	my_cls += '<option value="{{ $t->uuid }}">{{ $display }}</option>';
 	@endforeach

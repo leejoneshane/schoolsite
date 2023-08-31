@@ -290,8 +290,8 @@ class GcalendarServiceProvider extends ServiceProvider
         $event_end = new \Google_Service_Calendar_EventDateTime();
         $event_start->setTimeZone(env('TZ'));
         $event_end->setTimeZone(env('TZ'));
-        $event_start->setDateTime($ics->reserved_at->format('Y-m-d').'T'.$ics->period['start'].'+08:00');
-        $event_end->setDateTime($ics->reserved_at->format('Y-m-d').'T'.$ics->period['end'].'+08:00');
+        $event_start->setDateTime($ics->reserved_at->format('Y-m-d').'T'.$ics->period['start'].':00+08:00');
+        $event_end->setDateTime($ics->reserved_at->format('Y-m-d').'T'.$ics->period['end'].':00+08:00');
         $event->setStart($event_start);
         $event->setEnd($event_end);
         if (!empty($event_id)) {

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Teacher;
 use App\Providers\GcalendarServiceProvider as GCAL;
+use App\Models\IcsCalendar;
 use Carbon\Carbon;
 
 class PublicClass extends Model
@@ -32,8 +33,8 @@ class PublicClass extends Model
     ];
 
     protected static $sessionTime = [
-        1 => [ 'start' => '8:45', 'end' => '9:25' ],
-        2 => [ 'start' => '9:35', 'end' => '10:15' ],
+        1 => [ 'start' => '08:45', 'end' => '09:25' ],
+        2 => [ 'start' => '09:35', 'end' => '10:15' ],
         3 => [ 'start' => '10:30', 'end' => '11:10' ],
         4 => [ 'start' => '11:20', 'end' => '12:00' ],
         5 => [ 'start' => '12:40', 'end' => '13:20' ],
@@ -106,9 +107,10 @@ class PublicClass extends Model
         });
         static::deleted(function($item)
         {
+            $calendar_id = IcsCalendar::forPublic()->id;
             $cal = new GCAL;
             if ($item->event_id) {
-                $cal->delete_event($item->calendar_id, $item->event_id);
+                $cal->delete_event($calendar_id, $item->event_id);
             }
         });
     }
@@ -123,7 +125,7 @@ class PublicClass extends Model
     public function getTimeperiodAttribute()
     {
         $period = self::$sessionTime[$this->session];
-        return $this->reserved_at . $period['start'] . '~' . $period['end'];
+        return $this->reserved_at->format('Y-m-d') . ' ' . $period['start'] . '~' . $period['end'];
     }
 
     //提供公開課時段

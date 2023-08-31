@@ -94,8 +94,9 @@ class PublicController extends Controller
         $date = $request->input('date');
         $weekday = $request->input('weekday');
         $session = $request->input('session');
-        $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain'));
-        if ($manager) {
+        $manager = ($user->is_admin || $user->hasPermission('public.manager'));
+        $domain_manager = $user->hasPermission('public.domain');
+        if ($manager || $domain_manager) {
             $selections = [ 'all' => '全部'];
             $domains = Domain::all();
             foreach ($domains as $dom) {
@@ -114,8 +115,9 @@ class PublicController extends Controller
                 ->get();
             $teacher = $user->profile;
             $domain = null;
-            if ($teacher->domains->isNotEmpty()) {
+            if ($domain_manager && $teacher->domains->isNotEmpty()) {
                 $domain = $teacher->domains->first();
+                $teachers = $domain->teachers;
                 $current = 'd'.$domain->id;
             }
             return view('app.public_add', ['current' => $current, 'selections' => $selections, 'section' => $section, 'domain' => $domain, 'domains' => $domains, 'teacher' => $teacher, 'teachers' => $teachers, 'classes' => $classes, 'mydate' => $date, 'weekday' => $weekday, 'session' => $session, 'sessions' => self::$sessionMap]);
