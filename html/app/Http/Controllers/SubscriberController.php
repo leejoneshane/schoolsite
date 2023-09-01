@@ -52,28 +52,29 @@ class SubscriberController extends Controller
     {
         if (!$news) return redirect()->route('subscriber');
         $news = News::find($news);
-        $subscriber = Subscriber::findByEmail($request->input('email'));
-        if (!$subscriber) {
-            $subscriber = Subscriber::create([
-                'email' => $request->input('email'),
-            ]);
-            Watchdog::watch($request, '建立訂閱戶：' . $subscriber->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        }
-
-        if ($subscriber) {
-            $subscriber->subscription($news->id);
-            Watchdog::watch($request, $subscriber->email . '訂閱電子報：' . $news->name);
-        }
-
-        if (config('subscribers.verify')) {
-            if (!($subscriber->verified)) {
-                $subscriber->sendEmailVerificationNotification();
-                Watchdog::watch($request, '寄送郵件信箱確認信到 ' . $subscriber->email);
-                return redirect()->route('subscriber')->with('success', '電子報：'.$news->name.'的驗證信已經寄送到您的電子郵件信箱，請收信並進行驗證！');
+        if ($request->has('email')) {
+            $subscriber = Subscriber::findByEmail($request->input('email'));
+            if (!$subscriber) {
+                $subscriber = Subscriber::create([
+                    'email' => $request->input('email'),
+                ]);
+                Watchdog::watch($request, '建立訂閱戶：' . $subscriber->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             }
+            if ($subscriber) {
+                $subscriber->subscription($news->id);
+                Watchdog::watch($request, $subscriber->email . '訂閱電子報：' . $news->name);
+            }
+            if (config('subscribers.verify')) {
+                if (!($subscriber->verified)) {
+                    $subscriber->sendEmailVerificationNotification();
+                    Watchdog::watch($request, '寄送郵件信箱確認信到 ' . $subscriber->email);
+                    return redirect()->route('subscriber')->with('success', '電子報：'.$news->name.'的驗證信已經寄送到您的電子郵件信箱，請收信並進行驗證！');
+                }
+            }
+            return redirect()->route('home')->with('success', '恭喜您！您已經成功訂閱電子報：'.$news->name.'!');
+        } else {
+            return redirect()->route('home')->with('error', '電子郵件輸入錯誤！無法訂閱電子報！');
         }
-
-        return redirect()->route('home')->with('success', '恭喜您！您已經成功訂閱電子報：'.$news->name.'!');
     }
 
     public function remove(Request $request, $news = null)
