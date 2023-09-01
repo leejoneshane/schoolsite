@@ -22,6 +22,7 @@ class LunchSurvey extends Model
         'by_parent',
         'boxed_meal',
         'memo',
+        'upgrade',
     ];
 
     //以下為透過程式動態產生之屬性
@@ -51,6 +52,9 @@ class LunchSurvey extends Model
         self::creating(function($model) {
             if (empty($model->section)) {
                 $model->section = next_section();
+            }
+            if (empty($model->upgrade)) {
+                $model->upgrade = next_section();
             }
         });
     }
@@ -87,47 +91,63 @@ class LunchSurvey extends Model
     public static function section_survey($section = null)
     {
         if (!$section) $section = next_section();
-        $surveys = LunchSurvey::where('section', $section)->get()
-            ->sortBy(function ($survey, $key) {
-                return ($survey->student) ? $survey->student->class_id.$survey->student->seat : false;
-            });
-        return $surveys;
+        if ($section != next_section()) self::upgrade($section);
+        return LunchSurvey::where('section', $section)
+            ->orderBy('class_id')
+            ->orderBy('seat')
+            ->get();
     }
 
     //篩選指定班級所有學生的午餐調查表，靜態函式
     public static function class_survey($class, $section = null)
     {
         if (!$section) $section = next_section();
-        $surveys = LunchSurvey::where('section', $section)->get()
-            ->filter(function ($survey, $key) use ($class) {
-                return ($survey->classroom()) ? $survey->classroom()->id == $class : false;
-            })->sortBy(function ($survey, $key) {
-                return ($survey->student) ? $survey->student->seat : false;
-            });
-        return $surveys;
+        if ($section != next_section()) self::upgrade($section);
+        return LunchSurvey::where('section', $section)
+            ->where('class_id', $class)
+            ->orderBy('seat')
+            ->get();
     }
 
     //計算本學期已調查班級數
     public static function count_classes($section = null)
     {
         if (!$section) $section = next_section();
-        return LunchSurvey::query()->distinct('class_id')->where('section', $section)->count();
+        if ($section != next_section()) self::upgrade($section);
+        return LunchSurvey::distinct('class_id')->where('section', $section)->count();
     }
 
     //檢查本學期已調查學生數
     public static function count($section = null)
     {
         if (!$section) $section = next_section();
-        return LunchSurvey::query()->where('section', $section)->count();
+        return LunchSurvey::where('section', $section)->count();
     }
 
     //檢查本學期指定班級已調查學生數
     public static function countByClass($section, $class_id)
     {
-        return LunchSurvey::where('section', $section)->get()
-            ->filter(function ($survey, $key) use ($class_id) {
-                return ($survey->classroom()) ? $survey->classroom()->id == $class_id : false;
-            })->count();
+        if ($section != next_section()) self::upgrade($section);
+        return LunchSurvey::where('section', $section)->where('class_id', $class_id)->count();
+    }
+
+    //將學生資料升級
+    public static function upgrade($section)
+    {
+        $surveys = LunchSurvey::where('section', $section)->where('upgrade', '<', next_section())->get();
+        if ($surveys->isNotEmpty()) {
+            foreach ($surveys as $s) {
+                $stu = $s->student;
+                if ($stu) {
+                    $s->class_id = $stu->class_id;
+                    $s->seat = $stu->seat;
+                    $s->upgrade = next_section();
+                    $s->save();    
+                } else {
+                    $s->delete;
+                }
+            }
+        }
     }
 
     //提供午餐類型中文字串

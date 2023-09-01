@@ -17,9 +17,9 @@
     </tr>
     @foreach ($surveys as $s)
     <tr>
-        <td style="text-align:center;">{{ $s->student->classroom->name }}</td>
-        <td style="text-align:center;">{{ $s->student->seat }}</td>
-        <td style="text-align:center;">{{ $s->student->realname }}</td>
+        <td style="text-align:center;">{{ ($s->student) ? $s->student->classroom->name : '' }}</td>
+        <td style="text-align:center;">{{ ($s->student) ? $s->student->seat : '' }}</td>
+        <td style="text-align:center;">{{ ($s->student) ? $s->student->realname : '' }}</td>
         <td style="text-align:center;">{{ ($s->by_school && !($s->vegen)) ? 1 : 0  }}</td>
         <td style="text-align:center;">{{ ($s->by_school && $s->vegen) ? 1 : 0  }}</td>
         <td style="text-align:center;">{{ ($s->by_school && $s->milk) ? 1 : 0  }}</td>
