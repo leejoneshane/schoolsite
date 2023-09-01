@@ -170,14 +170,7 @@ class PublicClass extends Model
     public static function sections()
     {
         return PublicClass::query()->selectRaw('DISTINCT(section)')->orderBy('section', 'desc')->get()->map(function ($item) {
-            $sec = $item->section;
-            $seme = substr($sec, -1);
-            if ($seme == 1) {
-                $strseme = '上學期';
-            } else {
-                $strseme = '下學期';
-            }
-            return (object) [ 'section' => $sec, 'name' => '第'.substr($sec, 0, -1).'學年'.$strseme ];
+            return (object) [ 'section' => $item->section, 'name' => section_name($item->section) ];
         });
     }
 

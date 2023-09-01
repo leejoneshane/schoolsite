@@ -22,6 +22,17 @@ function watch(Request $request, $action) {
     ]);
 }
 
+function section_name($section = null) {
+    if (!$section) $section = current_section();
+    $seme = substr($section, -1);
+    if ($seme == 1) {
+        $strseme = '上學期';
+    } else {
+        $strseme = '下學期';
+    }
+    return '第'.substr($section, 0, -1).'學年'.$strseme;
+}
+
 function current_year() {
     if (date('m') > 7) {
         $year = date('Y') - 1911;

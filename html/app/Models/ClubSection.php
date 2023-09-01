@@ -59,13 +59,7 @@ class ClubSection extends Model
     //提供學期中文字串
     public function getNameAttribute()
     {
-        $seme = substr($this->section, -1);
-        if ($seme == 1) {
-            $strseme = '上學期';
-        } else {
-            $strseme = '下學期';
-        }
-        return '第'.substr($this->section, 0, -1).'學年'.$strseme;
+        return section_name($this->section);
     }
 
     //提供上課時間中文字串

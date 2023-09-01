@@ -62,23 +62,11 @@ class PublicController extends Controller
         $sections = PublicClass::sections();
         $temp = current_section();
         if (!$sections->contains('section', $temp)) {
-            $seme = substr($temp, -1);
-            if ($seme == 1) {
-                $strseme = '上學期';
-            } else {
-                $strseme = '下學期';
-            }
-            $sections->push((object)[ 'section' => $temp, 'name' => '第'.substr($temp, 0, -1).'學年'.$strseme ]);
+            $sections->push((object)[ 'section' => $temp, 'name' => section_name($temp) ]);
         }
         $temp = next_section();
         if (!$sections->contains('section', $temp)) {
-            $seme = substr($temp, -1);
-            if ($seme == 1) {
-                $strseme = '上學期';
-            } else {
-                $strseme = '下學期';
-            }
-            $sections->push((object)[ 'section' => $temp, 'name' => '第'.substr($temp, 0, -1).'學年'.$strseme ]);
+            $sections->push((object)[ 'section' => $temp, 'name' => section_name($temp) ]);
         }
         $schedule = PublicClass::weekly($date);
         return view('app.public', ['manager' => $manager, 'domain_manager' => $domainmanager, 'calendar' => $calendar, 'section' => $section, 'sections' => $sections, 'mydate' => $date, 'publics' => $publics, 'sessions' => self::$sessionMap, 'schedule' => $schedule]);

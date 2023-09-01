@@ -99,7 +99,7 @@
         window.location.replace('{{ route('clubs.enrolls', ['club_id' => $club->id]) }}' + '/' + section);
         ">
         @foreach ($club->sections as $s)
-        <option value="{{ $s->section }}"{{ ($s->section == $section) ? ' selected' : '' }}>{{ substr($s->section, 0, -1) }}學年{{ (substr($s->section, -1) == 1) ? '上學期' : '下學期' }}</option>
+        <option value="{{ $s->section }}"{{ ($s->section == $section) ? ' selected' : '' }}>{{ section_name($s->section) }}</option>
         @endforeach
     </select>
 @if ($club->devide)
