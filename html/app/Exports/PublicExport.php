@@ -6,6 +6,7 @@ use App\Models\PublicClass;
 use App\Models\Domain;
 use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\IOFactory;
+use ZipArchive;
 
 class PublicExport
 {
@@ -21,7 +22,6 @@ class PublicExport
     public function export()
     {
         $domain = Domain::find($this->domain_id);
-        $pdfpath = public_path('public_class/' . $domain->id . '.pdf');
         $filesName = [];
         $publics = PublicClass::byDomain($this->domain_id, $this->section);
         foreach ($publics as $p) {
@@ -34,15 +34,14 @@ class PublicExport
         Settings::setPdfRendererPath($domPdfPath);
         Settings::setPdfRendererName('DomPDF');
 
-        include_once(base_path('vendor/seblucas/tbszip/tbszip.php'));
-        $zip = new clsTbsZip();
+        $zip = new ZipArchive();
         $content = [] ;
         $r = '';
         for ($i = 1;$i <  count($filesName);$i++){
         // Open the all document - 1
-            $zip->Open($filesName[$i]);
-            $content[$i] = $zip->FileRead('word/document.xml');
-            $zip->Close();
+            $zip->open($filesName[$i], ZipArchive::RDONLY);
+            $content[$i] = $zip->getFromName('word/document.xml');
+            $zip->close();
             // Extract the content of  document
             $p = strpos($content[$i], '<w:body');
             $p = strpos($content[$i], '>', $p);
@@ -52,25 +51,24 @@ class PublicExport
             $r .= $content[$i]  ;
         }
         // Insert after first document
-        $zip->Open($filesName[0]);
-        $content2 = $zip->FileRead('word/document.xml');
+        $merge_file = public_path('public_class/' . $this->section . $domain->name . 'merge.docx');
+        copy($filesName[0], $merge_file);
+        $zip->Open($merge_file, ZipArchive::OVERWRITE);
+        $content2 = $zip->getFromName('word/document.xml');
         $p = strpos($content2, '</w:body>');
         $content2 = substr_replace($content2, $r, $p, 0);
-        $zip->FileReplace('word/document.xml', $content2, TBSZIP_STRING);
-        $zip->Flush(TBSZIP_FILE, 'merge.docx');
+        $zip->addFromString('word/document.xml', $content2, ZipArchive::FL_OVERWRITE);
+        $zip->close();
 
-        // Load temporarily create word file
-        $sourceDocx = public_path('public_class/' . 'merge.docx');
-        $Content = IOFactory::load($sourceDocx); 
-
-        //Save it into PDF
-        $savePdfPath = public_path('public_class/' . $this->domain_id . 'merge.pdf');
-        if (file_exists($savePdfPath)) unlink($savePdfPath);
+        // Load temporarily create word file then Save it into PDF
+        $pdfpath = public_path('public_class/' . $this->section . $domain->name . '.pdf');
+        $Content = IOFactory::load($merge_file); 
+        if (file_exists($pdfpath)) unlink($pdfpath);
         $PDFWriter = IOFactory::createWriter($Content,'PDF');
-        $PDFWriter->save($savePdfPath);
+        $PDFWriter->save($pdfpath);
 
-        unlink($sourceDocx);
-        return public_path($savePdfPath);
+        unlink($merge_file);
+        return $pdfpath;
     }
 
     public function download($filename,$headers = [])
