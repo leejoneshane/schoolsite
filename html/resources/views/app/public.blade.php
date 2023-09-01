@@ -8,16 +8,16 @@
         <i class="fa-solid fa-unlock-keyhole"></i>管理權限
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public.export', ['section' => $section]) }}">
-        <i class="fa-solid fa-file-export"></i>PDF 下載
+        <i class="fa-solid fa-file-export"></i>匯出成果報告
     </a>
 @endif
-<button class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" onclick="
-    navigator.clipboard.writeText('{{ $calendar->url() }}').then(
-        result => alert('行事曆分享連結已經複製到剪貼簿！請在 Google 日曆左側選單選取「新增其它日曆」->「加入日曆網址」，然後貼上連結就完成了！')
-    );
+    <button class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" onclick="
+        navigator.clipboard.writeText('{{ $calendar->url() }}').then(
+            result => alert('行事曆分享連結已經複製到剪貼簿！請在 Google 日曆左側選單選取「新增其它日曆」->「加入日曆網址」，然後貼上連結就完成了！')
+        );
     ">
-    <i class="fa-solid fa-cloud-arrow-up"></i>取得日曆網址
-</button>
+        <i class="fa-solid fa-cloud-arrow-up"></i>取得日曆網址
+    </button>
 </div>
 <div class="p-3 font-bold">
     <label for="sections">請選擇學期：</label>

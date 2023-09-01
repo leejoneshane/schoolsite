@@ -142,7 +142,7 @@ class LunchSurvey extends Model
                     $s->class_id = $stu->class_id;
                     $s->seat = $stu->seat;
                     $s->upgrade = next_section();
-                    $s->save();    
+                    $s->save();
                 } else {
                     $s->delete;
                 }

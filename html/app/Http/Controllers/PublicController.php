@@ -310,6 +310,13 @@ class PublicController extends Controller
     }
 
     public function export($section) {
+        $domains = Domain::all();
+        foreach ($domains as $dom) {
+            $dom->count = PublicClass::where('section', $section)->where('domain_id', $dom->id)->count();
+            $dom->eduplan = PublicClass::where('section', $section)->where('domain_id', $dom->id)->whereNotNull('eduplan')->count();
+            $dom->discuss = PublicClass::where('section', $section)->where('domain_id', $dom->id)->whereNotNull('discuss')->count();
+        }
+        return view('app.public_export', ['section' => $section, 'domains' => $domains]);
     }
 
     public function download($section, $domain_id) {
