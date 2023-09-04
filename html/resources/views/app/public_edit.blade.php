@@ -14,15 +14,10 @@
     <p><div class="p-3">
         <label for="date" class="inline">上課時間：</label>
         <input id="date" class="inline rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" name="date" value="{{ $public->reserved_at->format('Y-m-d') }}" required>
+            type="date" name="date" value="{{ $public->reserved_at->format('Y-m-d') }}" onchange="weekday(this)" required>
     </div></p>
     <p><div class="p-3">
-        <label for="weekday" class="inline">週節次：週</label>
-        <select id="weekday" name="weekday" class="form-select w-16 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-            @for ($i=1; $i<6; $i++)
-            <option value="{{ $i }}"{{ ($i == $public->weekday) ? ' selected' : '' }}>{{ $i }}</option>
-            @endfor
-        </select>
+        <label for="session" class="inline">週節次：週</label><label id="weekday" class="inline">{{ ['日','一','二','三','四','五','六'][$public->weekday] }}</label>
         <select id="session" name="session" class="form-select w-24 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
             @foreach ($sessions as $s => $name)
             <option value="{{ $s }}"{{ ($s == $public->session) ? ' selected' : '' }}>{{ $name }}</option>
@@ -74,7 +69,7 @@
         </button>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">{{ ($public->eduplan) ? '教案已上傳' : '尚未上傳教案' }}</label>
+        <label class="inline">臺北市國語實驗國民小學公開觀課素養導向教案，{{ ($public->eduplan) ? '已上傳' : '未上傳' }}</label>
         @if ($public->eduplan)
         <button id="btn_del1" type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="del_eduplan()">刪除
@@ -84,12 +79,11 @@
             onclick="upload_eduplan()">重新上傳
         </button>
         <div id="show_eduplan" class="hidden">
-            <span class="sr-only">請上傳檔案：</span>
-            <input type="file" id="eduplan" name="eduplan" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+            <input type="file" id="eduplan" name="eduplan" accept=".docx" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
         </div>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">{{ ($public->eduplan) ? '教案已上傳' : '尚未上傳教案' }}</label>
+        <label class="inline">臺北市國語實驗國民小學公開課摘要及觀課後會談紀錄，{{ ($public->eduplan) ? '已上傳' : '未上傳' }}</label>
         @if ($public->discuss)
         <button id="btn_del1" type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="del_discuss()">刪除
@@ -99,14 +93,13 @@
             onclick="upload_discuss()">重新上傳
         </button>
         <div id="show_discuss" class="hidden">
-            <span class="sr-only">請上傳觀課後會談紀錄：</span>
-            <input type="file" name="discuss" accept=".docx" class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+            <input type="file" name="discuss" accept=".docx" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
         </div>
     </div></p>
     <p class="p-6">
         <div class="inline">
             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                修改
+                確認
             </button>
         </div>
     </p>
@@ -174,6 +167,13 @@ function del_discuss() {
     var btn = document.getElementById('btn_del2');
     btn.setAttribute('disabled', true);
     btn.innerHTML = '舊檔案將刪除';
+}
+
+function weekday(obj) {
+    var target = document.getElementById('weekday');
+    var mydate = obj.value;
+    const dayOfWeek = new Date(mydate).getDay();
+    target.innerHTML = ['日','一','二','三','四','五','六'][dayOfWeek];
 }
 
 </script>

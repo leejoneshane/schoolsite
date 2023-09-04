@@ -81,7 +81,7 @@
         @endif
         </td>
     @endif
-    @if (Auth::user()->is_admin || $manager)
+    @if (Auth::user()->is_admin || $manager || $venue->manager->uuid == Auth::user()->uuid)
         <td class="p-2">
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('venue.edit', ['id' => $venue->id]) }}" title="編輯">

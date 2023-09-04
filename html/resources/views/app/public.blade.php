@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="text-2xl font-bold leading-normal">
-    公開課
+    公開授課
 @if ($manager)
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public.permission') }}">
         <i class="fa-solid fa-unlock-keyhole"></i>管理權限
@@ -122,6 +122,7 @@
         $dates[3] = $dates[2]->copy()->addDay();
         $dates[4] = $dates[3]->copy()->addDay();
         $dates[5] = $dates[4]->copy()->addDay();
+        $reserve_start = $schedule->today->copy()->addWeek();
         @endphp
         <thead>
             <tr class="font-semibold text-lg">
@@ -172,7 +173,7 @@
                     </button>
                         @endforeach
                     @endif
-                    @if ($manager || ($domain_manager && $sdate > $schedule->today))
+                    @if ($manager || ($domain_manager && $sdate > $reserve_start))
                     <button class="w-full py-2 bg-green-200 hover:bg-green-300 focus:ring-4 focus:ring-green-400 text-sm text-center"
                         onclick="booking('{{ $dates[$i]->format('Y-m-d') }}',{{ $i }},{{ $key }})">
                         我要預約

@@ -189,12 +189,14 @@ class PublicController extends Controller
             $public = PublicClass::find($id);
             $class_id = $request->input('classroom');
             $myclass = Classroom::find($class_id);
+            $mydate = Carbon::createFromFormat('Y-m-d', $request->input('date'));
+            $weekday = $mydate->dayOfWeekIso;
             $public->update([
                 'teach_unit' => $request->input('unit'),
                 'teach_grade'  => $myclass->grade_id,
                 'teach_class' => $class_id,
                 'reserved_at' => $request->input('date'),
-                'weekday' => $request->input('weekday'),
+                'weekday' => $weekday,
                 'session' => $request->input('session'),
                 'location'  => $request->input('location'),
                 'partners' => $request->input('teachers'),
