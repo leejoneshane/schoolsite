@@ -13,6 +13,7 @@ class Domain extends Model
     protected $fillable = [
         'id',
         'name',
+        'organize',
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）

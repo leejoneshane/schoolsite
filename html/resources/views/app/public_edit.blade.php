@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="edit-club" action="{{ route('public.edit', ['id' => $public->id]) }}" method="POST">
+<form id="edit-club" action="{{ route('public.edit', ['id' => $public->id]) }}" method="POST" enctype="multipart/form-data">
     @csrf
     <input type="hidden" id="del_eduplan" name="del_eduplan" value="no">
     <input type="hidden" id="del_discuss" name="del_discuss" value="no">

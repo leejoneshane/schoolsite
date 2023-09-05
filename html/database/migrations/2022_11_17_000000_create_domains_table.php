@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('domains', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->boolean('organize')->default(0);
             $table->timestamps();
         });
     }

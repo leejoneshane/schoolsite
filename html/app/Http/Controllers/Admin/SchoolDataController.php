@@ -159,9 +159,11 @@ class SchoolDataController extends Controller
     public function domainUpdate(Request $request)
     {
         $domains = $request->input('domains');
+        $organizes = $request->input('organize');
         foreach ($domains as $id => $name) {
             $dom = Domain::find($id);
             $dom->name = $name;
+            $dom->organize = (isset($organizes[$id]) && $organizes[$id] == 'yes');
             $dom->save();
             Watchdog::watch($request, '更新教學領域：' . $dom->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }

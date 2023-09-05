@@ -7,8 +7,9 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<link rel="stylesheet" type="text/css" href="/css/ckeditor.css">
-<script src="/js/ckeditor.js"></script>
+<!--script src="/js/ckeditor.js"></script-->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/translations/zh.js"></script>
 <div class="p-2 w-full text-white bg-blue-700 font-semibold text-lg">
     {{ $teacher->role->name . $teacher->realname }}：{{ date('Y-m-d') . $teacher->mainunit->name }}業務報告
 </div>

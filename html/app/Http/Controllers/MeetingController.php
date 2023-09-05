@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Meeting;
 use App\Models\Watchdog;
+use App\Models\User;
 use Carbon\Carbon;
 
 class MeetingController extends Controller
@@ -19,19 +20,19 @@ class MeetingController extends Controller
             $dt = Carbon::today();
         }
         $meets = Meeting::inTime($dt);
-        $user = Auth::user();
-        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
+        $user = User::find(Auth::user()->id);
         $teacher = $user->profile;
-        $create = ($teacher->role->role_no == 'C02' || $user->is_admin);
+        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
+        $create = $user->is_admin || $user->hasPermission('meeting.director');
         return view('app.meetings', ['date' => $dt->toDateString(), 'create' => $create, 'unit' => $teacher->unit_id, 'meets' => $meets]);
     }
 
     public function add()
     {
-        $user = Auth::user();
-        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
+        $user = User::find(Auth::user()->id);
         $teacher = $user->profile;
-        if ($teacher->role->role_no == 'C02' || $user->is_admin) {
+        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
+        if ($user->is_admin || $user->hasPermission('meeting.director')) {
             return view('app.meeting_add', ['teacher' => $teacher]);
         } else {
             return redirect()->route('meeting')->with('error', '只有主任才能新增業務報告！');
@@ -40,17 +41,17 @@ class MeetingController extends Controller
 
     public function insert(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = $user->profile;
-        if ($teacher->role->role_no == 'C02' || $user->is_admin) {
+        if ($user->is_admin || $user->hasPermission('meeting.director')) {
             $teacher = $user->profile;
             $m = Meeting::create([
                 'unit_id' => $teacher->mainunit->id,
                 'role' => $teacher->role->name,
                 'reporter' => $teacher->realname,
                 'words' => $request->input('words'),
-                'inside' => $request->boolean('open'),
+                'inside' => !$request->boolean('open'),
                 'expired_at' => ($request->input('enddate')) ?: null,
             ]);
             Watchdog::watch($request, '新增網路朝會業務報告：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -62,10 +63,10 @@ class MeetingController extends Controller
 
     public function edit($id)
     {
-        $user = Auth::user();
-        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
+        $user = User::find(Auth::user()->id);
         $teacher = $user->profile;
-        if ($teacher->role->role_no == 'C02' || $user->is_admin) {
+        if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
+        if ($user->is_admin || $user->hasPermission('meeting.director')) {
             $meet = Meeting::find($id);
             if (!$meet) return redirect()->route('meeting')->with('error', '找不到業務報告，因此無法修改內容！');
             return view('app.meeting_edit', ['teacher' => $teacher, 'meet' => $meet]);
@@ -76,18 +77,18 @@ class MeetingController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
-        $teacher = $user->profile;
-        if ($teacher->role->role_no == 'C02' || $user->is_admin) {
+        if ($user->is_admin || $user->hasPermission('meeting.director')) {
             $meet = Meeting::find($id);
             if (!$meet) return redirect()->route('meeting')->with('error', '找不到業務報告，因此無法修改內容！');
             if ($request->boolean('switch')) {
+                $teacher = $user->profile;
                 $meet->update([
                     'role' => $teacher->role->name,
                     'reporter' => $teacher->realname,
                     'words' => $request->input('words'),
-                    'inside' => $request->boolean('open'),
+                    'inside' => !$request->boolean('open'),
                     'expired_at' => ($request->input('enddate')) ?: null,
                 ]);
             } else {
@@ -106,10 +107,9 @@ class MeetingController extends Controller
 
     public function remove(Request $request, $id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
-        $teacher = $user->profile;
-        if ($teacher->role->role_no == 'C02' || $user->is_admin) {
+        if ($user->is_admin || $user->hasPermission('meeting.director')) {
             $m = Meeting::find($id);
             Watchdog::watch($request, '移除網路朝會業務報告：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $m->delete();

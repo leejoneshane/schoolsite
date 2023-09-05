@@ -277,6 +277,7 @@ class TpeduServiceProvider extends ServiceProvider
                     }
                     $emp->unit_id = $m_dept_id;
                     $emp->unit_name = $m_dept_name;
+                    DB::table('job_title')->where('year', current_year())->where('uuid', $uuid)->delete();
                     if (is_array($user->titleName->{$o})) {
                         foreach ($user->titleName->{$o} as $ro) {
                             $a = explode(',', $ro->key);
@@ -322,7 +323,7 @@ class TpeduServiceProvider extends ServiceProvider
                         }
                         $m_role_id = $role->id;
                         $m_role_name = $role_name;
-                        DB::table('job_title')->insertOrIgnore([
+                        DB::table('job_title')->insert([
                             'year' => current_year(),
                             'uuid' => $uuid,
                             'unit_id' => $dept->id,

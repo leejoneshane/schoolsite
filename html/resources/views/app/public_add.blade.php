@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-club" action="{{ route('public.add') }}" method="POST">
+<form id="add-club" action="{{ route('public.add') }}" method="POST" enctype="multipart/form-data">
     @csrf
     <input type="hidden" name="section" value="{{ $section }}">
     <input type="hidden" name="date" value="{{ $mydate }}">

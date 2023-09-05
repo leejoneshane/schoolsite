@@ -98,6 +98,7 @@
                         href="{{ route('public.edit', ['id' => $data->id]) }}" title="編輯">
                         <i class="fa-solid fa-pen"></i>
                     </a>
+                    @if ($manager || $domain_manager)
                     <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
                         onclick="
                             const myform = document.getElementById('remove');
@@ -106,6 +107,7 @@
                     ">
                         <i class="fa-solid fa-trash"></i>
                     </button>
+                    @endif
                 </td>
             </tr>
             @endforeach

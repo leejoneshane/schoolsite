@@ -273,7 +273,7 @@ class OrganizeController extends Controller
                 ]);
             }
         }
-        $domains = Domain::all();
+        $domains = Domain::where('organize', true)->get();
         foreach ($domains as $a) {
             if ($a->teachers->count()) {
                 $v = OrganizeVacancy::create([

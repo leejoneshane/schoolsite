@@ -7,7 +7,9 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<script src="/js/ckeditor.js"></script>
+<!--script src="/js/ckeditor.js"></script-->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/translations/zh.js"></script>
 <form id="edit-kind" action="{{ route('repair.editkind', ['kind' => $kind->id]) }}" method="POST">
     @csrf
     <p class="p-3">
