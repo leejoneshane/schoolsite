@@ -73,10 +73,12 @@
     <p><div class="p-3">
         <label class="inline">臺北市國語實驗國民小學公開觀課素養導向教案：</label>
         <input type="file" name="eduplan" accept=".docx" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請上傳 docx 格式檔案！</span>
     </div></p>
     <p><div class="p-3">
         <label class="inline">臺北市國語實驗國民小學公開課摘要及觀課後會談紀錄：</label>
         <input type="file" name="discuss" accept=".docx" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請上傳 docx 格式檔案！</span>
     </div></p>
     <p class="p-6">
         <div class="inline">

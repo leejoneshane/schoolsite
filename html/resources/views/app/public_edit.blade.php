@@ -70,30 +70,28 @@
     </div></p>
     <p><div class="p-3">
         <label class="inline">臺北市國語實驗國民小學公開觀課素養導向教案，{{ ($public->eduplan) ? '已上傳' : '未上傳' }}</label>
-        @if ($public->eduplan)
-        <button id="btn_del1" type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
-            onclick="del_eduplan()">刪除
+        <button id="btn_eduplan" type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600{{ !($public->eduplan) ? ' hidden' : '' }}"
+            onclick="del('eduplan')">刪除
         </button>
-        @endif
         <button type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
-            onclick="upload_eduplan()">重新上傳
+            onclick="upload('eduplan')">重新上傳
         </button>
         <div id="show_eduplan" class="hidden">
             <input type="file" id="eduplan" name="eduplan" accept=".docx" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+            <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請上傳 docx 格式檔案！</span>
         </div>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">臺北市國語實驗國民小學公開課摘要及觀課後會談紀錄，{{ ($public->eduplan) ? '已上傳' : '未上傳' }}</label>
-        @if ($public->discuss)
-        <button id="btn_del1" type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
-            onclick="del_discuss()">刪除
+        <label class="inline">臺北市國語實驗國民小學公開課摘要及觀課後會談紀錄，{{ ($public->discuss) ? '已上傳' : '未上傳' }}</label>
+        <button id="btn_discuss" type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600{{ !($public->discuss) ? ' hidden' : '' }}"
+            onclick="del('discuss')">刪除
         </button>
-        @endif
         <button type="button" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600"
-            onclick="upload_discuss()">重新上傳
+            onclick="upload('discuss')">重新上傳
         </button>
         <div id="show_discuss" class="hidden">
             <input type="file" name="discuss" accept=".docx" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+            <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請上傳 docx 格式檔案！</span>
         </div>
     </div></p>
     <p class="p-6">
@@ -137,34 +135,18 @@ function add_teacher() {
     elemb.outerHTML = my_btn;
 }
 
-function upload_eduplan() {
-    var target = document.getElementById('show_eduplan');
-    target.classList.remove("hidden");
-    var btn = document.getElementById('btn_del1');
-    btn.setAttribute('disabled', true);
-    btn.innerHTML = '舊檔案將刪除';
-}
-
-function del_eduplan() {
-    var target = document.getElementById('del_eduplan');
+function del(type) {
+    var target = document.getElementById('del_' + type);
     target.value = 'yes';
-    var btn = document.getElementById('btn_del1');
+    var btn = document.getElementById('btn_' + type);
     btn.setAttribute('disabled', true);
     btn.innerHTML = '舊檔案將刪除';
 }
 
-function upload_discuss() {
-    var target = document.getElementById('show_discuss');
+function upload(type) {
+    var target = document.getElementById('show_' + type);
     target.classList.remove("hidden");
-    var btn = document.getElementById('btn_del2');
-    btn.setAttribute('disabled', true);
-    btn.innerHTML = '舊檔案將刪除';
-}
-
-function del_discuss() {
-    var target = document.getElementById('del_discuss');
-    target.value = 'yes';
-    var btn = document.getElementById('btn_del2');
+    var btn = document.getElementById('btn_' + type);
     btn.setAttribute('disabled', true);
     btn.innerHTML = '舊檔案將刪除';
 }

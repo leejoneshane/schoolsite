@@ -52,11 +52,12 @@ class SubscriberController extends Controller
     {
         if (!$news) return redirect()->route('subscriber');
         $news = News::find($news);
-        if ($request->has('email')) {
-            $subscriber = Subscriber::findByEmail($request->input('email'));
+        $email = $request->input('email');
+        if (!empty($email)) {
+            $subscriber = Subscriber::findByEmail($email);
             if (!$subscriber) {
                 $subscriber = Subscriber::create([
-                    'email' => $request->input('email'),
+                    'email' => $email,
                 ]);
                 Watchdog::watch($request, '建立訂閱戶：' . $subscriber->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             }

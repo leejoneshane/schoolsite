@@ -6,7 +6,7 @@
 </div>
 <p><div class="p-3">
     <label for="email" class="inline">您的郵件信箱：</label>
-    <input type="text" id="email" name="email" value="{{ ($email) ?: '' }}" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" onchange="check(this.value)">
+    <input type="email" id="email" name="email" value="{{ ($email) ?: '' }}" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" onchange="check(this.value)">
     <button type="button" class="inline text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" onclick="refresh()">
         查詢訂閱情形
     </button>
