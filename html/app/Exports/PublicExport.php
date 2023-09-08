@@ -53,11 +53,12 @@ class PublicExport
         // Insert after first document
         $merge_file = public_path('public_class/' . $this->section . $domain->name . 'merge.docx');
         copy($filesName[0], $merge_file);
-        
+
         $zip->Open($merge_file, ZipArchive::OVERWRITE);
         $content2 = $zip->getFromName('word/document.xml');
         $p = strpos($content2, '</w:body>');
         $content2 = substr_replace($content2, $r, $p, 0);
+        $zip->deleteName('word/document.xml');
         $zip->addFromString('word/document.xml', $content2, ZipArchive::FL_OVERWRITE);
         $zip->close();
 
