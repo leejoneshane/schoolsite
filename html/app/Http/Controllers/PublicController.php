@@ -8,13 +8,14 @@ use App\Models\PublicClass;
 use App\Models\IcsCalendar;
 use App\Models\User;
 use App\Models\Unit;
-use App\Models\Grade;
 use App\Models\Teacher;
 use App\Models\Domain;
 use App\Models\Classroom;
 use App\Models\Watchdog;
 use App\Models\Permission;
 use App\Exports\PublicExport;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\ClubNotification;
 use Carbon\Carbon;
 
 class PublicController extends Controller
@@ -146,6 +147,10 @@ class PublicController extends Controller
             }
             $public->save();
             Watchdog::watch($request, '新增公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            $managers = Permission::findByName('public.manager')->users;
+            foreach ($managers as $manager) {
+                Notification::sendNow($manager, new ClubNotification($public->id));
+            }
             return redirect()->route('public')->with('success', '公開課新增完成！');
         } else {
             return redirect()->route('public')->with('error', '只有管理員或已授權的群召才能新增公開課！');
@@ -242,6 +247,10 @@ class PublicController extends Controller
                 $public->discuss = $fileName;
             }
             $public->save();
+            $managers = Permission::findByName('public.manager')->users;
+            foreach ($managers as $manager) {
+                Notification::sendNow($manager, new ClubNotification($public->id));
+            }
             Watchdog::watch($request, '更新公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('public')->with('success', '公開課更新完成！');
         } else {
