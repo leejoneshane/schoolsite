@@ -163,7 +163,10 @@ class PublicClass extends Model
     //取得此公開課的觀課老師
     public function teachers()
     {
-        return Teacher::whereIn('uuid', $this->partners)->get();
+        if ($this->partners) {
+            return Teacher::whereIn('uuid', $this->partners)->get();
+        }
+        return null;
     }
 
     //篩選指定學期所有公開課紀錄
@@ -178,7 +181,7 @@ class PublicClass extends Model
     public static function bySection($section = null)
     {
         if (!$section) $section = current_section();
-        return PublicClass::where('section', $section)->get();
+        return PublicClass::where('section', $section)->orderBy('domain_id')->get();
     }
 
     //篩選指定學期，指定領域所有教師的公開課紀錄

@@ -10,6 +10,9 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public.export', ['section' => $section]) }}">
         <i class="fa-solid fa-file-export"></i>匯出成果報告
     </a>
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public.excel', ['section' => $section]) }}">
+        <i class="fa-solid fa-table"></i>匯出統計表
+    </a>
 @endif
     <button class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" onclick="
         navigator.clipboard.writeText('{{ $calendar->url() }}').then(
