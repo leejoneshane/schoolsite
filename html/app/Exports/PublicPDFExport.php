@@ -8,7 +8,7 @@ use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\IOFactory;
 use ZipArchive;
 
-class PublicExport
+class PublicPDFExport
 {
     public $section;
     public $domain_id;

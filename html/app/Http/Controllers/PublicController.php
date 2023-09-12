@@ -13,7 +13,7 @@ use App\Models\Domain;
 use App\Models\Classroom;
 use App\Models\Watchdog;
 use App\Models\Permission;
-use App\Exports\PublicExport;
+use App\Exports\PublicPDFExport;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\ClubNotification;
 use Carbon\Carbon;
@@ -348,7 +348,7 @@ class PublicController extends Controller
         if ($manager) {
             $domain = Domain::find($domain_id);
             $filename = $domain->name . '公開課成果報告.pdf';
-            $exporter = new PublicExport($section, $domain_id);
+            $exporter = new PublicPDFExport($section, $domain_id);
             return $exporter->download($filename);
         } else {
             return redirect()->route('home')->with('error', '只有管理員才能下載公開課成果報告！');
