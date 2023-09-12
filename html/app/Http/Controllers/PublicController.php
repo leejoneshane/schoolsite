@@ -217,7 +217,7 @@ class PublicController extends Controller
                     $path = public_path('public_class/' . $public->eduplan);
                     if (file_exists($path)) {
                         unlink($path);
-                    }                        
+                    }
                 }
                 $extension = $request->file('eduplan')->getClientOriginalExtension();
                 $fileName = $public->id . '_eduplan' . '.' . $extension;
@@ -231,7 +231,7 @@ class PublicController extends Controller
                 if (file_exists($path)) {
                     unlink($path);
                 }
-                $public->discuss = null;            
+                $public->discuss = null;
             } elseif ($request->hasFile('discuss')) {
                 if ($public->discuss) {
                     $path = public_path('public_class/' . $public->discuss);
@@ -268,6 +268,18 @@ class PublicController extends Controller
         if ($manager) {
             $public = PublicClass::find($id);
             Watchdog::watch($request, '移除公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            if (!empty($public->eduplan)) {
+                $path = public_path('public_class/' . $public->eduplan);
+                if (file_exists($path)) {
+                    unlink($path);
+                }
+            }
+            if (!empty($public->eduplan)) {
+                $path = public_path('public_class/' . $public->discuss);
+                if (file_exists($path)) {
+                    unlink($path);
+                }
+            }
             $public->delete();
             return redirect()->route('public')->with('success', '公開課資訊已經移除！');
         } else {
