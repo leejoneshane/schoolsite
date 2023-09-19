@@ -176,7 +176,6 @@ class PublicController extends Controller
                 ->orderBy('belongs.domain_id')
                 ->get();
             return view('app.public_edit', ['public' => $public, 'domains' => $domains, 'teachers' => $teachers, 'classes' => $classes, 'sessions' => self::$sessionMap]);
-
         } else {
             return redirect()->route('public')->with('error', '只有管理員才能修改公開課資訊！');
         }
@@ -256,6 +255,81 @@ class PublicController extends Controller
             return redirect()->route('public')->with('success', '公開課更新完成！');
         } else {
             return redirect()->route('public')->with('error', '只有管理員才能修改公開課資訊！');
+        }
+    }
+
+    public function new($section)
+    {
+        $user = User::find(Auth::user()->id);
+        if ($user->user_type == 'Student') {
+            return redirect()->route('home')->with('error', '只有教職員才能補登公開課！');
+        }
+        $manager = ($user->is_admin || $user->hasPermission('public.manager'));
+        if ($manager) {
+            $domains = Domain::all();
+            $classes = Classroom::all();
+            $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', '=', 'teachers.uuid')
+                ->leftJoin('domains', 'domains.id', '=', 'belongs.domain_id')
+                ->where('belongs.year', current_year())
+                ->orderBy('belongs.domain_id')
+                ->get();
+            $teacher = $user->profile;
+            return view('app.public_new', ['section' => $section, 'domains' => $domains, 'teachers' => $teachers, 'classes' => $classes, 'sessions' => self::$sessionMap]);
+        } else {
+            return redirect()->route('public')->with('error', '只有管理員才能補登公開課！');
+        }
+    }
+
+    public function append(Request $request, $section)
+    {
+        $user = User::find(Auth::user()->id);
+        if ($user->user_type == 'Student') {
+            return redirect()->route('home')->with('error', '只有教職員才能補登公開課！');
+        }
+        $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain'));
+        if ($manager) {
+            $class_id = $request->input('classroom');
+            $myclass = Classroom::find($class_id);
+            $mydate = Carbon::createFromFormat('Y-m-d', $request->input('date'));
+            $weekday = $mydate->dayOfWeekIso;
+            $public = PublicClass::create([
+                'section' => $section,
+                'domain_id' => $request->input('domain'),
+                'teach_unit' => $request->input('unit'),
+                'teach_grade'  => $myclass->grade_id,
+                'teach_class' => $class_id,
+                'reserved_at' => $request->input('date'),
+                'weekday' => $weekday,
+                'session' => $request->input('session'),
+                'location'  => $request->input('location'),
+                'uuid' => $request->input('uuid'),
+                'partners' => $request->input('teachers'),
+            ]);
+            if ($request->hasFile('eduplan')) {
+                $extension = $request->file('eduplan')->getClientOriginalExtension();
+                $fileName = $public->id . '_eduplan' . '.' . $extension;
+                $request->file('eduplan')->move(public_path('public_class'), $fileName);
+                $url = asset('public_class/' . $fileName);
+                Watchdog::watch($request, '上傳教案：' . $url);
+                $public->eduplan = $fileName;
+            }
+            if ($request->hasFile('discuss')) {
+                $extension = $request->file('discuss')->getClientOriginalExtension();
+                $fileName = $public->id . '_discuss' . '.' . $extension;
+                $request->file('discuss')->move(public_path('public_class'), $fileName);
+                $url = asset('public_class/' . $fileName);
+                Watchdog::watch($request, '上傳觀課後會談：' . $url);
+                $public->discuss = $fileName;
+            }
+            $public->save();
+            Watchdog::watch($request, '補登公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            $managers = Permission::findByName('public.manager')->users;
+            foreach ($managers as $manager) {
+                Notification::sendNow($manager, new ClubNotification($public->id));
+            }
+            return redirect()->route('public')->with('success', '公開課補登完成！');
+        } else {
+            return redirect()->route('public')->with('error', '只有管理員才能補登公開課！');
         }
     }
 

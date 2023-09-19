@@ -176,6 +176,8 @@ Route::group(['prefix' => 'public', 'middleware' => [ 'auth'] ], function () {
     Route::post('insert', 'App\Http\Controllers\PublicController@insert')->name('public.add');
     Route::get('edit/{id}', 'App\Http\Controllers\PublicController@edit');
     Route::post('edit/{id}', 'App\Http\Controllers\PublicController@update')->name('public.edit');
+    Route::get('new/{section}', 'App\Http\Controllers\PublicController@new');
+    Route::post('new/{section}', 'App\Http\Controllers\PublicController@append')->name('public.append');
     Route::post('remove/{id}', 'App\Http\Controllers\PublicController@remove')->name('public.remove');
     Route::post('view', 'App\Http\Controllers\PublicController@show')->name('public.view');
     Route::get('perm', 'App\Http\Controllers\PublicController@perm');

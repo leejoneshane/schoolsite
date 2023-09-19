@@ -14,7 +14,7 @@
     <p><div class="p-3">
         <label for="date" class="inline">上課時間：</label>
         <input id="date" class="inline rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" name="date" value="{{ $public->reserved_at->format('Y-m-d') }}" onchange="weekday(this)" required>
+            type="date" name="date" min="{{ today()->addDays(7)->toDateString() }}" value="{{ $public->reserved_at->format('Y-m-d') }}" onchange="weekday(this)" required>
     </div></p>
     <p><div class="p-3">
         <label for="session" class="inline">週節次：週</label><label id="weekday" class="inline">{{ ['日','一','二','三','四','五','六'][$public->weekday] }}</label>
@@ -78,7 +78,7 @@
         </button>
         <div id="show_eduplan" class="hidden">
             <input type="file" id="eduplan" name="eduplan" accept=".docx" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
-            <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請上傳 docx 格式檔案！</span>
+            <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請上傳 docx 格式檔案！只支援「標楷體、新細明體、微軟正黑體」</span>
         </div>
     </div></p>
     <p><div class="p-3">
@@ -91,7 +91,7 @@
         </button>
         <div id="show_discuss" class="hidden">
             <input type="file" name="discuss" accept=".docx" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
-            <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請上傳 docx 格式檔案！</span>
+            <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請上傳 docx 格式檔案！只支援「標楷體、新細明體、微軟正黑體」</span>
         </div>
     </div></p>
     <p class="p-6">

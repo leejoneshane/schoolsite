@@ -2,27 +2,30 @@
 
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
-    新增公開課
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public', ['section' => $section]) }}?date={{ $mydate }}">
+    公開課補登錄
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public', ['section' => $section]) }}?date={{ today()->toDateString() }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-club" action="{{ route('public.add') }}" method="POST" enctype="multipart/form-data">
+<form id="edit-club" action="{{ route('public.append', ['section' => $section]) }}" method="POST" enctype="multipart/form-data">
     @csrf
-    <input type="hidden" name="section" value="{{ $section }}">
-    <input type="hidden" name="date" value="{{ $mydate }}">
-    <input type="hidden" name="weekday" value="{{ $weekday }}">
-    <input type="hidden" name="session" value="{{ $session }}">
     <p><div class="p-3">
-        <label class="inline">上課時間：{{ $mydate }}</label>
+        <label for="date" class="inline">上課時間：</label>
+        <input id="date" class="inline rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+            type="date" name="date" value="{{ today()->toDateString() }}" onchange="weekday(this)" required>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">節次：週{{ $weekday }}{{ $sessions[$session]  }}</label>
+        <label for="session" class="inline">週節次：週</label><label id="weekday" class="inline">{{ ['日','一','二','三','四','五','六'][today()->dayOfWeekIso] }}</label>
+        <select id="session" name="session" class="form-select w-24 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+            @foreach ($sessions as $s => $name)
+            <option value="{{ $s }}">{{ $name }}</option>
+            @endforeach
+        </select>
     </div></p>
     <p><div class="p-3">
         <label for="uuid" class="inline">授課教師：</label>
         <select id="uuid" name="uuid" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-        @foreach ($teacher_list as $t)
+        @foreach ($teachers as $t)
         @php
             $gap = '';
             $rname = '';
@@ -32,7 +35,7 @@
             }
             $display = $rname . $gap . $t->realname;
             @endphp
-            <option {{ ($teacher->uuid == $t->uuid) ? 'selected' : ''}} value="{{ $t->uuid }}">{{ $display }}</option>
+            <option value="{{ $t->uuid }}">{{ $display }}</option>
         @endforeach
         </select>
     </div></p>
@@ -40,7 +43,7 @@
         <label for="classroom" class="inline">授課班級：</label>
         <select id="classroom" name="classroom" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
         @foreach ($classes as $cls)
-        <option value="{{ $cls->id }}"{{ ($cls->id == $teacher->tutor_class) ? ' selected' : '' }}>{{ $cls->name }}</option>
+        <option value="{{ $cls->id }}">{{ $cls->name }}</option>
         @endforeach
         </select>
     </div></p>
@@ -48,19 +51,19 @@
         <label for="domain" class="inline">教學領域：</label>
         <select id="domain" name="domain" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
             @foreach ($domains as $d)
-            <option value="{{ $d->id }}"{{ ($domain && $d->id == $domain->id) ? ' selected' : '' }}>{{ $d->name }}</option>
+            <option value="{{ $d->id }}">{{ $d->name }}</option>
             @endforeach
         </select>
     </div></p>
     <p><div class="p-3">
         <label for="unit" class="inline">單元名稱：</label>
         <input id="unit" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="text" name="unit" value="" required>
+            type="text" name="unit"" required>
     </div></p>
     <p><div class="p-3">
         <label for="location" class="inline">上課地點：</label>
         <input id="location" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="text" name="location" value="">
+            type="text" name="location">
     </div></p>
     <p><div class="p-3">
         <label for="nassign" class="inline">觀課夥伴：</label>
@@ -99,7 +102,7 @@
 function add_teacher() {
     var target = document.getElementById('nassign');
     var my_cls = '<select class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200" name="teachers[]">';
-	@foreach ($teacher_list as $t)
+	@foreach ($teachers as $t)
     @php
         $gap = '';
         $rname = '';
@@ -119,6 +122,13 @@ function add_teacher() {
     const elemb = document.createElement('button');
     target.parentNode.insertBefore(elemb, target);
     elemb.outerHTML = my_btn;
+}
+
+function weekday(obj) {
+    var target = document.getElementById('weekday');
+    var mydate = obj.value;
+    const dayOfWeek = new Date(mydate).getDay();
+    target.innerHTML = ['日','一','二','三','四','五','六'][dayOfWeek];
 }
 </script>
 @endsection

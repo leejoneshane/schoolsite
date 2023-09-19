@@ -7,6 +7,9 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public.permission') }}">
         <i class="fa-solid fa-unlock-keyhole"></i>管理權限
     </a>
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public.append', ['section' => $section]) }}">
+        <i class="fa-solid fa-pen"></i>補登公開課
+    </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public.export', ['section' => $section]) }}">
         <i class="fa-solid fa-file-export"></i>匯出成果報告
     </a>
@@ -178,7 +181,7 @@
                     </button>
                         @endforeach
                     @endif
-                    @if ($manager || ($domain_manager && $sdate > $reserve_start))
+                    @if (($manager || $domain_manager) && $sdate > $reserve_start)
                     <button class="w-full py-2 bg-green-200 hover:bg-green-300 focus:ring-4 focus:ring-green-400 text-sm text-center"
                         onclick="booking('{{ $dates[$i]->format('Y-m-d') }}',{{ $i }},{{ $key }})">
                         我要預約
