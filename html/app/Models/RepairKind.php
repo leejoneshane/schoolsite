@@ -42,7 +42,7 @@ class RepairKind extends Model
         if ($this->manager) {
             foreach ($this->manager as $uuid) {
                 $managers[] = Teacher::find($uuid);
-            }    
+            }
         }
         return $managers;
     }
@@ -56,7 +56,7 @@ class RepairKind extends Model
     //取得此分類的所有報修紀錄
     public function jobs()
     {
-        return $this->hasMany('App\Models\RepairJob', 'kind_id');
+        return $this->hasMany('App\Models\RepairJob', 'kind_id')->orderBy('created_at', 'DESC');
     }
 
 }

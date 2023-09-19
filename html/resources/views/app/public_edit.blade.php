@@ -45,6 +45,7 @@
     <p><div class="p-3">
         <label for="nassign" class="inline">觀課夥伴：</label>
         <div id="nassign">
+            @if ($public->teachers())
             @foreach ($public->teachers() as $user)
             <select class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             name="teachers[]">
@@ -63,6 +64,7 @@
             </select>
             <button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_teacher(this);"><i class="fa-solid fa-circle-minus"></i></button>
             @endforeach
+            @endif
         </div>
         <button id="nassign" type="button" class="py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="add_teacher()"><i class="fa-solid fa-circle-plus"></i>
