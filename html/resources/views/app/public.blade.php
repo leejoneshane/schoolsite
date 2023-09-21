@@ -37,6 +37,84 @@
         @endforeach
     </select>
 </div>
+<div class="p-3">
+    <label class="inline align-top">我要預約：</label>
+    <div class="p-3 inline-block rounded-lg border shadow-2xl">
+    <table class="border-collapse text-sm text-left">
+        @php
+        $dates[1] = $schedule->start->copy(); 
+        $dates[2] = $dates[1]->copy()->addDay();
+        $dates[3] = $dates[2]->copy()->addDay();
+        $dates[4] = $dates[3]->copy()->addDay();
+        $dates[5] = $dates[4]->copy()->addDay();
+        $reserve_start = $schedule->today->copy()->addWeek();
+        @endphp
+        <thead>
+            <tr class="font-semibold text-lg">
+                <th colspan="2" class="w-1/3 text-left">
+                    <button onclick="
+                        window.location.replace('{{ route('public', [ 'section' => $section ]) }}?date={{ $mydate->copy()->subWeek()->format('Y-m-d') }}');
+                    "><i class="fa-solid fa-backward-step"></i>前一週</button>
+                </th>
+                <th colspan="2" class="w-1/3 text-center"><input type="date" value="{{ ($mydate) ? $mydate->format('Y-m-d') : today()->format('Y-m-d') }}" min="{{ current_between_date()->mindate }}"  max="{{ current_between_date()->maxdate }}" onchange="
+                    window.location.replace('{{ route('public', [ 'section' => $section ]) }}?date=' + this.value );
+                "></th>
+                <th colspan="2" class="w-1/3 text-right">
+                    <button onclick="
+                        window.location.replace('{{ route('public', [ 'section' => $section ]) }}?date={{ $mydate->copy()->addWeek()->format('Y-m-d') }}');
+                    ">下一週<i class="fa-solid fa-forward-step"></i></button>
+                </th>
+            </tr>
+            <tr class="font-semibold text-lg">
+                <th class="border-r bg-gray-200">日期</th>
+                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[1]->format('Y-m-d') }}</th>
+                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[2]->format('Y-m-d') }}</th>
+                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[3]->format('Y-m-d') }}</th>
+                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[4]->format('Y-m-d') }}</th>
+                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[5]->format('Y-m-d') }}</th>
+            </tr>
+            <tr class="font-semibold text-lg">
+                <th class="border-b border-r border-slate-300">星期</th>
+                <th class="border-b border-l border-slate-300 text-center">一</th>
+                <th class="border-b border-l border-slate-300 text-center">二</th>
+                <th class="border-b border-l border-slate-300 text-center">三</th>
+                <th class="border-b border-l border-slate-300 text-center">四</th>
+                <th class="border-b border-l border-slate-300 text-center">五</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($sessions as $key => $se)
+            <tr class="h-6">
+                <th class="border-t border-r border-slate-300 font-semibold text-lg">{{ $se }}</th>
+                @php
+                    $sdate = $schedule->start->copy();
+                @endphp
+                @for ($i=1; $i<6; $i++)
+                <td class="w-48 border-t border-l border-slate-300 bg-green-200">
+                    @if (count($schedule->map[$i][$key]) > 0)
+                        @foreach ($schedule->map[$i][$key] as $data)
+                    <button id="{{ $data->id }}" class="viewit w-full py-2 bg-blue-200 text-sm text-center" data-modal-toggle="defaultModal" onclick="showReserve(this)">
+                        {{ $data->teacher->realname . $data->teach_class . $data->domain->name }}
+                    </button>
+                        @endforeach
+                    @endif
+                    @if (($manager || $domain_manager) && $sdate > $reserve_start)
+                    <button class="w-full py-2 bg-green-200 hover:bg-green-300 focus:ring-4 focus:ring-green-400 text-sm text-center"
+                        onclick="booking('{{ $dates[$i]->format('Y-m-d') }}',{{ $i }},{{ $key }})">
+                        我要預約
+                    </button>
+                    @endif
+                </td>
+                @php
+                    $sdate->addDay();
+                @endphp
+                @endfor
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+    </div>
+</div>
 <div class="p-3 font-bold">
     <label class="inline align-top">已登錄公開課：</label>
     <table class="border-collapse text-sm text-center">
@@ -119,84 +197,6 @@
             @endforeach
         </tbody>
     </table>
-</div>
-<div class="p-3">
-    <label class="inline align-top">我要預約：</label>
-    <div class="p-3 inline-block rounded-lg border shadow-2xl">
-    <table class="border-collapse text-sm text-left">
-        @php
-        $dates[1] = $schedule->start->copy(); 
-        $dates[2] = $dates[1]->copy()->addDay();
-        $dates[3] = $dates[2]->copy()->addDay();
-        $dates[4] = $dates[3]->copy()->addDay();
-        $dates[5] = $dates[4]->copy()->addDay();
-        $reserve_start = $schedule->today->copy()->addWeek();
-        @endphp
-        <thead>
-            <tr class="font-semibold text-lg">
-                <th colspan="2" class="w-1/3 text-left">
-                    <button onclick="
-                        window.location.replace('{{ route('public', [ 'section' => $section ]) }}?date={{ $mydate->copy()->subWeek()->format('Y-m-d') }}');
-                    "><i class="fa-solid fa-backward-step"></i>前一週</button>
-                </th>
-                <th colspan="2" class="w-1/3 text-center"><input type="date" value="{{ ($mydate) ? $mydate->format('Y-m-d') : today()->format('Y-m-d') }}" min="{{ current_between_date()->mindate }}"  max="{{ current_between_date()->maxdate }}" onchange="
-                    window.location.replace('{{ route('public', [ 'section' => $section ]) }}?date=' + this.value );
-                "></th>
-                <th colspan="2" class="w-1/3 text-right">
-                    <button onclick="
-                        window.location.replace('{{ route('public', [ 'section' => $section ]) }}?date={{ $mydate->copy()->addWeek()->format('Y-m-d') }}');
-                    ">下一週<i class="fa-solid fa-forward-step"></i></button>
-                </th>
-            </tr>
-            <tr class="font-semibold text-lg">
-                <th class="border-r bg-gray-200">日期</th>
-                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[1]->format('Y-m-d') }}</th>
-                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[2]->format('Y-m-d') }}</th>
-                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[3]->format('Y-m-d') }}</th>
-                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[4]->format('Y-m-d') }}</th>
-                <th class="w-32 border-l bg-gray-200 text-center">{{ $dates[5]->format('Y-m-d') }}</th>
-            </tr>
-            <tr class="font-semibold text-lg">
-                <th class="border-b border-r border-slate-300">星期</th>
-                <th class="border-b border-l border-slate-300 text-center">一</th>
-                <th class="border-b border-l border-slate-300 text-center">二</th>
-                <th class="border-b border-l border-slate-300 text-center">三</th>
-                <th class="border-b border-l border-slate-300 text-center">四</th>
-                <th class="border-b border-l border-slate-300 text-center">五</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach ($sessions as $key => $se)
-            <tr class="h-6">
-                <th class="border-t border-r border-slate-300 font-semibold text-lg">{{ $se }}</th>
-                @php
-                    $sdate = $schedule->start->copy();
-                @endphp
-                @for ($i=1; $i<6; $i++)
-                <td class="w-48 border-t border-l border-slate-300 bg-green-200">
-                    @if (count($schedule->map[$i][$key]) > 0)
-                        @foreach ($schedule->map[$i][$key] as $data)
-                    <button id="{{ $data->id }}" class="viewit w-full py-2 bg-blue-200 text-sm text-center" data-modal-toggle="defaultModal" onclick="showReserve(this)">
-                        {{ $data->teacher->realname . $data->teach_class . $data->domain->name }}
-                    </button>
-                        @endforeach
-                    @endif
-                    @if (($manager || $domain_manager) && $sdate > $reserve_start)
-                    <button class="w-full py-2 bg-green-200 hover:bg-green-300 focus:ring-4 focus:ring-green-400 text-sm text-center"
-                        onclick="booking('{{ $dates[$i]->format('Y-m-d') }}',{{ $i }},{{ $key }})">
-                        我要預約
-                    </button>
-                    @endif
-                </td>
-                @php
-                    $sdate->addDay();
-                @endphp
-                @endfor
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-    </div>
 </div>
 <div id="defaultModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-full h-full max-w-2xl md:h-auto">
