@@ -13,16 +13,24 @@
     <input type="hidden" id="del_discuss" name="del_discuss" value="no">
     <p><div class="p-3">
         <label for="date" class="inline">上課時間：</label>
+        @if ($public->reserved_at > today()->addDays(7))
         <input id="date" class="inline rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="date" name="date" min="{{ today()->addDays(7)->toDateString() }}" value="{{ $public->reserved_at->format('Y-m-d') }}" onchange="weekday(this)" required>
+        @else
+        <label id="date" class="inline">{{ $public->reserved_at->format('Y-m-d') }}</label>
+        @endif
     </div></p>
     <p><div class="p-3">
         <label for="session" class="inline">週節次：週</label><label id="weekday" class="inline">{{ ['日','一','二','三','四','五','六'][$public->weekday] }}</label>
+        @if ($public->reserved_at > today()->addDays(7))
         <select id="session" name="session" class="form-select w-24 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
             @foreach ($sessions as $s => $name)
             <option value="{{ $s }}"{{ ($s == $public->session) ? ' selected' : '' }}>{{ $name }}</option>
             @endforeach
         </select>
+        @else
+        <label id="session" class="inline">{{ $sessions[$public->session] }}</label>
+        @endif
     </div></p>
     <p><div class="p-3">
         <label for="classroom" class="inline">授課班級：</label>

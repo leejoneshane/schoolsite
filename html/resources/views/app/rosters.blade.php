@@ -88,7 +88,7 @@
                 href="{{ route('roster.enroll', ['id' => $roster->id]) }}">
                 <i class="fa-solid fa-pen-to-square"></i>
             </a>
-            @elseif (in_array($teacher->domain->id, $roster->domains))
+            @elseif ($teacher->domain && $roster->domains && in_array($teacher->domain->id, $roster->domains))
             <label for="classes" class="inline">修改名單：</label>
             <select id="classes" class="inline rounded w-32 py-2 mr-6 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                 onchange="

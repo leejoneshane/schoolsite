@@ -12,6 +12,9 @@
         寫作須知：使用中文直式稿紙，右邊第一行必須輸入標題，作者會自動帶入請不要輸入，請使用滑鼠控制游標，按「ctrl + s」儲存，按「ctrl + w」儲存並關閉！
     </p>
 </div>
+@php
+    $words = 21 - mb_strlen($context->title) - mb_strlen($context->author);
+@endphp
 <div id="sheet" class="p-0" style="
     width: 1792px;
     height: 810px;
@@ -28,7 +31,7 @@
     word-break: break-all;
     white-space: pre-wrap;
     overflow-x: scroll;
-">　　　　{{ $context->title }}<br>{{ str_replace(' ', '', $context->words) }}</div>
+">　　　　{{ $context->title }}@for ($i = 0; $i < $words; $i++)　@endfor{{ $context->author }}<br>{{ str_replace(' ', '', $context->words) }}</div>
 <script>
     var font = 32;
     var c = document.createElement('canvas');

@@ -38,8 +38,8 @@
     </select>
 </div>
 <div class="p-3">
-    <label class="inline align-top">我要預約：</label>
-    <div class="p-3 inline-block rounded-lg border shadow-2xl">
+    <label class="inline align-top font-bold">已登錄公開課：</label>
+    <div class="p-3 rounded-lg border shadow-2xl">
     <table class="border-collapse text-sm text-left">
         @php
         $dates[1] = $schedule->start->copy(); 
@@ -52,17 +52,25 @@
         <thead>
             <tr class="font-semibold text-lg">
                 <th colspan="2" class="w-1/3 text-left">
-                    <button onclick="
+                    @if ($dates[1]->format('Y-m-d') > section_between_date($section)->mindate)
+                    <button class="text-blue-700" onclick="
                         window.location.replace('{{ route('public', [ 'section' => $section ]) }}?date={{ $mydate->copy()->subWeek()->format('Y-m-d') }}');
                     "><i class="fa-solid fa-backward-step"></i>前一週</button>
+                    @else
+                    <span><i class="fa-solid fa-backward-step"></i>前一週</span>
+                    @endif
                 </th>
-                <th colspan="2" class="w-1/3 text-center"><input type="date" value="{{ ($mydate) ? $mydate->format('Y-m-d') : today()->format('Y-m-d') }}" min="{{ current_between_date()->mindate }}"  max="{{ current_between_date()->maxdate }}" onchange="
+                <th colspan="2" class="w-1/3 text-center"><input type="date" value="{{ ($mydate) ? $mydate->format('Y-m-d') : today()->format('Y-m-d') }}" min="{{ section_between_date($section)->mindate }}"  max="{{ section_between_date($section)->maxdate }}" onchange="
                     window.location.replace('{{ route('public', [ 'section' => $section ]) }}?date=' + this.value );
                 "></th>
                 <th colspan="2" class="w-1/3 text-right">
-                    <button onclick="
+                    @if ($dates[5]->format('Y-m-d') < section_between_date($section)->maxdate)
+                    <button class="text-blue-700" onclick="
                         window.location.replace('{{ route('public', [ 'section' => $section ]) }}?date={{ $mydate->copy()->addWeek()->format('Y-m-d') }}');
                     ">下一週<i class="fa-solid fa-forward-step"></i></button>
+                    @else
+                    <span>下一週<i class="fa-solid fa-forward-step"></i></span>
+                    @endif
                 </th>
             </tr>
             <tr class="font-semibold text-lg">
@@ -98,7 +106,7 @@
                     </button>
                         @endforeach
                     @endif
-                    @if (($manager || $domain_manager) && $sdate > $reserve_start)
+                    @if (($manager || $domain_manager) && $sdate > $reserve_start && $dates[$i] <= section_between_date($section)->maxdate)
                     <button class="w-full py-2 bg-green-200 hover:bg-green-300 focus:ring-4 focus:ring-green-400 text-sm text-center"
                         onclick="booking('{{ $dates[$i]->format('Y-m-d') }}',{{ $i }},{{ $key }})">
                         我要預約
@@ -115,8 +123,8 @@
     </table>
     </div>
 </div>
-<div class="p-3 font-bold">
-    <label class="inline align-top">已登錄公開課：</label>
+<div class="p-3">
+    <label class="inline align-top font-bold">已登錄公開課：</label>
     <table class="border-collapse text-sm text-center">
         <thead>
             <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">

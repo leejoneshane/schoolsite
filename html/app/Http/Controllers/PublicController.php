@@ -196,16 +196,26 @@ class PublicController extends Controller
             $myclass = Classroom::find($class_id);
             $mydate = Carbon::createFromFormat('Y-m-d', $request->input('date'));
             $weekday = $mydate->dayOfWeekIso;
-            $public->update([
-                'teach_unit' => $request->input('unit'),
-                'teach_grade'  => $myclass->grade_id,
-                'teach_class' => $class_id,
-                'reserved_at' => $request->input('date'),
-                'weekday' => $weekday,
-                'session' => $request->input('session'),
-                'location'  => $request->input('location'),
-                'partners' => $request->input('teachers'),
-            ]);
+            if ($request->has('date')) {
+                $public->update([
+                    'teach_unit' => $request->input('unit'),
+                    'teach_grade'  => $myclass->grade_id,
+                    'teach_class' => $class_id,
+                    'reserved_at' => $request->input('date'),
+                    'weekday' => $weekday,
+                    'session' => $request->input('session'),
+                    'location'  => $request->input('location'),
+                    'partners' => $request->input('teachers'),
+                ]);
+            } else {
+                $public->update([
+                    'teach_unit' => $request->input('unit'),
+                    'teach_grade'  => $myclass->grade_id,
+                    'teach_class' => $class_id,
+                    'location'  => $request->input('location'),
+                    'partners' => $request->input('teachers'),
+                ]);    
+            }
             if ($request->input('del_eduplan') == 'yes') {
                 $path = public_path('public_class/' . $public->eduplan);
                 if (file_exists($path)) {
