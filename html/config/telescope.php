@@ -125,7 +125,7 @@ return [
             'hidden' => [],
         ],
 
-        Watchers\ClientRequestWatcher::class => env('TELESCOPE_CLIENT_REQUEST_WATCHER', true),
+        Watchers\ClientRequestWatcher::class => env('TELESCOPE_CLIENT_REQUEST_WATCHER', false),
 
         Watchers\CommandWatcher::class => [
             'enabled' => env('TELESCOPE_COMMAND_WATCHER', true),
@@ -171,7 +171,7 @@ return [
         Watchers\RedisWatcher::class => env('TELESCOPE_REDIS_WATCHER', true),
 
         Watchers\RequestWatcher::class => [
-            'enabled' => env('TELESCOPE_REQUEST_WATCHER', true),
+            'enabled' => env('TELESCOPE_REQUEST_WATCHER', false),
             'size_limit' => env('TELESCOPE_RESPONSE_SIZE_LIMIT', 64),
             'ignore_http_methods' => [],
             'ignore_status_codes' => [],
