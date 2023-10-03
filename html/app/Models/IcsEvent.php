@@ -96,7 +96,7 @@ class IcsEvent extends Model implements Subscribeable
     }
 
     //取得要輸出到電子報的本月份行事曆內容
-    public function newsletter()
+    public static function newsletter($type)
     {
         $year = date('Y') - 1911;
         $month = date('n');
@@ -105,8 +105,12 @@ class IcsEvent extends Model implements Subscribeable
         $min = 1;
         $max = (new Carbon('last day of this month'))->day;
         for ($day = $min; $day <= $max; $day++) {
-            $sd = new Carbon($year.'-'.$month.'-'.$day);
-            $events = self::inTimeForStudent($sd);
+            $sd = new Carbon(date('Y').'-'.$month.'-'.$day);
+            if ($type == 'Teacher') {
+                $events = self::inTime($sd);
+            } else {
+                $events = self::inTimeForStudent($sd);
+            }
             $important = $events->where('important', true);
             $events = $events->where('important', false); 
             $content = '';

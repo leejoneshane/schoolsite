@@ -27,6 +27,7 @@ class NewsController extends Controller
     {
         $caption = $request->input('caption');
         $model = $request->input('model');
+        $inside = $request->has('inside');
         $loop = $request->input('loop');
         $day = $request->input('day');
         $weekday = $request->input('weekday');
@@ -45,6 +46,7 @@ class NewsController extends Controller
             'name' => $caption,
             'model' => $model,
             'cron' => $cronjob,
+            'inside' => $inside,
         ]);
         Watchdog::watch($request, '新增電子報：' . $n->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('news')->with('success', '電子報新增完成！');
@@ -61,6 +63,7 @@ class NewsController extends Controller
     {
         $caption = $request->input('caption');
         $model = $request->input('model');
+        $inside = $request->has('inside');
         $loop = $request->input('loop');
         $day = $request->input('day');
         $weekday = $request->input('weekday');
@@ -75,10 +78,12 @@ class NewsController extends Controller
                 $cronjob = 'weekly.'.$weekday;
                 break;
         }
-        $n = News::find($news)->update([
+        $n = News::find($news);
+        $n->update([
             'name' => $caption,
             'model' => $model,
             'cron' => $cronjob,
+            'inside' => $inside,
         ]);
         Watchdog::watch($request, '更新電子報：' . $n->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('news')->with('success', '電子報更新完成！');

@@ -33,7 +33,7 @@ class Meeting extends Model implements Subscribeable
     ];
 
     //取得要輸出到電子報的網路朝會報告
-    public function newsletter()
+    public static function newsletter($type)
     {
         $meets = Meeting::inTimeOpen(date('Y-m-d'));
         if ($meets) {

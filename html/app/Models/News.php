@@ -25,6 +25,7 @@ class News extends Model
         'name',
         'model',
         'cron',
+        'inside',
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）
@@ -37,6 +38,11 @@ class News extends Model
     protected $appends = [
         'job',
         'loop',
+    ];
+
+    //以下屬性需進行資料庫欄位格式轉換
+    protected $casts = [
+        'inside' => 'boolean',
     ];
 
     //提供派報時間字串

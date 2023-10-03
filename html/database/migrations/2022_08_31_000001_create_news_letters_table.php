@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('model');
             $table->string('cron');
+            $table->boolean('inside')->default(0);
         });
     }
 

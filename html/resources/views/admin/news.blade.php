@@ -9,7 +9,7 @@
 </div>
 <div class="border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 m-5" role="alert">
     <p>
-        電子報系統是由：排程控制器、郵件通知、資料物件模型、電子報樣板、訂閱戶物件，組合而成。<br>
+        電子報系統是由：排程工作（Jobs\SendNewsLetters）、郵件通知（Notifications\NewsLetter）、資料物件模型、電子報樣板、訂閱戶物件，組合而成。<br>
         其中資料物件模型、電子報樣板必須透過物件導向程式設計實作。在新增電子報之前，請先確認滿足以上需求的程式碼已經設計完成！
     </p>
 </div>
@@ -25,6 +25,9 @@
             派報排程
         </th>
         <th scope="col" class="p-2">
+            僅供教職員訂閱
+        </th>
+        <th scope="col" class="p-2">
             管理
         </th>
     </tr>
@@ -33,6 +36,7 @@
         <td class="p-2">{{ $i->name }}</td>
         <td class="p-2">{{ $i->model }}</td>
         <td class="p-2">{{ $i->job }}</td>
+        <td class="p-2">{{ ($i->inside) ? '是' : '否' }}</td>
         <td class="p-2">
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('subscribers', ['news' => $i->id]) }}" title="訂閱戶">

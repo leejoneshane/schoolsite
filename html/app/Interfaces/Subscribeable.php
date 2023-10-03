@@ -15,5 +15,5 @@ interface Subscribeable
      * @param  string|null  $connection
      * @return Array
      */
-    public function newsletter();
+    public static function newsletter($type);
 }

@@ -19,6 +19,7 @@ class Subscriber extends Model
     //以下屬性可以批次寫入
     protected $fillable = [
         'email',
+        'user_type',
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）

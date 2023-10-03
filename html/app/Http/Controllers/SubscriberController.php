@@ -21,9 +21,18 @@ class SubscriberController extends Controller
             if (Auth::check()) {
                 $email = Auth::user()->email;
                 $subscriber = Subscriber::findByEmail($email);
+                if (is_null($subscriber->user_type)) {
+                    $type = Auth::user()->user_type;
+                    $subscriber->user_type = $type;
+                    $subscriber->save();
+                }
             }
         }
-        $news = News::all();
+        if (!Auth::check() || Auth::user()->user_type == 'Student') {
+            $news = News::where('inside', false)->get();
+        } else {
+            $news = News::all();
+        }
         $this->removeUnverify();
         return view('app.subscriber', ['email' => $email, 'subscriber' => $subscriber, 'news' => $news]);
     }
@@ -56,14 +65,22 @@ class SubscriberController extends Controller
         if (!empty($email)) {
             $subscriber = Subscriber::findByEmail($email);
             if (!$subscriber) {
-                $subscriber = Subscriber::create([
-                    'email' => $email,
-                ]);
+                if (Auth::check()) {
+                    $type = Auth::user()->user_type;
+                    $subscriber = Subscriber::create([
+                        'email' => $email,
+                        'user_type' => $type,
+                    ]);
+                } else {
+                    $subscriber = Subscriber::create([
+                        'email' => $email,
+                    ]);
+                }
                 Watchdog::watch($request, '建立訂閱戶：' . $subscriber->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             }
             if ($subscriber) {
                 $subscriber->subscription($news->id);
-                Watchdog::watch($request, $subscriber->email . '訂閱電子報：' . $news->name);
+                Watchdog::watch($request, $subscriber->email . '訂閱電子報：' . $news->name);    
             }
             if (config('subscribers.verify')) {
                 if (!($subscriber->verified)) {
