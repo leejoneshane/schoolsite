@@ -21,7 +21,7 @@ class SubscriberController extends Controller
             if (Auth::check()) {
                 $email = Auth::user()->email;
                 $subscriber = Subscriber::findByEmail($email);
-                if (is_null($subscriber->user_type)) {
+                if ($subscriber && is_null($subscriber->user_type)) {
                     $type = Auth::user()->user_type;
                     $subscriber->user_type = $type;
                     $subscriber->save();
