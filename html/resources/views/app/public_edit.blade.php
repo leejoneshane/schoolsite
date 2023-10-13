@@ -34,10 +34,19 @@
     </div></p>
     <p><div class="p-3">
         <label for="classroom" class="inline">授課班級：</label>
-        <select id="classroom" name="classroom" class="form-select w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-        @foreach ($classes as $cls)
-        <option value="{{ $cls->id }}"{{ ($cls->id == $public->teach_class) ? ' selected' : '' }}>{{ $cls->name }}</option>
-        @endforeach
+        <select id="classroom" name="classroom" class="form-select w-32 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200" onchange="choise_target()">
+            @foreach ($classes as $cls)
+            <option value="{{ $cls->id }}"{{ ($cls->id == $public->teach_class) ? ' selected' : '' }}>{{ $cls->name }}</option>
+            @endforeach
+            <option value="none"{{ is_null($public->teach_class) ? ' selected' : '' }}>特殊需求</option>
+        </select>
+    </div></p>
+    <p><div id="grade" class="p-3{{ is_null($public->teach_class) ? '' : ' hidden'}}">
+        <label for="target" class="inline">教學對象：</label>
+        <select id="target" name="target" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+            @foreach ($grades as $g)
+            <option value="{{ $g->id }}"{{ ($g->id == $public->teach_grade) ? ' selected' : '' }}>{{ $g->name . '學生' }}</option>
+            @endforeach
         </select>
     </div></p>
     <p><div class="p-3">
@@ -113,7 +122,20 @@
     </p>
 </form>
 <script>
-    function remove_teacher(elem) {
+function choise_target() {
+    var grade = document.getElementById('grade');
+    var target = document.getElementById('target');
+    var elem = document.getElementById('classroom');
+    myclass = elem.value;
+    if (myclass == 'none') {
+        grade.classList.remove('hidden');
+    } else {
+        target.value = myclass.substr(0,1);
+        grade.classList.add('hidden');
+    }
+}
+
+function remove_teacher(elem) {
     const parent = elem.parentNode;
     const brother = elem.previousElementSibling;
     parent.removeChild(brother);

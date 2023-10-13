@@ -173,7 +173,7 @@
                 <td class="p-2">{{ $data->teacher->realname }}</td>
                 @endif
                 <td class="p-2">{{ $data->teach_unit }}</td>
-                <td class="p-2">{{ $data->classroom->name }}</td>
+                <td class="p-2">{{ is_null($data->teach_class) ? '特殊需求' : $data->classroom->name }}</td>
                 <td class="p-2">{{ $data->location }}</td>
                 <td class="p-2">
                     @if (!empty($data->eduplan))

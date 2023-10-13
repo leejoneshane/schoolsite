@@ -20,7 +20,7 @@
 </div>
 <div class="p-2">
     <span class="text-indigo-700 dark:text-indigo-200">授課班級：</span>
-    {{ $public->classroom->name }}
+    {{ is_null($public->teach_class) ? '特殊需求' : $public->classroom->name }}
 </div>
 <div class="p-2">
     <span class="text-indigo-700 dark:text-indigo-200">授課地點：</span>

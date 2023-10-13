@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Models\Unit;
 use App\Models\Teacher;
 use App\Models\Domain;
+use App\Models\Grade;
 use App\Models\Classroom;
 use App\Models\Watchdog;
 use App\Models\Permission;
@@ -22,6 +23,7 @@ use Carbon\Carbon;
 class PublicController extends Controller
 {
     protected static $sessionMap = [
+        0 => '早自習',
         1 => '第一節',
         2 => '第二節',
         3 => '第三節',
@@ -89,6 +91,7 @@ class PublicController extends Controller
         if ($manager || $domain_manager) {
             $domains = Domain::all();
             $classes = Classroom::all();
+            $grades = Grade::all();
             $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', '=', 'teachers.uuid')
                 ->leftJoin('domains', 'domains.id', '=', 'belongs.domain_id')
                 ->where('belongs.year', current_year())
@@ -101,7 +104,7 @@ class PublicController extends Controller
                 $domain = $teacher->domains->first();
                 $teacher_list = $domain->teachers;
             }
-            return view('app.public_add', ['section' => $section, 'domain' => $domain, 'domains' => $domains, 'teacher' => $teacher, 'teacher_list' => $teacher_list, 'teachers' => $teachers, 'classes' => $classes, 'mydate' => $date, 'weekday' => $weekday, 'session' => $session, 'sessions' => self::$sessionMap]);
+            return view('app.public_add', ['section' => $section, 'domain' => $domain, 'domains' => $domains, 'teacher' => $teacher, 'teacher_list' => $teacher_list, 'teachers' => $teachers, 'grades' => $grades, 'classes' => $classes, 'mydate' => $date, 'weekday' => $weekday, 'session' => $session, 'sessions' => self::$sessionMap]);
         } else {
             return redirect()->route('public')->with('error', '只有管理員或已授權的群召才能新增公開課！');
         }
@@ -116,12 +119,19 @@ class PublicController extends Controller
         $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain'));
         if ($manager) {
             $class_id = $request->input('classroom');
+            if ($class_id == 'none') {
+                $class_id = null;
+                $grade_id = $request->input('target');
+            } else {
+                $myclass = Classroom::find($class_id);
+                $grade_id = $myclass->grade_id;
+            }
             $myclass = Classroom::find($class_id);
             $public = PublicClass::create([
                 'section' => $request->input('section'),
                 'domain_id' => $request->input('domain'),
                 'teach_unit' => $request->input('unit'),
-                'teach_grade'  => $myclass->grade_id,
+                'teach_grade'  => $grade_id,
                 'teach_class' => $class_id,
                 'reserved_at' => $request->input('date'),
                 'weekday' => $request->input('weekday'),
@@ -170,12 +180,13 @@ class PublicController extends Controller
         if ($manager) {
             $domains = Domain::all();
             $classes = Classroom::all();
+            $grades = Grade::all();
             $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', '=', 'teachers.uuid')
                 ->leftJoin('domains', 'domains.id', '=', 'belongs.domain_id')
                 ->where('belongs.year', current_year())
                 ->orderBy('belongs.domain_id')
                 ->get();
-            return view('app.public_edit', ['public' => $public, 'domains' => $domains, 'teachers' => $teachers, 'classes' => $classes, 'sessions' => self::$sessionMap]);
+            return view('app.public_edit', ['public' => $public, 'domains' => $domains, 'teachers' => $teachers, 'grades' => $grades, 'classes' => $classes, 'sessions' => self::$sessionMap]);
         } else {
             return redirect()->route('public')->with('error', '只有管理員才能修改公開課資訊！');
         }
@@ -193,13 +204,20 @@ class PublicController extends Controller
         if ($manager) {
             $public = PublicClass::find($id);
             $class_id = $request->input('classroom');
+            if ($class_id == 'none') {
+                $class_id = null;
+                $grade_id = $request->input('target');
+            } else {
+                $myclass = Classroom::find($class_id);
+                $grade_id = $myclass->grade_id;
+            }
             $myclass = Classroom::find($class_id);
             if ($request->has('date')) {
                 $mydate = Carbon::createFromFormat('Y-m-d', $request->input('date'));
                 $weekday = $mydate->dayOfWeekIso;
                 $public->update([
                     'teach_unit' => $request->input('unit'),
-                    'teach_grade'  => $myclass->grade_id,
+                    'teach_grade'  => $grade_id,
                     'teach_class' => $class_id,
                     'reserved_at' => $request->input('date'),
                     'weekday' => $weekday,
@@ -210,7 +228,7 @@ class PublicController extends Controller
             } else {
                 $public->update([
                     'teach_unit' => $request->input('unit'),
-                    'teach_grade'  => $myclass->grade_id,
+                    'teach_grade'  => $grade_id,
                     'teach_class' => $class_id,
                     'location'  => $request->input('location'),
                     'partners' => $request->input('teachers'),
@@ -278,13 +296,14 @@ class PublicController extends Controller
         if ($manager) {
             $domains = Domain::all();
             $classes = Classroom::all();
+            $grades = Grade::all();
             $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', '=', 'teachers.uuid')
                 ->leftJoin('domains', 'domains.id', '=', 'belongs.domain_id')
                 ->where('belongs.year', current_year())
                 ->orderBy('belongs.domain_id')
                 ->get();
             $teacher = $user->profile;
-            return view('app.public_new', ['section' => $section, 'domains' => $domains, 'teachers' => $teachers, 'classes' => $classes, 'sessions' => self::$sessionMap]);
+            return view('app.public_new', ['section' => $section, 'domains' => $domains, 'teachers' => $teachers, 'grades' => $grades, 'classes' => $classes, 'sessions' => self::$sessionMap]);
         } else {
             return redirect()->route('public')->with('error', '只有管理員才能補登公開課！');
         }
@@ -299,14 +318,20 @@ class PublicController extends Controller
         $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain'));
         if ($manager) {
             $class_id = $request->input('classroom');
-            $myclass = Classroom::find($class_id);
+            if ($class_id == 'none') {
+                $class_id = null;
+                $grade_id = $request->input('target');
+            } else {
+                $myclass = Classroom::find($class_id);
+                $grade_id = $myclass->grade_id;
+            }
             $mydate = Carbon::createFromFormat('Y-m-d', $request->input('date'));
             $weekday = $mydate->dayOfWeekIso;
             $public = PublicClass::create([
                 'section' => $section,
                 'domain_id' => $request->input('domain'),
                 'teach_unit' => $request->input('unit'),
-                'teach_grade'  => $myclass->grade_id,
+                'teach_grade'  => $grade_id,
                 'teach_class' => $class_id,
                 'reserved_at' => $request->input('date'),
                 'weekday' => $weekday,

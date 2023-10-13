@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('domain_id');
             $table->string('teach_unit');
             $table->integer('teach_grade');
-            $table->integer('teach_class');
+            $table->integer('teach_class')->nullable();
             $table->date('reserved_at');
             $table->integer('weekday');
             $table->integer('session');

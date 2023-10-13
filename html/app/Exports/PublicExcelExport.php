@@ -57,9 +57,9 @@ class PublicExcelExport implements FromCollection, WithHeadings, WithColumnForma
             if ($f['id'] == 'domain') {
                 $rowdata[] = $row->domain->name;
             } elseif ($f['id'] == 'teach_grade') {
-                $rowdata[] = $row->classroom->grade->name;
+                $rowdata[] = $row->grade->name;
             } elseif ($f['id'] == 'teach_class') {
-                $rowdata[] = $row->classroom->name;
+                $rowdata[] = is_null($row->teach_class) ? '特殊需求' : $row->classroom->name;
             } elseif ($f['id'] == 'reserved_at') {
                 $rowdata[] = $row->reserved_at->format('Y-m-d');
             } elseif ($f['id'] == 'teacher') {

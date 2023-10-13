@@ -10,6 +10,7 @@ use App\View\Components\Messager;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
+use Jenssegers\Agent\Agent;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -49,6 +50,14 @@ class AppServiceProvider extends ServiceProvider
         });
         Blade::if('adminorteacher', function () {
             return auth()->user() && (auth()->user()->is_admin || auth()->user()->user_type == 'Teacher');
+        });
+
+        Blade::if('mobile', function () {
+            return (new Agent)->isMobile();
+        });
+
+        Blade::if('desktop', function () {
+            return !((new Agent)->isMobile());
         });
 
         Queue::before(function (JobProcessing $event) {

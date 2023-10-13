@@ -22,6 +22,7 @@ class PublicClass extends Model
     ];
 
     protected static $sessionMap = [
+        0 => '早自習',
         1 => '第一節',
         2 => '第二節',
         3 => '第三節',
@@ -33,6 +34,7 @@ class PublicClass extends Model
     ];
 
     protected static $sessionTime = [
+        0 => [ 'start' => '08:00', 'end' => '08:40' ],
         1 => [ 'start' => '08:45', 'end' => '09:25' ],
         2 => [ 'start' => '09:35', 'end' => '10:15' ],
         3 => [ 'start' => '10:30', 'end' => '11:10' ],
@@ -138,7 +140,7 @@ class PublicClass extends Model
     public function getSummaryAttribute()
     {
         $summary = $this->teacher->realname . '老師公開課（';
-        $summary .= $this->classroom->name . $this->domain->name . $this->teach_unit . $this->week_session . $this->location . '）';
+        $summary .= (is_null($this->teach_class) ? $this->grade->name : $this->classroom->name) . $this->domain->name . $this->teach_unit . $this->week_session . $this->location . '）';
         return $summary;
     }
 
@@ -152,6 +154,12 @@ class PublicClass extends Model
     public function classroom()
     {
         return $this->belongsTo('App\Models\Classroom', 'teach_class');
+    }
+
+    //取得此公開課的教學對象
+    public function grade()
+    {
+        return $this->belongsTo('App\Models\Grade', 'teach_grade');
     }
 
     //取得此公開課的任教老師
@@ -219,7 +227,7 @@ class PublicClass extends Model
         $whole->start = $sdate; //此週開始日期
         $whole->today = Carbon::today();
         for ($i=1; $i<6; $i++) { // 1->星期一, 2->星期二, .....
-            for ($j=1; $j<9; $j++) { // 1->第一節, 2->第二節, ......
+            for ($j=0; $j<9; $j++) { // 0->早自習, 1->第一節, 2->第二節, ......
                 $whole->map[$i][$j] = [];
             }
         }
