@@ -189,21 +189,21 @@ class PublicClass extends Model
     public static function bySection($section = null)
     {
         if (!$section) $section = current_section();
-        return PublicClass::where('section', $section)->orderBy('domain_id')->get();
+        return PublicClass::where('section', $section)->orderBy('reserved_at')->get();
     }
 
     //篩選指定學期，指定領域所有教師的公開課紀錄
     public static function byDomain($domain_id, $section = null)
     {
         if (!$section) $section = current_section();
-        return PublicClass::where('section', $section)->where('domain_id', $domain_id)->get();
+        return PublicClass::where('section', $section)->where('domain_id', $domain_id)->orderBy('reserved_at')->get();
     }
 
     //篩選指定學期，指定教師的所有公開課紀錄
     public static function byUser($uuid, $section = null)
     {
         if (!$section) $section = current_section();
-        return PublicClass::where('section', $section)->where('uuid', $uuid)->get();
+        return PublicClass::where('section', $section)->where('uuid', $uuid)->orderBy('reserved_at')->get();
     }
 
     //取得指定日期的週間預約記錄
