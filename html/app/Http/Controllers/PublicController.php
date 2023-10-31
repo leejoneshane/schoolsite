@@ -377,21 +377,25 @@ class PublicController extends Controller
         $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain'));
         if ($manager) {
             $public = PublicClass::find($id);
-            Watchdog::watch($request, '移除公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            if (!empty($public->eduplan)) {
-                $path = public_path('public_class/' . $public->eduplan);
-                if (file_exists($path)) {
-                    unlink($path);
+            if ($public) {
+                Watchdog::watch($request, '移除公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                if (!empty($public->eduplan)) {
+                    $path = public_path('public_class/' . $public->eduplan);
+                    if (file_exists($path)) {
+                        unlink($path);
+                    }
                 }
-            }
-            if (!empty($public->eduplan)) {
-                $path = public_path('public_class/' . $public->discuss);
-                if (file_exists($path)) {
-                    unlink($path);
+                if (!empty($public->eduplan)) {
+                    $path = public_path('public_class/' . $public->discuss);
+                    if (file_exists($path)) {
+                        unlink($path);
+                    }
                 }
+                $public->delete();
+                return redirect()->route('public')->with('success', '公開課資訊已經移除！');
+            } else {
+                return redirect()->route('public')->with('error', '找不到要移除的公開課資訊！');
             }
-            $public->delete();
-            return redirect()->route('public')->with('success', '公開課資訊已經移除！');
         } else {
             return redirect()->route('public')->with('error', '只有管理員才能刪除公開課資訊！');
         }

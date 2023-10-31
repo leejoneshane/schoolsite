@@ -238,8 +238,12 @@ class SeatsController extends Controller
             return redirect()->route('home')->with('error', '只有教職員才能查閱分組座位表！');
         }
         $seats = Seats::find($id);
-        $styles = SeatsTheme::$styles;
-        return view('app.seats_view', ['seats' => $seats, 'styles' => $styles]);
+        if ($seats) {
+            $styles = SeatsTheme::$styles;
+            return view('app.seats_view', ['seats' => $seats, 'styles' => $styles]);    
+        } else {
+            return redirect()->route('seats')->with('success', '找不到分組座位表，因此無法查閱！');
+        }
     }
 
     public function group($id)

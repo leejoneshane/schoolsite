@@ -220,15 +220,16 @@ class TpeduServiceProvider extends ServiceProvider
             $birth = date('Y-m-d', strtotime($user->birthDate));
             $stu = ($user->employeeType == '學生') ? true : false; 
             if ($stu) {
-                $oldemp = Student::withTrashed()->find('uuid');
-                if ($year && substr($user->employeeNumber, 0, 3) != $year) {
-                    if ($user->tpClass > '600') {
-                        $oldemp->class_id = 'z';
-                        $oldemp->save();
-                    } else {
-                        $oldemp->delete();
-                    }
-                    return false;
+                if ($oldemp = Student::withTrashed()->find('uuid')) {
+                    if ($year && substr($user->employeeNumber, 0, 3) != $year) {
+                        if ($user->tpClass > '600') {
+                            $oldemp->class_id = 'z';
+                            $oldemp->save();
+                        } else {
+                             $oldemp->delete();
+                        }
+                        return false;
+                    }    
                 }
                 $emp = Student::withTrashed()->firstOrNew(['uuid' => $uuid]);
                 $emp->class_id = $user->tpClass;
