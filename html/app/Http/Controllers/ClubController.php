@@ -1037,6 +1037,10 @@ class ClubController extends Controller
             $class_id = substr($stdno, 0, 3);
             $seat = (integer) substr($stdno, -2);
             $student = Student::findByStdno($class_id, $seat);
+            if (!$student) {
+                $message .= $stdno.$student->realname.'此學生不存在，無法報名！';
+                continue;
+            }
             if ($student->has_enroll($club_id, $section)) {
                 $message .= $stdno.$student->realname.'已經報名此社團，無法再次報名！';
                 continue;

@@ -29,7 +29,10 @@ class DayoffExport
         $unit = $dayoff->creater->mainunit;
         if ($unit) {
             $watermark = 'images/'.$unit->name.'圓戳章.jpg';
-            $header->addWatermark(public_path($watermark), ['posHorizontal' => 'absolute', 'posVertical' => 'absolute', 'marginTop' => 300, 'marginLeft' => 150]);
+            $file_path = public_path($watermark);
+            if (file_exists($file_path)) {
+                $header->addWatermark($file_path, ['posHorizontal' => 'absolute', 'posVertical' => 'absolute', 'marginTop' => 300, 'marginLeft' => 150]);
+            }
         }
         $section->addFooter()->addPreserveText('第 {PAGE} 頁，共 {NUMPAGES} 頁', null, ['alignment' => 'center']);
         $members = [];

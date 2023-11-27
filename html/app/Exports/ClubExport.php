@@ -23,7 +23,13 @@ class ClubExport implements FromCollection, WithHeadings, WithColumnFormatting, 
 
     public function collection()
     {
-        return Club::where('kind_id', $this->kind)->get();
+        $rows = Club::where('kind_id', $this->kind)->get();
+        foreach ($rows as $row) {
+            if ($row->section() == null) {
+                $rows->forget($row);
+            }
+        }
+        return $rows;
     }
 
     public function headings(): array
