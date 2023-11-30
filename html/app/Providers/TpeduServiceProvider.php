@@ -631,7 +631,6 @@ class TpeduServiceProvider extends ServiceProvider
                 $l->delete();
             }
             $leaves = Student::where('class_id', $class_id)->whereRaw('LEFT(id, 3) < ?', [$year])->get();
-            dd($leaves);
             foreach ($leaves as $l) {
                 $detail_log[] = '轉學或畢業學生'.$l->idno.' '.$l->realname.'已刪除！';
                 User::destroy($l->uuid);
