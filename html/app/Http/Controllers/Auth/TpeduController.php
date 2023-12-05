@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Auth\Events\Registered;
@@ -68,11 +69,8 @@ class TpeduController extends Controller
                             if ($tpuser->expired()) $this->sso->fetch_user($uuid);
                         }
                     }
-                    if ($user->email != $user->profile->email) {
-                        $user->email = $user->profile->email;
-                        $user->save();
-                    }
-                    Auth::login($user);
+                    //Log::notice($user->toJson());
+                    Auth::login($user, true);
                     Watchdog::watch($request, '登入網站');
                     return redirect()->route('home');
                 } else { //new user
@@ -107,7 +105,7 @@ class TpeduController extends Controller
                                 $user->save();
                             }    
                         }
-                        Auth::login($user);
+                        Auth::login($user, true);
                         event(new Registered($user));
                         return redirect()->route('home');
                     } else {
