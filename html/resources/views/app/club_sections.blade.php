@@ -7,9 +7,14 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin', ['kid' => $club->kind->id]) }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
-    @if (!$new)
+    @if (!$current)
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.addsection', ['club_id' => $club->id]) }}">
         <i class="fa-solid fa-circle-plus"></i>為本學期開班
+    </a>
+    @endif
+    @if (!$next)
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.addsection', ['club_id' => $club->id, 'section' => next_section()]) }}">
+        <i class="fa-solid fa-circle-plus"></i>為下學期開班
     </a>
     @endif
 </div>

@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-section" action="{{ route('clubs.addsection', ['club_id' => $club->id]) }}" method="POST">
+<form id="add-section" action="{{ route('clubs.addsection', ['club_id' => $club->id, 'section' => $section]) }}" method="POST">
     @csrf
     <p><div class="p-3">
         <label for="kind" class="inline">社團分類：{{ $club->kind->name }}</label>
@@ -17,6 +17,9 @@
     </div></p>
     <p><div class="p-3">
         <label for="title" class="inline">營隊全名：{{ $club->name }}</label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="title" class="inline">將開班的學期：{{ section_name($section) }}</label>
     </div></p>
     <p><div class="p-3">
         <label for="total" class="inline">招生人數：</label>

@@ -498,34 +498,41 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
             $sections = ClubSection::where('club_id', $club_id)->get();
-            $new = ClubSection::where('club_id', $club_id)->where('section', current_section())->exists();
-            return view('app.club_sections', ['club' => $club, 'sections' => $sections, 'new' => $new]);
+            $current = ClubSection::where('club_id', $club_id)->where('section', current_section())->exists();
+            $next = ClubSection::where('club_id', $club_id)->where('section', next_section())->exists();
+            return view('app.club_sections', ['club' => $club, 'sections' => $sections, 'current' => $current, 'next' => $next]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function sectionAdd($club_id)
+    public function sectionAdd($club_id, $section = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            return view('app.club_addsection', ['club' => $club]);
+            if (!$section) $section = current_section();
+            return view('app.club_addsection', ['club' => $club, 'section' => $section]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function sectionInsert(Request $request, $club_id)
+    public function sectionInsert(Request $request, $club_id, $section = null)
     {
-        $found = ClubSection::where('club_id', $club_id)->where('section', current_section())->first();
+        if (!$section) $section = current_section();
+        $found = ClubSection::where('club_id', $club_id)->where('section', $section)->first();
         if ($found) {
             return redirect()->route('clubs.sections', ['club_id' => $club_id])->with('error', '本學期已經開班！');
         }
-        $weekdays = $request->input('weekdays');
-        foreach ($weekdays as $k => $w) {
-            $weekdays[$k] = (integer) $w;
+        if ($request->has('selfdefine')) {
+            $weekdays = [];
+        } else {
+            $weekdays = $request->input('weekdays');
+            foreach ($weekdays as $k => $w) {
+                $weekdays[$k] = (integer) $w;
+            }    
         }
         $c = ClubSection::create([
             'section' => current_section(),
