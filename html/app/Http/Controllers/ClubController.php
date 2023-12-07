@@ -422,18 +422,13 @@ class ClubController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
-            $sections = ClubEnroll::sections(); 
-            if (!$section) {
-                $section = current_section();
-                if (!empty($sections)) {
-                    $section_obj = $sections->first();
-                    if ($section_obj) {
-                        $section = $section_obj->section;
-                    }
-                }
-            }
             $club = Club::find($club_id);
+            if (!$section) {
+                $last = $club->section();
+                $section = $last->section;
+            }
             $enrolls = $club->section_enrolls($section);
+
             return view('app.club_mail', ['club' => $club, 'section' => $section, 'enrolls' => $enrolls]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -447,16 +442,6 @@ class ClubController extends Controller
         $enroll_ids = $request->input('enrolls');
         $message = $request->input('message');
         if (!empty($enroll_ids)) {
-            $sections = ClubEnroll::sections(); 
-            if (!$section) {
-                $section = current_section();
-                if (!empty($sections)) {
-                    $section_obj = $sections->first();
-                    if ($section_obj) {
-                        $section = $section_obj->section;
-                    }
-                }
-            }
             $enrolls = ClubEnroll::whereIn('id', $enroll_ids)->whereNotNull('email')->get();
             Notification::sendNow($enrolls, new ClubNotification($message));
             Watchdog::watch($request, '寄送郵件給學生社團：' . $club->name . '的錄取學生，郵件內容：' . $message);
@@ -471,15 +456,9 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
-            $sections = $club->sections(); 
             if (!$section) {
-                $section = current_section();
-                if (!empty($sections)) {
-                    $section_obj = $sections->first();
-                    if ($section_obj) {
-                        $section = $section_obj->section;
-                    }
-                }
+                $last = $club->section();
+                $section = $last->section;
             }
             ClubEnroll::where('club_id', $club_id)->where('section', $section)->delete();
             $kind_id = $club->kind_id;
