@@ -630,7 +630,8 @@ class ClubController extends Controller
         if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法報名參加學生社團！');
         $club = Club::find($club_id);
         $student = Student::find($user->uuid);
-        return view('app.club_addenroll', ['club' => $club, 'student' => $student]);
+        $old = $student->enrolls()->latest('section')->first();
+        return view('app.club_addenroll', ['club' => $club, 'student' => $student, 'old' => $old]);
     }
 
     public function enrollInsert(Request $request, $club_id)

@@ -35,14 +35,17 @@
             已報名
         </th>
     </tr>
+    @php
+        $section = $club->section();
+    @endphp
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $club->style }}">
         <td class="p-2">{{ $club->name }}</td>
         <td class="p-2">{{ $club->section()->teacher }}</td>
         <td class="p-2">{{ $club->grade }}</td>
-        <td class="p-2">{{ $club->section()->studytime }}</td>
-        <td class="p-2">{{ $club->section()->location }}</td>
-        <td class="p-2">{{ $club->section()->total }}</td>
-        <td class="p-2">{{ $club->section()->maximum }}</td>
+        <td class="p-2">{{ $section->studytime }}</td>
+        <td class="p-2">{{ $section->location }}</td>
+        <td class="p-2">{{ $section->total }}</td>
+        <td class="p-2">{{ $section->maximum }}</td>
         <td class="p-2">{{ $club->count_enrolls() }}</td>
     </tr>
 </table>
@@ -53,24 +56,24 @@
             <div class="p-3">
                 <label for="parent" class="inline">聯絡人：</label>
                 <input class="inline w-48 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    type="text" name="parent" minlength="2" required>
+                    type="text" name="parent" minlength="2" value="{{ $old ? $old->parent : '' }}" required>
             </div>
             <div class="p-3">
                 <label for="email" class="inline">電子郵件地址：</label>
                 <input class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    type="email" name="email">
+                    type="email" name="email" value="{{ $old ? $old->email : '' }}">
             </div>
             <div class="p-3">
                 <label for="mobile" class="inline">行動電話號碼：</label>
                 <input class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    type="tel" name="mobile" pattern="09[0-9]{8}">
+                    type="tel" name="mobile" value="{{ $old ? $old->mobile : '' }}" pattern="09[0-9]{8}">
             </div>
             <div class="p-3">
                 <label for="identity" class="inline">特殊身份註記：</label>
                 <select name="identity" class="inline w-48 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                     <option value="0">一般學生</option>
-                    <option value="1">臺北市安心就學補助</option>
-                    <option value="2">領有身心障礙手冊</option>
+                    <option value="1"{{ ($old && $old->identity == 1) ? ' selected' : '' }}>臺北市安心就學補助</option>
+                    <option value="2"{{ ($old && $old->identity == 2) ? ' selected' : '' }}>領有身心障礙手冊</option>
                 </select>
             </div>
             @if ($club->has_lunch)
