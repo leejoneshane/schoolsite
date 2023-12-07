@@ -73,12 +73,15 @@
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $kind->style }}">
         <td class="p-2">{{ $club->name }}</td>
         <td class="p-2">{{ $club->grade }}</td>
-        @if ($club->section())
-        <td class="p-2">{{ $club->section()->teacher }}</td>
-        <td class="p-2">{{ $club->section()->studytime }}</td>
-        <td class="p-2">{{ $club->section()->location }}</td>
-        <td class="p-2">{{ $club->section()->total }}</td>
-        <td class="p-2">{{ ($club->section()->maximum == 0) ? '—' : $club->section()->maximum}}</td>
+        @php
+            $section = $club->section();
+        @endphp
+        @if ($section)
+        <td class="p-2">{{ $section->teacher }}</td>
+        <td class="p-2">{{ $section->studytime }}</td>
+        <td class="p-2">{{ $section->location }}</td>
+        <td class="p-2">{{ $section->total }}</td>
+        <td class="p-2">{{ ($section->maximum == 0) ? '—' : $section->maximum}}</td>
         <td class="p-2">{{ $club->count_enrolls() }}</td>
         @else
         <td colspan="6" class="p-2">本學期未開班</td>

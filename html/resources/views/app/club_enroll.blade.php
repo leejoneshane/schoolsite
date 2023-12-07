@@ -43,7 +43,7 @@
     </tr>
     @forelse ($clubs as $club)
     @php
-        $section = $club->section();   
+        $section = $club->section();
     @endphp
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $club->style }}">
         <td class="p-2">{{ $club->name }}</td>
@@ -59,7 +59,7 @@
             @if ($enroll = $student->get_enroll($club->id))
                 已報名
             @else
-                @if ($club->section()->maximum == 0 || $club->count_enrolls() < $club->section()->maximum)
+                @if ($section->maximum == 0 || $club->count_enrolls() < $section->maximum)
                 <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                     href="{{ route('clubs.addenroll', ['club_id' => $club->id]) }}">
                     我要報名

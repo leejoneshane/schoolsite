@@ -295,7 +295,7 @@ class Teacher extends Model
     //取得教師最新的職編意願調查表
     public function last_survey()
     {
-        return $this->hasOne('App\Models\OrganizeSurvey', 'uuid', 'uuid')->latest();
+        return $this->hasOne('App\Models\OrganizeSurvey', 'uuid', 'uuid')->latest()->first();
     }
 
     //重新從 LDAP 同步教師個資

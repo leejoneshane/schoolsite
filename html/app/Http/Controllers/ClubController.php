@@ -641,17 +641,18 @@ class ClubController extends Controller
             return redirect()->route('clubs.enroll')->with('error', '您已經報名該社團，無法再次報名！');
         }
         $club = Club::find($club_id);
+        $section = $club->section();
         if ($club->kind->single) {
             $same_kind = $student->current_enrolls_for_kind($club->kind_id);
             if ($same_kind->isNotEmpty()) return redirect()->route('clubs.enroll')->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
         }
         $order = $club->count_enrolls() + 1;
-        if ($club->section()->maximum != 0 && $order > $club->section()->maximum) {
+        if ($section->maximum != 0 && $order > $section->maximum) {
             return redirect()->route('clubs.enroll')->with('error', '很抱歉，該學生社團已經額滿！');
         }
         $enrolls = Student::find($user->uuid)->section_enrolls();
         $weekdays = [];
-        if ($club->section()->self_defined && $request->has('weekdays')) {
+        if ($section->self_defined && $request->has('weekdays')) {
             $weekdays = $request->input('weekdays');
             foreach ($weekdays as $k => $w) {
                 $weekdays[$k] = (integer) $w;
@@ -664,6 +665,7 @@ class ClubController extends Controller
         }
         if ($conflict) return redirect()->route('clubs.enroll')->with('error', '很抱歉，此社團與其他已報名的社團上課時段重疊，因此無法報名！');
         $enroll = ClubEnroll::create([
+            'section' => $section->section,
             'uuid' => $user->uuid,
             'club_id' => $club_id,
             'need_lunch' => $request->input('lunch') ?: 0,
@@ -681,7 +683,7 @@ class ClubController extends Controller
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
-        if ($order > $club->section()->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        if ($order > $section->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
         Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '報名順位：' . $order . $message);
         return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
     }

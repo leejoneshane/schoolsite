@@ -76,15 +76,14 @@ class Club extends Model
     }
 
     //篩選可報名的社團（可依年級篩選），靜態函式
-    public static function can_enroll($grade = null, $section = null)
+    public static function can_enroll($grade = null)
     {
         $today = Carbon::now();
-        if (!$section) $section = current_section();
         if ($grade) {
             return Club::select('clubs.*', 'club_kinds.style')
             ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
-            ->where('clubs_section.section', $section)
+            ->where('clubs_section.section', '>', prev_section())
             ->where('club_kinds.stop_enroll', false)
             ->whereDate('club_kinds.enrollDate', '<=', $today->format('Y-m-d'))
             ->whereDate('club_kinds.expireDate', '>=', $today->format('Y-m-d'))
@@ -98,7 +97,7 @@ class Club extends Model
             return Club::select('clubs.*', 'club_kinds.style')
             ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
-            ->where('clubs_section.section', $section)
+            ->where('clubs_section.section', '>', prev_section())
             ->where('club_kinds.stop_enroll', false)
             ->whereDate('club_kinds.enrollDate', '<=', $today->format('Y-m-d'))
             ->whereDate('club_kinds.expireDate', '>=', $today->format('Y-m-d'))
@@ -131,10 +130,16 @@ class Club extends Model
     //提供指定學期或目前的學期資訊
     public function section($section = null)
     {
-        if (!$section) $section = current_section();
-        return ClubSection::where('club_id', $this->id)
-            ->where('section', $section)
-            ->first();
+        if ($section) {
+            return ClubSection::where('club_id', $this->id)
+                ->where('section', $section)
+                ->first();
+        } else {
+            return ClubSection::where('club_id', $this->id)
+                ->where('section', '>', prev_section())
+                ->latest('section')
+                ->first();
+        }
     }
 
     //取得此社團的分類
@@ -167,7 +172,9 @@ class Club extends Model
         if ($section) {
             return $this->enrolls()->where('section', $section)->get();
         } else {
-            return $this->enrolls()->where('section', current_section())->get();
+            $section = $this->section();
+            if (!$section) return null;
+            return $this->enrolls()->where('section', $section->section)->get();
         }
     }
 
@@ -177,7 +184,9 @@ class Club extends Model
         if ($section) {
             return $this->accepted_enrolls()->where('section', $section)->get();
         } else {
-            return $this->accepted_enrolls()->where('section', current_section())->get();
+            $section = $this->section();
+            if (!$section) return null;
+            return $this->accepted_enrolls()->where('section', $section->section)->get();
         }
     }
 
@@ -195,7 +204,9 @@ class Club extends Model
         if ($section) {
             return $this->accepted_enrolls()->where('section', $section)->where('groupBy', $group)->get();
         } else {
-            return $this->accepted_enrolls()->where('section', current_section())->where('groupBy', $group)->get();
+            $section = $this->section();
+            if (!$section) return null;
+            return $this->accepted_enrolls()->where('section', $section->section)->where('groupBy', $group)->get();
         }
     }
 
@@ -238,7 +249,9 @@ class Club extends Model
         if ($section) {
             return $this->students()->wherePivot('section', $section)->get();
         } else {
-            return $this->students()->wherePivot('section', current_section())->get();
+            $section = $this->section();
+            if (!$section) return null;
+            return $this->students()->wherePivot('section', $section->section)->get();
         }
     }
 
@@ -248,7 +261,9 @@ class Club extends Model
         if ($section) {
             return $this->students()->wherePivot('section', $section)->wherePivot('accepted', 1)->get();
         } else {
-            return $this->students()->wherePivot('section', current_section())->wherePivot('accepted', 1)->get();
+            $section = $this->section();
+            if (!$section) return null;
+            return $this->students()->wherePivot('section', $section->section)->wherePivot('accepted', 1)->get();
         }
     }
 

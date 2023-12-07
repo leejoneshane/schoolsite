@@ -125,8 +125,12 @@ class Student extends Model
     //取得此學生指定學年的所有社團報名資訊
     public function section_enrolls($section = null)
     {
-        if (!$section) $section = current_section();
-        return $this->enrolls()->where('section', $section)->get();
+        if ($section) {
+            return $this->enrolls()->where('section', $section)->get();
+        } else {
+            $section = $this->enrolls()->latest('section')->first(); 
+            return $this->enrolls()->where('section', $section)->get();
+        }
     }
 
     //取得此學生指定分類的所有社團報名資訊

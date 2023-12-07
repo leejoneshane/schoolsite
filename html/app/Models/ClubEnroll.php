@@ -249,7 +249,7 @@ class ClubEnroll extends Model
         if ($section) {
             $query = $query->where('section', $section);
         } else {
-            $query = $query->where('section', current_section());
+            $query = $query->where('section', '>', prev_section())->latest('section');
         }
         return $query->first();
     }
