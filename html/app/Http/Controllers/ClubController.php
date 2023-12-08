@@ -514,7 +514,7 @@ class ClubController extends Controller
             }    
         }
         $c = ClubSection::create([
-            'section' => current_section(),
+            'section' => $section,
             'club_id' => $club_id,
             'weekdays' => $weekdays,
             'self_defined' => $request->has('selfdefine') ? true : false,
