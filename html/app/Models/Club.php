@@ -80,7 +80,7 @@ class Club extends Model
     {
         $today = Carbon::now();
         if ($grade) {
-            return Club::select('clubs.*', 'club_kinds.style')
+            return Club::select('clubs.*', 'club_kinds.style')->distinct()
             ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
             ->where('clubs_section.section', '>', prev_section())
@@ -94,7 +94,7 @@ class Club extends Model
             ->orderBy('clubs.kind_id')
             ->get();
         } else {
-            return Club::select('clubs.*', 'club_kinds.style')
+            return Club::select('clubs.*', 'club_kinds.style')->distinct()
             ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
             ->where('clubs_section.section', '>', prev_section())

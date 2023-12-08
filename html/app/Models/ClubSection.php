@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\ClubEnroll;
 
 class ClubSection extends Model
 {
@@ -88,6 +89,14 @@ class ClubSection extends Model
     public function club()
     {
         return $this->belongsTo('App\Models\Club');
+    }
+
+    //取得此開班訊息的所有報名資訊，依報名時間排序
+    public function enrolls()
+    {
+        return ClubEnroll::where('club_id', $this->club_id)
+        ->where('section', $this->section)
+        ->get();
     }
 
 }

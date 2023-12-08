@@ -115,11 +115,12 @@
             @endif
         </td>
         <td class="p-2">
+            @if ($enroll->section > prev_section())
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('clubs.editenroll', ['enroll_id' => $enroll->id]) }}">
                 修改報名資訊
             </a>
-            @if ($enroll->club->self_remove && !($enroll->accepted) && $enroll->kind()->expireDate->format('Y-m-d') >= date('Y-m-d'))
+            @if ($enroll->club->self_remove && $enroll->kind()->expireDate->format('Y-m-d') >= date('Y-m-d'))
             <button class="py-2 pr-6 text-red-300 hover:text-red-600"
                 onclick="
                 const myform = document.getElementById('remove');
@@ -128,6 +129,7 @@
             ">
                 取消報名
             </button>
+            @endif
             @endif
         </td>
     </tr>

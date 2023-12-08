@@ -505,13 +505,14 @@ class ClubController extends Controller
         if ($found) {
             return redirect()->route('clubs.sections', ['club_id' => $club_id])->with('error', '本學期已經開班！');
         }
-        if ($request->has('selfdefine')) {
-            $weekdays = [];
-        } else {
-            $weekdays = $request->input('weekdays');
-            foreach ($weekdays as $k => $w) {
-                $weekdays[$k] = (integer) $w;
-            }    
+        $weekdays = [];
+        if (!($request->has('selfdefine'))) {
+            $data = $request->input('weekdays');
+            if (!empty($data)) {
+                foreach ($data as $k => $w) {
+                    $weekdays[$k] = (integer) $w;
+                }    
+            }
         }
         $c = ClubSection::create([
             'section' => $section,
@@ -548,11 +549,14 @@ class ClubController extends Controller
     public function sectionUpdate(Request $request, $section_id)
     {
         $section = ClubSection::find($section_id);
-        $weekdays = $request->input('weekdays');
-        if (!empty($weekdays)) {
-            foreach ($weekdays as $k => $w) {
-                $weekdays[$k] = (integer) $w;
-            }    
+        $weekdays = [];
+        if (!($request->has('selfdefine'))) {
+            $data = $request->input('weekdays');
+            if (!empty($data)) {
+                foreach ($data as $k => $w) {
+                    $weekdays[$k] = (integer) $w;
+                }    
+            }
         }
         $section->update([
             'weekdays' => $weekdays,
@@ -578,7 +582,7 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $section = ClubSection::find($section_id);
-            if ($section->club->enrolls) {
+            if ($section->enrolls()->count() > 0) {
                 return redirect()->route('clubs.sections', ['club_id' => $section->club_id])->with('error', '此學期已經錄取學生，因此無法移除！');
             } else {
                 Watchdog::watch($request, '移除開班資訊：' . $section->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
