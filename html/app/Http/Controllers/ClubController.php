@@ -602,7 +602,7 @@ class ClubController extends Controller
         $grade = substr($student->class_id, 0, 1);
         $clubs = Club::can_enroll($grade);
         $enrolls0 = $student->section_enrolls(next_section());
-        $enrolls1 = $student->section_enrolls(current_section());
+        $enrolls1 = $student->section_enrolls();
         $enrolls2 = $student->section_enrolls(prev_section());
         $enrolls = $enrolls0->merge($enrolls1)->merge($enrolls2);
         return view('app.club_enroll', ['clubs' => $clubs, 'student' => $student, 'enrolls' => $enrolls]);
@@ -668,7 +668,8 @@ class ClubController extends Controller
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
-        if ($section->total > 0 && $order > $section->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        $total = $section->total;
+        if ($total > 0 && $order > $total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
         Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '報名順位：' . $order . $message);
         return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
     }
