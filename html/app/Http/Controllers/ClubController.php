@@ -667,7 +667,7 @@ class ClubController extends Controller
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
-        if ($order > $section->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        if ($section->total > 0 && $order > $section->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
         Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '報名順位：' . $order . $message);
         return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
     }
@@ -1000,7 +1000,8 @@ class ClubController extends Controller
         $enroll->accepted = true;
         $enroll->save();
         $message = '';
-        if ($order > $club->section($section)->total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        $total = $club->section($section)->total;
+        if ($total > 0 && $order > $total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
         Watchdog::watch($request, '新增報名資訊，學生社團：' . $club->name . '，學生：' . $student->class_id . $student->realname);
         return redirect()->route('clubs.enrolls', ['club_id' => $club_id, 'section' => $section])->with('success', '已經完成報名手續，該生報名順位為'.$order.$message);
     }
@@ -1080,7 +1081,8 @@ class ClubController extends Controller
             }
             $enroll->accepted = true;
             $enroll->save();
-            if ($order > $club->section($section)->total) {
+            $total = $club->section($section)->total;
+            if ($total > 0 && $order > $total) {
                 $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'，目前列為候補！';
             } else {
                 $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
