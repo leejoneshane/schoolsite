@@ -104,6 +104,7 @@
     </tr>
     @foreach ($enrolls as $enroll)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+        <td class="p-2">{{ section_name($enroll->section) }}</td>
         <td class="p-2 {{ $enroll->club->style }}">{{ $enroll->club->name }}</td>
         <td class="p-2">{{ $enroll->parent }}</td>
         <td class="p-2">{{ $enroll->email }}</td>
