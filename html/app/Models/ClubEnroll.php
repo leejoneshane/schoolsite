@@ -148,17 +148,6 @@ class ClubEnroll extends Model
         return '自理';
     }
 
-    //建立社團報名資訊時，若省略學年，則預設為目前學年
-    public static function boot()
-    {
-        parent::boot();
-        self::creating(function($model) {
-            if (empty($model->section)) {
-                $model->section = current_section();
-            }
-        });
-    }
-
     //取得此報名資訊的學生社團
     public function club()
     {
