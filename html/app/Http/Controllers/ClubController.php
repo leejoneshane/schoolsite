@@ -602,7 +602,7 @@ class ClubController extends Controller
         $grade = substr($student->class_id, 0, 1);
         $clubs = Club::can_enroll($grade);
         $enrolls0 = $student->section_enrolls(next_section());
-        $enrolls1 = $student->section_enrolls();
+        $enrolls1 = $student->section_enrolls(current_section());
         $enrolls2 = $student->section_enrolls(prev_section());
         $enrolls = $enrolls0->merge($enrolls1)->merge($enrolls2);
         return view('app.club_enroll', ['clubs' => $clubs, 'student' => $student, 'enrolls' => $enrolls]);
