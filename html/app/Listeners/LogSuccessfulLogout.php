@@ -25,8 +25,10 @@ class LogSuccessfulLogout
      */
     public function handle(Logout $event)
     {
-        $id = $event->user->id;
-        $namespace = 'online-users:'.$id;
-        Redis::del($namespace);
+        if ($event->user->user_type == 'Teacher') {
+            $id = $event->user->id;
+            $namespace = 'online-users:'.$id;
+            Redis::del($namespace);
+        }
     }
 }

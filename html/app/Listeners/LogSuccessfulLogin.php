@@ -25,9 +25,11 @@ class LogSuccessfulLogin
      */
     public function handle(Login $event)
     {
-        $id = $event->user->id;
-        $namespace = 'online-users:'.$id;
-        $expire = config('session.lifetime') * 7200;
-        Redis::setex($namespace, $expire, $id);
+        if ($event->user->user_type == 'Teacher') {
+            $id = $event->user->id;
+            $namespace = 'online-users:'.$id;
+            $expire = config('session.lifetime') * 7200;
+            Redis::setex($namespace, $expire, $id);
+        }
     }
 }
