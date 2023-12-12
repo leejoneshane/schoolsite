@@ -78,8 +78,11 @@
 </table>
 <div class="block w-full h-12"></div>
 @if ($enrolls->isNotEmpty())
-<table class="w-full py-4 text-left font-normal">
+<table class="w-full py-4 text-center font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
+        <th scope="col" class="p-2">
+            學期
+        </th>
         <th scope="col" class="p-2">
             營隊全名
         </th>

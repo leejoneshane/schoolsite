@@ -81,8 +81,8 @@
                 <label for="lunch" class="inline">午餐選項：</label>
                 <select name="lunch" class="inline w-48 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
                     <option value="0">自理</option>
-                    <option value="1">葷食</option>
-                    <option value="2">素食</option>
+                    <option value="1"{{ ($old && $old->lunch == 1) ? ' selected' : '' }}>葷食</option>
+                    <option value="2"{{ ($old && $old->lunch == 2) ? ' selected' : '' }}>素食</option>
                 </select>
             </div>
             @endif
