@@ -29,7 +29,7 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
     {
         $enrolls = collect();
         foreach ($this->clubs as $club) {
-            $enrolls = $enrolls->merge($club->section_accepted());
+            $enrolls = $enrolls->merge($club->section_accepted())->sortBy('uuid');
         }
         $collection = [];
         $old = '';
