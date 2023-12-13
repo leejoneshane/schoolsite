@@ -116,20 +116,8 @@ class Club extends Model
         return Club::select('clubs.*', 'club_kinds.style')
             ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
-            ->whereDate('club_section.startDate', '>=', $dates->mindate)
-            ->whereDate('club_section.endDate', '<=', $dates->maxdate)
-            ->orderBy('clubs.kind_id')
-            ->get();
-    }
-
-    //篩選指定學期需進行收費統計的社團，靜態函式
-    public static function cash_enrolls($section)
-    {
-        $dates = section_between_date($section);
-        return Club::leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
-            ->select('clubs.*', 'club_kinds.style')
-            ->whereDate('club_kinds.enrollDate', '>=', $dates->mindate)
-            ->whereDate('club_kinds.expireDate', '<=', $dates->maxdate)
+            ->whereDate('clubs_section.startDate', '>=', $dates->mindate)
+            ->whereDate('clubs_section.endDate', '<=', $dates->maxdate)
             ->orderBy('clubs.kind_id')
             ->get();
     }
