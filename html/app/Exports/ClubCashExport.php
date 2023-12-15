@@ -22,7 +22,7 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
     {
         if (!$section) $section = next_section();
         $this->section = $section;
-        $this->clubs = Club::can_enroll();
+        $this->clubs = Club::section_clubs();
     }
 
     public function collection()

@@ -76,11 +76,10 @@ class Club extends Model
     }
 
     //篩選可報名的社團（可依年級篩選），靜態函式
-    public static function can_enroll($grade = null)
+    public static function can_enroll($grade)
     {
         $today = Carbon::now();
-        if ($grade) {
-            return Club::select('clubs.*', 'club_kinds.style')->distinct()
+        return Club::select('clubs.*', 'club_kinds.style')->distinct()
             ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
             ->where('clubs_section.section', '>', prev_section())
@@ -93,28 +92,20 @@ class Club extends Model
             ->whereJsonContains('clubs.for_grade', (integer) $grade)
             ->orderBy('clubs.kind_id')
             ->get();
-        } else {
-            return Club::select('clubs.*', 'club_kinds.style')->distinct()
+
+    }
+
+    //篩選現在及未來學期實際有上課的社團，靜態函式
+    public static function section_clubs()
+    {
+        $dates = current_between_date();
+        return Club::select('clubs.*', 'club_kinds.style')->distinct()
             ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
             ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
             ->where('clubs_section.section', '>', prev_section())
-            ->whereDate('club_kinds.enrollDate', '<=', $today->format('Y-m-d'))
-            ->whereDate('club_kinds.expireDate', '>=', $today->format('Y-m-d'))
+            ->whereDate('club_kinds.enrollDate', '>=', $dates->mindate)
+            ->whereDate('club_kinds.expireDate', '<=', $dates->maxdate)
             ->where('clubs.stop_enroll', false)
-            ->orderBy('clubs.kind_id')
-            ->get();
-        }
-    }
-
-    //篩選指定學期實際有上課的社團，靜態函式
-    public static function section_clubs($section)
-    {
-        $dates = section_between_date($section);
-        return Club::select('clubs.*', 'club_kinds.style')
-            ->leftjoin('club_kinds', 'clubs.kind_id', '=', 'club_kinds.id')
-            ->leftjoin('clubs_section', 'clubs.id', '=', 'clubs_section.club_id')
-            ->whereDate('clubs_section.startDate', '>=', $dates->mindate)
-            ->whereDate('clubs_section.endDate', '<=', $dates->maxdate)
             ->orderBy('clubs.kind_id')
             ->get();
     }
