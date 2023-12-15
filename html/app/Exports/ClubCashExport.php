@@ -22,15 +22,16 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
     {
         if (!$section) $section = next_section();
         $this->section = $section;
-        $this->clubs = Club::section_clubs($section);
+        $this->clubs = Club::can_enroll();
     }
 
     public function collection()
     {
         $enrolls = collect();
         foreach ($this->clubs as $club) {
-            $enrolls = $enrolls->merge($club->section_accepted())->sortBy('uuid');
+            $enrolls = $enrolls->merge($club->section_accepted());
         }
+        $enrolls = $enrolls->sortBy('uuid');
         $collection = [];
         $old = '';
         $record = new \stdClass;
@@ -39,6 +40,9 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
             $sec = $enroll->club_section();
             if (!$old) { //first
                 $old = $enroll->uuid;
+                $record->grade = substr($enroll->student->class_id, 0, 1);
+                $record->myclass = substr($enroll->student->class_id, -2);
+                $record->seat = $enroll->student->seat;
                 $record->student = $enroll->student;
                 $record->clubs[$enroll->club_id] = $sec->cash;
             } elseif ($old != $enroll->uuid) { //prev
@@ -51,6 +55,9 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
                 $old = $enroll->uuid;
                 $record = new \stdClass;
                 $record->clubs = [];
+                $record->grade = substr($enroll->student->class_id, 0, 1);
+                $record->myclass = substr($enroll->student->class_id, -2);
+                $record->seat = $enroll->student->seat;
                 $record->student = $enroll->student;
                 $record->clubs[$enroll->club_id] = $sec->cash;
             } else {
@@ -68,6 +75,9 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
         $total = 0;
         $append = new \stdClass;
         $append->student = null;
+        $append->grade = 99;
+        $append->myclass = null;
+        $append->seat = null;
         $append->clubs = [];
         foreach ($collection as $c) {
             foreach ($c->clubs as $id => $cash) {
@@ -81,7 +91,12 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
         }
         $append->total = $total;
         $collection[] = $append;
-        return collect($collection);
+        $rows = collect($collection)->sortBy([
+            ['grade', 'asc'],
+            ['myclass', 'asc'],
+            ['seat', 'asc']
+        ]);
+        return $rows;
     }
 
     public function headings(): array
@@ -103,17 +118,15 @@ class ClubCashExport implements FromCollection, WithHeadings, WithColumnFormatti
 
     public function map($row): array
     {
-        if (!isset($row->student) || is_null($row->student)) {
+        if (is_null($row->student)) {
             $map = [ '總計', '', '', '', '', '' ];
         } else {
-            $grade = substr($row->student->class_id, 0, 1);
-            $myclass = substr($row->student->class_id, -2);
             $m = $row->student->birthdate->format('m');
             $d = $row->student->birthdate->format('d');
             $map = [
-                $grade,
-                $myclass,
-                $row->student->seat,
+                $row->grade,
+                $row->myclass,
+                $row->seat,
                 $row->student->id,
                 $m.'月'.$d.'日',
                 $row->student->realname,
