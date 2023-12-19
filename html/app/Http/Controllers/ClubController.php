@@ -621,12 +621,12 @@ class ClubController extends Controller
     public function enrollInsert(Request $request, $club_id)
     {
         $user = Auth::user();
-        $student = Student::find($user->uuid);
-        if ($student->has_enroll($club_id)) {
-            return redirect()->route('clubs.enroll')->with('error', '您已經報名該社團，無法再次報名！');
-        }
         $club = Club::find($club_id);
         $section = $club->section();
+        $student = Student::find($user->uuid);
+        if ($student->has_enroll($club_id, $section)) {
+            return redirect()->route('clubs.enroll')->with('error', '您已經報名該社團，無法再次報名！');
+        }
         if ($club->kind->single) {
             $same_kind = $student->current_enrolls_for_kind($club->kind_id);
             if ($same_kind->isNotEmpty()) return redirect()->route('clubs.enroll')->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
