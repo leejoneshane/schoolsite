@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-club" action="{{ route('venue.add') }}" method="POST">
+<form id="add-club" action="{{ route('venue.add') }}" method="POST" enctype="multipart/form-data">
     @csrf
     <p><div class="p-3">
         <label for="title" class="inline">名稱：</label>
@@ -35,6 +35,11 @@
         <textarea id="description" name="description" rows="4" class="inline block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         ></textarea>
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入場地容留人數、可使用設備（如：單槍、大屏、麥克風、有無網路...等）、鑰匙保管方式，設備請輸入外觀、規格、配件、使用條件或限制...等資訊！</span>
+    </div></p>
+    <p><div class="p-3">
+        <label class="inline">附加螢幕截圖：</label>
+        <input type="file" name="reserved_info" accept="image/png,image/jpeg" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>顯示於場地預約畫面右側，僅支援 .png 或 .jpg 兩種格式。</span>
     </div></p>
     <p><div class="p-3">
         <label class="inline">不出借時段：</label>

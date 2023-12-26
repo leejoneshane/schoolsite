@@ -39,6 +39,7 @@ class Venue extends Model
         'uuid',
         'description',
         'availability',
+        'reserved_info',
         'unavailable_at',
         'unavailable_until',
         'schedule_start',

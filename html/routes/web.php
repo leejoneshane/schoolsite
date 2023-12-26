@@ -234,7 +234,7 @@ Route::group(['prefix' => 'organize', 'middleware' => [ 'auth'] ], function () {
 
 // 場地/設備預約
 Route::group(['prefix' => 'venue', 'middleware' => [ 'auth'] ], function () {
-    Route::get('/', 'App\Http\Controllers\VenueController@index')->name('venues');
+    Route::get('index', 'App\Http\Controllers\VenueController@index')->name('venues');
     Route::get('add', 'App\Http\Controllers\VenueController@add');
     Route::post('add', 'App\Http\Controllers\VenueController@insert')->name('venue.add');
     Route::get('edit/{id}', 'App\Http\Controllers\VenueController@edit');

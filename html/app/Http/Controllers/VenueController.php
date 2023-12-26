@@ -65,6 +65,14 @@ class VenueController extends Controller
                 'uuid' => $request->input('manager'),
                 'description' => $request->input('description'),
             ]);
+            if ($request->hasFile('reserved_info')) {
+                $extension = $request->file('reserved_info')->getClientOriginalExtension();
+                $fileName = $venue->id . '.' . $extension;
+                $request->file('reserved_info')->move(public_path('venue'), $fileName);
+                $url = asset('venue/' . $fileName);
+                Watchdog::watch($request, '上傳教案：' . $url);
+                $venue->reserved_info = $fileName;
+            }
             $unavailable = $request->input('unavailable');
             if ($unavailable && $unavailable == 'yes') {
                 $venue->unavailable_at = $request->input('startdate');
@@ -136,6 +144,20 @@ class VenueController extends Controller
                 'uuid' => $request->input('manager'),
                 'description' => $request->input('description'),
             ]);
+            if ($request->hasFile('reserved_info')) {
+                if ($venue->reserved_info) {
+                    $path = public_path('venue/' . $venue->reserved_info);
+                    if (file_exists($path)) {
+                        unlink($path);
+                    }    
+                }
+                $extension = $request->file('reserved_info')->getClientOriginalExtension();
+                $fileName = $venue->id . '.' . $extension;
+                $request->file('reserved_info')->move(public_path('venue'), $fileName);
+                $url = asset('venue/' . $fileName);
+                Watchdog::watch($request, '上傳教案：' . $url);
+                $venue->reserved_info = $fileName;
+            }
             $unavailable = $request->input('unavailable');
             if ($unavailable && $unavailable == 'yes') {
                 $venue->unavailable_at = $request->input('startdate');
