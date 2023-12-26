@@ -202,13 +202,13 @@ class Club extends Model
     //計算此社團本學年報名學生數
     public function count_enrolls($section = null)
     {
-        return $this->section_enrolls($section)->count();
+        return $this->section_enrolls($section) ? $this->section_enrolls($section)->count() : 0;
     }
 
     //計算此社團本學年錄取學生數
     public function count_accepted($section = null)
     {
-        return $this->section_accepted($section)->count();
+        return $this->section_accepted($section) ? $this->section_accepted($section)->count() : 0;
     }
 
     //取得此社團所有的學生

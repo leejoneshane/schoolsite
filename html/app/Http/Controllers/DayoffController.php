@@ -85,7 +85,11 @@ class DayoffController extends Controller
         $to = $request->input('to');
         if (!empty($dates)) {
             foreach ($dates as $k => $d) {
-                $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
+                if ($from && $to && $from[$k] && $to[$k]) {
+                    $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
+                } else {
+                    return back()->withInput()->with('error', '「公假時間」欄位填寫不完整！');
+                }
             }    
         }
         if (empty($datetimes) && empty($request->input('rdate'))) {

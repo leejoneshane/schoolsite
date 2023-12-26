@@ -40,7 +40,7 @@
     @endphp
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $club->style }}">
         <td class="p-2">{{ $club->name }}</td>
-        <td class="p-2">{{ $club->section()->teacher }}</td>
+        <td class="p-2">{{ $section->teacher ?: ''}}</td>
         <td class="p-2">{{ $club->grade }}</td>
         <td class="p-2">{{ $section->studytime }}</td>
         <td class="p-2">{{ $section->location }}</td>
@@ -86,7 +86,7 @@
                 </select>
             </div>
             @endif
-            @if ($club->section()->self_defined)
+            @if ($section->self_defined)
             <div class="p-3">
                 <label class="inline">自選上課日：每週</label>
                 <div id="weekdays" class="inline">
