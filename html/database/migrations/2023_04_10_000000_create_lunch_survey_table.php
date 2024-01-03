@@ -24,7 +24,7 @@ return new class extends Migration
             $table->boolean('milk')->default(1);
             $table->boolean('by_parent')->default(0);
             $table->boolean('boxed_meal')->default(0);
-            $table->string('upgrade');
+            $table->string('upgraded');
             $table->timestamps();
             $table->unique(['section', 'uuid']);
         });

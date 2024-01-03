@@ -22,7 +22,7 @@ class LunchSurvey extends Model
         'by_parent',
         'boxed_meal',
         'memo',
-        'upgrade',
+        'upgraded',
     ];
 
     //以下為透過程式動態產生之屬性
@@ -53,8 +53,8 @@ class LunchSurvey extends Model
             if (empty($model->section)) {
                 $model->section = next_section();
             }
-            if (empty($model->upgrade)) {
-                $model->upgrade = next_section();
+            if (empty($model->upgraded)) {
+                $model->upgraded = next_section();
             }
         });
     }
