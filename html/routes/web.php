@@ -363,6 +363,7 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::get('database/students/{search?}', 'App\Http\Controllers\Admin\SchoolDataController@studentList')->name('students');
     Route::get('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@studentEdit');
     Route::post('database/students/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@studentUpdate')->name('students.edit');
+    Route::post('database/students/{uuid}/pwd', 'App\Http\Controllers\Admin\SchoolDataController@studentPwd')->name('students.password');
     Route::post('database/students/{uuid}/sync', 'App\Http\Controllers\Admin\SchoolDataController@studentSync')->name('students.sync');
     Route::post('database/students/{uuid}/remove', 'App\Http\Controllers\Admin\SchoolDataController@studentRemove')->name('students.remove');
     Route::post('database/students/{uuid}/restore', 'App\Http\Controllers\Admin\SchoolDataController@studentRestore')->name('students.restore');

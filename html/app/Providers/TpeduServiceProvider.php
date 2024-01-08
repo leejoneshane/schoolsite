@@ -184,6 +184,33 @@ class TpeduServiceProvider extends ServiceProvider
         }
     }
 
+    public function patch($which, array $replacement = [], array $data = [])
+    {
+        if (empty($data)) return false;
+        $dataapi = config('services.tpedu.endpoint.' . $which);
+        $replacement['school'] = config('services.tpedu.school');
+        $search = [];
+        $values = [];
+        foreach ($replacement as $key => $data) {
+            $search[] = '{'.$key.'}';
+            $values[] = $data;
+        }
+        $dataapi = str_replace($search, $values, $dataapi);
+        $response = Http::baseUrl(config('services.tpedu.server')
+        )->withHeaders([
+            'Accept' => 'application/json',
+            'Authorization' => 'Bearer ' . config('services.tpedu.token'),
+        ])->patch($dataapi, $data);
+        if ($response->getStatusCode() == 200) {
+            $json = json_decode($response->getBody());
+            return $json;
+        } else {
+            $this->error = $response->getBody();
+            Log::error('oauth2 '.$dataapi.' response =>'.$this->error);
+            return false;
+        }
+    }
+
     public function fetch_user($uuid, $only = false, $pwd = false, $year = null)
     {
         if ($only) {
@@ -392,6 +419,25 @@ class TpeduServiceProvider extends ServiceProvider
             $emp->save();
             if ($emp->trashed()) $emp->restore();
             return true;
+        }
+        return false;
+    }
+
+    public function reset_password($uuid, $password)
+    {
+        $t = Student::withTrashed()->find($uuid);
+        if (!$t) {
+            $t = Teacher::withTrashed()->find($uuid);
+        }
+        if ($t) {
+            $sys_user = User::where('uuid', $uuid)->first();
+            if ($sys_user) {
+                $sys_user->forceFill([
+                    'password' => Hash::make($password)
+                ])->setRememberToken(Str::random(60));
+                $sys_user->save();    
+            }
+            return $this->patch('one_user', ['uuid' => $uuid], ['password' => $password]);
         }
         return false;
     }

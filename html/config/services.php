@@ -87,7 +87,7 @@ return [
             'teachers_of_subject' => 'api/v2/school/{school}/subject/{subject}/teachers',
             'classes_of_subject' => 'api/v2/school/{school}/subject/{subject}/classes',
             'find_users' => 'api/v2/school/{school}/people',
-            'one_user' => 'api/v2/school/{school}/people/{uuid}',            
+            'one_user' => 'api/v2/school/{school}/people/{uuid}',
         ],
     ],
 

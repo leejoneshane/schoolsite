@@ -219,6 +219,20 @@ class GsuiteServiceProvider extends ServiceProvider
         }
     }
 
+    public function reset_password($userKey, $passwd)
+    {
+        if (!strpos($userKey, '@')) {
+            $userKey .= '@' . config('services.gsuite.domain');
+        }
+        $user = $this->get_user($userKey);
+        if ($user) {
+            $user->setHashFunction('SHA-1');
+            $user->setPassword(sha1($passwd));
+            return true;
+        }
+        return false;
+    }
+
     public function sync_user(Model $t, $userKey, $user = null, $recover = false)
     {
         if ($t instanceof Student) {

@@ -14,6 +14,8 @@ use App\Models\Subject;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Watchdog;
+use App\Providers\TpeduServiceProvider;
+use App\Providers\GsuiteServiceProvider;
 
 class SchoolDataController extends Controller
 {
@@ -512,6 +514,19 @@ class SchoolDataController extends Controller
         $student->save();
         Watchdog::watch($request, '更新學生資訊：' . $student->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect(urldecode($request->input('referer')))->with('success', '學生資訊已經更新完成！');
+    }
+
+    public function studentPwd(Request $request, $uuid)
+    {
+        $referer = $request->headers->get('referer');
+        $s = Student::withTrashed()->find($uuid);
+        $gsuite = $s->gmails()->where('primary', true)->first();
+        $userKey = $gsuite->userKey;
+        $pwd = substr($s->idno, -6);
+        (new GsuiteServiceProvider)->reset_password($userKey, $pwd);
+        (new TpeduServiceProvider)->reset_password($uuid, $pwd);
+        Watchdog::watch($request, '重設學生密碼為' . $pwd);
+        return redirect(urldecode($referer))->with('success', '學生 LDAP 和 Google 密碼已經重設為身分證字號後六碼！');
     }
 
     public function studentSync(Request $request, $uuid)
