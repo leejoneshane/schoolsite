@@ -525,7 +525,7 @@ class SchoolDataController extends Controller
         $pwd = substr($s->idno, -6);
         (new GsuiteServiceProvider)->reset_password($userKey, $pwd);
         (new TpeduServiceProvider)->reset_password($uuid, $pwd);
-        Watchdog::watch($request, '重設學生密碼為' . $pwd);
+        Watchdog::watch($request, '重設學生「' . $s->id . $s->realname . '」密碼為 ' . $pwd);
         return redirect(urldecode($referer))->with('success', '學生 LDAP 和 Google 密碼已經重設為身分證字號後六碼！');
     }
 
