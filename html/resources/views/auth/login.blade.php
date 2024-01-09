@@ -27,6 +27,13 @@
                 @enderror
             </div>
 
+            <div class="relative mb-6">
+                <div class="text-sm flex justify-between items-center">
+                    <div></div>
+                    <a class="py-2 px-6 rounded text-blue-300 btn bg-white hover:text-blue-600" href="https://sites.google.com/tc.meps.tp.edu.tw/elearning/%E9%A6%96%E9%A0%81">點這裡，看登入教學影片！</a>
+                </div>
+            </div>
+
             <div class="space-y-9">
                 <div class="text-sm flex justify-between items-center">
                     <button class="py-2 px-6 rounded text-white btn bg-blue-500 hover:bg-blue-600" type="submit">下一步</button>
