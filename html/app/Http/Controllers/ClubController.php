@@ -12,6 +12,7 @@ use App\Models\ClubKind;
 use App\Models\ClubEnroll;
 use App\Models\Unit;
 use App\Models\Classroom;
+use App\Models\Teacher;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\ClubNotification;
 use App\Notifications\ClubEnrollNotification;
@@ -34,7 +35,10 @@ class ClubController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         $cash = $user->hasPermission('club.cash');
-        return view('app.club', ['manager' => ($user->is_admin || $manager), 'cash_reporter' => ($user->is_admin || $cash)]);
+        $teacher = Teacher::find($user->uuid);
+        $tutor = false;
+        if (!empty($teacher->tutor_class)) $tutor = true;
+        return view('app.club', ['tutor' => $tutor, 'manager' => ($user->is_admin || $manager), 'cash_reporter' => ($user->is_admin || $cash)]);
     }
 
     public function kindList()
@@ -280,24 +284,31 @@ class ClubController extends Controller
     public function clubClassroom($kid, $section = null, $class_id = null)
     {
         $user = User::find(Auth::user()->id);
-        $manager = $user->hasPermission('club.manager');
-        if ($user->is_admin || $manager) {
-            $sections = ClubEnroll::sections(); 
-            if (!$section) {
-                $section = current_section();
-                if (!empty($sections)) {
-                    $section_obj = $sections->first();
-                    if ($section_obj) {
-                        $section = $section_obj->section;
-                    }
+        $sections = ClubEnroll::sections(); 
+        if (!$section) {
+            $section = current_section();
+            if (!empty($sections)) {
+                $section_obj = $sections->first();
+                if ($section_obj) {
+                    $section = $section_obj->section;
                 }
             }
-            $classes = Classroom::all();
-            if (!$class_id) $class_id = $classes->first()->id;
+        }
+        $classes = Classroom::all();
+        if (!$class_id) $class_id = $classes->first()->id;
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
             $enrolls = ClubEnroll::acceptedByClass($class_id, $section)->groupBy('uuid');
-            return view('app.club_classroom', ['kind_id' => $kid, 'class_id' => $class_id, 'section' => $section, 'sections' => $sections, 'classes' => $classes, 'enrolls' => $enrolls]);
+            return view('app.club_classroom', ['tutor' => false, 'kind_id' => $kid, 'class_id' => $class_id, 'section' => $section, 'sections' => $sections, 'classes' => $classes, 'enrolls' => $enrolls]);
         } else {
-            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+            $teacher = Teacher::find($user->uuid);
+            if ($teacher->tutor_classroom) {
+                $class_id = $teacher->tutor_class;
+                $enrolls = ClubEnroll::acceptedByClass($class_id, $section)->groupBy('uuid');
+                return view('app.club_classroom', ['tutor' => true, 'kind_id' => $kid, 'class_id' => $class_id, 'section' => $section, 'sections' => $sections, 'classes' => $classes, 'enrolls' => $enrolls]);
+            } else {
+                return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+            }
         }
     }
 
@@ -511,7 +522,7 @@ class ClubController extends Controller
             if (!empty($data)) {
                 foreach ($data as $k => $w) {
                     $weekdays[$k] = (integer) $w;
-                }    
+                }
             }
         }
         $c = ClubSection::create([

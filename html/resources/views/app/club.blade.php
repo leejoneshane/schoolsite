@@ -21,6 +21,11 @@
         <i class="fa-solid fa-sack-dollar"></i>收費統計表
     </a>
     @endif
+    @if ($tutor)
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.classroom') }}">
+        <i class="fa-solid fa-sack-dollar"></i>各班錄取名冊
+    </a>
+    @endif
 </div>
 <ol class="ml-4 list-decimal">
     <li class="mb-4 leading-6 text-green-600">
