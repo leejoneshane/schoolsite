@@ -228,7 +228,7 @@ class GsuiteServiceProvider extends ServiceProvider
         if ($user) {
             $user->setHashFunction('SHA-1');
             $user->setPassword(sha1($passwd));
-            return true;
+            return $this->update_user($userKey, $user);
         }
         return false;
     }

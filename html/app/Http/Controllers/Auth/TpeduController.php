@@ -29,7 +29,7 @@ class TpeduController extends Controller
     public function redirect(Request $request)
     {
         if (Auth::check()) return redirect()->route('home');
-        Watchdog::watch($request, '嘗試登入網站！');
+//        Watchdog::watch($request, '嘗試登入網站！');
         return redirect()->away(
             $this->sso->login()
         );
