@@ -22,7 +22,7 @@
     </a>
     @endif
     @if ($tutor)
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.classroom') }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.tutor') }}">
         <i class="fa-solid fa-sack-dollar"></i>各班錄取名冊
     </a>
     @endif

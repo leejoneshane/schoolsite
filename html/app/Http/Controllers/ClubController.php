@@ -284,7 +284,30 @@ class ClubController extends Controller
     public function clubClassroom($kid, $section = null, $class_id = null)
     {
         $user = User::find(Auth::user()->id);
-        $sections = ClubEnroll::sections(); 
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $sections = ClubEnroll::sections(); 
+            if (!$section) {
+                $section = current_section();
+                if (!empty($sections)) {
+                    $section_obj = $sections->first();
+                    if ($section_obj) {
+                        $section = $section_obj->section;
+                    }
+                }
+            }
+            $classes = Classroom::all();
+            if (!$class_id) $class_id = $classes->first()->id;
+            $enrolls = ClubEnroll::acceptedByClass($class_id, $section)->groupBy('uuid');
+            return view('app.club_classroom', ['kind_id' => $kid, 'class_id' => $class_id, 'section' => $section, 'sections' => $sections, 'classes' => $classes, 'enrolls' => $enrolls]);
+        }
+        return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+    }
+
+    public function clubTutor($section = null)
+    {
+        $user = User::find(Auth::user()->id);
+        $sections = ClubEnroll::sections();
         if (!$section) {
             $section = current_section();
             if (!empty($sections)) {
@@ -294,22 +317,13 @@ class ClubController extends Controller
                 }
             }
         }
-        $classes = Classroom::all();
-        if (!$class_id) $class_id = $classes->first()->id;
-        $manager = $user->hasPermission('club.manager');
-        if ($user->is_admin || $manager) {
+        $teacher = Teacher::find($user->uuid);
+        if ($teacher && ($classroom = $teacher->tutor_classroom)) {
+            $class_id = $teacher->tutor_class;
             $enrolls = ClubEnroll::acceptedByClass($class_id, $section)->groupBy('uuid');
-            return view('app.club_classroom', ['tutor' => false, 'kind_id' => $kid, 'class_id' => $class_id, 'section' => $section, 'sections' => $sections, 'classes' => $classes, 'enrolls' => $enrolls]);
-        } else {
-            $teacher = Teacher::find($user->uuid);
-            if ($teacher->tutor_classroom) {
-                $class_id = $teacher->tutor_class;
-                $enrolls = ClubEnroll::acceptedByClass($class_id, $section)->groupBy('uuid');
-                return view('app.club_classroom', ['tutor' => true, 'kind_id' => $kid, 'class_id' => $class_id, 'section' => $section, 'sections' => $sections, 'classes' => $classes, 'enrolls' => $enrolls]);
-            } else {
-                return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
-            }
+            return view('app.club_tutor', ['class_id' => $class_id, 'classroom' => $classroom, 'section' => $section, 'sections' => $sections, 'enrolls' => $enrolls]);
         }
+        return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
     }
 
     public function clubExportClass($kid, $section, $class_id)

@@ -132,6 +132,7 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('cash/{section?}', 'App\Http\Controllers\ClubController@clubExportCash')->name('clubs.cash');
     Route::get('classroom/{kid}/{section?}/{class_id?}', 'App\Http\Controllers\ClubController@clubClassroom')->name('clubs.classroom');
     Route::get('classroom/{kid}/{section}/export/{class_id}', 'App\Http\Controllers\ClubController@clubExportClass')->name('clubs.exportclass');
+    Route::get('tutor/{section?}', 'App\Http\Controllers\ClubController@clubTutor')->name('clubs.tutor');
 });
 
 //午餐調查
