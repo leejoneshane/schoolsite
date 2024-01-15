@@ -160,7 +160,7 @@ function find_solutions(Array $assoc, int $mean) {
     $v = $assoc[$k];
     $mod = $mean - $v;
     unset($assoc[$k]);
-    if (count($assoc) < 1) {
+    if (count($assoc) < 2) {
         $solution[] = [ 'classes' => [ $k ], 'sum' => $v ];
     } else {
         list($p, $q, $keys) = near_search($assoc, $mod);
