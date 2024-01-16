@@ -899,13 +899,13 @@ class ClubController extends Controller
                     $classes[$cls] = $max;
                 }
             }
-            $result = [];
             arsort($classes);
             $limit = $request->input('limit');
             if (empty($limit)) $limit = 20;
             $devide_num = $devide_temp = ceil($all / $limit);
             $mean = round($all / $devide_num);
             $n = 1;
+            $result = [];
             while (count($result) < $devide_num) {
                 $solutions = find_solutions($classes, $mean);
                 $last = 0;
@@ -925,7 +925,12 @@ class ClubController extends Controller
                 $n ++;
             }
             if (count($classes) > 0) {
-                $result[] = [ 'classes' => implode(',', $classes), 'sum' => array_sum($classes)  ];
+                $n = $n - 2;
+                foreach ($classes as $cls => $max) {
+                    $result[$n]['classes'][] = $cls;
+                    $result[$n]['sum'] += $max;
+                    $counter[$cls]['group'] = $n + 1;     
+                }
             }
             return view('app.club_devide', ['club' => $club, 'section' => $section, 'all' => $all, 'limit' => $limit, 'devide_num' => $devide_num, 'counter' => $counter, 'result' => $result]);
         } else {
