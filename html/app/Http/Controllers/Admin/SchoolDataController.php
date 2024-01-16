@@ -521,9 +521,15 @@ class SchoolDataController extends Controller
         $referer = $request->headers->get('referer');
         $s = Student::withTrashed()->find($uuid);
         $gsuite = $s->gmails()->where('primary', true)->first();
-        $userKey = $gsuite->userKey;
-        $pwd = substr($s->idno, -6);
-        $result = (new GsuiteServiceProvider)->reset_password($userKey, $pwd);
+        if ($gsuite) {
+            $userKey = $gsuite->userKey;
+            $pwd = substr($s->idno, -6);
+            $result = (new GsuiteServiceProvider)->reset_password($userKey, $pwd);    
+        } else {
+            return redirect(urldecode($referer))->with('error', '該學生尚未建立 Google 帳號，請先進行帳號同步！');
+            //$userKey = 'meps' . $s->id . '@' . config('services.gsuite.domain');
+            //$result = (new GsuiteServiceProvider)->sync_user($s, $userKey); 
+        }
         if ($result) {
             Watchdog::watch($request, '重設學生「' . $s->stdno . $s->realname . '」密碼為 ' . $pwd);
             return redirect(urldecode($referer))->with('success', '學生 Google 密碼已經重設為身分證字號後六碼！');    
