@@ -580,7 +580,7 @@ class ClubController extends Controller
             if (!empty($data)) {
                 foreach ($data as $k => $w) {
                     $weekdays[$k] = (integer) $w;
-                }    
+                }
             }
         }
         $section->update([
@@ -866,7 +866,7 @@ class ClubController extends Controller
             $enrolls = $club->section_accepted($section)->sortBy(function (ClubEnroll $enroll) {
                 return $enroll->student->stdno;
             });
-            $all = $all_temp = $enrolls->count();
+            $all = $enrolls->count();
             if ($all == 0) {
                 return redirect()->route('clubs.admin')->with('error', '尚未錄取學生，因此無法分組！');
             }
@@ -900,13 +900,15 @@ class ClubController extends Controller
                 }
             }
             arsort($classes);
+            $all = array_sum($classes);
             $limit = $request->input('limit');
             if (empty($limit)) $limit = 20;
-            $devide_num = $devide_temp = ceil($all / $limit);
+            $devide_num = ceil($all / $limit);
             $mean = round($all / $devide_num);
             $n = 1;
             $result = [];
             while (count($result) < $devide_num) {
+                if (empty($classes)) break;
                 $solutions = find_solutions($classes, $mean);
                 $last = 0;
                 $d = $mean;
@@ -925,7 +927,7 @@ class ClubController extends Controller
                 $n ++;
             }
             if (count($classes) > 0) {
-                $n = $n - 2;
+                $n = array_key_last($result);
                 foreach ($classes as $cls => $max) {
                     $result[$n]['classes'][] = $cls;
                     $result[$n]['sum'] += $max;

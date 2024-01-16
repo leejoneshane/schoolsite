@@ -13,7 +13,7 @@
     <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>改變上限將會重新分組，您可以試試看哪一種組合最好！</span>
 </div></p>
 <p><div class="p-3">
-    <label class="inline">錄取總人數：<span class="text-blue-700">{{ $all }}</span>，</label>
+    <label class="inline">{{ ($club->section($section)->self_defined) ? '統計單日最多上課人數' : '錄取總人數' }}：<span class="text-blue-700">{{ $all }}</span>，</label>
     <label class="inline">建議分成 <span id="groups" class="text-blue-700">{{ $devide_num }}</span> 組。</label>
 </div></p>
 <form id="save" action="{{ route('clubs.devide', [ 'club_id' => $club->id, 'section' => $section ]) }}" method="POST">

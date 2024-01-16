@@ -156,11 +156,12 @@ function section_between_date($section = null) {
 
 function find_solutions(Array $assoc, int $mean) {
     $solution = [];
+    if (empty($assoc)) return false;
     $k = array_key_first($assoc);
     $v = $assoc[$k];
     $mod = $mean - $v;
     unset($assoc[$k]);
-    if (count($assoc) < 2) {
+    if (count($assoc) < 1) {
         $solution[] = [ 'classes' => [ $k ], 'sum' => $v ];
     } else {
         list($p, $q, $keys) = near_search($assoc, $mod);
@@ -172,9 +173,11 @@ function find_solutions(Array $assoc, int $mean) {
                 $solution[] = [ 'classes' => [ $k, $q ], 'sum' => $v + $assoc[$q] ];
             } else {
                 if (empty($keys)) {
-                    $sub_solution = find_solutions($assoc, $mod);
-                    foreach ($sub_solution as $sub) {
-                        $solution[] = [ 'classes' => array_merge([$k], $sub['classes']), 'sum' => $v + $sub['sum'] ];
+                    if (!empty($assoc)) {
+                        $sub_solution = find_solutions($assoc, $mod);
+                        foreach ($sub_solution as $sub) {
+                            $solution[] = [ 'classes' => array_merge([$k], $sub['classes']), 'sum' => $v + $sub['sum'] ];
+                        }
                     }
                 } else {
                     $assoc = array_slice_assoc_inverse($assoc, $keys);
