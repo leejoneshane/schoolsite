@@ -198,6 +198,11 @@
         </td>
         <td class="p-2 text-lg">
         @if ($current == $section || $current = prev_section($section))
+        @if ($club->devide && count($groups) > 1)
+        <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" title="分組" href="{{ route('clubs.selgrp', ['enroll_id' => $enroll->id]) }}">
+            <i class="fa-solid fa-people-arrows"></i>
+        </a>
+        @endif
         @if ($enroll->accepted)
             <button class="py-2 pr-6 text-fuchsia-300 hover:text-fuchsia-600" title="除名"
                 onclick="
@@ -205,7 +210,7 @@
                 myform.action = '{{ route('clubs.deny', ['enroll_id' => $enroll->id]) }}';
                 myform.submit();
             ">
-                <i class="fa-solid fa-person-circle-xmark"></i>
+                <i class="fa-solid fa-user-xmark"></i>
             </button>
         @else
             <button class="py-2 pr-6 text-blue-300 hover:text-blue-600" title="錄取"
@@ -214,7 +219,7 @@
                 myform.action = '{{ route('clubs.valid', ['enroll_id' => $enroll->id]) }}';
                 myform.submit();
             ">
-                <i class="fa-solid fa-person-circle-check"></i>
+                <i class="fa-solid fa-user-check"></i>
             </button>
         @endif
             <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
@@ -223,7 +228,7 @@
                 myform.action = '{{ route('clubs.delenroll', ['enroll_id' => $enroll->id]) }}';
                 myform.submit();
             ">
-                <i class="fa-solid fa-trash"></i>
+                <i class="fa-solid fa-user-slash"></i>
             </button>
         @endif
         </td>

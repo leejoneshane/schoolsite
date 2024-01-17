@@ -201,6 +201,8 @@ class ClubTimePerGroupSheet implements FromCollection, WithHeadings, WithStyles,
     {
         if ($this->devide == 'all') {
             return '全部';
+        } elseif (is_null($this->devide)) {
+            return '未分組';
         } else {
             return '第' . $this->devide . '組';
         }

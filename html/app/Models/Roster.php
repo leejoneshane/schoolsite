@@ -169,7 +169,7 @@ class Roster extends Model
     //檢查學生名單是否可以填報
     public function opened()
     {
-        return Carbon::now() >= $this->started_at && Carbon::now() <= $this->ended_at;
+        return Carbon::today() >= $this->started_at && Carbon::today() <= $this->ended_at;
     }
 
     //檢查學生名單是否不能填報

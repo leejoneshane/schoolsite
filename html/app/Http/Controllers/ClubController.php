@@ -854,6 +854,34 @@ class ClubController extends Controller
         }
     }
 
+    public function enrollGroupSelect($enroll_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $enroll = ClubEnroll::find($enroll_id);
+            $groups = $enroll->club->section_groups($enroll->section);
+            return view('app.club_group', ['enroll' => $enroll, 'groups' => $groups]);
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function enrollGroupUpdate(Request $request, $enroll_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('club.manager');
+        if ($user->is_admin || $manager) {
+            $enroll = ClubEnroll::find($enroll_id);
+            $devide = $request->input('group');
+            $enroll->update(['groupBy' => $devide]);
+            Watchdog::watch($request, '已將' . $enroll->club->name . '報名資訊：' . $enroll->student->realname . '分至第' . $devide . '組！');
+            return redirect()->back()->with('success', '已將學生'.$enroll->student->realname.'分到第' . $devide . '組！');
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
     public function enrollDevide(Request $request, $club_id, $section)
     {
         $user = User::find(Auth::user()->id);
