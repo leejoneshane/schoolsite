@@ -36,6 +36,7 @@ class ClubSection extends Model
         'cash',
         'total',
         'maximum',
+        'admit',
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）
@@ -49,6 +50,7 @@ class ClubSection extends Model
         'self_defined' => 'boolean',
         'startDate' => 'datetime:Y-m-d',
         'endDate' => 'datetime:Y-m-d',
+        'admit' => 'array',
     ];
 
     //以下為透過程式動態產生之屬性

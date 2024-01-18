@@ -167,6 +167,21 @@ class Club extends Model
         }
     }
 
+    //取得此社團指定學年或本學年所有的報名資訊，依年級篩選
+    public function section_enrolls_by_grade($section = null, $grade)
+    {
+        if ($section) {
+            $enrolls = $this->enrolls()->where('section', $section)->get();
+        } else {
+            $section = $this->section();
+            if (!$section) return null;
+            $enrolls = $this->enrolls()->where('section', $section->section)->get();
+        }
+        return $enrolls->filter(function (ClubEnroll $item) use ($grade) {
+            return $item->student->grade_id == $grade;
+        });
+    }
+
     //取得此社團指定學年或本學年所有已錄取的報名資訊，依報名時間排序
     public function section_accepted($section = null)
     {
@@ -177,6 +192,21 @@ class Club extends Model
             if (!$section) return null;
             return $this->accepted_enrolls()->where('section', $section->section)->get();
         }
+    }
+
+    //取得此社團指定學年或本學年所有已錄取的報名資訊，依年級篩選
+    public function section_accepted_by_grade($section = null, $grade)
+    {
+        if ($section) {
+            $enrolls = $this->accepted_enrolls()->where('section', $section)->get();
+        } else {
+            $section = $this->section();
+            if (!$section) return null;
+            $enrolls = $this->accepted_enrolls()->where('section', $section->section)->get();
+        }
+        return $enrolls->filter(function (ClubEnroll $item) use ($grade) {
+            return $item->student->grade_id == $grade;
+        });
     }
 
     //取得此社團指定學年或本學年所有的學生分組
@@ -205,10 +235,22 @@ class Club extends Model
         return $this->section_enrolls($section) ? $this->section_enrolls($section)->count() : 0;
     }
 
+    //計算此社團本學年指定年級報名學生數
+    public function count_enrolls_by_grade($section = null, $grade)
+    {
+        return $this->section_enrolls_by_grade($section, $grade) ? $this->section_enrolls_by_grade($section, $grade)->count() : 0;
+    }
+
     //計算此社團本學年錄取學生數
     public function count_accepted($section = null)
     {
         return $this->section_accepted($section) ? $this->section_accepted($section)->count() : 0;
+    }
+
+    //計算此社團本學年指定年級錄取學生數
+    public function count_accepted_by_grade($section = null, $grade)
+    {
+        return $this->section_accepted_by_grade($section, $grade) ? $this->section_accepted_by_grade($section, $grade)->count() : 0;
     }
 
     //取得此社團所有的學生

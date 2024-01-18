@@ -29,6 +29,7 @@ return new class extends Migration
             $table->integer('cash');
             $table->integer('total');
             $table->integer('maximum');
+            $table->json('admit')->nullable();
             $table->timestamps();
         });
     }

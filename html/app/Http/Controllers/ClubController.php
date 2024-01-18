@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Student;
+use App\Models\Grade;
 use App\Models\Club;
 use App\Models\ClubSection;
 use App\Models\ClubKind;
@@ -517,7 +518,13 @@ class ClubController extends Controller
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
             if (!$section) $section = current_section();
-            return view('app.club_addsection', ['club' => $club, 'section' => $section]);
+            $grades = null;
+            if (count($club->for_grade) > 1) {
+                $grades = Grade::all()->mapWithKeys(function (Grade $item) {
+                    return [$item->id => $item->name];
+                })->toArray();
+            }
+            return view('app.club_addsection', ['club' => $club, 'section' => $section, 'grades' => $grades]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -539,6 +546,12 @@ class ClubController extends Controller
                 }
             }
         }
+        $admit = null;
+        if ($request->has('admit')) {
+            foreach($request->input('admit') as $k => $v) {
+                if ($v) $admit[$k] = $v;
+            }
+        }
         $c = ClubSection::create([
             'section' => $section,
             'club_id' => $club_id,
@@ -554,6 +567,7 @@ class ClubController extends Controller
             'cash' => $request->input('cash') ?: 0,
             'total' => $request->input('total') ?: 0,
             'maximum' => $request->input('limit') ?: 0,
+            'admit' => $admit,
         ]);
         Watchdog::watch($request, '新增學生社團開班資訊：' . $c->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('clubs.sections', ['club_id' => $club_id])->with('success', '開班資訊已經新增完成！');
@@ -565,7 +579,24 @@ class ClubController extends Controller
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $section = ClubSection::find($section_id);
-            return view('app.club_editsection', ['section' => $section]);
+            $club = $section->club;
+            $grades = null;
+            if (count($club->for_grade) > 1) {
+                $grades = Grade::all()->mapWithKeys(function (Grade $item) {
+                    return [$item->id => $item->name];
+                })->toArray();
+            }
+            $counter = [];
+            $accepted = [];
+            if (count($club->for_grade) > 1) {
+                for ($g=1; $g<7; $g++) {
+                    $counter[$g] = $club->count_enrolls_by_grade($section->section, $g); //報名人數
+                    $accepted[$g] = $club->count_accepted_by_grade($section->section, $g); //錄取人數
+                }
+                $counter['total'] = array_sum($counter);
+                $accepted['total'] = array_sum($accepted);
+            }
+            return view('app.club_editsection', ['section' => $section, 'grades' => $grades, 'counter' => $counter, 'accepted' => $accepted]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -583,6 +614,12 @@ class ClubController extends Controller
                 }
             }
         }
+        $admit = null;
+        if ($request->has('admit')) {
+            foreach($request->input('admit') as $k => $v) {
+                if ($v) $admit[$k] = $v;
+            }
+        }
         $section->update([
             'weekdays' => $weekdays,
             'self_defined' => $request->has('selfdefine') ? true : false,
@@ -596,6 +633,7 @@ class ClubController extends Controller
             'cash' => $request->input('cash') ?: 0,
             'total' => $request->input('total') ?: 0,
             'maximum' => $request->input('limit') ?: 0,
+            'admit' => $admit,
         ]);
         Watchdog::watch($request, '更新開班資訊：' . $section->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('clubs.sections', ['club_id' => $section->club_id])->with('success', '開班資訊已經修改完成！');
@@ -649,6 +687,7 @@ class ClubController extends Controller
         $club = Club::find($club_id);
         $section = $club->section();
         $student = Student::find($user->uuid);
+        $grade = $student->grade();
         if ($student->has_enroll($club_id, $section)) {
             return redirect()->route('clubs.enroll')->with('error', '您已經報名該社團，無法再次報名！');
         }
@@ -660,7 +699,6 @@ class ClubController extends Controller
         if ($section->maximum != 0 && $order > $section->maximum) {
             return redirect()->route('clubs.enroll')->with('error', '很抱歉，該學生社團已經額滿！');
         }
-        $enrolls = Student::find($user->uuid)->section_enrolls();
         $weekdays = [];
         if ($section->self_defined && $request->has('weekdays')) {
             $weekdays = $request->input('weekdays');
@@ -668,6 +706,7 @@ class ClubController extends Controller
                 $weekdays[$k] = (integer) $w;
             }
         }
+        $enrolls = Student::find($user->uuid)->section_enrolls();
         $conflict = false;
         foreach ($enrolls as $en) {
             $conflict = $en->conflict($club, $weekdays);
@@ -690,11 +729,21 @@ class ClubController extends Controller
             Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '報名順位：' . $order);
             return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.'因須進行資格審核，待錄取作業完成後，將另行公告通知！');
         }
-        $enroll->accepted = true;
-        $enroll->save();
         $message = '';
-        $total = $section->total;
-        if ($total > 0 && $order > $total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        if (count($club->for_grade) > 1 && isset($section->admit[$grade->id])) {
+            $order = $club->count_enrolls_by_grade(null, $grade->id) + 1;
+            if ($order > $section->admit[$grade->id]) {
+                $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+            }
+        } else {
+            $total = $section->total;
+            if ($total > 0 && $order > $total) {
+                $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+            } else {
+                $enroll->accepted = true;
+                $enroll->save();
+            }
+        }
         Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '報名順位：' . $order . $message);
         return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
     }
@@ -820,7 +869,18 @@ class ClubController extends Controller
                 }
                 $mygroup = 'all';
             }
-            return view('app.club_enrolls', ['club' => $club, 'current' => $current, 'section' => $section, 'group' => $mygroup, 'groups' => $groups, 'enrolls' => $enrolls, 'order' => $order]);
+            $grades = Grade::all();
+            $counter = [];
+            $accepted = [];
+            if (count($club->for_grade) > 1) {
+                for ($g=1; $g<7; $g++) {
+                    $counter[$g] = $club->count_enrolls_by_grade($section, $g); //報名人數
+                    $accepted[$g] = $club->count_accepted_by_grade($section, $g); //錄取人數
+                }
+                $counter['total'] = array_sum($counter);
+                $accepted['total'] = array_sum($accepted);
+            }
+            return view('app.club_enrolls', ['club' => $club, 'current' => $current, 'section' => $section, 'group' => $mygroup, 'groups' => $groups, 'grades' => $grades, 'counter' => $counter, 'accepted' => $accepted, 'enrolls' => $enrolls, 'order' => $order]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -1015,6 +1075,7 @@ class ClubController extends Controller
     {
         $uuid = $request->input('student');
         $student = Student::find($uuid);
+        $grade = $student->grade();
         if ($student->has_enroll($club_id, $section)) {
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '該生已經報名此社團，無法再次報名！');
         }
@@ -1023,11 +1084,11 @@ class ClubController extends Controller
             $same_kind = $student->current_enrolls_for_kind($club->kind_id, $section);
             if ($same_kind->isNotEmpty()) return redirect()->route('clubs.enroll')->with('error', '很抱歉，'.$club->kind->name.'只允許報名參加一個社團！');
         }
+        $section_obj = $club->section($section);
         $order = $club->count_enrolls() + 1;
-        if ($club->section($section)->maximum != 0 && $order > $club->section($section)->maximum) {
+        if ($section_obj->maximum != 0 && $order > $section_obj->maximum) {
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '很抱歉，該學生社團已經額滿！');
         }
-        $enrolls = Student::find($uuid)->section_enrolls($section);
         $weekdays = [];
         if ($club->section($section)->self_defined && $request->has('weekdays')) {
             $weekdays = $request->input('weekdays');
@@ -1036,6 +1097,7 @@ class ClubController extends Controller
             }
         }
 /*
+        $enrolls = Student::find($uuid)->section_enrolls($section);
         $conflict = false;
         foreach ($enrolls as $en) {
             $conflict = $en->conflict($club, $weekdays);
@@ -1059,11 +1121,21 @@ class ClubController extends Controller
             Watchdog::watch($request, '新增報名資訊，學生社團：' . $club->name . '，學生：' . $student->class_id . $student->realname);
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '已經完成報名手續，該生報名順位為'.$order.'！');
         }
-        $enroll->accepted = true;
-        $enroll->save();
         $message = '';
-        $total = $club->section($section)->total;
-        if ($total > 0 && $order > $total) $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+        if (count($club->for_grade) > 1 && isset($section_obj->admit[$grade->id])) {
+            $order = $club->count_enrolls_by_grade(null, $grade->id) + 1;
+            if ($order > $section_obj->admit[$grade->id]) {
+                $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+            }
+        } else {
+            $total = $club->section($section)->total;
+            if ($total > 0 && $order > $total) {
+                $message = '，目前列為候補，若能遞補錄取將會另行通知！';
+            } else {
+                $enroll->accepted = true;
+                $enroll->save();        
+            }
+        }
         Watchdog::watch($request, '新增報名資訊，學生社團：' . $club->name . '，學生：' . $student->class_id . $student->realname);
         return redirect()->route('clubs.enrolls', ['club_id' => $club_id, 'section' => $section])->with('success', '已經完成報名手續，該生報名順位為'.$order.$message);
     }
@@ -1093,6 +1165,7 @@ class ClubController extends Controller
             $class_id = substr($stdno, 0, 3);
             $seat = (integer) substr($stdno, -2);
             $student = Student::findByStdno($class_id, $seat);
+            $grade = $student->grade();
             if (!$student) {
                 $message .= $stdno.$student->realname.'此學生不存在，無法報名！';
                 continue;
@@ -1108,12 +1181,11 @@ class ClubController extends Controller
                     continue;
                 }
             }
-            $order = $club->count_enrolls($section) + 1;
-            if ($club->section()->maximum != 0 && $order > $club->section()->maximum) {
-                $message .= $stdno.$student->realname.'因該社團已經額滿，無法報名！';
-                continue;
+            $section_obj = $club->section($section);
+            $order = $club->count_enrolls() + 1;
+            if ($section_obj->maximum != 0 && $order > $section_obj->maximum) {
+                return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '很抱歉，該學生社團已經額滿！');
             }
-            $enrolls = $student->section_enrolls();
             $weekdays = [];
             if ($club->section()->self_defined && $request->has('weekdays')) {
                 $weekdays = $request->input('weekdays');
@@ -1122,6 +1194,7 @@ class ClubController extends Controller
                 }
             }
 /*
+            $enrolls = $student->section_enrolls();
             $conflict = false;
             foreach ($enrolls as $en) {
                 $conflict = $en->conflict($club, $weekdays);
@@ -1141,13 +1214,20 @@ class ClubController extends Controller
                 $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
                 continue;
             }
-            $enroll->accepted = true;
-            $enroll->save();
-            $total = $club->section($section)->total;
-            if ($total > 0 && $order > $total) {
-                $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'，目前列為候補！';
+            if (count($club->for_grade) > 1 && isset($section_obj->admit[$grade->id])) {
+                $order = $club->count_enrolls_by_grade(null, $grade->id) + 1;
+                if ($order > $section_obj->admit[$grade->id]) {
+                    $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'，目前列為候補！';
+                }
             } else {
-                $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
+                $total = $club->section($section)->total;
+                if ($total > 0 && $order > $total) {
+                    $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'，目前列為候補！';
+                } else {
+                    $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'！';
+                    $enroll->accepted = true;
+                    $enroll->save();
+                }    
             }
             Watchdog::watch($request, '快速新增報名資訊，學生社團：' . $club->name . '，學生：' . $stdno.$student->realname);
         }

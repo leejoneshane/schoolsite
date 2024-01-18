@@ -86,6 +86,29 @@
         <input type="number" name="limit" min="0" value="{{ $section->maximum }}" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入數字，0或留白代表無限制！報名上限超過招生人數時，超過部分視同候補，將不會自動錄取！</span>
     </div></p>
+    @if (count($section->club->for_grade) > 1)
+    <p><div class="p-3">
+        <label for="admit">自動錄取名額：</label>
+        @foreach ($section->club->for_grade as $g)
+        <span class="text-sm pl-6">{{ $grades[$g] }}：</span>
+        <input class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+            type="number" name="admit[{{$g}}]" value="{{ isset(($section->admit)[$g]) ? ($section->admit)[$g] : '' }}">
+        @endforeach
+        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入數字，0代表通通列為候補（不錄取），未填寫的年級只要未超過報名上限將全數自動錄取。</span>
+    </div></p>
+    <div class="px-3 py-0">
+        <label for="sections">已報名人數：合計{{ $counter['total'] }}</label>
+        @foreach ($grades as $id => $grade)
+        <label class="pl-6">{{ $grade }}：{{ $counter[$id] }}</label>
+        @endforeach
+    </div>
+    <div class="px-3 py-0">
+        <label for="sections">已錄取人數：合計{{ $accepted['total'] }}</label>
+        @foreach ($grades as $id => $grade)
+        <label class="pl-6">{{ $grade }}：{{ $accepted[$id] }}</label>
+        @endforeach
+    </div>
+    @endif
     <p class="p-6">
         <div class="inline">
             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">

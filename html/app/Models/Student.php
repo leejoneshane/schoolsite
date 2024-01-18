@@ -54,6 +54,7 @@ class Student extends Model
     //以下為透過程式動態產生之屬性
     protected $appends = [
         'stdno',
+        'grade_id',
         'age',
     ];
 
@@ -72,6 +73,12 @@ class Student extends Model
     public function getAgeAttribute()
     {
         return Carbon::parse($this->birthdate)->age;
+    }
+
+    //提供學生年齡
+    public function getGradeIdAttribute()
+    {
+        return substr($this->class_id, 0, 1);
     }
 
     //篩選指定學號的學生

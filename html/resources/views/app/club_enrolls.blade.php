@@ -121,6 +121,20 @@
     @endif
 @endif
 </div>
+@if (count($club->for_grade) > 1)
+<div class="px-3 py-0">
+    <label for="sections">已報名人數：合計{{ $counter['total'] }}</label>
+    @foreach ($grades as $grade)
+    <label class="pl-6">{{ $grade->name }}：{{ $counter[$grade->id] }}</label>
+    @endforeach
+</div>
+<div class="px-3 py-0">
+    <label for="sections">已錄取人數：合計{{ $accepted['total'] }}</label>
+    @foreach ($grades as $grade)
+    <label class="pl-6">{{ $grade->name }}：{{ $accepted[$grade->id] }}</label>
+    @endforeach
+</div>
+@endif
 <table class="w-full py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
         <th scope="col" class="p-2">
