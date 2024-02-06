@@ -134,14 +134,14 @@ class LunchSurvey extends Model
     //將學生資料升級
     public static function upgrade($section)
     {
-        $surveys = LunchSurvey::where('section', $section)->where('upgrade', '<', next_section())->get();
+        $surveys = LunchSurvey::where('section', $section)->where('upgraded', '<', next_section())->get();
         if ($surveys->isNotEmpty()) {
             foreach ($surveys as $s) {
                 $stu = $s->student;
                 if ($stu) {
                     $s->class_id = $stu->class_id;
                     $s->seat = $stu->seat;
-                    $s->upgrade = next_section();
+                    $s->upgraded = next_section();
                     $s->save();
                 } else {
                     $s->delete;
