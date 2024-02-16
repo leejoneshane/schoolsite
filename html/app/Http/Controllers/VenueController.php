@@ -149,7 +149,7 @@ class VenueController extends Controller
                     $path = public_path('venue/' . $venue->reserved_info);
                     if (file_exists($path)) {
                         unlink($path);
-                    }    
+                    }
                 }
                 $extension = $request->file('reserved_info')->getClientOriginalExtension();
                 $fileName = $venue->id . '.' . $extension;
@@ -162,6 +162,9 @@ class VenueController extends Controller
             if ($unavailable && $unavailable == 'yes') {
                 $venue->unavailable_at = $request->input('startdate');
                 $venue->unavailable_until = $request->input('enddate');
+            } else {
+                $venue->unavailable_at = null;
+                $venue->unavailable_until = null;
             }
             $map = $request->input('map');
             $schedule = collect();
