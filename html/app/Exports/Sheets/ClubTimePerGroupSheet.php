@@ -61,7 +61,7 @@ class ClubTimePerGroupSheet implements FromCollection, WithHeadings, WithStyles,
         foreach ($rows as $k => $row) {
             $rows[$k]->no = $i;
             $clubs = [];
-            $next = $row->student->section_enrolls($this->section)->reject($row);
+            $next = $row->student->section_accepted($this->section)->reject($row);
             $period0 = $period1 = $period2 = [];
             foreach ($next as $en) {
                 $sec = $en->club_section();

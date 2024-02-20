@@ -119,7 +119,7 @@
             @endif
         </td>
         <td class="p-2">
-            @if ($enroll->section > prev_section())
+            @if ($enroll->club->self_remove && $enroll->section > prev_section())
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 href="{{ route('clubs.editenroll', ['enroll_id' => $enroll->id]) }}">
                 修改報名資訊

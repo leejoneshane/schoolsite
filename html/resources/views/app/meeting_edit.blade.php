@@ -18,7 +18,7 @@
     <p><div class="p-3">
         <label class="inline text-sm">截止日期：</label>
         <input class="w-36 rounded p-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-        type="date" name="enddate" value="{{ $meet->expired_at }}">
+        type="date" name="enddate" value="{{ $meet->expired_at->toDateString() }}">
         <span class="pl-6">
             <label for="open" class="inline-flex relative items-center align-middle cursor-pointer">
                 <input type="checkbox" id="open" name="open" value="yes" class="sr-only peer"{{ ($meet->inside) ? '' : ' checked'}}>

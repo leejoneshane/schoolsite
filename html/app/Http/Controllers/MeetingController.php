@@ -24,7 +24,7 @@ class MeetingController extends Controller
         $teacher = $user->profile;
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $create = $user->is_admin || $user->hasPermission('meeting.director');
-        return view('app.meetings', ['date' => $dt->toDateString(), 'create' => $create, 'unit' => $teacher->unit_id, 'meets' => $meets]);
+        return view('app.meetings', ['date' => $dt->toDateString(), 'create' => $create, 'unit' => $teacher->mainunit, 'meets' => $meets]);
     }
 
     public function add()

@@ -129,6 +129,12 @@ class Student extends Model
         return $this->hasMany('App\Models\ClubEnroll', 'uuid', 'uuid');
     }
 
+    //取得此學生所有社團報名資訊
+    public function accepted()
+    {
+        return $this->hasMany('App\Models\ClubEnroll', 'uuid', 'uuid')->where('accepted', true);
+    }
+
     //取得此學生指定學年的所有社團報名資訊
     public function section_enrolls($section = null)
     {
@@ -144,6 +150,26 @@ class Student extends Model
     public function current_enrolls_for_kind($kind_id, $section = null)
     {
         $filtered = $this->section_enrolls($section)->filter(function ($enroll) use ($kind_id) {
+            return $enroll->club->kind_id == $kind_id;
+        });
+        return $filtered;
+    }
+
+    //取得此學生指定學年的所有社團報名資訊
+    public function section_accepted($section = null)
+    {
+        if ($section) {
+            return $this->accepted()->where('section', $section)->get();
+        } else {
+            $section = $this->accepted()->latest('section')->first(); 
+            return $this->accepted()->where('section', $section)->get();
+        }
+    }
+
+    //取得此學生指定分類的所有社團報名資訊
+    public function current_accepted_for_kind($kind_id, $section = null)
+    {
+        $filtered = $this->section_accepted($section)->filter(function ($enroll) use ($kind_id) {
             return $enroll->club->kind_id == $kind_id;
         });
         return $filtered;
