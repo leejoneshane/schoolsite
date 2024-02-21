@@ -54,6 +54,7 @@ class IcsEventPolicy
     public function update(User $user, IcsEvent $event)
     {
         if ($user->user_type == 'Teacher') {
+            if ($event->uuid == $user->uuid) return true;
             $role = Role::find($user->profile->role_id);
             $unit_no = Unit::find($event->unit_id)->unit_no;
             if ($unit_no == substr($role->unit->unit_no, 0, 3) && (
