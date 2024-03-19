@@ -6,7 +6,7 @@
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('organize') }}">
         <i class="fa-solid fa-eject"></i>回上一頁
     </a>
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('organize.listresult') }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('organize.listresult', ['year' => $year]) }}">
         <i class="fa-solid fa-user-check"></i>職編結果一覽表
     </a>
 </div>
@@ -57,9 +57,11 @@
             {{ $v->shortfall }}
         </td>
         <td class="p-2">
-            @foreach ($v->reserved() as $t)
+            @if ($v->reserved && $v->reserved->count() > 0)
+                @foreach ($v->reserved as $t)
             <span class="pl-4">{{ $t->realname }}</span>
-            @endforeach
+                @endforeach
+            @endif
         </td>
     </tr>
     @endforeach

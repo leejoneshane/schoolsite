@@ -92,7 +92,7 @@
             {{ $v->assigned }}
         </td>
         <td class="p-2">
-        @foreach ($v->reserved() as $t)
+        @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
         @foreach ($teachers[$v->id] as $t)
@@ -124,7 +124,7 @@
             {{ $v->assigned }}
         </td>
         <td class="p-2">
-        @foreach ($v->reserved() as $t)
+        @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
         @foreach ($teachers[$v->id] as $t)
@@ -151,7 +151,7 @@
             {{ $v->assigned }}
         </td>
         <td class="p-2">
-        @foreach ($v->reserved() as $t)
+        @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
         @foreach ($teachers[$v->id] as $t)
@@ -182,7 +182,7 @@
             {{ $v->assigned }}
         </td>
         <td class="p-2">
-        @foreach ($v->reserved() as $t)
+        @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
         @foreach ($teachers[$v->id] as $t)
@@ -218,7 +218,7 @@
             {{ $v->assigned }}
         </td>
         <td class="p-2">
-        @foreach ($v->reserved() as $t)
+        @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
         @foreach ($teachers[$v->id] as $t)
@@ -244,7 +244,7 @@
             {{ $v->assigned }}
         </td>
         <td class="p-2">
-        @foreach ($v->reserved() as $t)
+        @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
         @foreach ($teachers[$v->id] as $t)
@@ -283,7 +283,7 @@
             {{ $v->assigned }}
         </td>
         <td class="p-2">
-        @foreach ($v->reserved() as $t)
+        @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
         @foreach ($teachers[$v->id] as $t)
@@ -314,7 +314,7 @@
             {{ $v->assigned }}
         </td>
         <td class="p-2">
-        @foreach ($v->reserved() as $t)
+        @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
         @foreach ($teachers[$v->id] as $t)

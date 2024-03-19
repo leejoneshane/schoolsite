@@ -106,19 +106,19 @@ class OrganizeVacancy extends Model
     //取得此職缺的任職教師
     public function original()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'organize_original', 'vacancy_id', 'uuid')->where('syear', $this->syear)->get();
+        return $this->belongsToMany('App\Models\Teacher', 'organize_original', 'vacancy_id', 'uuid')->where('syear', $this->syear);
     }
 
     //取得此職缺的保留職缺教師
     public function reserved()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'organize_reserved', 'vacancy_id', 'uuid')->where('syear', $this->syear)->get();
+        return $this->belongsToMany('App\Models\Teacher', 'organize_reserved', 'vacancy_id', 'uuid')->where('syear', $this->syear);
     }
 
     //取得已編排擔任此職缺的教師
     public function assigned()
     {
-        return $this->belongsToMany('App\Models\Teacher', 'organize_assign', 'vacancy_id', 'uuid')->where('syear', $this->syear)->get();
+        return $this->belongsToMany('App\Models\Teacher', 'organize_assign', 'vacancy_id', 'uuid')->where('syear', $this->syear);
     }
 
     //根據指定的志願序，計算此職缺的選填人數

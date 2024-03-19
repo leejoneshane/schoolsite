@@ -21,7 +21,13 @@
         <option value="{{ $y }}"{{ ($y == $year) ? ' selected' : '' }}>{{ $y }}</option>
         @endforeach
     </select>
+    @if (!$flow || !$flow->onFinish())
+    <span class="p-2">
+        <span class="text-red-700">尚未設定時程，請洽教務處詢問！</span>
+    </span>
+    @endif
 </div>
+@if ($flow && $flow->onFinish())
 <table class="w-full p-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
         <th scope="col" class="w-32 p-2">
@@ -43,14 +49,19 @@
             {{ $v->shortfall }}
         </td>
         <td class="p-2">
-            @foreach ($v->reserved() as $t)
+            @if ($v->reserved && $v->reserved->count() > 0)
+                @foreach ($v->reserved as $t)
             <span class="pl-4 text-green-500">{{ $t->realname }}</span>
-            @endforeach
-            @foreach ($v->assigned() as $t)
+                @endforeach
+            @endif
+            @if ($v->assigned && $v->assigned->count() > 0)
+                @foreach ($v->assigned as $t)
             <span class="pl-4 text-blue-500">{{ $t->realname }}</span>
-            @endforeach
+                @endforeach
+            @endif
         </td>
     </tr>
     @endforeach
 </table>
+@endif
 @endsection

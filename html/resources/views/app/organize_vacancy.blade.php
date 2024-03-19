@@ -63,9 +63,9 @@
                 type="text" name="shortfall{{ $v->id }}" value="{{ $v->shortfall }}" required>
         </td>
         <td class="p-2">
-            @foreach ($v->original() as $t)
+            @foreach ($v->original as $t)
             <span class="pl-4">{{ $t->realname }}</span>
-            @if ($v->reserved()->contains($t))
+            @if ($v->reserved->contains($t))
             <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="release" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
                 開缺
             </button>
@@ -75,7 +75,7 @@
             </button>
             @endif
             @endforeach
-            @if ($v->original()->count() > 1)
+            @if ($v->reserved->count() > 1)
             <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
             @endif
         </td>
@@ -121,9 +121,9 @@
                 type="text" name="shortfall{{ $v->id }}" value="{{ $v->shortfall }}" required>
         </td>
         <td class="p-2">
-            @foreach ($v->original() as $t)
+            @foreach ($v->original as $t)
             <span class="pl-4">{{ $t->realname }}</span>
-            @if ($v->reserved()->contains($t))
+            @if ($v->reserved->contains($t))
             <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="release" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
                 開缺
             </button>
@@ -133,7 +133,7 @@
             </button>
             @endif
             @endforeach
-            @if ($v->original()->count() > 1)
+            @if ($v->reserved->count() > 1)
             <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
             @endif
         </td>
@@ -179,9 +179,9 @@
                 type="text" name="shortfall{{ $v->id }}" value="{{ $v->shortfall }}" required>
         </td>
         <td class="p-2">
-            @foreach ($v->original() as $t)
+            @foreach ($v->original as $t)
             <span class="pl-4">{{ $t->realname }}</span>
-            @if ($v->reserved()->contains($t))
+            @if ($v->reserved->contains($t))
             <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="release" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
                 開缺
             </button>
@@ -191,7 +191,7 @@
             </button>
             @endif
             @endforeach
-            @if ($v->original()->count() > 1)
+            @if ($v->reserved->count() > 1)
             <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
             @endif
         </td>

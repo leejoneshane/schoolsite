@@ -163,7 +163,6 @@ class OrganizeController extends Controller
         if ($user->is_admin || $manager) {
             DB::table('organize_original')->where('syear', current_year())->delete();
             DB::table('organize_reserved')->where('syear', current_year())->delete();
-            DB::table('organize_swap')->where('syear', current_year())->delete();
             DB::table('organize_assign')->where('syear', current_year())->delete();
             OrganizeVacancy::where('syear', current_year())->delete();
             $this->vacancy_init();
@@ -286,12 +285,12 @@ class OrganizeController extends Controller
                     'assigned' => 0,
                 ]);
                 foreach ($a->teachers as $t) {
-                    DB::table('organize_original')->insert([
+                    DB::table('organize_original')->insertOrIgnore([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
                     ]);
-                    DB::table('organize_reserved')->insert([
+                    DB::table('organize_reserved')->insertOrIgnore([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
@@ -637,8 +636,9 @@ class OrganizeController extends Controller
         $years = OrganizeSettings::years();
         if (!in_array($current, $years)) $years[] = $current;
         rsort($years);
+        $flow = OrganizeSettings::where('syear', $year)->first();
         $vacancys = OrganizeVacancy::year($year);
-        return view('app.organize_listresult', ['current' => $current, 'year' => $year, 'years' => $years, 'vacancys' => $vacancys]);
+        return view('app.organize_listresult', ['flow' => $flow, 'current' => $current, 'year' => $year, 'years' => $years, 'vacancys' => $vacancys]);
     }
 
 }
