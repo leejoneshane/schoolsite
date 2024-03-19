@@ -89,7 +89,7 @@ class TpeduController extends Controller
                             }
                         }
                     } else {
-                        return redirect()->route('login')->with('error', "無法從單一身份驗證取得您的個資，因此無法登入！");
+                        return redirect()->route('login')->with('error', '無法從單一身份驗證取得您的個資，因此無法登入！');
                     }
                     if ($tpuser) {
                         $email = $tpuser->email; 
@@ -113,12 +113,12 @@ class TpeduController extends Controller
                         if ($user) {
                             Auth::login($user, true);
                             event(new Registered($user));
-                            return redirect()->route('home');    
+                            return redirect()->route('home');
                         } else {
-                            return redirect()->route('login')->with('error', "建立您的登入帳號失敗，請聯絡系統管理人員為您排除障礙！");
+                            return redirect()->route('login')->with('error', '建立您的登入帳號失敗，請聯絡系統管理人員為您排除障礙！');
                         }
                     } else {
-                        return redirect()->route('login')->with('error', "您的帳號並非隸屬於本校，因此無法登入！");
+                        return redirect()->route('login')->with('error', '您的帳號並非隸屬於本校，因此無法登入！');
                     }
                 }
             }
