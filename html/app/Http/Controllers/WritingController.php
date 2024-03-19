@@ -31,7 +31,7 @@ class WritingController extends Controller
             $order = session('order', 'updated_at');
         }
         if ($genre) {
-            $contexts = $genre->contexts()->orderByDesc($order)->paginate(16);
+            $contexts = $genre->contexts()->orderByDesc($order)->paginate(16)->withQueryString();
         } else {
             $contexts = collect();
         }

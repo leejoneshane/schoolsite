@@ -75,15 +75,18 @@ class TpeduController extends Controller
                     return redirect()->route('home');
                 } else { //new user
                     $tpuser = false;
-                    $temp = Student::find($uuid);
-                    if ($temp) {
-                        $user_type = 'Student';
-                        $tpuser = $temp;
-                    } else {
-                        $temp = Teacher::find($uuid);
+                    $result = $this->sso->fetch_user($uuid);
+                    if ($result) {
+                        $temp = Student::find($uuid);
                         if ($temp) {
-                            $user_type = 'Teacher';
+                            $user_type = 'Student';
                             $tpuser = $temp;
+                        } else {
+                            $temp = Teacher::find($uuid);
+                            if ($temp) {
+                                $user_type = 'Teacher';
+                                $tpuser = $temp;
+                            }
                         }
                     }
                     if ($tpuser) {
@@ -103,7 +106,7 @@ class TpeduController extends Controller
                             if (in_array('TPECadmin1', $characters)) {
                                 $user->is_admin = true;
                                 $user->save();
-                            }    
+                            }
                         }
                         Auth::login($user, true);
                         event(new Registered($user));

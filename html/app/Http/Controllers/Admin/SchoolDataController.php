@@ -519,20 +519,27 @@ class SchoolDataController extends Controller
     public function studentPwd(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');
+        $google = new GsuiteServiceProvider();
         $s = Student::withTrashed()->find($uuid);
         $gsuite = $s->gmails()->where('primary', true)->first();
         if ($gsuite) {
             $userKey = $gsuite->userKey;
             $pwd = substr($s->idno, -6);
-            $result = (new GsuiteServiceProvider)->reset_password($userKey, $pwd);    
+            $result = $google->reset_password($userKey, $pwd);
         } else {
-            return redirect(urldecode($referer))->with('error', '該學生尚未建立 Google 帳號，請先進行帳號同步！');
-            //$userKey = 'meps' . $s->id . '@' . config('services.gsuite.domain');
-            //$result = (new GsuiteServiceProvider)->sync_user($s, $userKey); 
+            $userKey = 'meps' . $s->id;
+            $guser = $google->get_user($userKey);
+            if ($guser) {
+                $result = $google->reset_password($userKey, $pwd);
+            } else {
+                $result = $google->sync_user($s, $userKey);
+                Watchdog::watch($request, '建立 Google 帳號並重設學生「' . $s->stdno . $s->realname . '」密碼為 ' . $pwd);
+                return redirect(urldecode($referer))->with('success', '已爲該學生建立 Google 帳號，預設密碼為身分證字號後六碼！');
+            }
         }
         if ($result) {
             Watchdog::watch($request, '重設學生「' . $s->stdno . $s->realname . '」密碼為 ' . $pwd);
-            return redirect(urldecode($referer))->with('success', '學生 Google 密碼已經重設為身分證字號後六碼！');    
+            return redirect(urldecode($referer))->with('success', '學生 Google 密碼已經重設為身分證字號後六碼！');
         } else {
             return redirect(urldecode($referer))->with('error', '還原學生 Google 密碼失敗！');
         }
