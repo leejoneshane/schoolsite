@@ -94,7 +94,7 @@ class MeetingController extends Controller
             } else {
                 $meet->update([
                     'words' => $request->input('words'),
-                    'inside' => $request->boolean('open'),
+                    'inside' => !$request->boolean('open'),
                     'expired_at' => ($request->input('enddate')) ?: null,
                 ]);
             }

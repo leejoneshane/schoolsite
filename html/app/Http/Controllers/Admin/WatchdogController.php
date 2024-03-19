@@ -23,20 +23,20 @@ class WatchdogController extends Controller
         }
         if ($request->has('uuid')) {
             $uuid = $request->input('uuid');
-            $logs = Watchdog::where('uuid', $uuid)->latest()->paginate(16);
+            $logs = Watchdog::where('uuid', $uuid)->latest()->paginate(16)->withQueryString();
         } elseif ($request->has('ip')) {
             $ip = $request->input('ip');
-            $logs = Watchdog::where('ip', $ip)->latest()->paginate(16);
+            $logs = Watchdog::where('ip', $ip)->latest()->paginate(16)->withQueryString();
         } elseif ($request->has('stdid')) {
             $stdid = $request->input('stdid');
             $user = Student::findById($stdid);
-            $logs = Watchdog::where('uuid', $user->uuid)->latest()->paginate(16);
+            $logs = Watchdog::where('uuid', $user->uuid)->latest()->paginate(16)->withQueryString();
         } elseif ($request->has('stdno')) {
             $stdno = $request->input('stdno');
             $user = Student::findByStdno(substr($stdno, 0, 3), substr($stdno, -2));
-            $logs = Watchdog::where('uuid', $user->uuid)->latest()->paginate(16);
+            $logs = Watchdog::where('uuid', $user->uuid)->latest()->paginate(16)->withQueryString();
         } else {
-            $logs = Watchdog::whereRaw('DATE(created_at) = ?', $date->format('Y-m-d'))->latest()->paginate(16);
+            $logs = Watchdog::whereRaw('DATE(created_at) = ?', $date->format('Y-m-d'))->latest()->paginate(16)->withQueryString();
         }
         $teachers = Teacher::orderBy('realname')->get();
         return view('admin.watchdog', ['date' => $date, 'ip' => $ip, 'uuid' => $uuid, 'stdid' => $stdid, 'stdno' => $stdno, 'teachers' => $teachers, 'logs' => $logs]);
