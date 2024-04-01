@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Database\Query\JoinClause;
 use App\Imports\SeniorityImport;
 use App\Exports\SeniorityExport;
 use App\Models\Seniority;
@@ -57,7 +58,12 @@ class SeniorityController extends Controller
         $manager = $user->is_admin || $user->hasPermission('organize.manager');
         $units = Unit::main();
         $domains = Domain::all();
-        $query = Seniority::year_teachers($year);
+        $query = Seniority::year_teachers($year)
+          ->select('teachers.*', 'belongs.domain_id')
+          ->leftJoin('belongs', function (JoinClause $join) use ($year) {
+            $join->on('belongs.uuid', '=', 'teachers.uuid')
+                 ->where('belongs.year', '=', $year);
+        });
         if (!empty($unit_id)) {
             $unit = Unit::find($unit_id);
             $keys = Unit::subkeys($unit->unit_no);
@@ -65,7 +71,7 @@ class SeniorityController extends Controller
             $domain_id = $idno = $realname = $email = '';
         }
         if (!empty($domain_id)) {
-            $query = $query->leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.domain_id', $domain_id);
+            $query = $query->where('belongs.domain_id', $domain_id);
             $unit_id = $idno = $realname = $email = '';
         }
         if (!empty($idno)) {
@@ -77,7 +83,7 @@ class SeniorityController extends Controller
         if (!empty($email)) {
             $query = $query->where('email', 'like', '%'.$email.'%');
         }
-        $teachers = $query->orderByRaw('unit_id = 25')->orderBy('tutor_class')->paginate(16);
+        $teachers = $query->orderByRaw('unit_id = 25')->orderBy('tutor_class')->orderBy('belongs.domain_id')->paginate(16)->withQueryString();
         return view('app.seniority', ['current' => $current, 'manager' => $manager, 'year' => $year, 'unit' => $unit_id, 'domain' => $domain_id, 'idno' => $idno, 'realname' => $realname, 'email' => $email, 'years' => $years, 'units' => $units, 'domains' => $domains, 'teachers' => $teachers]);
     }
 

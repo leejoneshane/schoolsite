@@ -114,12 +114,12 @@
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">{{ ($teacher->tutor) ?: (($teacher->unit_id == 25 && $teacher->domain) ? $teacher->domain->name : $teacher->role_name) }}</td>
         <td class="p-2">{{ $teacher->realname }}</td>
-        <td id="osy{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority->school_year }}</td>
-        <td id="osm{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority->school_month }}</td>
-        <td id="oty{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority->teach_year }}</td>
-        <td id="otm{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority->teach_month }}</td>
-        <td id="oy{{ $loop->iteration }}" class="text-center text-green-700 dark:text-green-300">{{ $seniority->years }}</td>
-        <td id="os{{ $loop->iteration }}" class="text-center text-green-700 dark:text-green-300">{{ $seniority->score }}</td>
+        <td id="osy{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority ? $seniority->school_year : '-'}}</td>
+        <td id="osm{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority ? $seniority->school_month : '-'}}</td>
+        <td id="oty{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority ? $seniority->teach_year : '-'}}</td>
+        <td id="otm{{ $loop->iteration }}" class="text-right text-green-700 dark:text-green-300">{{ $seniority ? $seniority->teach_month : '-'}}</td>
+        <td id="oy{{ $loop->iteration }}" class="text-center text-green-700 dark:text-green-300">{{ $seniority ? $seniority->years : '-'}}</td>
+        <td id="os{{ $loop->iteration }}" class="text-center text-green-700 dark:text-green-300">{{ $seniority ? $seniority->score : '-'}}</td>
         <td class="p-2">
             @if (($manager))
             <button id="oedit{{ $loop->iteration }}" class="py-2 pr-6 text-blue-300 hover:text-blue-600"
@@ -132,15 +132,15 @@
             </button>
             @endif
         </td>
-        <td id="nsy{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_school_year }}</td>
-        <td id="nsm{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_school_month }}</td>
-        <td id="nty{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_teach_year }}</td>
-        <td id="ntm{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority->new_teach_month }}</td>
-        <td id="ny{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newyears }}</td>
-        <td id="ns{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority->newscore }}</td>
+        <td id="nsy{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority ? $seniority->new_school_year : ''}}</td>
+        <td id="nsm{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority ? $seniority->new_school_month : ''}}</td>
+        <td id="nty{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority ? $seniority->new_teach_year : ''}}</td>
+        <td id="ntm{{ $loop->iteration }}" class="text-right text-blue-700 dark:text-blue-300">{{ $seniority ? $seniority->new_teach_month : ''}}</td>
+        <td id="ny{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority ? $seniority->newyears : ''}}</td>
+        <td id="ns{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority ? $seniority->newscore : ''}}</td>
         <td class="p-2">
-        @if ($manager || Auth::user()->uuid == $seniority->uuid)
-            @if ($seniority->ok)
+        @if ($manager || $seniority && Auth::user()->uuid == $seniority->uuid)
+            @if ($seniority && $seniority->ok)
             <button class="py-2 pr-6 text-blue-500">
                 <i class="fa-solid fa-check"></i>
             </button>
@@ -154,7 +154,7 @@
                 <i class="fa-solid fa-floppy-disk"></i>
             </button>
             <label for="ok{{ $loop->iteration }}" class="inline-flex relative items-center cursor-pointer">
-                <input type="checkbox" id="ok{{ $loop->iteration }}" name="{{ $teacher->uuid }}" value="yes" class="sr-only peer"{{ $seniority->ok ? ' checked' : '' }} onclick="checkit('{{ $loop->iteration }}')">
+                <input type="checkbox" id="ok{{ $loop->iteration }}" name="{{ $teacher->uuid }}" value="yes" class="sr-only peer"{{ $seniority && $seniority->ok ? ' checked' : '' }} onclick="checkit('{{ $loop->iteration }}')">
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                 <span class="ml-3 text-gray-900 dark:text-gray-300">正確無誤</span>
             </label>
