@@ -23,9 +23,14 @@ class SeniorityImport implements ToCollection, WithStartRow
     public function collection(Collection $rows)
     {
         foreach ($rows as $row) {
+            if (empty($row[0])) continue;
             $uuid = $row[0];
             $job = $row[1];
             $name = $row[2];
+            $row[3] = intval($row[3]);
+            $row[4] = intval($row[4]);
+            $row[6] = intval($row[6]);
+            $row[7] = intval($row[7]);
             if ($uuid) {
                 $teacher = Teacher::where('uuid', $uuid)->first();
             } elseif ($name && $job) {
