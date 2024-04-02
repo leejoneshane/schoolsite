@@ -154,7 +154,7 @@ class ClubEnroll extends Model
     public function getSoymilkAttribute()
     {
         $lunch = LunchSurvey::where('uuid', $this->uuid)->orderBy('section', 'desc')->first();
-        if ($lunch->milk) {
+        if (!$lunch || $lunch->milk) {
             return false;
         } else {
             return true;
