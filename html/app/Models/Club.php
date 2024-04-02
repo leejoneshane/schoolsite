@@ -253,6 +253,12 @@ class Club extends Model
         return $this->section_accepted_by_grade($section, $grade) ? $this->section_accepted_by_grade($section, $grade)->count() : 0;
     }
 
+    //計算此社團本學年指定組別錄取學生數
+    public function count_accepted_by_group($group, $section = null)
+    {
+        return $this->section_devide($group, $section) ? $this->section_devide($group, $section)->count() : 0;
+    }
+
     //取得此社團所有的學生
     public function students()
     {

@@ -85,15 +85,17 @@ class ClubEnrolledExport
                     }
                 }
                 $table->addRow(null, ['tblHeader' => true]);
-                $table->addCell(Converter::cmToTwip(1.25), ['vMerge' => 'restart', 'bgColor' => 'cccccc', 'valign' => 'center'])
+                $table->addCell(Converter::cmToTwip(1), ['vMerge' => 'restart', 'bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('編號', ['bold' => true], ['alignment' => 'center']);
                 $table->addCell(Converter::cmToTwip(2), ['vMerge' => 'restart', 'bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('年班座號', ['bold' => true], ['alignment' => 'center']);
                 $table->addCell(Converter::cmToTwip(2), ['vMerge' => 'restart', 'bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('學生姓名', ['bold' => true], ['alignment' => 'center']);
                 if ($club->has_lunch) {
-                    $table->addCell(Converter::cmToTwip(1.25), ['vMerge' => 'restart', 'bgColor' => 'cccccc', 'valign' => 'center'])
+                    $table->addCell(Converter::cmToTwip(1), ['vMerge' => 'restart', 'bgColor' => 'cccccc', 'valign' => 'center'])
                         ->addText('營養午餐', ['bold' => true], ['alignment' => 'center']);
+                    $table->addCell(Converter::cmToTwip(1), ['vMerge' => 'restart', 'bgColor' => 'cccccc', 'valign' => 'center'])
+                        ->addText('豆奶', ['bold' => true], ['alignment' => 'center']);
                 }
                 $table->addCell(Converter::cmToTwip(1.25), ['gridSpan' => 5, 'bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('自選上課日', ['bold' => true], ['alignment' => 'center']);
@@ -101,7 +103,7 @@ class ClubEnrolledExport
                     ->addText('聯絡人', ['bold' => true, 'alignment' => 'center']);
                 $table->addCell(Converter::cmToTwip(3), ['vMerge' => 'restart', 'bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('聯絡信箱', ['bold' => true, 'alignment' => 'center']);
-                $table->addCell(Converter::cmToTwip(3), ['vMerge' => 'restart', 'bgColor' => 'cccccc', 'valign' => 'center'])
+                $table->addCell(Converter::cmToTwip(2), ['vMerge' => 'restart', 'bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('聯絡電話', ['bold' => true, 'alignment' => 'center']);
                 $table->addCell(Converter::cmToTwip(2), ['vMerge' => 'restart', 'bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('備註', ['bold' => true, 'alignment' => 'center']);
@@ -128,21 +130,23 @@ class ClubEnrolledExport
                 $table->addCell(null, ['vMerge' => 'continue']);
             } else {
                 $table->addRow(null, ['tblHeader' => true]);
-                $table->addCell(Converter::cmToTwip(1.25), ['bgColor' => 'cccccc', 'valign' => 'center'])
+                $table->addCell(Converter::cmToTwip(1), ['bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('編號', ['bold' => true], ['alignment' => 'center']);
                 $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('年班座號', ['bold' => true], ['alignment' => 'center']);
                 $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('學生姓名', ['bold' => true], ['alignment' => 'center']);
                 if ($club->has_lunch) {
-                    $table->addCell(Converter::cmToTwip(1.25), ['bgColor' => 'cccccc', 'valign' => 'center'])
+                    $table->addCell(Converter::cmToTwip(1), ['bgColor' => 'cccccc', 'valign' => 'center'])
                         ->addText('營養午餐', ['bold' => true], ['alignment' => 'center']);
+                    $table->addCell(Converter::cmToTwip(1), ['bgColor' => 'cccccc', 'valign' => 'center'])
+                        ->addText('豆奶', ['bold' => true], ['alignment' => 'center']);
                 }
                 $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('聯絡人', ['bold' => true, 'alignment' => 'center']);
                 $table->addCell(Converter::cmToTwip(3), ['bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('聯絡信箱', ['bold' => true, 'alignment' => 'center']);
-                $table->addCell(Converter::cmToTwip(3), ['bgColor' => 'cccccc', 'valign' => 'center'])
+                $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('聯絡電話', ['bold' => true, 'alignment' => 'center']);
                 $table->addCell(Converter::cmToTwip(2), ['bgColor' => 'cccccc', 'valign' => 'center'])
                     ->addText('備註', ['bold' => true, 'alignment' => 'center']);
@@ -155,6 +159,11 @@ class ClubEnrolledExport
                 $table->addCell()->addText($enroll->student->realname);
                 if ($club->has_lunch) {
                     $table->addCell()->addText($enroll->lunch);
+                    if ($enroll->soymilk) {
+                        $table->addCell()->addText('1');
+                    } else {
+                        $table->addCell();
+                    }
                 }
                 if ($club->section($this->section)->self_defined) {
                     for ($i=1; $i<6; $i++) {
@@ -162,7 +171,7 @@ class ClubEnrolledExport
                             $table->addCell()->addText('1');
                         } else {
                             $table->addCell();
-                        }    
+                        }
                     }
                 }
                 $table->addCell()->addText($enroll->parent);

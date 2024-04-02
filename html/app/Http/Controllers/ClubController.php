@@ -879,6 +879,11 @@ class ClubController extends Controller
                 }
                 $counter['total'] = array_sum($counter);
                 $accepted['total'] = array_sum($accepted);
+            } elseif ($club->devide) {
+                foreach ($groups as $g) {
+                    $accepted[$g] = $club->count_accepted_by_group($g, $section); //錄取人數
+                }
+                $accepted['total'] = array_sum($accepted);
             }
             return view('app.club_enrolls', ['club' => $club, 'current' => $current, 'section' => $section, 'group' => $mygroup, 'groups' => $groups, 'grades' => $grades, 'counter' => $counter, 'accepted' => $accepted, 'enrolls' => $enrolls, 'order' => $order]);
         } else {

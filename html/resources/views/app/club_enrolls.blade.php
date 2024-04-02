@@ -134,6 +134,13 @@
     <label class="pl-6">{{ $grade->name }}：{{ $accepted[$grade->id] }}</label>
     @endforeach
 </div>
+@elseif ($club->devide)
+<div class="px-3 py-0">
+    <label for="sections">已錄取人數：合計{{ $accepted['total'] }}</label>
+    @foreach ($groups as $g)
+    <label class="pl-6">{{ is_null($g) ? '未分組' : '第'.$g.'組' }}：{{ $accepted[$g] }}</label>
+    @endforeach
+</div>
 @endif
 <table class="w-full py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
@@ -173,6 +180,9 @@
             身份註記
         </th>
         <th scope="col" class="p-2">
+            豆奶
+        </th>
+        <th scope="col" class="p-2">
             管理
         </th>
     </tr>
@@ -209,6 +219,9 @@
         </td>
         <td class="p-2">
             <span>{{ $enroll->mark }}</span>
+        </td>
+        <td class="p-2">
+            <span>{{ ($enroll->soymilk) ? '✓' : '' }}</span>
         </td>
         <td class="p-2 text-lg">
         @if ($current == $section || $current = prev_section($section))

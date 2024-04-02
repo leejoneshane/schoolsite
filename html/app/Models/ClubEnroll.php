@@ -11,6 +11,7 @@ use App\Notifications\ClubEnrollNotification;
 use App\Notifications\ClubEnrolledNotification;
 use Carbon\CarbonPeriod;
 use App\Models\ClubSection;
+use App\Models\LunchSurvey;
 
 class ClubEnroll extends Model
 {
@@ -66,6 +67,7 @@ class ClubEnroll extends Model
         'weekday',
         'studytime',
         'lunch',
+        'soymilk',
     ];
 
     //提供學生身份註記字串
@@ -146,6 +148,17 @@ class ClubEnroll extends Model
                 return '素食';
         }
         return '自理';
+    }
+
+    //提供學生用餐選擇字串
+    public function getSoymilkAttribute()
+    {
+        $lunch = LunchSurvey::where('uuid', $this->uuid)->orderBy('section', 'desc')->first();
+        if ($lunch->milk) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     //取得此報名資訊的學生社團
