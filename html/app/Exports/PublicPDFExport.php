@@ -81,7 +81,7 @@ class PublicPDFExport
 
         // Load temporarily create word file then Save it into PDF
         $pdfpath = public_path('public_class/' . $this->section . $domain->name . '.pdf');
-        ConvertApi::setApiSecret('1nzs3PF69LGr5xeC');
+        ConvertApi::setApiSecret('your-secert-code');
         $result = ConvertApi::convert('pdf', [
                 'File' => $merge_file,
         //        'PageRange' => '1-10',
