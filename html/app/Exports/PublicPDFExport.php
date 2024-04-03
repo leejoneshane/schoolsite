@@ -8,6 +8,9 @@ use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\IOFactory;
 use ZipArchive;
 
+require base_path('vendor') . '/convertapi/convertapi-php/lib/ConvertApi/autoload.php';
+use \ConvertApi\ConvertApi;
+
 class PublicPDFExport
 {
     public $section;
@@ -68,11 +71,22 @@ class PublicPDFExport
 
         // Load temporarily create word file then Save it into PDF
         $pdfpath = public_path('public_class/' . $this->section . $domain->name . '.pdf');
+        ConvertApi::setApiSecret('1nzs3PF69LGr5xeC');
+        $result = ConvertApi::convert('pdf', [
+                'File' => $merge_file,
+        //        'PageRange' => '1-10',
+                'PageOrientation' => 'portrait',
+                'PageSize' => 'a4',
+            ], 'docx'
+        );
+        $result->saveFiles($pdfpath);
+        /*
         $Content = IOFactory::load($merge_file); 
         if (file_exists($pdfpath)) unlink($pdfpath);
         $PDFWriter = IOFactory::createWriter($Content,'PDF');
         $PDFWriter->save($pdfpath);
         unlink($merge_file);
+        */
 
         return $pdfpath;
     }
