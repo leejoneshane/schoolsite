@@ -28,8 +28,18 @@ class PublicPDFExport
         $filesName = [];
         $publics = PublicClass::byDomain($this->domain_id, $this->section);
         foreach ($publics as $p) {
-            if ($p->eduplan) $filesName[] = public_path('public_class/' . $p->eduplan);
-            if ($p->discuss) $filesName[] = public_path('public_class/' . $p->discuss);
+            if ($p->eduplan) {
+                $extension = pathinfo($p->eduplan, PATHINFO_EXTENSION);
+                if ($extension == 'docx') {
+                    $filesName[] = public_path('public_class/' . $p->eduplan);
+                }
+            }
+            if ($p->discuss) {
+                $extension = pathinfo($p->discuss, PATHINFO_EXTENSION);
+                if ($extension == 'docx') {
+                    $filesName[] = public_path('public_class/' . $p->discuss);
+                }
+            }
         }
 
         /* Set the PDF Engine Renderer Path */

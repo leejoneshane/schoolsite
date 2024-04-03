@@ -47,9 +47,9 @@
     <p class="p-3">
         <label class="inline">人數限制：</label>
         <input class="w-16 rounded px-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="number" name="min" min="1" max="10" value="{{ $roster->min }}">　到　
+            type="number" name="min" min="1" max="10" value="{{ $roster->min }}" inputmode="numeric">　到　
         <input class="w-16 rounded px-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="number" name="max" min="1" max="10" value="{{ $roster->max }}">
+            type="number" name="max" min="1" max="10" value="{{ $roster->max }}" inputmode="numeric">
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請指定人數範圍，若為特定人數，請填同一數字！</span>
     </p>
     <p class="p-6">

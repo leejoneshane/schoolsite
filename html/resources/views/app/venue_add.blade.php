@@ -88,12 +88,12 @@
     </div></p>
     <p><div class="p-3">
         <label for="start" class="inline">幾天後開始預約？</label>
-        <input type="number" id="start" name="start" value="1" min="0" max="180" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">天後
+        <input type="number" id="start" name="start" value="1" min="0" max="180" inputmode="numeric" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">天後
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入數字，0或留白代表當天可預約！</span>
     </div></p>
     <p><div class="p-3">
         <label for="limit" class="inline">可預約幾天內的空堂？</label>
-        <input type="number" id="limit" name="limit" value="30" min="0" max="180" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">天內
+        <input type="number" id="limit" name="limit" value="30" min="0" max="180" inputmode="numeric" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">天內
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入數字，0或留白代表無限制！</span>
     </div></p>
     <p><div class="p-3">

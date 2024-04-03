@@ -9,7 +9,7 @@
 </div>
 <p><div class="p-3">
     <label for="limit" class="inline">每組人數上限：</label>
-    <input type="number" id="limit" name="limit" value="{{ $limit }}" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" onchange="redo()" required>
+    <input type="number" id="limit" name="limit" value="{{ $limit }}" inputmode="numeric" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" onchange="redo()" required>
     <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>改變上限將會重新分組，您可以試試看哪一種組合最好！</span>
 </div></p>
 <p><div class="p-3">

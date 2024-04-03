@@ -142,19 +142,29 @@ class PublicController extends Controller
             ]);
             if ($request->hasFile('eduplan')) {
                 $extension = $request->file('eduplan')->getClientOriginalExtension();
-                $fileName = $public->id . '_eduplan' . '.' . $extension;
-                $request->file('eduplan')->move(public_path('public_class'), $fileName);
-                $url = asset('public_class/' . $fileName);
-                Watchdog::watch($request, '上傳教案：' . $url);
-                $public->eduplan = $fileName;
+                if ($extension != 'docx') {
+                    $public->save();
+                    return redirect()->route('public')->with('error', '只能上傳 .docx 格式的檔案！');
+                } else {
+                    $fileName = $public->id . '_eduplan' . '.' . $extension;
+                    $request->file('eduplan')->move(public_path('public_class'), $fileName);
+                    $url = asset('public_class/' . $fileName);
+                    Watchdog::watch($request, '上傳教案：' . $url);
+                    $public->eduplan = $fileName;
+                }
             }
             if ($request->hasFile('discuss')) {
                 $extension = $request->file('discuss')->getClientOriginalExtension();
-                $fileName = $public->id . '_discuss' . '.' . $extension;
-                $request->file('discuss')->move(public_path('public_class'), $fileName);
-                $url = asset('public_class/' . $fileName);
-                Watchdog::watch($request, '上傳觀課後會談：' . $url);
-                $public->discuss = $fileName;
+                if ($extension != 'docx') {
+                    $public->save();
+                    return redirect()->route('public')->with('error', '只能上傳 .docx 格式的檔案！');
+                } else {
+                    $fileName = $public->id . '_discuss' . '.' . $extension;
+                    $request->file('discuss')->move(public_path('public_class'), $fileName);
+                    $url = asset('public_class/' . $fileName);
+                    Watchdog::watch($request, '上傳觀課後會談：' . $url);
+                    $public->discuss = $fileName;
+                }
             }
             $public->save();
             Watchdog::watch($request, '新增公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -248,11 +258,16 @@ class PublicController extends Controller
                     }
                 }
                 $extension = $request->file('eduplan')->getClientOriginalExtension();
-                $fileName = $public->id . '_eduplan' . '.' . $extension;
-                $request->file('eduplan')->move(public_path('public_class'), $fileName);
-                $url = asset('public_class/' . $fileName);
-                Watchdog::watch($request, '上傳教案：' . $url);
-                $public->eduplan = $fileName;
+                if ($extension != 'docx') {
+                    $public->save();
+                    return redirect()->route('public')->with('error', '只能上傳 .docx 格式的檔案！');
+                } else {
+                    $fileName = $public->id . '_eduplan' . '.' . $extension;
+                    $request->file('eduplan')->move(public_path('public_class'), $fileName);
+                    $url = asset('public_class/' . $fileName);
+                    Watchdog::watch($request, '上傳教案：' . $url);
+                    $public->eduplan = $fileName;
+                }
             }
             if ($request->input('del_discuss') == 'yes') {
                 $path = public_path('public_class/' . $public->discuss);
@@ -268,11 +283,16 @@ class PublicController extends Controller
                     }
                 }
                 $extension = $request->file('discuss')->getClientOriginalExtension();
-                $fileName = $public->id . '_discuss' . '.' . $extension;
-                $request->file('discuss')->move(public_path('public_class'), $fileName);
-                $url = asset('public_class/' . $fileName);
-                Watchdog::watch($request, '上傳觀課後會談：' . $url);
-                $public->discuss = $fileName;
+                if ($extension != 'docx') {
+                    $public->save();
+                    return redirect()->route('public')->with('error', '只能上傳 .docx 格式的檔案！');
+                } else {
+                    $fileName = $public->id . '_discuss' . '.' . $extension;
+                    $request->file('discuss')->move(public_path('public_class'), $fileName);
+                    $url = asset('public_class/' . $fileName);
+                    Watchdog::watch($request, '上傳觀課後會談：' . $url);
+                    $public->discuss = $fileName;
+                }
             }
             $public->save();
             $managers = Permission::findByName('public.manager')->users;
@@ -342,19 +362,29 @@ class PublicController extends Controller
             ]);
             if ($request->hasFile('eduplan')) {
                 $extension = $request->file('eduplan')->getClientOriginalExtension();
-                $fileName = $public->id . '_eduplan' . '.' . $extension;
-                $request->file('eduplan')->move(public_path('public_class'), $fileName);
-                $url = asset('public_class/' . $fileName);
-                Watchdog::watch($request, '上傳教案：' . $url);
-                $public->eduplan = $fileName;
+                if ($extension != 'docx') {
+                    $public->save();
+                    return redirect()->route('public')->with('error', '只能上傳 .docx 格式的檔案！');
+                } else {
+                    $fileName = $public->id . '_eduplan' . '.' . $extension;
+                    $request->file('eduplan')->move(public_path('public_class'), $fileName);
+                    $url = asset('public_class/' . $fileName);
+                    Watchdog::watch($request, '上傳教案：' . $url);
+                    $public->eduplan = $fileName;    
+                }
             }
             if ($request->hasFile('discuss')) {
                 $extension = $request->file('discuss')->getClientOriginalExtension();
-                $fileName = $public->id . '_discuss' . '.' . $extension;
-                $request->file('discuss')->move(public_path('public_class'), $fileName);
-                $url = asset('public_class/' . $fileName);
-                Watchdog::watch($request, '上傳觀課後會談：' . $url);
-                $public->discuss = $fileName;
+                if ($extension != 'docx') {
+                    $public->save();
+                    return redirect()->route('public')->with('error', '只能上傳 .docx 格式的檔案！');
+                } else {
+                    $fileName = $public->id . '_discuss' . '.' . $extension;
+                    $request->file('discuss')->move(public_path('public_class'), $fileName);
+                    $url = asset('public_class/' . $fileName);
+                    Watchdog::watch($request, '上傳觀課後會談：' . $url);
+                    $public->discuss = $fileName;
+                }
             }
             $public->save();
             Watchdog::watch($request, '補登公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));

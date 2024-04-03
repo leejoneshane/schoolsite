@@ -23,7 +23,7 @@
     </div></p>
     <p><div class="p-3">
         <label for="total" class="inline">招生人數：</label>
-        <input type="number" name="total" min="0" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <input type="number" name="total" min="0" inputmode="numeric" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入數字，0或留白代表無限制！</span>
     </div></p>
     <p><div class="p-3">
@@ -81,11 +81,11 @@
     </div></p>
     <p><div class="p-3">
         <label for="cash" class="inline">費用：</label>
-        新台幣<input type="number" name="cash" min="0" class="inline w-24 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>元
+        新台幣<input type="number" name="cash" min="0" inputmode="numeric" class="inline w-24 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>元
     </div></p>
     <p><div class="p-3">
         <label for="limit" class="inline">報名上限：</label>
-        <input type="number" name="limit" min="0" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <input type="number" name="limit" min="0" inputmode="numeric" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入數字，0或留白代表無限制！報名上限低於招生人數時，將會保留招生名額，作為現場報名或其他安排。報名上限超過招生人數時，超過部分視同候補，將不會自動錄取！</span>
     </div></p>
     @if (count($club->for_grade) > 1)
@@ -94,7 +94,7 @@
         @foreach ($club->for_grade as $g)
         <span class="text-sm pl-6">{{ $grades[$g] }}：</span>
         <input class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-            type="number" name="admit[]">
+            type="number" name="admit[]" inputmode="numeric">
         @endforeach
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請輸入數字，0代表通通列為候補（不錄取），未填寫的年級只要未超過報名上限將全數自動錄取。</span>
     </div></p>
