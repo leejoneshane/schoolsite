@@ -34,9 +34,9 @@
             <td class="p-2">{{ $c->id }}</td>
             <td class="p-2">
                 <input class="rounded w-32 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    type="text" name="name['{{ $c->id }}']" value="{{ $c->name }}">
+                    type="text" name="name[{{ $c->id }}]" value="{{ $c->name }}">
                 <select class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                    name="tutor['{{ $c->id }}']">
+                    name="tutor[{{ $c->id }}]">
                 @foreach ($teachers as $t)
                     @php
                         $gap = '';
