@@ -62,7 +62,7 @@
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">壹、基本資料</div>
     <div class="p-2">
         <label for="exp" class="text-indigo-700 dark:text-indigo-200">教學經歷：
-            <textarea id="exp" name="exp" cols="80" rows="5">{{ ($survey) ? $survey->exprience : (($teacher->last_survey) ? $teacher->last_survey->exprience : '' ) }}</textarea>
+            <textarea id="exp" name="exp" cols="80" rows="5">{{ ($survey) ? $survey->exprience : (($teacher->last_survey()) ? $teacher->last_survey()->exprience : '' ) }}</textarea>
         </label>
     </div>
     <div class="p-2">
@@ -85,10 +85,10 @@
     </div>
     <div class="p-2">
         <label for="edu_school" class="text-indigo-700 dark:text-indigo-200">畢業學校：
-            <input class="w-64" id="edu_school" name="edu_school" type="text" value="{{ $survey ? $survey->edu_school : (($teacher->last_survey) ? $teacher->last_survey->edu_school : '' ) }}" required>
+            <input class="w-64" id="edu_school" name="edu_school" type="text" value="{{ $survey ? $survey->edu_school : (($teacher->last_survey()) ? $teacher->last_survey()->edu_school : '' ) }}" required>
         </label>
         <label for="edu_division" class="text-indigo-700 dark:text-indigo-200">畢業科系：
-            <input class="w-64" id="edu_division" name="edu_division" type="text" value="{{ $survey ? $survey->edu_division : (($teacher->last_survey) ? $teacher->last_survey->edu_division : '' ) }}" required>
+            <input class="w-64" id="edu_division" name="edu_division" type="text" value="{{ $survey ? $survey->edu_division : (($teacher->last_survey()) ? $teacher->last_survey()->edu_division : '' ) }}" required>
         </label>
     </div>
     <div class="p-2 text-orange-700 dark:text-orange-200">教學經歷，請填寫您在本校任職期間擔任各項職務的確切年份及累計年資。</div>
