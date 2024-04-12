@@ -521,10 +521,10 @@ class SchoolDataController extends Controller
         $referer = $request->headers->get('referer');
         $google = new GsuiteServiceProvider();
         $s = Student::withTrashed()->find($uuid);
+        $pwd = substr($s->idno, -6);
         $gsuite = $s->gmails()->where('primary', true)->first();
         if ($gsuite) {
             $userKey = $gsuite->userKey;
-            $pwd = substr($s->idno, -6);
             $result = $google->reset_password($userKey, $pwd);
         } else {
             $userKey = 'meps' . $s->id;
