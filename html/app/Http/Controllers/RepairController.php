@@ -12,6 +12,7 @@ use App\Models\RepairJob;
 use App\Models\RepairReply;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\RepairNotification;
+use App\Notifications\RepairReplyNotification;
 
 class RepairController extends Controller
 {
