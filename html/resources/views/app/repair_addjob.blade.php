@@ -22,11 +22,11 @@
         <input type="text" id="place" name="place" class="inline w-1/2 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
     </p>
     <p class="p-3">
-        <label for="summary" class="inline">問題簡述：</label>
+        <label for="summary" class="inline">問題主旨：</label>
         <input type="text" id="place" name="summary" class="inline w-1/2 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
     </p>
     <p class="p-3">
-        <label for="description" class="inline">自我檢測結果：</label>
+        <label for="description" class="inline">問題描述：</label>
         <textarea id="description" name="description" rows="4" class="inline block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         ></textarea>
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請依照上方訊息先進行自我檢測！</span>

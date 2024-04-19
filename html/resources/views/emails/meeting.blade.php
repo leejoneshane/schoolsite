@@ -23,5 +23,6 @@
         </tr>
     @endforeach
     </table>
+    <p class="mt-4 text-sm text-gray-500">© {{ config('app.name') }}. All rights reserved.</p>
 </body>
 </html>

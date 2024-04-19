@@ -26,7 +26,7 @@
             報修者
         </th>
         <th scope="col" class="px-2">
-            處理情形
+            修繕進度
         </th>
         <th scope="col" class="px-2">
             處理日期
@@ -67,9 +67,9 @@
     </tr>
     <tr id="detail_{{ $job->id }}" class="hidden bg-gray-100 dark:bg-gray-600">
         <td colspan="8" class="border-b px-2">
-            【說明】<br>
+            【問題描述】<br>
             {{ $job->description }}<br>
-            【處理情形】<br>
+            【修繕結果】<br>
             {{ ($job->reply) ? $job->reply->comment : ''}}<br>
         </td>
     </tr>

@@ -17,7 +17,7 @@ use App\Models\Permission;
 use App\Exports\PublicPDFExport;
 use App\Exports\PublicExcelExport;
 use Illuminate\Support\Facades\Notification;
-use App\Notifications\ClubNotification;
+use App\Notifications\PublicNotification;
 use Carbon\Carbon;
 
 class PublicController extends Controller
@@ -170,7 +170,7 @@ class PublicController extends Controller
             Watchdog::watch($request, '新增公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $managers = Permission::findByName('public.manager')->users;
             foreach ($managers as $manager) {
-                Notification::sendNow($manager, new ClubNotification($public->id));
+                Notification::sendNow($manager, new PublicNotification($public->id));
             }
             return redirect()->route('public')->with('success', '公開課新增完成！');
         } else {
@@ -242,7 +242,7 @@ class PublicController extends Controller
                     'teach_class' => $class_id,
                     'location'  => $request->input('location'),
                     'partners' => $request->input('teachers'),
-                ]);    
+                ]);
             }
             if ($request->input('del_eduplan') == 'yes') {
                 $path = public_path('public_class/' . $public->eduplan);
@@ -297,7 +297,7 @@ class PublicController extends Controller
             $public->save();
             $managers = Permission::findByName('public.manager')->users;
             foreach ($managers as $manager) {
-                Notification::sendNow($manager, new ClubNotification($public->id));
+                Notification::sendNow($manager, new PublicNotification($public->id));
             }
             Watchdog::watch($request, '更新公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('public')->with('success', '公開課更新完成！');
@@ -390,7 +390,7 @@ class PublicController extends Controller
             Watchdog::watch($request, '補登公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $managers = Permission::findByName('public.manager')->users;
             foreach ($managers as $manager) {
-                Notification::sendNow($manager, new ClubNotification($public->id));
+                Notification::sendNow($manager, new PublicNotification($public->id));
             }
             return redirect()->route('public')->with('success', '公開課補登完成！');
         } else {
