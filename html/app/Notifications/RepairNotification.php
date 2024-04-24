@@ -45,7 +45,7 @@ class RepairNotification extends Notification implements ShouldQueue
     {
         $job = RepairJob::find($this->id);
         return (new MailMessage)->subject('國語實驗國民小學修繕登記通知')
-            ->view('emails.repair', ['manager' => $notifiable, 'job' => $job]);
+            ->view('emails.repair', ['manager' => $notifiable->profile, 'job' => $job]);
     }
 
     /**

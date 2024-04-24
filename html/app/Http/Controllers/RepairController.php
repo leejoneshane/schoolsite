@@ -114,8 +114,11 @@ class RepairController extends Controller
             'description' => $request->input('description'),
         ]);
         $managers = $job->kind->managers;
-        foreach ($managers as $manager) {
-            Notification::sendNow($manager, new RepairNotification($job->id));
+        foreach ($managers as $teacher) {
+            $manager = $teacher->user;
+            if ($user) {
+                Notification::sendNow($manager, new RepairNotification($job->id));
+            }
         }
         Watchdog::watch($request, '報修登記：' . $job->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('repair.list', ['kind' => $kind])->with('success', '已完成報修！');
@@ -148,7 +151,9 @@ class RepairController extends Controller
             'status' => $request->input('status'),
             'comment' => $request->input('comment'),
         ]);
-        Notification::sendNow($reply->job->reporter, new RepairReplyNotification($reply->id));
+        if ($reporter = $reply->job->reporter->user) {
+            Notification::sendNow($reporter, new RepairReplyNotification($reply->id));
+        }
         Watchdog::watch($request, '修繕回應：' . $reply->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $kind = RepairJob::find($job)->kind_id;
         return redirect()->route('repair.list', ['kind' => $kind])->with('success', '已回覆修繕結果！');
