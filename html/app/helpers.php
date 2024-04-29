@@ -79,9 +79,9 @@ function next_section($section = null) {
 
 function which_section($date) {
     if (is_string($date)) {
-        $date = date('Y-m-d', strtotime($date));
+        $date = new DateTime($date);
     }
-    $m = $date->format('m');
+    $m = $date->format('n');
     if ($m > 7) {
         $syear = $date->format('Y') - 1911;
     } else {
