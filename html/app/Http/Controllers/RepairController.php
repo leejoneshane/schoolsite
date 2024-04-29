@@ -116,7 +116,7 @@ class RepairController extends Controller
         $managers = $job->kind->managers;
         foreach ($managers as $teacher) {
             $manager = $teacher->user;
-            if ($user) {
+            if ($manager) {
                 Notification::sendNow($manager, new RepairNotification($job->id));
             }
         }

@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Club;
 use App\Models\ClubSection;
 use App\Models\Unit;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\Importable;
@@ -75,6 +76,7 @@ class ClubImport implements ToCollection, WithHeadingRow
             } else {
                 $etime = ExcelDate::excelToDateTimeObject($row['etime'])->format('H:i');
             }
+            $section = which_section($sdate);
             $club = Club::updateOrCreate([
                 'name' => $row['name'],
             ],[
@@ -87,7 +89,7 @@ class ClubImport implements ToCollection, WithHeadingRow
                 'stop_enroll' => false,
             ]);
             ClubSection::updateOrCreate([
-                'section' => current_section(),
+                'section' => $section,
                 'club_id' => $club->id,
             ],[
                 'weekdays' => $weekdays,
