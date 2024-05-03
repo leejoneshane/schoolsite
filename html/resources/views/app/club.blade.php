@@ -8,11 +8,16 @@
         <i class="fa-solid fa-pen-nib"></i>我要報名
     </a>
     @endstudent
-    @if ($manager)
+    @if ($admin)
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.kinds') }}">
         <i class="fa-solid fa-bookmark"></i>社團分類
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.admin') }}">
+        <i class="fa-solid fa-people-roof"></i>社團管理
+    </a>
+    @endif
+    @if ($manager)
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('clubs.manage') }}">
         <i class="fa-solid fa-people-roof"></i>社團管理
     </a>
     @endif

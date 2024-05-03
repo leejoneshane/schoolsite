@@ -23,6 +23,7 @@ class Club extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
+        'uuid',
         'name',
         'short_name',
         'kind_id',
@@ -42,6 +43,7 @@ class Club extends Model
         'enrolls',
         'accepted_enrolls',
         'students',
+        'manager',
     ];
 
     //以下屬性需進行資料庫欄位格式轉換
@@ -141,6 +143,12 @@ class Club extends Model
     public function unit()
     {
         return $this->belongsTo('App\Models\Unit');
+    }
+
+    //取得此社團的管理員
+    public function manager()
+    {
+        return $this->belongsTo('App\Models\Teacher', 'uuid', 'uuid');
     }
 
     //取得此社團所有的報名資訊，依報名時間排序

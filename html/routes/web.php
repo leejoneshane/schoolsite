@@ -113,6 +113,7 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
     Route::get('kind/{kid}/up', 'App\Http\Controllers\ClubController@kindUp')->name('clubs.upkind');
     Route::get('kind/{kid}/down', 'App\Http\Controllers\ClubController@kindDown')->name('clubs.downkind');
     Route::get('list/{kid?}', 'App\Http\Controllers\ClubController@clubList')->name('clubs.admin');
+    Route::get('manage', 'App\Http\Controllers\ClubController@clubManage')->name('clubs.manage');
     Route::get('add/{kid?}', 'App\Http\Controllers\ClubController@clubAdd');
     Route::post('add/{kid?}', 'App\Http\Controllers\ClubController@clubInsert')->name('clubs.add');
     Route::get('edit/{club_id}', 'App\Http\Controllers\ClubController@clubEdit');

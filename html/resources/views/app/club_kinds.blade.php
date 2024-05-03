@@ -42,7 +42,7 @@
             報名時間
         </th>
         <th scope="col" class="p-2">
-            休息時間
+            截止時間
         </th>
         <th scope="col" class="p-2">
             管理

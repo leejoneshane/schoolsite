@@ -34,12 +34,13 @@ class ClubController extends Controller
     public function index()
     {
         $user = User::find(Auth::user()->id);
-        $manager = $user->hasPermission('club.manager');
+        $admin = $user->hasPermission('club.manager');
         $cash = $user->hasPermission('club.cash');
         $teacher = Teacher::find($user->uuid);
+        $manager = $teacher->manage_clubs->isNotEmpty();
         $tutor = false;
         if (!empty($teacher->tutor_class)) $tutor = true;
-        return view('app.club', ['tutor' => $tutor, 'manager' => ($user->is_admin || $manager), 'cash_reporter' => ($user->is_admin || $cash)]);
+        return view('app.club', ['tutor' => $tutor, 'admin' => ($user->is_admin || $admin), 'manager' => $manager, 'cash_reporter' => ($user->is_admin || $cash)]);
     }
 
     public function kindList()
@@ -353,7 +354,15 @@ class ClubController extends Controller
             }
             $kinds = ClubKind::orderBy('weight')->get();
             $units = Unit::main();
-            return view('app.club_add', ['kind' => $kid, 'kinds' => $kinds, 'unit' => $unit, 'units' => $units]);
+            $teachers = Teacher::leftJoin('units', 'units.id', '=', 'unit_id')
+                ->leftJoin('roles', 'roles.id', '=', 'role_id')
+                ->orderBy('units.unit_no')
+                ->orderBy('roles.role_no')
+                ->get()
+                ->reject(function ($teacher) {
+                    return $teacher->user->is_admin;
+                });
+            return view('app.club_add', ['kind' => $kid, 'kinds' => $kinds, 'unit' => $unit, 'units' => $units, 'teachers' => $teachers]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -372,6 +381,7 @@ class ClubController extends Controller
             $grades[$k] = (integer) $g;
         }
         $c = Club::create([
+            'uuid' => $request->input('manager') ?: null,
             'name' => $title,
             'short_name' => $request->input('short'),
             'kind_id' => $kind_id,
@@ -394,7 +404,15 @@ class ClubController extends Controller
             $club = Club::find($club_id);
             $kinds = ClubKind::orderBy('weight')->get();
             $units = Unit::main();
-            return view('app.club_edit', ['kinds' => $kinds, 'units' => $units, 'club' => $club]);
+            $teachers = Teacher::leftJoin('units', 'units.id', '=', 'unit_id')
+                ->leftJoin('roles', 'roles.id', '=', 'role_id')
+                ->orderBy('units.unit_no')
+                ->orderBy('roles.role_no')
+                ->get()
+                ->reject(function ($teacher) {
+                    return $teacher->user->is_admin;
+                });
+            return view('app.club_edit', ['kinds' => $kinds, 'units' => $units, 'teachers' => $teachers, 'club' => $club]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -409,6 +427,7 @@ class ClubController extends Controller
             $grades[$k] = (integer) $g;
         }
         $club->update([
+            'uuid' => $request->input('manager') ?: null,
             'name' => $request->input('title'),
             'short_name' => $request->input('short'),
             'kind_id' => $request->input('kind'),
@@ -491,6 +510,18 @@ class ClubController extends Controller
             $str = substr($section, 0, -1) . '學年'. ((substr($section, -1) == 1) ? '上' : '下') .'學期';
             Watchdog::watch($request, '移除學生社團' . $club->name . $str . '所有報名資訊');
             return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '已經移除此課外社團' . $str . '報名資訊，可以重新開始報名！');
+        } else {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function clubManage()
+    {
+        $user = User::find(Auth::user()->id);
+        $teacher = Teacher::find($user->uuid);
+        $manager = $teacher->manage_clubs->isNotEmpty();
+        if ($manager) {
+            return view('app.clubs_manage', ['clubs' => $teacher->manage_clubs]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }

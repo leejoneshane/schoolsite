@@ -61,6 +61,7 @@ class Teacher extends Model
         'domains',
         'mainunit',
         'tutor_classroom',
+        'manage_clubs',
         'subjects',
         'classrooms',
         'seniority',
@@ -210,6 +211,12 @@ class Teacher extends Model
     public function tutor_classroom()
     {
         return $this->belongsTo('App\Models\Classroom', 'tutor_class');
+    }
+
+    //取得教師的導師班級
+    public function manage_clubs()
+    {
+        return $this->hasMany('App\Models\Club', 'uuid', 'uuid');
     }
 
     //取得教師的所有單位（不含上層單位）

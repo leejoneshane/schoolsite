@@ -26,6 +26,24 @@
         </select>
     </div></p>
     <p><div class="p-3">
+        <label for="manager" class="inline">管理員：</label>
+        <select name="manager" class="inline w-48 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+            <option value=""></option>
+        @foreach ($teachers as $t)
+        @php
+            $gap = '';
+            $rname = '';
+            if ($t->role_name) $rname = $t->role_name;
+            for ($i=0;$i<6-mb_strlen($rname);$i++) {
+                $gap .= '　';
+            }
+            $display = $t->role_name . $gap . $t->realname;
+        @endphp
+            <option value="{{ $t->uuid }}"{{ ($club->uuid == $t->uuid) ? ' selected' : '' }}>{{ $display }}</option>
+        @endforeach
+        </select>
+    </div></p>
+    <p><div class="p-3">
         <label for="title" class="inline">營隊全名：</label>
         <input type="text" name="title" value="{{ $club->name }}" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
         <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>請不要包含學年學期資訊，系統會自動將學生報名資訊依學期分開管理。</span>

@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('clubs', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid')->nullable();
             $table->string('name', 200);
             $table->string('short_name', 10);
             $table->integer('kind_id');
