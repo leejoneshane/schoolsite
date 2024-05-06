@@ -37,9 +37,12 @@ class ClubController extends Controller
         $admin = $user->hasPermission('club.manager');
         $cash = $user->hasPermission('club.cash');
         $teacher = Teacher::find($user->uuid);
-        $manager = $teacher->manage_clubs->isNotEmpty();
         $tutor = false;
-        if (!empty($teacher->tutor_class)) $tutor = true;
+        $manager = false;
+        if ($teacher) {
+            $manager = $teacher->manage_clubs->isNotEmpty();
+            if (!empty($teacher->tutor_class)) $tutor = true;
+        }
         return view('app.club', ['tutor' => $tutor, 'admin' => ($user->is_admin || $admin), 'manager' => $manager, 'cash_reporter' => ($user->is_admin || $cash)]);
     }
 
