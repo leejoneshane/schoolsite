@@ -140,7 +140,7 @@
         <td id="ns{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority ? $seniority->newscore : ''}}</td>
         <td class="p-2">
         @if ($manager || $seniority && Auth::user()->uuid == $seniority->uuid)
-            @if ($seniority && $seniority->ok)
+            @if (!$manager && $seniority && $seniority->ok)
             <button class="py-2 pr-6 text-blue-500">
                 <i class="fa-solid fa-check"></i>
             </button>

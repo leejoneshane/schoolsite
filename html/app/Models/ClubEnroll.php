@@ -229,7 +229,14 @@ class ClubEnroll extends Model
     //篩選本學年所有重複報名的學生 UUID，靜態函式
     public static function repetition($section = null)
     {
-        if (!$section) $section = current_section();
+        if (!$section) {
+            $latest = ClubEnroll::latest()->first();
+            if ($latest) {
+                $section = $latest->section;
+            } else {
+                $section = current_section();
+            }
+        }
         return ClubEnroll::select('uuid')
             ->where('section', $section)
             ->whereIn('club_id', self::single_clubs())

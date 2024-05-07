@@ -56,7 +56,7 @@
         <td class="p-2">{{ ($section->maximum == 0) ? '—' : $section->maximum}}</td>
         <td class="p-2">{{ $club->count_enrolls() }}</td>
         <td class="p-2">
-            @if ($enroll = $student->get_enroll($club->id, $section))
+            @if ($student->has_enroll($club->id, $section->section))
                 已報名
             @else
                 @if ($section->maximum == 0 || $club->count_enrolls() < $section->maximum)

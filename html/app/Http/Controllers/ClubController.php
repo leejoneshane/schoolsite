@@ -242,16 +242,6 @@ class ClubController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
-            $sections = ClubEnroll::sections(); 
-            if (!$section) {
-                $section = current_section();
-                if (!empty($sections)) {
-                    $section_obj = $sections->first();
-                    if ($section_obj) {
-                        $section = $section_obj->section;
-                    }
-                }
-            }
             $uuids = ClubEnroll::repetition($section);
             $students = [];
             foreach ($uuids as $uuid) {
@@ -524,7 +514,10 @@ class ClubController extends Controller
         $teacher = Teacher::find($user->uuid);
         $manager = $teacher->manage_clubs->isNotEmpty();
         if ($manager) {
-            return view('app.clubs_manage', ['clubs' => $teacher->manage_clubs]);
+            $clubs = $teacher->manage_clubs->filter(function ($club) {
+                return $club->kind->manual_auditing;
+            });
+            return view('app.clubs_manage', ['clubs' => $clubs]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -711,6 +704,9 @@ class ClubController extends Controller
         if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法報名參加學生社團！');
         $club = Club::find($club_id);
         $student = Student::find($user->uuid);
+        if ($student->has_enroll($club_id)) {
+            return redirect()->route('clubs.enroll')->with('error', '您已經報名該社團，無法再次報名！');
+        }
         $old = $student->enrolls()->latest('section')->first();
         return view('app.club_addenroll', ['club' => $club, 'student' => $student, 'old' => $old]);
     }
@@ -722,7 +718,7 @@ class ClubController extends Controller
         $section = $club->section();
         $student = Student::find($user->uuid);
         $grade = $student->grade();
-        if ($student->has_enroll($club_id, $section)) {
+        if ($student->has_enroll($club_id, $section->section)) {
             return redirect()->route('clubs.enroll')->with('error', '您已經報名該社團，無法再次報名！');
         }
         if ($club->kind->single) {
@@ -740,7 +736,7 @@ class ClubController extends Controller
                 $weekdays[$k] = (integer) $w;
             }
         }
-        $enrolls = Student::find($user->uuid)->section_enrolls();
+        $enrolls = $student->section_enrolls();
         $conflict = false;
         foreach ($enrolls as $en) {
             $conflict = $en->conflict($club, $weekdays);
@@ -871,6 +867,15 @@ class ClubController extends Controller
                     }
                 } else {
                     $section = $current;
+                }
+            }
+            $repeat = collect();
+            $enrolls = $club->section_enrolls($section)->sortBy('created_at');
+            foreach ($enrolls as $enroll) {
+                if ($repeat->contains($enroll->uuid)) {
+                    $enroll->delete();
+                } else {
+                    $repeat->add($enroll->uuid);
                 }
             }
             $order = $request->input('order');
@@ -1172,7 +1177,7 @@ class ClubController extends Controller
                 $message = '，目前列為候補，若能遞補錄取將會另行通知！';
             } else {
                 $enroll->accepted = true;
-                $enroll->save();        
+                $enroll->save();
             }
         }
         Watchdog::watch($request, '新增報名資訊，學生社團：' . $club->name . '，學生：' . $student->class_id . $student->realname);
