@@ -139,12 +139,12 @@
         <td id="ny{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority ? $seniority->newyears : ''}}</td>
         <td id="ns{{ $loop->iteration }}" class="text-center text-blue-700 dark:text-blue-300">{{ $seniority ? $seniority->newscore : ''}}</td>
         <td class="p-2">
-        @if ($manager || $seniority && Auth::user()->uuid == $seniority->uuid)
-            @if (!$manager && $seniority && $seniority->ok)
-            <button class="py-2 pr-6 text-blue-500">
+        @if ($seniority)
+            @if ($manager && Auth::user()->uuid != $seniority->uuid && $seniority->ok)
+            <label class="py-2 pr-6 text-blue-500">
                 <i class="fa-solid fa-check"></i>
-            </button>
-            @else
+            </label>
+            @elseif ($seniority && Auth::user()->uuid == $seniority->uuid)
             <button id="edit{{ $loop->iteration }}" class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                 title="編輯" onclick="edit('{{ $loop->iteration }}')">
                 <i class="fa-solid fa-pen"></i>
