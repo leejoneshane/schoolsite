@@ -76,7 +76,7 @@ class ClubImport implements ToCollection, WithHeadingRow
             } else {
                 $etime = ExcelDate::excelToDateTimeObject($row['etime'])->format('H:i');
             }
-            $section = which_section($sdate);
+            $section = club_section($sdate);
             $club = Club::updateOrCreate([
                 'name' => $row['name'],
             ],[

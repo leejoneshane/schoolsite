@@ -95,6 +95,25 @@ function which_section($date) {
     return $syear . $seme;
 }
 
+//學生社團於7月1日開始，都屬於下一個學期
+function club_section($date) {
+    if (is_string($date)) {
+        $date = new DateTime($date);
+    }
+    $m = $date->format('n');
+    if ($m > 6) {
+        $syear = $date->format('Y') - 1911;
+    } else {
+        $syear = $date->format('Y') - 1912;
+    }
+    if ($m > 1 && $m < 7) {
+        $seme = 2;
+    } else {
+        $seme = 1;
+    }
+    return $syear . $seme;
+}
+
 function current_between_date() {
     if (date('m') > 7) {
         $syear = date('Y');
