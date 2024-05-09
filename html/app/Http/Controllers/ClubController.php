@@ -704,7 +704,8 @@ class ClubController extends Controller
         if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法報名參加學生社團！');
         $club = Club::find($club_id);
         $student = Student::find($user->uuid);
-        if ($student->has_enroll($club_id)) {
+        $section = $club->section();
+        if ($student->has_enroll($club_id, $section->section)) {
             return redirect()->route('clubs.enroll')->with('error', '您已經報名該社團，無法再次報名！');
         }
         $old = $student->enrolls()->latest('section')->first();
