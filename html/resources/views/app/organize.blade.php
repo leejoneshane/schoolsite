@@ -47,6 +47,12 @@
         {{ ($flow->onSecondStage()) ? '級科任意願調查（第二階段）' : '' }}
         {{ ($flow->onFinish()) ? '意願調查已經結束！' : '' }}
         </span>
+        <span class="pl-4 text-green-500">
+            {{ ($flow->onSurvey()) ? $flow->survey_at->format('Y-m-d') . '~' . $flow->first_stage->subDay()->format('Y-m-d') : '' }}
+            {{ ($flow->onFirstStage()) ? $flow->first_stage->format('Y-m-d') . '~' . $flow->pause_at->subDay()->format('Y-m-d') : '' }}
+            {{ ($flow->onPause()) ? $flow->pause_at->format('Y-m-d') . '~' . $flow->second_stage->subDay()->format('Y-m-d') : '' }}
+            {{ ($flow->onSecondStage()) ? $flow->second_stage->format('Y-m-d') . '~' . $flow->close_at->format('Y-m-d') : '' }}
+        </span>
         @endif
     </span>
 </div>
