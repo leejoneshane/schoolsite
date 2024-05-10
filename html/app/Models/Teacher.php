@@ -296,13 +296,13 @@ class Teacher extends Model
     public function survey($year = null)
     {
         if (!$year) $year = current_year();
-        return $this->hasOne('App\Models\OrganizeSurvey', 'uuid', 'uuid')->where('syear', $year)->first();
+        return $this->hasMany('App\Models\OrganizeSurvey', 'uuid', 'uuid')->where('syear', $year)->first();
     }
 
     //取得教師最新的職編意願調查表
     public function last_survey()
     {
-        return $this->hasOne('App\Models\OrganizeSurvey', 'uuid', 'uuid')->latest()->first();
+        return $this->hasMany('App\Models\OrganizeSurvey', 'uuid', 'uuid')->latest()->first();
     }
 
     //重新從 LDAP 同步教師個資

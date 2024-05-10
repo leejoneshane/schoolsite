@@ -26,12 +26,12 @@ class OrganizeController extends Controller
         if ($user->user_type != 'Teacher') {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
+        $current = current_year();
+        if (!$year) $year = $current;
         $teacher = $user->profile;
         $survey = $teacher->survey($year);
         $reserve = DB::table('organize_reserved')->where('syear', current_year())->where('uuid', $user->uuid)->first();
         $reserved = ($reserve) ? true : false;
-        $current = current_year();
-        if (!$year) $year = $current;
         $years = OrganizeSettings::years();
         if (!in_array($current, $years)) $years[] = $current;
         rsort($years);
@@ -62,9 +62,8 @@ class OrganizeController extends Controller
         if ($flow->onFirstStage()) {
             $specials = null;
             if ($request->has('specials')) $specials = array_map('intval', $request->input('specials'));
-            $survey = OrganizeSurvey::where('syear', current_year())
-            ->where('uuid', $teacher->uuid)
-            ->update([
+            $survey = OrganizeSurvey::where('syear', current_year())->where('uuid', $teacher->uuid)->first();
+            $survey->update([
                 'admin1' => $request->input('admin1'),
                 'admin2' => $request->input('admin2'),
                 'admin3' => $request->input('admin3'),
@@ -74,9 +73,8 @@ class OrganizeController extends Controller
         if ($flow->onSecondStage()) {
             if ($request->has('specials')) {
                 $specials = array_map('intval', $request->input('specials'));
-                $survey = OrganizeSurvey::where('syear', current_year())
-                ->where('uuid', $teacher->uuid)
-                ->update([
+                $survey = OrganizeSurvey::where('syear', current_year())->where('uuid', $teacher->uuid)->first();
+                $survey->update([
                     'special' => $specials,
                     'teach1' => $request->input('teach1'),
                     'teach2' => $request->input('teach2'),
@@ -88,9 +86,8 @@ class OrganizeController extends Controller
                     'overcome' => $request->input('overcome'),
                 ]);
             } else {
-                $survey = OrganizeSurvey::where('syear', current_year())
-                ->where('uuid', $teacher->uuid)
-                ->update([
+                $survey = OrganizeSurvey::where('syear', current_year())->where('uuid', $teacher->uuid)->first();
+                $survey->update([
                     'teach1' => $request->input('teach1'),
                     'teach2' => $request->input('teach2'),
                     'teach3' => $request->input('teach3'),
