@@ -398,7 +398,7 @@ class OrganizeController extends Controller
             $stage2 = OrganizeVacancy::year_stage(2);
             $rest_teachers = OrganizeSurvey::where('syear', current_year())->whereNull('assign')->get();
             $teachers = [];
-            if ($flow->onPause() || $search == 'seven') {
+//            if ($flow->onPause() || $search == 'seven') {
                 foreach ($stage1->general as $v) {
                     $query = OrganizeSurvey::where('syear', current_year());
                     switch ($search) {
@@ -445,8 +445,8 @@ class OrganizeController extends Controller
                     }
                     $teachers[$v->id] = $query->orderBy('score', 'desc')->orderBy('age', 'desc')->get();
                 }
-            }
-            if ($flow->onFinish() || $search == 'seven') {
+//            }
+//            if ($flow->onFinish() || $search == 'seven') {
                 foreach ($stage2->special as $v) {
                     $query = OrganizeSurvey::where('syear', current_year());
                     if ($search == 'seven') {
@@ -529,7 +529,7 @@ class OrganizeController extends Controller
                     }
                     $teachers[$v->id] = $query->orderBy('score', 'desc')->orderBy('age', 'desc')->get();
                 }
-            }
+//            }
             return view('app.organize_arrangement', ['display' => $search, 'flow' => $flow, 'seniority' => $seniority, 'completeness' => $completeness, 'stage1' => $stage1, 'stage2' => $stage2, 'teachers' => $teachers, 'rest_teachers' => $rest_teachers]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');

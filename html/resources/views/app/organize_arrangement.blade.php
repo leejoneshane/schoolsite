@@ -50,16 +50,12 @@
             var display = this.value;
             window.location.replace('{{ route('organize.arrange') }}' + '/' + display);
         ">
-            @if ($flow->onPause() || $flow->onFinish())
             <option value="first"{{ ($display == 'first') ? ' selected' : '' }}>第一志願錄取作業</option>
             <option value="second"{{ ($display == 'second') ? ' selected' : '' }}>第二志願錄取作業</option>
             <option value="third"{{ ($display == 'third') ? ' selected' : '' }}>第三志願錄取作業</option>
-            @endif
-            @if ($flow->onFinish())
             <option value="four"{{ ($display == 'four') ? ' selected' : '' }}>第四志願錄取作業</option>
             <option value="five"{{ ($display == 'five') ? ' selected' : '' }}>第五志願錄取作業</option>
             <option value="six"{{ ($display == 'six') ? ' selected' : '' }}>第六志願錄取作業</option>
-            @endif
             <option value="seven"{{ ($display == 'seven') ? ' selected' : '' }}>預排或缺額補滿</option>
         </select>
     </div>
@@ -79,7 +75,7 @@
             意願選填結果（<span class="bg-red-200">　</span>為第一志願，<span class="bg-orange-200">　</span>為第二志願，<span class="bg-yellow-200">　</span>為第三志願，<span class="bg-green-200">　</span>為第四志願，<span class="bg-blue-200">　</span>為第五志願，<span class="bg-purple-200">　</span>為第六志願）
         </th>
     </tr>
-    @if ($flow->onPause() && $display != 'seven')
+    @if ($display != 'seven')
     @foreach ($stage1->general as $v)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">
@@ -138,7 +134,9 @@
         </td>
     </tr>
     @endforeach
-    @elseif ($display == 'seven')
+    @endif
+
+    @if ($display == 'seven')
     @foreach ($stage1->general as $v)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">
@@ -205,7 +203,7 @@
     @endforeach
     @endif
 
-    @if ($flow->onFinish() && $display != 'seven')
+    @if ($display != 'seven')
     @foreach ($stage2->special as $v)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">
@@ -270,7 +268,9 @@
         </td>
     </tr>
     @endforeach
-    @elseif ($display == 'seven')
+    @endif
+    
+    @if ($display == 'seven')
     @foreach ($stage2->general as $v)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">

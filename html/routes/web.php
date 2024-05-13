@@ -228,7 +228,7 @@ Route::group(['prefix' => 'organize', 'middleware' => [ 'auth'] ], function () {
     Route::post('vacancy/release/all', 'App\Http\Controllers\OrganizeController@releaseAll')->name('organize.releaseall');
     Route::get('setting', 'App\Http\Controllers\OrganizeController@setting');
     Route::post('setting', 'App\Http\Controllers\OrganizeController@saveSettings')->name('organize.setting');
-    Route::get('arrange/{search?}', 'App\Http\Controllers\OrganizeController@index')->name('organize.arrange');
+    Route::get('arrange/{search?}', 'App\Http\Controllers\OrganizeController@arrange')->name('organize.arrange');
     Route::post('arrange/assign', 'App\Http\Controllers\OrganizeController@assign')->name('organize.assign');
     Route::post('arrange/unassign', 'App\Http\Controllers\OrganizeController@unassign')->name('organize.unassign');
     Route::get('list/vacancy/{year?}', 'App\Http\Controllers\OrganizeController@listVacancy')->name('organize.listvacancy');
