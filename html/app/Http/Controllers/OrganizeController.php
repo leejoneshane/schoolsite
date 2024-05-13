@@ -63,40 +63,82 @@ class OrganizeController extends Controller
             $specials = null;
             if ($request->has('specials')) $specials = array_map('intval', $request->input('specials'));
             $survey = OrganizeSurvey::where('syear', current_year())->where('uuid', $teacher->uuid)->first();
-            $survey->update([
-                'admin1' => $request->input('admin1'),
-                'admin2' => $request->input('admin2'),
-                'admin3' => $request->input('admin3'),
-                'special' => $specials,
-            ]);
+            if (!$survey) {
+                $survey = OrganizeSurvey::create([
+                    'syear' => current_year(),
+                    'uuid' => $teacher->uuid,
+                    'admin1' => $request->input('admin1'),
+                    'admin2' => $request->input('admin2'),
+                    'admin3' => $request->input('admin3'),
+                    'special' => $specials,
+                ]);
+            } else {
+                $survey->update([
+                    'admin1' => $request->input('admin1'),
+                    'admin2' => $request->input('admin2'),
+                    'admin3' => $request->input('admin3'),
+                    'special' => $specials,
+                ]);    
+            }
         }
         if ($flow->onSecondStage()) {
             if ($request->has('specials')) {
                 $specials = array_map('intval', $request->input('specials'));
                 $survey = OrganizeSurvey::where('syear', current_year())->where('uuid', $teacher->uuid)->first();
-                $survey->update([
-                    'special' => $specials,
-                    'teach1' => $request->input('teach1'),
-                    'teach2' => $request->input('teach2'),
-                    'teach3' => $request->input('teach3'),
-                    'teach4' => $request->input('teach4'),
-                    'teach5' => $request->input('teach5'),
-                    'teach6' => $request->input('teach6'),
-                    'grade' => $request->input('grade'),
-                    'overcome' => $request->input('overcome'),
-                ]);
+                if (!$survey) {
+                    $survey = OrganizeSurvey::create([
+                        'syear' => current_year(),
+                        'uuid' => $teacher->uuid,
+                        'special' => $specials,
+                        'teach1' => $request->input('teach1'),
+                        'teach2' => $request->input('teach2'),
+                        'teach3' => $request->input('teach3'),
+                        'teach4' => $request->input('teach4'),
+                        'teach5' => $request->input('teach5'),
+                        'teach6' => $request->input('teach6'),
+                        'grade' => $request->input('grade'),
+                        'overcome' => $request->input('overcome'),
+                    ]);
+                } else {
+                    $survey->update([
+                        'special' => $specials,
+                        'teach1' => $request->input('teach1'),
+                        'teach2' => $request->input('teach2'),
+                        'teach3' => $request->input('teach3'),
+                        'teach4' => $request->input('teach4'),
+                        'teach5' => $request->input('teach5'),
+                        'teach6' => $request->input('teach6'),
+                        'grade' => $request->input('grade'),
+                        'overcome' => $request->input('overcome'),
+                    ]);
+                }
             } else {
                 $survey = OrganizeSurvey::where('syear', current_year())->where('uuid', $teacher->uuid)->first();
-                $survey->update([
-                    'teach1' => $request->input('teach1'),
-                    'teach2' => $request->input('teach2'),
-                    'teach3' => $request->input('teach3'),
-                    'teach4' => $request->input('teach4'),
-                    'teach5' => $request->input('teach5'),
-                    'teach6' => $request->input('teach6'),
-                    'grade' => $request->input('grade'),
-                    'overcome' => $request->input('overcome'),
-                ]);
+                if (!$survey) {
+                    $survey = OrganizeSurvey::create([
+                        'syear' => current_year(),
+                        'uuid' => $teacher->uuid,
+                        'teach1' => $request->input('teach1'),
+                        'teach2' => $request->input('teach2'),
+                        'teach3' => $request->input('teach3'),
+                        'teach4' => $request->input('teach4'),
+                        'teach5' => $request->input('teach5'),
+                        'teach6' => $request->input('teach6'),
+                        'grade' => $request->input('grade'),
+                        'overcome' => $request->input('overcome'),
+                    ]);
+                } else {
+                    $survey->update([
+                        'teach1' => $request->input('teach1'),
+                        'teach2' => $request->input('teach2'),
+                        'teach3' => $request->input('teach3'),
+                        'teach4' => $request->input('teach4'),
+                        'teach5' => $request->input('teach5'),
+                        'teach6' => $request->input('teach6'),
+                        'grade' => $request->input('grade'),
+                        'overcome' => $request->input('overcome'),
+                    ]);
+                }
             }
         }
         Watchdog::watch($request, '填寫職務編排意願調查：' . $survey->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
