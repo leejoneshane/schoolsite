@@ -232,7 +232,7 @@ Route::group(['prefix' => 'organize', 'middleware' => [ 'auth'] ], function () {
     Route::post('arrange/assign', 'App\Http\Controllers\OrganizeController@assign')->name('organize.assign');
     Route::post('arrange/unassign', 'App\Http\Controllers\OrganizeController@unassign')->name('organize.unassign');
     Route::get('list/vacancy/{year?}', 'App\Http\Controllers\OrganizeController@listVacancy')->name('organize.listvacancy');
-    Route::post('list/survey', 'App\Http\Controllers\OrganizeController@listSurvey')->name('organize.listsurvey');
+    Route::post('list/survey/{tag?}', 'App\Http\Controllers\OrganizeController@listSurvey')->name('organize.listsurvey');
     Route::get('list/result/{year?}', 'App\Http\Controllers\OrganizeController@listResult')->name('organize.listresult');
 });
 

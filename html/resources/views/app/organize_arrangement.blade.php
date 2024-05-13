@@ -269,7 +269,7 @@
     </tr>
     @endforeach
     @endif
-    
+
     @if ($display == 'seven')
     @foreach ($stage2->general as $v)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
@@ -364,7 +364,9 @@ window.onload = function () {
     }
     var elm = document.querySelectorAll("button");
     for (var i = 0; i < elm.length; i++) {
-        elm[i].addEventListener("click", showSurvey);
+        if (elm[i].id) {
+            elm[i].addEventListener("click", showSurvey);
+        }
     }
     var elm = document.querySelectorAll("select");
     for (var i = 0; i < elm.length; i++) {
@@ -434,12 +436,14 @@ function assign(event) {
 }
 
 function showSurvey(event) {
-    window.axios.post('{{ route('organize.listsurvey') }}', {
+    var tag = new Date().getTime();
+    window.axios.post('{{ route('organize.listsurvey') }}/' + tag, {
         uuid: event.target.id,
     }, {
         headers: {
             'Content-Type': 'application/json;charset=utf-8',
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
         }
     }).then(function (response) {
         document.getElementById('modalHeader').innerHTML = response.data.header;

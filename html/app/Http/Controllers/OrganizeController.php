@@ -593,23 +593,14 @@ class OrganizeController extends Controller
         return view('app.organize_listvacancy', ['current' => $current, 'year' => $year, 'years' => $years, 'vacancys' => $vacancys]);
     }
 
-    public function listSurvey(Request $request)
+    public function listSurvey(Request $request, $tag = null)
     {
         $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
-        $uuid = $request->input('uuid');
-        if (!$uuid) {
-            $teacher = $user->profile;
-        } else {
-            $teacher = Teacher::find($uuid);
-        }
-        if ($request->has('year')) {
-            $year = $request->input('year');
-        } else {
-            $year = current_year();
-        }
+        $teacher = Teacher::find($request->uuid);
+        $year = current_year();
         $survey = $teacher->survey($year);
         $stage1 = OrganizeVacancy::year_stage(1, $year);
         $stage2 = OrganizeVacancy::year_stage(2, $year);

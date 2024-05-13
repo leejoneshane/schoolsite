@@ -65,10 +65,10 @@
 @php
     $specials = [];
     foreach ($stage1->special as $v) {
-        if (in_array($v->id, $survey->special)) $specials[] = $v->name;
+        if ($survey->special && in_array($v->id, $survey->special)) $specials[] = $v->name;
     }
     foreach ($stage2->special as $v) {
-        if (in_array($v->id, $survey->special)) $specials[] = $v->name;
+        if ($survey->special && in_array($v->id, $survey->special)) $specials[] = $v->name;
     }
 @endphp
 <div class="p-2">
