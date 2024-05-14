@@ -122,18 +122,17 @@
         $total = $score;
     }
     @endphp
-    <input type="hidden" id="default" value="{{ $score }}">
     <table>
         <tr>
             <td class="w-24 text-indigo-700 dark:text-indigo-200">本校資歷</td>
-            <td class="w-48">
+            <td class="w-52">
                 <input name="in" type="text" size="2" value="{{ $school_year }}" readonly>年
                 <input name="in" type="text" size="2" value="{{ $school_month }}" readonly>月 ✖️ 0.7
             </td>
             <td class="w-8 p-4 text-lg font-semibold"> ➕ </td>
             <td>
                 <label for="highgrade" class="inline-flex relative items-center cursor-pointer text-indigo-700 dark:text-indigo-200">
-                    <input type="checkbox" id="highgrade" name="highgrade" value="yes" class="sr-only peer"{{ ($high) ? ' checked' : ' disabled' }}>
+                    <input type="checkbox" id="highgrade" name="highgrade" value="yes" class="sr-only peer"{{ ($high) ? '' : ' disabled' }}>
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                     連續任滿高年級六年以上 2.1
                 </label>
@@ -141,7 +140,7 @@
             <td rowspan="2" class="w-8 p-4 text-lg font-semibold"> 🟰 </td>
             <td rowspan="2">
                 <label for="highgrade" class="text-indigo-700 dark:text-indigo-200">年資積分：
-                    <input id="total" name="total" size="5" value="{{ $total }}" readonly>分
+                    <input id="total" name="total" size="5" value="{{ $score }}" readonly>分
                 </label>
             </td>
         </tr>
@@ -307,12 +306,11 @@
 window.onload = function () {
     var elm = document.getElementById("highgrade");
     if (elm) {
-        elm.addEventListener("click", () => { 
-            total = document.getElementById('default').value;
+        elm.addEventListener("click", () => {
             if (this.checked) {
-                document.getElementById('total').value = total + 2.1;
+                document.getElementById('total').value = {{ $total }};
             } else {
-                document.getElementById('total').value = total;
+                document.getElementById('total').value = {{ $score }};
             }
         });
     }

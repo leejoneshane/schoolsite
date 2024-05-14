@@ -663,6 +663,9 @@ class OrganizeController extends Controller
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $teacher = Teacher::find($request->uuid);
+        $seniority = $teacher->seniority();
+        $score = $seniority->newscore;
+        if ($score < 1) $score = $seniority->score;
         $year = current_year();
         $survey = $teacher->survey($year);
         $stage1 = OrganizeVacancy::year_stage(1, $year);
@@ -671,7 +674,7 @@ class OrganizeController extends Controller
         if (!$survey) {
             $body = '找不到意願調查表！';
         } else {
-            $body = view('app.organize_listsurvey', ['year' => $year, 'teacher' => $teacher, 'survey' => $survey, 'stage1' => $stage1, 'stage2' => $stage2])->render();
+            $body = view('app.organize_listsurvey', ['year' => $year, 'teacher' => $teacher, 'highscore' => $score, 'survey' => $survey, 'stage1' => $stage1, 'stage2' => $stage2])->render();
         }
         return response()->json((object) [ 'header' => $header, 'body' => $body]);
     }

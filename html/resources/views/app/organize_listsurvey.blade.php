@@ -40,7 +40,7 @@
 </div>
 <div class="p-2">
     <span class="text-indigo-700 dark:text-indigo-200">年資積分：</span>
-    {{ $survey->score }}
+    {{ $survey->score }} {{ ($survey->score > $highscore) ? '（包含高年級級任加分！）' : '' }}
 </div>
 @php
     $first = $second = $third = '';
