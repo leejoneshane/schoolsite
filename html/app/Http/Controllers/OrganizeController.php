@@ -210,6 +210,7 @@ class OrganizeController extends Controller
     }
 
     private function vacancy_init() {
+        $already = [];
         $managers = Role::director();
         foreach ($managers as $a) {
             $teachers = Teacher::where('role_id', $a->id)->get();
@@ -228,6 +229,7 @@ class OrganizeController extends Controller
                 DB::table('organize_original')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();
                 DB::table('organize_reserved')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();
                 foreach ($teachers as $t) {
+                    $already[] = $t->uuid;
                     DB::table('organize_original')->insertOrIgnore([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
@@ -243,7 +245,7 @@ class OrganizeController extends Controller
         }
         $admins = Role::manager();
         foreach ($admins as $a) {
-            $teachers = Teacher::where('role_id', $a->id)->get();
+            $teachers = Teacher::where('role_id', $a->id)->whereNotIn('uuid', $already)->get();
             if ($teachers->count() > 0) {
                 $v = OrganizeVacancy::updateOrCreate([
                     'syear' => current_year(),
@@ -259,6 +261,7 @@ class OrganizeController extends Controller
                 DB::table('organize_original')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();
                 DB::table('organize_reserved')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();
                 foreach ($teachers as $t) {
+                    $already[] = $t->uuid;
                     DB::table('organize_original')->insertOrIgnore([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
@@ -301,6 +304,7 @@ class OrganizeController extends Controller
             DB::table('organize_reserved')->where('syear', current_year())->where('vacancy_id', $v2->id)->delete();
             foreach ($a->classrooms as $c) {
                 $t = $c->tutors->first();
+                $already[] = $t->uuid;
                 DB::table('organize_original')->insertOrIgnore([
                     'syear' => current_year(),
                     'uuid' => $t->uuid,
@@ -315,6 +319,7 @@ class OrganizeController extends Controller
             DB::table('organize_original')->where('syear', current_year())->where('vacancy_id', $v1->id)->delete();
             foreach ($b->classrooms as $c) {
                 $t = $c->tutors->first();
+                $already[] = $t->uuid;
                 DB::table('organize_original')->insertOrIgnore([
                     'syear' => current_year(),
                     'uuid' => $t->uuid,
@@ -324,7 +329,8 @@ class OrganizeController extends Controller
         }
         $domains = Domain::where('organize', true)->get();
         foreach ($domains as $a) {
-            if ($a->teachers->count()) {
+            $teachers = $a->teachers->whereNotIn('uuid', $already);
+            if ($teachers->count()) {
                 $v = OrganizeVacancy::updateOrCreate([
                     'syear' => current_year(),
                     'type' => 'domain',
@@ -332,13 +338,13 @@ class OrganizeController extends Controller
                 ],[
                     'name' => $a->name,
                     'stage' => 2,
-                    'shortfall' => $a->teachers->count(),
-                    'filled' => $a->teachers->count(),
+                    'shortfall' => $teachers->count(),
+                    'filled' => $teachers->count(),
                     'assigned' => 0,
                 ]);
                 DB::table('organize_original')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();
                 DB::table('organize_reserved')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();    
-                foreach ($a->teachers as $t) {
+                foreach ($teachers as $t) {
                     DB::table('organize_original')->insertOrIgnore([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
@@ -511,7 +517,7 @@ class OrganizeController extends Controller
                     } else {
                         $query->where(function ($query) use ($v) {
                             $query->where('assign', $v->id)->orWhereNull('assign');
-                        })->WhereJsonContains('special', $v->id);    
+                        })->WhereJsonContains('special', $v->id);
                     }
                     $teachers[$v->id] = $query->orderBy('score', 'desc')->ordderBy('age', 'desc')->get();
                 }
