@@ -200,10 +200,7 @@ class OrganizeController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('organize.manager');
         if ($user->is_admin || $manager) {
-            DB::table('organize_original')->where('syear', current_year())->delete();
-            DB::table('organize_reserved')->where('syear', current_year())->delete();
             DB::table('organize_assign')->where('syear', current_year())->delete();
-            OrganizeVacancy::where('syear', current_year())->delete();
             $this->vacancy_init();
             Watchdog::watch($request, '重新計算職缺');
             return redirect()->route('organize.vacancy');
@@ -217,22 +214,26 @@ class OrganizeController extends Controller
         foreach ($managers as $a) {
             $teachers = Teacher::where('role_id', $a->id)->get();
             if ($teachers->count() > 0) {
-                $v = OrganizeVacancy::create([
+                $v = OrganizeVacancy::updateOrCreate([
+                    'syear' => current_year(),
                     'type' => 'admin',
                     'role_id' => $a->id,
+                ],[
                     'name' => $a->name,
                     'stage' => 1,
                     'shortfall' => $teachers->count(),
                     'filled' => $teachers->count(),
                     'assigned' => 0,
                 ]);
+                DB::table('organize_original')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();
+                DB::table('organize_reserved')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();
                 foreach ($teachers as $t) {
-                    DB::table('organize_original')->insert([
+                    DB::table('organize_original')->insertOrIgnore([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
                     ]);
-                    DB::table('organize_reserved')->insert([
+                    DB::table('organize_reserved')->insertOrIgnore([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
@@ -244,23 +245,26 @@ class OrganizeController extends Controller
         foreach ($admins as $a) {
             $teachers = Teacher::where('role_id', $a->id)->get();
             if ($teachers->count() > 0) {
-                $v = OrganizeVacancy::create([
+                $v = OrganizeVacancy::updateOrCreate([
+                    'syear' => current_year(),
                     'type' => 'admin',
-                    'unit_id' => $a->unit->uplevel()->id,
                     'role_id' => $a->id,
+                ],[
                     'name' => $a->name,
                     'stage' => 1,
                     'shortfall' => $teachers->count(),
                     'filled' => $teachers->count(),
                     'assigned' => 0,
                 ]);
+                DB::table('organize_original')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();
+                DB::table('organize_reserved')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();
                 foreach ($teachers as $t) {
-                    DB::table('organize_original')->insert([
+                    DB::table('organize_original')->insertOrIgnore([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
                     ]);
-                    DB::table('organize_reserved')->insert([
+                    DB::table('organize_reserved')->insertOrIgnore([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
@@ -271,40 +275,47 @@ class OrganizeController extends Controller
         $grades = Grade::whereIn('id', [1, 3, 5])->get();
         foreach ($grades as $a) {
             $b = Grade::find($a->id + 1);
-            $v1 = OrganizeVacancy::create([
+            $v1 = OrganizeVacancy::updateOrCreate([
+                'syear' => current_year(),
                 'type' => 'tutor',
                 'grade_id' => $a->id,
+            ],[
                 'name' => $a->name,
                 'stage' => 2,
                 'shortfall' => $a->classrooms->count(),
                 'filled' => 0,
                 'assigned' => 0,
             ]);
-            $v2 = OrganizeVacancy::create([
+            $v2 = OrganizeVacancy::updateOrCreate([
+                'syear' => current_year(),
                 'type' => 'tutor',
                 'grade_id' => $b->id,
+            ],[
                 'name' => $b->name,
                 'stage' => 2,
                 'shortfall' => $a->classrooms->count(),
                 'filled' => $a->classrooms->count(),
                 'assigned' => 0,
             ]);
+            DB::table('organize_original')->where('syear', current_year())->where('vacancy_id', $v2->id)->delete();
+            DB::table('organize_reserved')->where('syear', current_year())->where('vacancy_id', $v2->id)->delete();
             foreach ($a->classrooms as $c) {
                 $t = $c->tutors->first();
-                DB::table('organize_original')->insert([
+                DB::table('organize_original')->insertOrIgnore([
                     'syear' => current_year(),
                     'uuid' => $t->uuid,
                     'vacancy_id' => $v2->id,
                 ]);
-                DB::table('organize_reserved')->insert([
+                DB::table('organize_reserved')->insertOrIgnore([
                     'syear' => current_year(),
                     'uuid' => $t->uuid,
                     'vacancy_id' => $v2->id,
                 ]);
             }
+            DB::table('organize_original')->where('syear', current_year())->where('vacancy_id', $v1->id)->delete();
             foreach ($b->classrooms as $c) {
                 $t = $c->tutors->first();
-                DB::table('organize_original')->insert([
+                DB::table('organize_original')->insertOrIgnore([
                     'syear' => current_year(),
                     'uuid' => $t->uuid,
                     'vacancy_id' => $v1->id,
@@ -314,15 +325,19 @@ class OrganizeController extends Controller
         $domains = Domain::where('organize', true)->get();
         foreach ($domains as $a) {
             if ($a->teachers->count()) {
-                $v = OrganizeVacancy::create([
+                $v = OrganizeVacancy::updateOrCreate([
+                    'syear' => current_year(),
                     'type' => 'domain',
                     'domain_id' => $a->id,
+                ],[
                     'name' => $a->name,
                     'stage' => 2,
                     'shortfall' => $a->teachers->count(),
                     'filled' => $a->teachers->count(),
                     'assigned' => 0,
                 ]);
+                DB::table('organize_original')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();
+                DB::table('organize_reserved')->where('syear', current_year())->where('vacancy_id', $v->id)->delete();    
                 foreach ($a->teachers as $t) {
                     DB::table('organize_original')->insertOrIgnore([
                         'syear' => current_year(),
