@@ -73,7 +73,7 @@
     </div>
     <div class="p-2">
         <label for="edu_level" class="text-indigo-700 dark:text-indigo-200">最高學歷：
-            <select name="edu_level">
+            <select id="edu_level" name="edu_level">
                 <option value="0"{{ ($survey && $survey->edu_level == 0) ? ' selected' : '' }}>研究所畢業(博士)</option>
                 <option value="1"{{ ($survey && $survey->edu_level == 1) ? ' selected' : '' }}>研究所畢業(碩士)</option>
                 <option value="2"{{ ($survey && $survey->edu_level == 2) ? ' selected' : '' }}>研究所四十學分班結業</option>
@@ -114,12 +114,14 @@
     $score = $seniority->newscore;
     if ($score < 1) $score = $seniority->score;
     $high = false;
+    $total = $score;
+    $highscore = $score + 2.1;
     if (!empty($teacher->tutor_class)) {
         $grade = substr($teacher->tutor_class, 0, 1); 
         if ($grade == '5' || $grade == '6') $high = true;
-        $total = $score + 2.1;
-    } else {
-        $total = $score;
+        if ($survey && $survey->high) {
+            $total = $high;
+        }
     }
     @endphp
     <table>
@@ -132,7 +134,7 @@
             <td class="w-8 p-4 text-lg font-semibold"> ➕ </td>
             <td>
                 <label for="highgrade" class="inline-flex relative items-center cursor-pointer text-indigo-700 dark:text-indigo-200">
-                    <input type="checkbox" id="highgrade" name="highgrade" value="yes" class="sr-only peer"{{ ($high) ? '' : ' disabled' }}>
+                    <input type="checkbox" id="highgrade" name="highgrade" value="yes" class="sr-only peer"{{ ($high) ? ($survey && $survey->high ? ' checked' : '') : ' disabled' }}>
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                     連續任滿高年級六年以上 2.1
                 </label>
@@ -140,7 +142,7 @@
             <td rowspan="2" class="w-8 p-4 text-lg font-semibold"> 🟰 </td>
             <td rowspan="2">
                 <label for="highgrade" class="text-indigo-700 dark:text-indigo-200">年資積分：
-                    <input id="total" name="total" size="5" value="{{ $score }}" readonly>分
+                    <input id="total" name="total" size="5" value="{{ $total }}" readonly>分
                 </label>
             </td>
         </tr>
@@ -190,7 +192,7 @@
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">肆、特殊任務意願</div>
     <div class="p-2">
             @foreach ($stage1->special as $s)
-        <label for="specials[]" class="pr-6 text-indigo-700 dark:text-indigo-200">
+        <label class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="specials[]" type="checkbox" value="{{ $s->id }}"{{ ($survey && $survey->special && in_array($s->id, $survey->special)) ? ' checked' : '' }}>
             {{ $s->name }}（{{ $s->count_survey() }}）
         </label>
@@ -308,7 +310,7 @@ window.onload = function () {
     if (elm) {
         elm.addEventListener("click", () => {
             if (this.checked) {
-                document.getElementById('total').value = {{ $total }};
+                document.getElementById('total').value = {{ $highscore }};
             } else {
                 document.getElementById('total').value = {{ $score }};
             }

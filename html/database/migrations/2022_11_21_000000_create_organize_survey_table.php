@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('edu_school')->nullable();
             $table->string('edu_division')->nullable();
             $table->float('score');
+            $table->boolean('high')->default(0);
             $table->string('admin1')->nullable();
             $table->string('admin2')->nullable();
             $table->string('admin3')->nullable();

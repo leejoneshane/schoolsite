@@ -57,6 +57,7 @@ class OrganizeController extends Controller
                 'edu_school' => $request->input('edu_school'),
                 'edu_division' => $request->input('edu_division'),
                 'score' => $request->input('total'),
+                'high' => $request->has('highgrade'),
             ]);
         }
         if ($flow->onFirstStage() || $flow->onSecondStage()) {

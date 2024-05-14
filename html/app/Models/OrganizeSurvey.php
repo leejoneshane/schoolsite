@@ -20,6 +20,7 @@ class OrganizeSurvey extends Model
         'edu_school',
         'edu_division',
         'score',
+        'high',
         'admin1',
         'admin2',
         'admin3',
