@@ -45,8 +45,8 @@ class OrganizeController extends Controller
     {
         $teacher = Teacher::find($uuid);
         $flow = OrganizeSettings::current();
-        if ($flow->onSurvey()) {
-            $age = ($teacher->birthdate->format('md') > date("md")) ? date("Y") - $teacher->birthdate->format('Y') - 1 : date("Y") - $teacher->birthdate->format('Y');
+        $age = ($teacher->birthdate->format('md') > date("md")) ? date("Y") - $teacher->birthdate->format('Y') - 1 : date("Y") - $teacher->birthdate->format('Y');
+        if ($flow->onSurvey() || $flow->onFirstStage() || $flow->onSecondStage()) {
             $survey = OrganizeSurvey::updateOrCreate([
                 'syear' => current_year(),
                 'uuid' => $teacher->uuid,
@@ -59,7 +59,7 @@ class OrganizeController extends Controller
                 'score' => $request->input('total'),
             ]);
         }
-        if ($flow->onFirstStage()) {
+        if ($flow->onFirstStage() || $flow->onSecondStage()) {
             $specials = null;
             if ($request->has('specials')) $specials = array_map('intval', $request->input('specials'));
             $survey = OrganizeSurvey::where('syear', current_year())->where('uuid', $teacher->uuid)->first();

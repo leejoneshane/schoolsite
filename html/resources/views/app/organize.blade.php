@@ -64,7 +64,7 @@
     @else
 <form action="{{ route('organize.survey', ['uuid' => $teacher->uuid]) }}" method="POST">
     @csrf
-    @if ($flow->onSurvey())
+    @if ($flow->onSurvey() || $flow->onFirstStage() || $flow->onSecondStage())
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">壹、基本資料</div>
     <div class="p-2">
         <label for="exp" class="text-indigo-700 dark:text-indigo-200">教學經歷：
@@ -154,7 +154,7 @@
         </tr>
     </table>
     @endif
-    @if ($flow->onFirstStage())
+    @if ($flow->onFirstStage() || $flow->onSecondStage())
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">叁、行政職務意願</div>
         @if ($stage1->general->isEmpty())
     <div class="p-2">職缺尚未設定，請洽教務處詢問！</div>
