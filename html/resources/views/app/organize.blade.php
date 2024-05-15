@@ -155,7 +155,7 @@
         </tr>
     </table>
     @endif
-    @if ($flow->onFirstStage() || $flow->onSecondStage())
+    @if ($flow->onFirstStage())
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">叁、行政職務意願</div>
         @if ($stage1->general->isEmpty())
     <div class="p-2">職缺尚未設定，請洽教務處詢問！</div>
@@ -310,9 +310,9 @@ window.onload = function () {
     if (elm) {
         elm.addEventListener("click", () => {
             if (this.checked) {
-                document.getElementById('total').value = '{{ $highscore }}';
+                document.getElementById('total').value = '{{ ($highscore) ?: '' }}';
             } else {
-                document.getElementById('total').value = '{{ $score }}';
+                document.getElementById('total').value = '{{ ($score) ?: '' }}';
             }
         });
     }
