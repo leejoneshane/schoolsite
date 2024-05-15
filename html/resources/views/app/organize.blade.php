@@ -120,7 +120,7 @@
         $grade = substr($teacher->tutor_class, 0, 1); 
         if ($grade == '5' || $grade == '6') $high = true;
         if ($survey && $survey->high) {
-            $total = $high;
+            $total = $highscore;
         }
     }
     @endphp
@@ -310,9 +310,9 @@ window.onload = function () {
     if (elm) {
         elm.addEventListener("click", () => {
             if (this.checked) {
-                document.getElementById('total').value = {{ $highscore }};
+                document.getElementById('total').value = '{{ $highscore }}';
             } else {
-                document.getElementById('total').value = {{ $score }};
+                document.getElementById('total').value = '{{ $score }}';
             }
         });
     }
