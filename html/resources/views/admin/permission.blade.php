@@ -6,6 +6,9 @@
     <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('permission.add') }}">
         <i class="fa-solid fa-circle-plus"></i>新增權限
     </a>
+    <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('permission.admin') }}">
+        <i class="fa-solid fa-circle-plus"></i>設定系統管理員
+    </a>
 </div>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>

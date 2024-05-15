@@ -380,6 +380,8 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('website/menus/{menu}/remove', 'App\Http\Controllers\Admin\MenuController@remove')->name('menus.remove');
 // 權限管理
     Route::get('website/permission', 'App\Http\Controllers\Admin\PermitController@index')->name('permission');
+    Route::get('website/permission/admin', 'App\Http\Controllers\Admin\PermitController@admin');
+    Route::post('website/permission/admin', 'App\Http\Controllers\Admin\PermitController@adminUpdate')->name('permission.admin');
     Route::get('website/permission/add', 'App\Http\Controllers\Admin\PermitController@add');
     Route::post('website/permission/add', 'App\Http\Controllers\Admin\PermitController@insert')->name('permission.add');
     Route::get('website/permission/{id}/edit', 'App\Http\Controllers\Admin\PermitController@edit');
