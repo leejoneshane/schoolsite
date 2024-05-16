@@ -147,7 +147,7 @@ class PermitController extends Controller
             Watchdog::watch($request, $log);
         } else {
             $log = '已經移除所有授權！';
-            Watchdog::watch($request, '移除' . $perm->description . '所有已授權人員！');
+            Watchdog::watch($request, '移除系統管理員所有已授權人員！');
         }
         return back()->with('success', $log);
     }

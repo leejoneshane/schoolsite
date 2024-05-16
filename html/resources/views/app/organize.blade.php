@@ -101,40 +101,17 @@
     <div class="p-2 text-orange-700 dark:text-orange-200">如有意願擔任領域教師，請填寫領域研習時數、獲獎紀錄、證照或其他專長認定文件。</div>
 
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">貳、年資積分</div>
-    @php
-    $seniority = $teacher->seniority();
-    $school_year = $seniority->new_school_year;
-    if ($school_year < 1) $school_year = $seniority->school_year;
-    $school_month = $seniority->new_school_month;
-    if ($school_month < 1) $school_month = $seniority->school_month;
-    $teach_year = $seniority->new_teach_year;
-    if ($teach_year < 1) $teach_year = $seniority->teach_year;
-    $teach_month = $seniority->new_teach_month;
-    if ($teach_month < 1) $teach_month = $seniority->teach_month;
-    $score = $seniority->newscore;
-    if ($score < 1) $score = $seniority->score;
-    $high = false;
-    $total = $score;
-    $highscore = $score + 2.1;
-    if (!empty($teacher->tutor_class)) {
-        $grade = substr($teacher->tutor_class, 0, 1); 
-        if ($grade == '5' || $grade == '6') $high = true;
-        if ($survey && $survey->high) {
-            $total = $highscore;
-        }
-    }
-    @endphp
     <table>
         <tr>
             <td class="w-24 text-indigo-700 dark:text-indigo-200">本校資歷</td>
             <td class="w-52">
-                <input name="in" type="text" size="2" value="{{ $school_year }}" readonly>年
-                <input name="in" type="text" size="2" value="{{ $school_month }}" readonly>月 ✖️ 0.7
+                <input name="in" type="text" size="2" value="{{ $score['syear'] }}" readonly>年
+                <input name="in" type="text" size="2" value="{{ $score['smonth'] }}" readonly>月 ✖️ 0.7
             </td>
             <td class="w-8 p-4 text-lg font-semibold"> ➕ </td>
             <td>
                 <label for="highgrade" class="inline-flex relative items-center cursor-pointer text-indigo-700 dark:text-indigo-200">
-                    <input type="checkbox" id="highgrade" name="highgrade" value="yes" class="sr-only peer"{{ ($high) ? ($survey && $survey->high ? ' checked' : '') : ' disabled' }}>
+                    <input type="checkbox" id="highgrade" name="highgrade" value="yes" class="sr-only peer"{{ ($score['highgrade']) ? ($survey && $survey->high ? ' checked' : '') : ' disabled' }}>
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                     連續任滿高年級六年以上 2.1
                 </label>
@@ -142,15 +119,15 @@
             <td rowspan="2" class="w-8 p-4 text-lg font-semibold"> 🟰 </td>
             <td rowspan="2">
                 <label for="highgrade" class="text-indigo-700 dark:text-indigo-200">年資積分：
-                    <input id="total" name="total" size="5" value="{{ $total }}" readonly>分
+                    <input id="total" name="total" size="5" value="{{ $score['total'] }}" readonly>分
                 </label>
             </td>
         </tr>
         <tr>
             <td class="w-24 text-indigo-700 dark:text-indigo-200">外校資歷</td>
             <td colspan="3">
-                <input name="out" type="text" size="2" value="{{ $teach_year }}" readonly>年
-                <input name="out" type="text" size="2" value="{{ $teach_month }}" readonly>月 ✖️ 0.3
+                <input name="out" type="text" size="2" value="{{ $score['tyear'] }}" readonly>年
+                <input name="out" type="text" size="2" value="{{ $score['tmonth'] }}" readonly>月 ✖️ 0.3
             </td>
         </tr>
     </table>
@@ -310,9 +287,9 @@ window.onload = function () {
     if (elm) {
         elm.addEventListener("click", () => {
             if (this.checked) {
-                document.getElementById('total').value = '{{ ($highscore) ?: '' }}';
+                document.getElementById('total').value = '{{ $score['high'] }}';
             } else {
-                document.getElementById('total').value = '{{ ($score) ?: '' }}';
+                document.getElementById('total').value = '{{ $score['org'] }}';
             }
         });
     }

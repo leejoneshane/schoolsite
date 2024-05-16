@@ -30,6 +30,31 @@ class OrganizeController extends Controller
         if (!$year) $year = $current;
         $teacher = $user->profile;
         $survey = $teacher->survey($year);
+        $seniority = $teacher->seniority();
+        $school_year = $seniority->new_school_year;
+        if ($school_year < 1) $school_year = $seniority->school_year;
+        $score['syear'] = $school_year;
+        $school_month = $seniority->new_school_month;
+        if ($school_month < 1) $school_month = $seniority->school_month;
+        $score['smonth'] = $school_month;
+        $teach_year = $seniority->new_teach_year;
+        if ($teach_year < 1) $teach_year = $seniority->teach_year;
+        $score['tyear'] = $teach_year;
+        $teach_month = $seniority->new_teach_month;
+        if ($teach_month < 1) $teach_month = $seniority->teach_month;
+        $score['tmonth'] = $teach_month;
+        $score['org'] = $seniority->newscore;
+        if ($score['org'] < 1) $score['org'] = $seniority->score;
+        $score['highgrade'] = false;
+        $score['total'] = $score['org'];
+        $score['high'] = $score['org'] + 2.1;
+        if (!empty($teacher->tutor_class)) {
+            $grade = substr($teacher->tutor_class, 0, 1); 
+            if ($grade == '5' || $grade == '6') $score['highgrade'] = true;
+            if ($survey && $survey->high) {
+                $score['total'] = $score['high'];
+            }
+        }
         $reserve = DB::table('organize_reserved')->where('syear', current_year())->where('uuid', $user->uuid)->first();
         $reserved = ($reserve) ? true : false;
         $years = OrganizeSettings::years();
@@ -38,7 +63,7 @@ class OrganizeController extends Controller
         $flow = OrganizeSettings::where('syear', $year)->first();
         $stage1 = OrganizeVacancy::year_stage(1);
         $stage2 = OrganizeVacancy::year_stage(2);
-        return view('app.organize', ['current' => $current, 'year' => $year, 'years' => $years, 'flow' => $flow, 'reserved' => $reserved, 'teacher' => $teacher, 'survey' => $survey, 'stage1' => $stage1, 'stage2' => $stage2]);
+        return view('app.organize', ['current' => $current, 'year' => $year, 'years' => $years, 'flow' => $flow, 'reserved' => $reserved, 'teacher' => $teacher, 'survey' => $survey, 'score' => $score, 'stage1' => $stage1, 'stage2' => $stage2]);
     }
 
     public function survey(Request $request, $uuid)
@@ -627,8 +652,7 @@ class OrganizeController extends Controller
         $uuid = $request->input('uuid');
         if (empty($uuid)) return response()->json('not found');
         $survey = OrganizeSurvey::findByUUID($uuid);
-        $survey->assign = null;
-        $survey->save();
+        $survey->update(['assign' => null]);
         $vacancy = OrganizeVacancy::find($vacancy_id);
         $vacancy->assigned -= 1;
         $vacancy->save();
