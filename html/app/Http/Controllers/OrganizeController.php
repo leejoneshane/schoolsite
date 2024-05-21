@@ -85,7 +85,7 @@ class OrganizeController extends Controller
                 'high' => $request->has('highgrade'),
             ]);
         }
-        if ($flow->onFirstStage() || $flow->onSecondStage()) {
+        if ($flow->onFirstStage()) {
             $specials = null;
             if ($request->has('specials')) $specials = array_map('intval', $request->input('specials'));
             $survey = OrganizeSurvey::where('syear', current_year())->where('uuid', $teacher->uuid)->first();
@@ -122,7 +122,7 @@ class OrganizeController extends Controller
                         'teach4' => $request->input('teach4'),
                         'teach5' => $request->input('teach5'),
                         'teach6' => $request->input('teach6'),
-                        'grade' => $request->input('grade'),
+                        'grade' => $request->has('grade') ? $request->input('grade') : 2,
                         'overcome' => $request->input('overcome'),
                     ]);
                 } else {
@@ -134,7 +134,7 @@ class OrganizeController extends Controller
                         'teach4' => $request->input('teach4'),
                         'teach5' => $request->input('teach5'),
                         'teach6' => $request->input('teach6'),
-                        'grade' => $request->input('grade'),
+                        'grade' => $request->has('grade') ? $request->input('grade') : 2,
                         'overcome' => $request->input('overcome'),
                     ]);
                 }
@@ -150,7 +150,7 @@ class OrganizeController extends Controller
                         'teach4' => $request->input('teach4'),
                         'teach5' => $request->input('teach5'),
                         'teach6' => $request->input('teach6'),
-                        'grade' => $request->input('grade'),
+                        'grade' => $request->has('grade') ? $request->input('grade') : 2,
                         'overcome' => $request->input('overcome'),
                     ]);
                 } else {
@@ -161,7 +161,7 @@ class OrganizeController extends Controller
                         'teach4' => $request->input('teach4'),
                         'teach5' => $request->input('teach5'),
                         'teach6' => $request->input('teach6'),
-                        'grade' => $request->input('grade'),
+                        'grade' => $request->has('grade') ? $request->input('grade') : 2,
                         'overcome' => $request->input('overcome'),
                     ]);
                 }
@@ -631,8 +631,7 @@ class OrganizeController extends Controller
         $uuid = $request->input('uuid');
         if (empty($uuid)) return response()->json('not found');
         $survey = OrganizeSurvey::findByUUID($uuid);
-        $survey->assign = $vacancy_id;
-        $survey->save();
+        if ($survey) $survey->update(['assign' => $vacancy_id]);
         $vacancy = OrganizeVacancy::find($vacancy_id);
         $vacancy->assigned += 1;
         $vacancy->save();
@@ -652,7 +651,7 @@ class OrganizeController extends Controller
         $uuid = $request->input('uuid');
         if (empty($uuid)) return response()->json('not found');
         $survey = OrganizeSurvey::findByUUID($uuid);
-        $survey->update(['assign' => null]);
+        if ($survey) $survey->update(['assign' => null]);
         $vacancy = OrganizeVacancy::find($vacancy_id);
         $vacancy->assigned -= 1;
         $vacancy->save();

@@ -167,7 +167,7 @@ class ClubEnroll extends Model
         return $this->belongsTo('App\Models\Club', 'club_id');
     }
 
-    //取得此報名資訊的學生社團
+    //取得此報名資訊的學生社團學期開班物件
     public function club_section()
     {
         return ClubSection::where('club_id', $this->club_id)

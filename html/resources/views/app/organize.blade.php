@@ -249,26 +249,26 @@
         @endif
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">陸、無缺額時，希望任教年段</div>
     <div class="p-2">
-        <label for="grade" class="pr-6 text-indigo-700 dark:text-indigo-200">
+        <label class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="grade" type="radio" value="1"{{ ($survey && $survey->grade == 1) ? ' checked' : '' }}>
             低年級
         </label>
-        <label for="grade" class="pr-6 text-indigo-700 dark:text-indigo-200">
+        <label class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="grade" type="radio" value="2"{{ ($survey && $survey->grade == 2) ? ' checked' : '' }}>
             中年級
         </label>
-        <label for="grade" class="pr-6 text-indigo-700 dark:text-indigo-200">
+        <label class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="grade" type="radio" value="3"{{ ($survey && $survey->grade == 3) ? ' checked' : '' }}>
             高年級
         </label>
     </div>
     <div class="py-4 text-lg text-indigo-700 dark:text-indigo-200 font-semibold">柒、超鐘點意願</div>
     <div class="p-2">
-        <label for="overcome" class="pr-6 text-indigo-700 dark:text-indigo-200">
+        <label class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="overcome" type="radio" value="1"{{ ($survey && $survey->overcome) ? ' checked' : '' }}>
             同意
         </label>
-        <label for="overcome" class="pr-6 text-indigo-700 dark:text-indigo-200">
+        <label class="pr-6 text-indigo-700 dark:text-indigo-200">
             <input name="overcome" type="radio" value="0"{{ ($survey && !($survey->overcome)) ? ' checked' : '' }}>
             無意願
         </label>

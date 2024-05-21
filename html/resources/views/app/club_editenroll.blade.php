@@ -37,12 +37,12 @@
     </tr>
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600 {{ $club->style }}">
         <td class="p-2">{{ $club->name }}</td>
-        <td class="p-2">{{ $club->section($enroll->section)->teacher }}</td>
+        <td class="p-2">{{ $enroll->club_section() ? $enroll->club_section()->teacher : ''}}</td>
         <td class="p-2">{{ $club->grade }}</td>
-        <td class="p-2">{{ $club->section($enroll->section)->studytime }}</td>
-        <td class="p-2">{{ $club->section($enroll->section)->location }}</td>
-        <td class="p-2">{{ $club->section($enroll->section)->total }}</td>
-        <td class="p-2">{{ $club->section($enroll->section)->maximum }}</td>
+        <td class="p-2">{{ $enroll->club_section() ? $enroll->club_section()->studytime : ''}}</td>
+        <td class="p-2">{{ $enroll->club_section() ? $enroll->club_section()->location : ''}}</td>
+        <td class="p-2">{{ $enroll->club_section() ? $enroll->club_section()->total : ''}}</td>
+        <td class="p-2">{{ $enroll->club_section() ? $enroll->club_section()->maximum : ''}}</td>
         <td class="p-2">{{ $club->count_enrolls($enroll->section) }}</td>
     </tr>
 </table>
