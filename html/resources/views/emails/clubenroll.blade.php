@@ -54,7 +54,7 @@
                             招生人數
                         </th>
                         <td class="p-2">
-                            {{ $enroll->club_section()->total }}
+                            {{ $enroll->club_section()->total > 0 ? $enroll->club_section()->total : '無限制' }}
                         </td>
                     </tr>
                     <tr>
