@@ -19,6 +19,7 @@ return new class extends Migration
             $table->uuid('uuid');
             $table->integer('vacancy_id');
             $table->unique(['syear', 'uuid']);
+            $table->timestamps();
         });
     }
 

@@ -116,7 +116,7 @@ class OrganizeVacancy extends Model
     }
 
     //取得已編排擔任此職缺的教師
-    public function assigned()
+    public function assign()
     {
         return $this->belongsToMany('App\Models\Teacher', 'organize_assign', 'vacancy_id', 'uuid')->where('syear', $this->syear);
     }

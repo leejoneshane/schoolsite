@@ -49,13 +49,13 @@
             {{ $v->shortfall }}
         </td>
         <td class="p-2">
-            @if (is_a($v->reserved, 'Illuminate\Database\Eloquent\Collection') && $v->reserved->count() > 0)
+            @if ($v->reserved && $v->reserved->count() > 0)
                 @foreach ($v->reserved as $t)
             <span class="pl-4 text-green-500">{{ $t->realname }}</span>
                 @endforeach
             @endif
-            @if (is_a($v->assigned, 'Illuminate\Database\Eloquent\Collection') && $v->assigned->count() > 0)
-                @foreach ($v->assigned as $t)
+            @if ($v->assign && $v->assign->count() > 0)
+                @foreach ($v->assign as $t)
             <span class="pl-4 text-blue-500">{{ $t->realname }}</span>
                 @endforeach
             @endif
