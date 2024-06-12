@@ -83,6 +83,6 @@ function doRefresh() {
         })
         .catch( (error) => console.log(error));
 }
-setInterval(doRefresh, 5000);
+setInterval(doRefresh, 300000);
 </script>
 @endauth
