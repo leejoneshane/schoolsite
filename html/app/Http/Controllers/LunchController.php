@@ -71,6 +71,12 @@ class LunchController extends Controller
         if (!$manager) {
             return redirect()->route('home')->with('error', '只有管理員才能設定午餐調查期程！');
         }
+        $settings = LunchSurvey::settings($section);
+        if ($request->input('qrcode') && $settings->qrcode != $request->input('qrcode')) {
+            QrCode::format('png')->size(300)
+                ->merge(public_path('images/logo.jpg'), 0.25, true)
+                ->generate($settings->qrcode, $image);
+        }
         DB::table('lunch')->upsert([
             'section' => $section,
             'money' => $request->input('money'),
@@ -81,7 +87,7 @@ class LunchController extends Controller
         ],[
             'section',
         ]);
-        $settings = LunchSurvey::settings();
+        $settings = LunchSurvey::settings($section);
         Watchdog::watch($request, '設定午餐調查期程：' . json_encode($settings, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return redirect()->route('lunch')->with('success', '午餐調查期程設定完成！');
     }
