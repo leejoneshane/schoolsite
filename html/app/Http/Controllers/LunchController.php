@@ -75,7 +75,7 @@ class LunchController extends Controller
         if ($request->input('qrcode') && $settings->qrcode != $request->input('qrcode')) {
             QrCode::format('png')->size(300)
                 ->merge(public_path('images/logo.jpg'), 0.25, true)
-                ->generate($settings->qrcode, $image);
+                ->generate($request->input('qrcode'), $image);
         }
         DB::table('lunch')->upsert([
             'section' => $section,
