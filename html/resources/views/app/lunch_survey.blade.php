@@ -66,7 +66,8 @@
             <tr>
                 <td>
                     <div class="flex justify-center">
-                        {!! QrCode::size(300)->generate($settings->qrcode) !!}
+                        <img src="/images/lunch.png" />
+                        {{--!! QrCode::format('png')->size(300)->generate($settings->qrcode) !!--}}
                     </div>
                 </td>
             </tr>

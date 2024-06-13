@@ -12,6 +12,7 @@ use App\Models\LunchSurvey;
 use App\Models\Watchdog;
 use App\Exports\LunchExport;
 use App\Exports\LunchClassExport;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class LunchController extends Controller
 {
@@ -25,6 +26,12 @@ class LunchController extends Controller
         if (!in_array($next, $sections)) $sections[] = $next;
         if (!$section) $section = $next;
         $settings = LunchSurvey::settings($section);
+        $image = public_path('images/lunch.png');
+        if (!file_exists($image)) {
+            QrCode::format('png')->size(300)
+                ->merge(public_path('images/logo.jpg'), 0.25, true)
+                ->generate($settings->qrcode, $image);
+        }
         $count = (object) ['classes' => LunchSurvey::count_classes($section), 'students' => LunchSurvey::count($section)];
         $survey = $surveys = $classes = null;
         $classes = Classroom::all();
@@ -42,7 +49,7 @@ class LunchController extends Controller
             $classroom = Classroom::find($class_id);
             $surveys = LunchSurvey::class_survey($class_id, $section);
         }
-        return view('app.lunch_survey', ['user' => $user, 'manager' => $manager, 'section' => $section, 'sections' => $sections, 'settings' => $settings, 'count' => $count, 'survey' => $survey, 'classroom' => $classroom, 'classes' => $classes, 'surveys' => $surveys]);
+        return view('app.lunch_survey', ['user' => $user, 'manager' => $manager, 'section' => $section, 'sections' => $sections, 'settings' => $settings, 'image' => $image, 'count' => $count, 'survey' => $survey, 'classroom' => $classroom, 'classes' => $classes, 'surveys' => $surveys]);
     }
 
     public function setting($section)
