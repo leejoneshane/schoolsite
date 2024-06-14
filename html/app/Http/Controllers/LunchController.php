@@ -73,6 +73,7 @@ class LunchController extends Controller
         }
         $settings = LunchSurvey::settings($section);
         if ($request->input('qrcode') && $settings->qrcode != $request->input('qrcode')) {
+            $image = public_path('images/lunch.png');
             QrCode::format('png')->size(300)
                 ->merge(public_path('images/logo.jpg'), 0.25, true)
                 ->generate($request->input('qrcode'), $image);
