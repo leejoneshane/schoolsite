@@ -3,6 +3,9 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     公假單
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('dayoff.permission') }}">
+        <i class="fa-solid fa-unlock-keyhole"></i>管理權限
+    </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('dayoff.add') }}">
         <i class="fa-solid fa-circle-plus"></i>新增公假單
     </a>

@@ -179,7 +179,9 @@ class TpeduServiceProvider extends ServiceProvider
             return $json;
         } else {
             $this->error = $response->getBody();
-            Log::error('oauth2 '.$dataapi.' response =>'.$this->error);
+            if (!empty($this->error)) {
+                Log::error('oauth2 '.$dataapi.' response =>'.$this->error);
+            }
             return false;
         }
     }

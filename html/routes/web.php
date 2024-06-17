@@ -307,6 +307,8 @@ Route::group(['prefix' => 'dayoff', 'middleware' => [ 'auth'] ], function () {
     Route::get('sudents/{id}/remove/all', 'App\Http\Controllers\DayoffController@removeStudents')->name('dayoff.empty');
     Route::get('download/{id}', 'App\Http\Controllers\DayoffController@download')->name('dayoff.download');
     Route::get('print/{id}', 'App\Http\Controllers\DayoffController@print')->name('dayoff.print');
+    Route::get('perm', 'App\Http\Controllers\DayoffController@perm');
+    Route::post('perm', 'App\Http\Controllers\DayoffController@updatePerm')->name('dayoff.permission');
 });
 
 // 分組座位表

@@ -2,8 +2,8 @@
 
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
-    將公開課授權給群召
-    <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public') }}">
+    將公假單授權給學生社團
+    <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('dayoff') }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
@@ -11,7 +11,7 @@
     <span class="font-semibold">權限代碼：</span>{{ $permission->group }}.{{ $permission->permission }}　
     <span class="font-semibold">權限描述：</span>{{ $permission->description }}
 </div>
-<form id="edit-teacher" action="{{ route('public.permission') }}" method="POST">
+<form id="edit-teacher" action="{{ route('dayoff.permission') }}" method="POST">
     @csrf
     <p class="p-2">
         <label for="roles" class="inline">已授權人員：</label>
