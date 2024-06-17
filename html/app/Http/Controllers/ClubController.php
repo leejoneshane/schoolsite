@@ -617,8 +617,8 @@ class ClubController extends Controller
             $accepted = [];
             if (count($club->for_grade) > 1) {
                 for ($g=1; $g<7; $g++) {
-                    $counter[$g] = $club->count_enrolls_by_grade($section->section, $g); //報名人數
-                    $accepted[$g] = $club->count_accepted_by_grade($section->section, $g); //錄取人數
+                    $counter[$g] = $club->count_enrolls_by_grade($g, $section->section); //報名人數
+                    $accepted[$g] = $club->count_accepted_by_grade($g, $section->section); //錄取人數
                 }
                 $counter['total'] = array_sum($counter);
                 $accepted['total'] = array_sum($accepted);
@@ -762,7 +762,7 @@ class ClubController extends Controller
         }
         $message = '';
         if (count($club->for_grade) > 1 && isset($section->admit[$grade->id])) {
-            $order = $club->count_enrolls_by_grade(null, $grade->id) + 1;
+            $order = $club->count_enrolls_by_grade($grade->id) + 1;
             if ($order > $section->admit[$grade->id]) {
                 $message = '，目前列為候補，若能遞補錄取將會另行通知！';
             }
@@ -914,8 +914,8 @@ class ClubController extends Controller
             $accepted = [];
             if (count($club->for_grade) > 1) {
                 for ($g=1; $g<7; $g++) {
-                    $counter[$g] = $club->count_enrolls_by_grade($section, $g); //報名人數
-                    $accepted[$g] = $club->count_accepted_by_grade($section, $g); //錄取人數
+                    $counter[$g] = $club->count_enrolls_by_grade($g, $section); //報名人數
+                    $accepted[$g] = $club->count_accepted_by_grade($g, $section); //錄取人數
                 }
                 $counter['total'] = array_sum($counter);
                 $accepted['total'] = array_sum($accepted);
@@ -1168,7 +1168,7 @@ class ClubController extends Controller
         }
         $message = '';
         if (count($club->for_grade) > 1 && isset($section_obj->admit[$grade->id])) {
-            $order = $club->count_enrolls_by_grade(null, $grade->id) + 1;
+            $order = $club->count_enrolls_by_grade($grade->id) + 1;
             if ($order > $section_obj->admit[$grade->id]) {
                 $message = '，目前列為候補，若能遞補錄取將會另行通知！';
             }
@@ -1260,7 +1260,7 @@ class ClubController extends Controller
                 continue;
             }
             if (count($club->for_grade) > 1 && isset($section_obj->admit[$grade->id])) {
-                $order = $club->count_enrolls_by_grade(null, $grade->id) + 1;
+                $order = $club->count_enrolls_by_grade($grade->id) + 1;
                 if ($order > $section_obj->admit[$grade->id]) {
                     $message .= $stdno.$student->realname.'已經完成報名手續，報名順位為'.$order.'，目前列為候補！';
                 }
