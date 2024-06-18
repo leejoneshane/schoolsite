@@ -76,20 +76,16 @@ class TpeduController extends Controller
                 } else { //new user
                     $tpuser = false;
                     $result = $this->sso->fetch_user($uuid);
-                    if ($result) {
-                        $temp = Student::find($uuid);
-                        if ($temp) {
-                            $user_type = 'Student';
-                            $tpuser = $temp;
-                        } else {
-                            $temp = Teacher::find($uuid);
-                            if ($temp) {
-                                $user_type = 'Teacher';
-                                $tpuser = $temp;
-                            }
-                        }
+                    $temp = Student::find($uuid);
+                    if ($temp) {
+                        $user_type = 'Student';
+                        $tpuser = $temp;
                     } else {
-                        return redirect()->route('login')->with('error', '無法從單一身份驗證取得您的個資，因此無法登入！');
+                        $temp = Teacher::find($uuid);
+                        if ($temp) {
+                            $user_type = 'Teacher';
+                            $tpuser = $temp;
+                        }
                     }
                     if ($tpuser) {
                         $email = $tpuser->email; 
