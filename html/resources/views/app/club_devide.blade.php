@@ -113,7 +113,7 @@
     </div>
 </p>
 </form>
-<script>
+<script nonce="selfhost">
 function redo() {
     var limit = document.getElementById('limit').value;
     window.location.replace("{{ route('clubs.devide', [ 'club_id' => $club->id, 'section' => $section ]) }}?limit=" + limit);

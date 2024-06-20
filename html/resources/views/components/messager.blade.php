@@ -16,7 +16,7 @@
         </button>
     </div>
 </div>
-<script>
+<script nonce="selfhost">
 function send() {
     var uid = document.getElementById('user_id').value;
     if (uid) {

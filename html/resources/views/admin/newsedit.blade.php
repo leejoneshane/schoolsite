@@ -68,7 +68,7 @@
     </div>
     </div>
 </form>
-<script>
+<script nonce="selfhost">
 @if ($news->loop['loop'] == 'monthly')
 document.getElementById('day').classList.remove('hidden');
 document.getElementById('weekday').classList.add('hidden');

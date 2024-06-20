@@ -43,7 +43,7 @@
     </tr>
     @endforeach
 </table>
-<script>
+<script nonce="selfhost">
     function check(email) {
         if (email != '{{ $email }}') {
             document.getElementById('notice').classList.remove('hidden');

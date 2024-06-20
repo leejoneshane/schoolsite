@@ -234,7 +234,7 @@
     <input type="hidden" id="weekday" name="weekday">
     <input type="hidden" id="session" name="session">
 </form>
-<script>
+<script nonce="selfhost">
 function booking(date, weekday, session) {
     var myform = document.getElementById('act');
     var section = document.getElementById('section');

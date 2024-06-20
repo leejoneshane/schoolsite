@@ -41,7 +41,7 @@
             </button>
     </div></p>
 </form>
-<script>
+<script nonce="selfhost">
     class MyUploadAdapter {
         constructor( loader ) {
             // The file loader instance to use during the upload.

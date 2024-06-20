@@ -100,7 +100,7 @@
         </div>
     </p>
 </form>
-<script>
+<script nonce="selfhost">
 function choise_target() {
     var grade = document.getElementById('grade');
     var target = document.getElementById('target');

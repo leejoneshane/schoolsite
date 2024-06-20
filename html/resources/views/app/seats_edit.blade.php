@@ -47,7 +47,7 @@
         </div>  
     </div>
 </div>
-<script>
+<script nonce="selfhost">
     const students = {!! json_encode($students, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!};
     const matrix = {!! json_encode($matrix, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!};
     const sel = {!! json_encode($without, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!};

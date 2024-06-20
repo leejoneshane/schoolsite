@@ -199,7 +199,7 @@
 </div>
 @endif
 </div>
-<script>
+<script nonce="selfhost">
     function show(elem) {
         var target1 = document.getElementById('by_school');
         var target2 = document.getElementById('by_parent');

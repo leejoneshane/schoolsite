@@ -355,7 +355,7 @@
         </div>
     </div>
 </div>
-<script>
+<script nonce="selfhost">
 window.old = [];
 window.onload = function () {
     var elm = document.querySelectorAll("input[type=checkbox]");

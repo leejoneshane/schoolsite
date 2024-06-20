@@ -112,7 +112,7 @@
         </button>
     </p>
 </form>
-<script>
+<script nonce="selfhost">
 function remove_role(elem) {
     const parent = elem.parentNode;
     const child = elem.previousElementSibling;

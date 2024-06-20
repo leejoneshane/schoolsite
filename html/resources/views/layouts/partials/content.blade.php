@@ -34,7 +34,7 @@
         </div>
     </div>
 </main>
-<script>
+<script nonce="selfhost">
 @auth
     function reply(uid) {
         var me = {{ auth()->user()->id }};

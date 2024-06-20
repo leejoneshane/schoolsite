@@ -127,7 +127,7 @@
         @csrf
     </form>
 </table>
-<script>
+<script nonce="selfhost">
     function query(main) {
         var search = '';
         if (main == 'unit') {

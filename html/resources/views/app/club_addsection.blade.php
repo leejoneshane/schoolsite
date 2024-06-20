@@ -107,7 +107,7 @@
         </div>
     </p>
 </form>
-<script>
+<script nonce="selfhost">
     function check_self(ele) {
         if (ele.checked) {
             document.getElementById('selfdefine').checked = false;

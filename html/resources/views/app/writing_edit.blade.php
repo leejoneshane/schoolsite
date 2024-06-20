@@ -34,7 +34,7 @@
     <input type="hidden" name="referer" value="{{ $referer }}">
     <textarea id="words" name="words" hidden></textarea>
 </form>
-<script>
+<script nonce="selfhost">
     function getCaretPosition() {
         const range = window.getSelection().getRangeAt(0);
         return range.endOffset;

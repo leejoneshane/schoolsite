@@ -142,7 +142,7 @@
     @csrf
     <input type="hidden" id="reserve" name="id">
 </form>
-<script>
+<script nonce="selfhost">
 function booking(id, date, weekday, session, length) {
     var myform = document.getElementById('act');
     var venue = document.getElementById('venue');

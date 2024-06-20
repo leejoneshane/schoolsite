@@ -64,7 +64,7 @@
         <div id="matrix" ></div>
     </div>
 </div>
-<script>
+<script nonce="selfhost">
     function show_matrix(id) {
         var matrix = document.getElementById("matrix");
         window.axios.get('{{ route('seats.viewtheme') }}', {

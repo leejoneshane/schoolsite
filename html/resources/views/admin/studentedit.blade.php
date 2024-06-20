@@ -76,7 +76,7 @@
         </button>
     </p>
 </form>
-<script>
+<script nonce="selfhost">
 function remove_character(elem) {
     const parent = elem.parentNode;
     const child = elem.previousElementSibling;

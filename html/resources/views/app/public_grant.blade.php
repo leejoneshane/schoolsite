@@ -45,8 +45,8 @@
         </button>
     </p>
 </form>
-<script>
-    function remove_teacher(elem) {
+<script nonce="selfhost">
+function remove_teacher(elem) {
     const parent = elem.parentNode;
     const brother = elem.previousElementSibling;
     parent.removeChild(brother);

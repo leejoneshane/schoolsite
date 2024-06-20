@@ -79,7 +79,7 @@
     </form>
 </table>
 {{ $jobs->links('pagination::tailwind') }}
-<script>
+<script nonce="selfhost">
     function show(job) {
         var tr=document.getElementById('detail_' + job);
         if (tr.classList.contains('hidden')) {

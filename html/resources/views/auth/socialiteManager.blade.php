@@ -74,7 +74,7 @@
     </form>
     </div>
 </div>
-<script>
+<script nonce="selfhost">
     function mysubmit(via, uid) {
         document.getElementById('socialite').value = via;
         document.getElementById('userid').value = uid;

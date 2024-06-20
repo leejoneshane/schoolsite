@@ -32,7 +32,7 @@
     white-space: pre-wrap;
     overflow-x: scroll;
 ">　　　　{{ $context->title }}@for ($i = 0; $i < $words; $i++)　@endfor{{ $context->author }}<br>{{ str_replace(' ', '', $context->words) }}</div>
-<script>
+<script nonce="selfhost">
     var font = 32;
     var c = document.createElement('canvas');
     c.width = 1792;

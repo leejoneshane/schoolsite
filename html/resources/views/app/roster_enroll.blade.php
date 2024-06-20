@@ -101,7 +101,7 @@
         </button>
     </div>
 </form>
-<script>
+<script nonce="selfhost">
     const min = {{ $roster->min }};
     const max = {{ $roster->max }};
     function checknum() {

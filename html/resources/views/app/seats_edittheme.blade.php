@@ -65,7 +65,7 @@
         </div>
     </div>
 </form>
-<script>
+<script nonce="selfhost">
     const styles = {!! json_encode($styles, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!};
     const matrix = {!! json_encode($template->matrix, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!};
 

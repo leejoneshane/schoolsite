@@ -132,7 +132,7 @@
         @csrf
     </form>
 </table>
-<script>
+<script nonce="selfhost">
     function query() {
         var search = '';
     var idno = document.getElementById('idno').value;

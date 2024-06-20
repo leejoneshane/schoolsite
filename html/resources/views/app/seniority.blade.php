@@ -169,7 +169,7 @@
     @endforelse
 </table>
 {{ $teachers->links('pagination::tailwind') }}
-<script>
+<script nonce="selfhost">
     function query(main) {
         var search = '';
         var year = document.getElementById('years').value;

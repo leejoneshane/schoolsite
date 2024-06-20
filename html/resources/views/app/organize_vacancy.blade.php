@@ -198,7 +198,7 @@
     </tr>
     @endforeach
 </table>
-<script>
+<script nonce="selfhost">
     window.onload = function () {
         var elm = document.querySelectorAll("select");
         for (var i = 0; i < elm.length; i++) {

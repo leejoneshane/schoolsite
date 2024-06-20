@@ -281,7 +281,7 @@
     </div>
 </form>
     @endif
-<script>
+<script nonce="selfhost">
 window.onload = function () {
     var elm = document.getElementById("highgrade");
     if (elm) {
