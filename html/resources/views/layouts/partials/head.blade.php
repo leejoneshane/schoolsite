@@ -16,5 +16,5 @@
 <link rel="stylesheet" href="/css/ckeditor.css">
 
 <!-- Scripts -->
-<script nonce="flowbite" src="https://unpkg.com/flowbite@1.5.3/dist/flowbite.js"></script>
+<script src="https://unpkg.com/flowbite@1.5.3/dist/flowbite.js"></script>
 @vite(['resources/css/tailwind.css','resources/scripts/main.ts'])
