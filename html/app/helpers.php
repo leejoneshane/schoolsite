@@ -95,7 +95,7 @@ function which_section($date) {
     return $syear . $seme;
 }
 
-//學生社團於7月1日開始，都屬於下一個學期
+//學生社團於暑假期間開課，屬於上一個學期
 function club_section($date) {
     if (is_string($date)) {
         $date = new DateTime($date);
@@ -106,7 +106,7 @@ function club_section($date) {
     } else {
         $syear = $date->format('Y') - 1912;
     }
-    if ($m > 1 && $m < 7) {
+    if ($m > 1 && $m < 9) {
         $seme = 2;
     } else {
         $seme = 1;
