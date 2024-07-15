@@ -16,6 +16,7 @@ use App\Models\Watchdog;
 use App\Models\Permission;
 use App\Exports\PublicPDFExport;
 use App\Exports\PublicExcelExport;
+use App\Exports\PublicDocxExport;
 use Illuminate\Support\Facades\Notification;
 use App\Notifications\PublicNotification;
 use Carbon\Carbon;
@@ -493,6 +494,19 @@ class PublicController extends Controller
             $domain = Domain::find($domain_id);
             $filename = $domain->name . '公開課成果報告.pdf';
             $exporter = new PublicPDFExport($section, $domain_id);
+            return $exporter->download($filename);
+        } else {
+            return redirect()->route('home')->with('error', '只有管理員才能下載公開課成果報告！');
+        }
+    }
+
+    public function docx($section, $domain_id) {
+        $user = User::find(Auth::user()->id);
+        $manager = ($user->is_admin || $user->hasPermission('public.manager'));
+        if ($manager) {
+            $domain = Domain::find($domain_id);
+            $filename = $domain->name . '公開課成果報告.docx';
+            $exporter = new PublicDocxExport($section, $domain_id);
             return $exporter->download($filename);
         } else {
             return redirect()->route('home')->with('error', '只有管理員才能下載公開課成果報告！');

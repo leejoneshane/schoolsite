@@ -38,7 +38,8 @@
                 <td class="p-2">{{ $dom->discuss }}</td>
                 <td class="p-2">
                     @if ($dom->eduplan > 0 && $dom->discuss > 0)
-                    <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public.download', ['section' => $section, 'domain_id' => $dom->id]) }}">匯出成PDF</a>
+                    <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public.downloadWord', ['section' => $section, 'domain_id' => $dom->id]) }}">匯出成Docx</a>
+                    <a class="text-sm py-2 px-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('public.downloadPDF', ['section' => $section, 'domain_id' => $dom->id]) }}">匯出成PDF</a>
                     @endif
                 </td>
             @endforeach

@@ -187,8 +187,9 @@ Route::group(['prefix' => 'public', 'middleware' => [ 'auth'] ], function () {
     Route::get('perm', 'App\Http\Controllers\PublicController@perm');
     Route::post('perm', 'App\Http\Controllers\PublicController@updatePerm')->name('public.permission');
     Route::get('export/{section}', 'App\Http\Controllers\PublicController@export')->name('public.export');
-    Route::get('download/{section}/{domain_id}', 'App\Http\Controllers\PublicController@pdf')->name('public.download');
-    Route::get('excel/{section}', 'App\Http\Controllers\PublicController@excel')->name('public.excel');
+    Route::get('download/Word/{section}/{domain_id}', 'App\Http\Controllers\PublicController@docx')->name('public.downloadWord');
+    Route::get('download/PDF/{section}/{domain_id}', 'App\Http\Controllers\PublicController@pdf')->name('public.downloadPDF');
+    Route::get('download/Excel/{section}', 'App\Http\Controllers\PublicController@excel')->name('public.excel');
 });
 
 // 網路朝會
