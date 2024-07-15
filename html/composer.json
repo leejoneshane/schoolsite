@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
-        "beyondcode/laravel-websockets": "^1.13",
+        "barryvdh/laravel-dompdf": "*",
         "doctrine/dbal": "^3.4",
         "google/apiclient": "^2.12",
         "guzzlehttp/guzzle": "^7.2",
@@ -22,8 +22,10 @@
         "laravel/ui": "^3.4",
         "maatwebsite/excel": "^3.1",
         "meilisearch/meilisearch-php": "^0.27.0",
-        "phpoffice/phpword": "1",
+        "phpoffice/phpspreadsheet": "*",
+        "phpoffice/phpword": "*",
         "psr/simple-cache": "2",
+        "simplesoftwareio/simple-qrcode": "*",
         "socialiteproviders/facebook": "^4.1",
         "socialiteproviders/google": "^4.1",
         "socialiteproviders/line": "^4.1",
@@ -75,7 +77,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

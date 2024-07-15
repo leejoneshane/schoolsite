@@ -13,13 +13,13 @@ use App\Models\Watchdog;
 class SyncController extends Controller
 {
 
-    public function syncFromTpedu()
+    public function syncFromLDAP()
     {
         $classes = Classroom::all();
         return view('admin.tpedu', ['classes' => $classes]);
     }
 
-    public function startSyncFromTpedu(Request $request)
+    public function startSyncFromLDAP(Request $request)
     {
         $expire = $request->boolean('expire');
         $password = ($request->input('password') == 'sync') ? true : false;
@@ -45,12 +45,12 @@ class SyncController extends Controller
         return view('admin')->with('success', '同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
     }
 
-    public function syncToAD()
+    public function syncToMSAD()
     {
         return view('admin.ad');
     }
 
-    public function startSyncToAD(Request $request)
+    public function startSyncToMSAD(Request $request)
     {
         $password = ($request->input('password') == 'sync') ? true : false;
         $leave = $request->input('leave');

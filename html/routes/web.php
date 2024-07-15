@@ -338,10 +338,10 @@ Route::group(['prefix' => 'seats', 'middleware' => [ 'auth'] ], function () {
 Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
 // 快取資料庫同步作業
-    Route::get('database/sync', 'App\Http\Controllers\Admin\SyncController@syncFromTpedu');
-    Route::post('database/sync', 'App\Http\Controllers\Admin\SyncController@startSyncFromTpedu')->name('sync');
-    Route::get('database/sync/ad', 'App\Http\Controllers\Admin\SyncController@syncToAD');
-    Route::post('database/sync/ad', 'App\Http\Controllers\Admin\SyncController@startSyncToAD')->name('syncAD');
+    Route::get('database/sync', 'App\Http\Controllers\Admin\SyncController@syncFromLDAP');
+    Route::post('database/sync', 'App\Http\Controllers\Admin\SyncController@startSyncFromLDAP')->name('sync');
+    Route::get('database/sync/ad', 'App\Http\Controllers\Admin\SyncController@syncToMSAD');
+    Route::post('database/sync/ad', 'App\Http\Controllers\Admin\SyncController@startSyncToMSAD')->name('syncAD');
     Route::get('database/sync/google', 'App\Http\Controllers\Admin\SyncController@syncToGsuite');
     Route::post('database/sync/google', 'App\Http\Controllers\Admin\SyncController@startSyncToGsuite')->name('syncGsuite');
 // 單一身份驗證資料管理
