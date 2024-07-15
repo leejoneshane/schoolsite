@@ -81,6 +81,7 @@ class PublicPDFExport
 
         // Load temporarily create word file then Save it into PDF
         $pdfpath = public_path('public_class/' . $this->section . $domain->name . '.pdf');
+        /*
         ConvertApi::setApiSecret('your-secert-code');
         $result = ConvertApi::convert('pdf', [
                 'File' => $merge_file,
@@ -90,13 +91,12 @@ class PublicPDFExport
             ], 'docx'
         );
         $result->saveFiles($pdfpath);
-        /*
+        */
         $Content = IOFactory::load($merge_file); 
         if (file_exists($pdfpath)) unlink($pdfpath);
         $PDFWriter = IOFactory::createWriter($Content,'PDF');
         $PDFWriter->save($pdfpath);
         unlink($merge_file);
-        */
 
         return $pdfpath;
     }
