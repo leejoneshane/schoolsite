@@ -165,7 +165,7 @@ class PublicClass extends Model
     //取得此公開課的任教老師
     public function teacher()
     {
-        return $this->belongsTo('App\Models\Teacher', 'uuid', 'uuid');
+        return $this->belongsTo('App\Models\Teacher', 'uuid', 'uuid')->withTrashed();
     }
 
     //取得此公開課的觀課老師
