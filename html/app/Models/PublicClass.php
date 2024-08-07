@@ -172,7 +172,7 @@ class PublicClass extends Model
     public function teachers()
     {
         if ($this->partners) {
-            return Teacher::whereIn('uuid', $this->partners)->get();
+            return Teacher::withTrashed()->whereIn('uuid', $this->partners)->get();
         }
         return null;
     }
