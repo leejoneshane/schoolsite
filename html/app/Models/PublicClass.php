@@ -211,7 +211,7 @@ class PublicClass extends Model
     {
         $sdate = $date->copy()->startOfWeek();
         $edate = $sdate->copy()->addDays(6)->format('Y-m-d');
-        return PublicClass::whereBetween('reserved_at', [$sdate, $edate])->get();
+        return PublicClass::whereBetween('reserved_at', [$sdate->format('Y-m-d'), $edate])->get();
     }
 
     //提供本週或指定日期公開課節次陣列
