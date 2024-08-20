@@ -53,9 +53,6 @@ class LunchSurvey extends Model
             if (empty($model->section)) {
                 $model->section = next_section();
             }
-            if (empty($model->upgraded)) {
-                $model->upgraded = next_section();
-            }
         });
     }
 
@@ -91,7 +88,6 @@ class LunchSurvey extends Model
     public static function section_survey($section = null)
     {
         if (!$section) $section = next_section();
-        if ($section != next_section()) self::upgrade($section);
         return LunchSurvey::where('section', $section)
             ->orderBy('class_id')
             ->orderBy('seat')
@@ -102,10 +98,9 @@ class LunchSurvey extends Model
     public static function class_survey($class, $section = null)
     {
         if (!$section) $section = next_section();
-        if ($section != next_section()) self::upgrade($section);
+        $uuids = Classroom::find($class)->uuids();
         return LunchSurvey::where('section', $section)
-            ->where('class_id', $class)
-            ->orderBy('seat')
+            ->whereIn('uuid', $uuids)
             ->get();
     }
 
@@ -113,7 +108,6 @@ class LunchSurvey extends Model
     public static function count_classes($section = null)
     {
         if (!$section) $section = next_section();
-        if ($section != next_section()) self::upgrade($section);
         return LunchSurvey::distinct('class_id')->where('section', $section)->count();
     }
 
@@ -127,27 +121,7 @@ class LunchSurvey extends Model
     //檢查本學期指定班級已調查學生數
     public static function countByClass($section, $class_id)
     {
-        if ($section != next_section()) self::upgrade($section);
-        return LunchSurvey::where('section', $section)->where('class_id', $class_id)->count();
-    }
-
-    //將學生資料升級
-    public static function upgrade($section)
-    {
-        $surveys = LunchSurvey::where('section', $section)->where('upgraded', '<', next_section())->get();
-        if ($surveys->isNotEmpty()) {
-            foreach ($surveys as $s) {
-                $stu = $s->student;
-                if ($stu) {
-                    $s->class_id = $stu->class_id;
-                    $s->seat = $stu->seat;
-                    $s->upgraded = next_section();
-                    $s->save();
-                } else {
-                    $s->delete;
-                }
-            }
-        }
+        return LunchSurvey::class_survey($class_id, $section)->count();
     }
 
     //提供午餐類型中文字串
@@ -169,13 +143,13 @@ class LunchSurvey extends Model
         return $str;
     }
 
-    //取得填寫此午餐調查的學生
+    //取得填寫此午餐調查的學生物件
     public function student()
     {
         return $this->belongsTo('App\Models\Student', 'uuid', 'uuid');
     }
 
-    //取得填寫此午餐調查的班級
+    //取得填寫此午餐調查的班級物件
     public function classroom()
     {
         return ($this->student) ? $this->student->classroom : null;

@@ -52,6 +52,14 @@ class Classroom extends Model
         return $this->hasMany('App\Models\Student', 'class_id')->orderBy('seat');
     }
 
+    //取得此班級學生的 uuid，依座號排序
+    public function uuids()
+    {
+        return $this->students->map(function ($stu) {
+            return $stu->uuid;
+        })->toArray();
+    }
+
     //取得此班級的任教老師，依真實姓名排序
     public function teachers()
     {
