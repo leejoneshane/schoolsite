@@ -38,6 +38,7 @@
         </th>
     </tr>
     @foreach ($jobs as $job)
+    @if ($job->reporter)
     <tr class="bg-white hover:bg-green-100 dark:bg-gray-700">
         <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ substr($job->created_at, 0, 10) }}</td>
         <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ $job->summary }}</td>
@@ -73,6 +74,7 @@
             {{ ($job->reply) ? $job->reply->comment : ''}}<br>
         </td>
     </tr>
+    @endif
     @endforeach
     <form class="hidden" id="remove" action="" method="POST">
         @csrf
