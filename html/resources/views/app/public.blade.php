@@ -170,23 +170,23 @@
                 <td class="p-2">{{ $data->domain->name }}</td>
                 @endif
                 @if ($manager || $domain_manager)
-                <td class="p-2">{{ $data->teacher->realname }}</td>
+                <td class="p-2">{{ $data->teacher ? $data->teacher->realname : $data->uuid}}</td>
                 @endif
                 <td class="p-2">{{ $data->teach_unit }}</td>
                 <td class="p-2">{{ is_null($data->teach_class) ? '特殊需求' : $data->classroom->name }}</td>
                 <td class="p-2">{{ $data->location }}</td>
                 <td class="p-2">
-                    @if (!empty($data->eduplan))
+                    @if (!empty($data->eduplan) && ($manager || $domain_manager || $data->uuid == $teacher->uuid))
                     <a href="{{ asset('public_class/' . $data->eduplan) }}">教案</a>
                     @endif
                 </td>
                 <td class="p-2">
-                    @if (!empty($data->discuss))
+                    @if (!empty($data->discuss) && ($manager || $domain_manager || $data->uuid == $teacher->uuid))
                     <a href="{{ asset('public_class/' . $data->discuss) }}">觀課後會談</a>
                     @endif
                 </td>
                 <td class="p-2">
-                    @if ($manager || $domain_manager)
+                    @if ($manager || $domain_manager || $data->uuid == $teacher->uuid)
                     <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                         href="{{ route('public.edit', ['id' => $data->id]) }}" title="編輯">
                         <i class="fa-solid fa-pen"></i>

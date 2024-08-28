@@ -55,13 +55,12 @@ class PublicController extends Controller
         }
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
         $domainmanager = $user->hasPermission('public.domain');
+        $teacher = Teacher::find($user->uuid);
+        $domain = $teacher->domains->first();
         if ($manager) {
             $publics = PublicClass::bySection($section);
-        } elseif ($domainmanager) {
-            $domain = Teacher::find($user->uuid)->domains->first();
+        } elseif ($domainmanager || $domain) {
             $publics = PublicClass::byDomain($domain->id, $section);
-        } else {
-            $publics = PublicClass::byUser($user->uuid, $section);
         }
         $calendar = IcsCalendar::forPublic();
         $sections = PublicClass::sections();
@@ -74,7 +73,7 @@ class PublicController extends Controller
             $sections->push((object)[ 'section' => $temp, 'name' => section_name($temp) ]);
         }
         $schedule = PublicClass::weekly($date);
-        return view('app.public', ['manager' => $manager, 'domain_manager' => $domainmanager, 'calendar' => $calendar, 'section' => $section, 'sections' => $sections, 'mydate' => $date, 'publics' => $publics, 'sessions' => self::$sessionMap, 'schedule' => $schedule]);
+        return view('app.public', ['manager' => $manager, 'domain_manager' => $domainmanager, 'teacher' => $teacher, 'calendar' => $calendar, 'section' => $section, 'sections' => $sections, 'mydate' => $date, 'publics' => $publics, 'sessions' => self::$sessionMap, 'schedule' => $schedule]);
     }
 
     public function add(Request $request)
@@ -89,7 +88,7 @@ class PublicController extends Controller
         $session = $request->input('session');
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
         $domain_manager = $user->hasPermission('public.domain');
-        if ($manager || $domain_manager) {
+//        if ($manager || $domain_manager) {
             $domains = Domain::all();
             $classes = Classroom::all();
             $grades = Grade::all();
@@ -105,10 +104,10 @@ class PublicController extends Controller
                 $domain = $teacher->domains->first();
                 $teacher_list = $domain->teachers;
             }
-            return view('app.public_add', ['section' => $section, 'domain' => $domain, 'domains' => $domains, 'teacher' => $teacher, 'teacher_list' => $teacher_list, 'teachers' => $teachers, 'grades' => $grades, 'classes' => $classes, 'mydate' => $date, 'weekday' => $weekday, 'session' => $session, 'sessions' => self::$sessionMap]);
-        } else {
-            return redirect()->route('public')->with('error', '只有管理員或已授權的群召才能新增公開課！');
-        }
+            return view('app.public_add', ['manager' => $manager, 'domain_manager' => $domain_manager, 'section' => $section, 'domain' => $domain, 'domains' => $domains, 'teacher' => $teacher, 'teacher_list' => $teacher_list, 'teachers' => $teachers, 'grades' => $grades, 'classes' => $classes, 'mydate' => $date, 'weekday' => $weekday, 'session' => $session, 'sessions' => self::$sessionMap]);
+//        } else {
+//            return redirect()->route('public')->with('error', '只有管理員或已授權的群召才能新增公開課！');
+//        }
     }
 
     public function insert(Request $request)
@@ -118,7 +117,7 @@ class PublicController extends Controller
             return redirect()->route('home')->with('error', '只有教職員才能新增公開課！');
         }
         $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain'));
-        if ($manager) {
+//        if ($manager) {
             $class_id = $request->input('classroom');
             if ($class_id == 'none') {
                 $class_id = null;
@@ -174,9 +173,9 @@ class PublicController extends Controller
                 Notification::sendNow($manager, new PublicNotification($public->id));
             }
             return redirect()->route('public')->with('success', '公開課新增完成！');
-        } else {
-            return redirect()->route('public')->with('error', '只有管理員或已授權的群召才能新增公開課！');
-        }
+//        } else {
+//            return redirect()->route('public')->with('error', '只有管理員或已授權的群召才能新增公開課！');
+//        }
     }
 
     public function edit($id)
@@ -187,8 +186,8 @@ class PublicController extends Controller
         }
         $public = PublicClass::find($id);
         if (!$public) return redirect()->route('public')->with('error', '找不到此公開課，因此無法編輯！');
-        $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain') || $public->uuid == $user->uuid);
-        if ($manager) {
+        $manager = $user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain');
+        if ($manager || $public->uuid == $user->uuid) {
             $domains = Domain::all();
             $classes = Classroom::all();
             $grades = Grade::all();
@@ -199,7 +198,7 @@ class PublicController extends Controller
                 ->get();
             return view('app.public_edit', ['public' => $public, 'domains' => $domains, 'teachers' => $teachers, 'grades' => $grades, 'classes' => $classes, 'sessions' => self::$sessionMap]);
         } else {
-            return redirect()->route('public')->with('error', '只有管理員才能修改公開課資訊！');
+            return redirect()->route('public')->with('error', '只有管理員和授課教師才能修改公開課資訊！');
         }
     }
 
@@ -207,12 +206,12 @@ class PublicController extends Controller
     {
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
-            return redirect()->route('home')->with('error', '只有教職員才能修改場地或設備！');
+            return redirect()->route('home')->with('error', '只有教職員才能修改公開課資訊！');
         }
         $public = PublicClass::find($id);
         if (!$public) return redirect()->route('public')->with('error', '找不到此公開課，因此無法編輯！');
-        $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain') || $public->uuid == $user->uuid);
-        if ($manager) {
+        $manager = $user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain');
+        if ($manager || $public->uuid == $user->uuid) {
             $public = PublicClass::find($id);
             $class_id = $request->input('classroom');
             if ($class_id == 'none') {
@@ -303,7 +302,7 @@ class PublicController extends Controller
             Watchdog::watch($request, '更新公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('public')->with('success', '公開課更新完成！');
         } else {
-            return redirect()->route('public')->with('error', '只有管理員才能修改公開課資訊！');
+            return redirect()->route('public')->with('error', '只有管理員和授課教師才能修改公開課資訊！');
         }
     }
 
@@ -405,8 +404,8 @@ class PublicController extends Controller
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能刪除公開課資訊！');
         }
-        $manager = ($user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain'));
-        if ($manager) {
+        $manager = $user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain');
+        if ($manager || $public->uuid == $user->uuid) {
             $public = PublicClass::find($id);
             if ($public) {
                 Watchdog::watch($request, '移除公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -428,7 +427,7 @@ class PublicController extends Controller
                 return redirect()->route('public')->with('error', '找不到要移除的公開課資訊！');
             }
         } else {
-            return redirect()->route('public')->with('error', '只有管理員才能刪除公開課資訊！');
+            return redirect()->route('public')->with('error', '只有管理員和授課教師才能刪除公開課資訊！');
         }
     }
 
