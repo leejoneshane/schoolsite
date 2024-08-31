@@ -1,6 +1,6 @@
 .DS_Store
 /data.ms
 .docker-compose.yml
-Icon.
 *.icloud
 /vendor
+Icon
