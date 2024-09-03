@@ -53,6 +53,7 @@ class PublicClass extends Model
         'teach_unit',
         'teach_grade',
         'teach_class',
+        'teacher_name',
         'reserved_at',
         'weekday',
         'session',

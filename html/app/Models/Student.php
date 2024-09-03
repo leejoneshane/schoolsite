@@ -56,6 +56,7 @@ class Student extends Model
         'stdno',
         'grade_id',
         'age',
+        'classname',
     ];
 
     //以下屬性需進行資料庫欄位格式轉換
@@ -63,7 +64,7 @@ class Student extends Model
         'birthdate' => 'datetime:Y-m-d',
     ];
 
-    //提供學生名牌號碼
+    //提供學生名牌號碼（班級座號）
     public function getStdnoAttribute()
     {
         return $this->class_id . (($this->seat < 10) ? '0'.$this->seat : $this->seat);
@@ -75,10 +76,16 @@ class Student extends Model
         return Carbon::parse($this->birthdate)->age;
     }
 
-    //提供學生年齡
+    //提供學生年級
     public function getGradeIdAttribute()
     {
         return substr($this->class_id, 0, 1);
+    }
+
+    //提供學生班級名稱
+    public function getClassnameAttribute()
+    {
+        return $this->classroom->name;
     }
 
     //篩選指定學號的學生

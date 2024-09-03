@@ -35,6 +35,7 @@ class VenueReserve extends Model
         'id',
         'venue_id',
         'uuid',
+        'teacher_name',
         'reserved_at',
         'weekday',
         'session',

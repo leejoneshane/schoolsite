@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('venue_id');
             $table->uuid('uuid');
+            $table->string('teacher_name')->nullable();
             $table->date('reserved_at');
             $table->integer('weekday');
             $table->integer('session');

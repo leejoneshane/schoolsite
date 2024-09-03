@@ -30,7 +30,7 @@
         <th scope="row" class="px-2">
             報修者
         </th>
-        <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ $job->reporter->realname }}</td>
+        <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ $job->reporter_name ?: $job->reporter->realname }}</td>
     </tr>
 </table>
 @if ($job->reply)
@@ -63,7 +63,7 @@
             {{ $reply->comment }}
         </td>
         <td class="px-2">
-            {{ $reply->maintener->realname }}
+            {{ $reply->manager_name ?: $reply->maintener->realname }}
         </td>
         <td class="border-b px-2">
             @if (Auth::user()->is_admin ||  $job->kind->is_manager(Auth::user()->uuid))

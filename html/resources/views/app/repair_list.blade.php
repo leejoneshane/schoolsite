@@ -43,10 +43,10 @@
         <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ substr($job->created_at, 0, 10) }}</td>
         <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ $job->summary }}</td>
         <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ $job->place }}</td>
-        <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ $job->reporter->realname }}</td>
+        <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ $job->reporter_name ?: $job->reporter->realname }}</td>
         <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ ($job->reply) ? $job->reply->status : ''}}</td>
         <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ ($job->reply) ? substr($job->reply->created_at, 0, 10) : ''}}</td>
-        <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ ($job->reply) ? $job->reply->maintener->realname : ''}}</td>
+        <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ ($job->reply) ? ($job->reply->manager_name ?: $job->reply->maintener->realname) : ''}}</td>
         <td class="border-b px-2">
             @if (Auth::user()->is_admin ||  $kind->is_manager(Auth::user()->uuid))
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"

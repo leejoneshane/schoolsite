@@ -276,6 +276,7 @@ class VenueController extends Controller
         $r = VenueReserve::create([
             'venue_id' => $venue_id,
             'uuid' => $user->uuid,
+            'teacher_name' => $user->profile->realname,
             'reserved_at' => $date,
             'weekday' => $request->input('weekday'),
             'session' => $request->input('session'),

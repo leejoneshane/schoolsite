@@ -12,6 +12,7 @@ class RepairJob extends Model
     //以下屬性可以批次寫入
     protected $fillable = [
         'uuid',
+        'reporter_name',
         'kind_id',
         'place',
         'summary',

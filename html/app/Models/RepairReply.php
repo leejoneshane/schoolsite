@@ -12,6 +12,7 @@ class RepairReply extends Model
     //以下屬性可以批次寫入
     protected $fillable = [
         'uuid',
+        'manager_name',
         'job_id',
         'status',
         'comment',

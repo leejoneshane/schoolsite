@@ -170,7 +170,7 @@
                 <td class="p-2">{{ $data->domain->name }}</td>
                 @endif
                 @if ($manager || $domain_manager)
-                <td class="p-2">{{ $data->teacher ? $data->teacher->realname : $data->uuid}}</td>
+                <td class="p-2">{{ $data->teacher_name ?: $data->teacher->realname}}</td>
                 @endif
                 <td class="p-2">{{ $data->teach_unit }}</td>
                 <td class="p-2">{{ is_null($data->teach_class) ? '特殊需求' : $data->classroom->name }}</td>

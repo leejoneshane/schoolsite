@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('repair_jobs', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
+            $table->string('reporter_name')->nullable();
             $table->integer('kind_id');
             $table->string('place');
             $table->string('summary');

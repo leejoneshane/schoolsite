@@ -108,6 +108,7 @@ class RepairController extends Controller
     {
         $job = RepairJob::create([
             'uuid' => $request->user()->uuid,
+            'reporter_name' => $request->user()->profile->realname,
             'kind_id' => $kind,
             'place' => $request->input('place'),
             'summary' => $request->input('summary'),
@@ -147,6 +148,7 @@ class RepairController extends Controller
     {
         $reply = RepairReply::create([
             'uuid' => $request->user()->uuid,
+            'namager_name' => $request->user()->profile->realname,
             'job_id' => $job,
             'status' => $request->input('status'),
             'comment' => $request->input('comment'),

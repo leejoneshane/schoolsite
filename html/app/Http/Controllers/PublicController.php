@@ -127,12 +127,14 @@ class PublicController extends Controller
                 $grade_id = $myclass->grade_id;
             }
             $myclass = Classroom::find($class_id);
+            $teacher = Teacher::find($request->input('uuid'));
             $public = PublicClass::create([
                 'section' => $request->input('section'),
                 'domain_id' => $request->input('domain'),
                 'teach_unit' => $request->input('unit'),
                 'teach_grade'  => $grade_id,
                 'teach_class' => $class_id,
+                'teacher_name' => $teacher->realname,
                 'reserved_at' => $request->input('date'),
                 'weekday' => $request->input('weekday'),
                 'session' => $request->input('session'),
@@ -347,12 +349,14 @@ class PublicController extends Controller
             }
             $mydate = Carbon::createFromFormat('Y-m-d', $request->input('date'));
             $weekday = $mydate->dayOfWeekIso;
+            $teacher = Teacher::find($request->input('uuid'));
             $public = PublicClass::create([
                 'section' => $section,
                 'domain_id' => $request->input('domain'),
                 'teach_unit' => $request->input('unit'),
                 'teach_grade'  => $grade_id,
                 'teach_class' => $class_id,
+                'teacher_name' => $teacher->realname,
                 'reserved_at' => $request->input('date'),
                 'weekday' => $weekday,
                 'session' => $request->input('session'),

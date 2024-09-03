@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('repair_replys', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid');
+            $table->string('manager_name')->nullable();
             $table->integer('job_id');
             $table->string('status');
             $table->string('comment')->nullable();

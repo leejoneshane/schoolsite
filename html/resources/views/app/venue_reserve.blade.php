@@ -91,11 +91,11 @@
                 <td class="w-32 border-t border-l border-slate-300 bg-blue-200 text-center"{{ ($reserve['length'] > 1) ? ' rowspan='.$reserve['length'] : ''}}>
                     @if ($reserve->subscriber->uuid == Auth::user()->uuid)
                     <button id="{{ $reserve->id }}" class="viewit w-full py-2 bg-blue-200 text-sm text-center test-blue-700" onclick="editReserve(this)">
-                        {{ $reserve->subscriber->realname }}
+                        {{ $reserve->teacher_name ?: $reserve->subscriber->realname }}
                     </button>
                     @else
                     <button id="{{ $reserve->id }}" class="viewit w-full py-2 bg-blue-200 text-sm text-center" data-modal-toggle="defaultModal" onclick="showReserve(this)">
-                        {{ $reserve->subscriber->realname }}
+                        {{ $reserve->teacher_name ?: $reserve->subscriber->realname }}
                     </button>
                     @endif
                 </td>

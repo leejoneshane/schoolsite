@@ -30,6 +30,12 @@
   <x-messager />
   <div id="right-section" class="flex items-center flex-shrink-0 text-white">
 @auth
+    <span class="inline-block mt-2 lg:mt-0 px-4 lg:px-2 py-1 leading-none text-white text-sm">  
+      @student
+      {{ Auth::user()->profile->classname }} 
+      @endstudent  
+      {{ Auth::user()->profile->realname }}
+    </span>
     <span class="block lg:inline-block mt-2 lg:mt-0 px-4 lg:px-2">
       <i class="fa-solid fa-share-nodes"></i>
       <a href="{{ route('social') }}" class="text-teal-200 hover:text-white">社群帳號管理</a>
