@@ -19,7 +19,7 @@
     <p><div class="p-3">
         <label class="inline">節次：週{{ $weekday }}{{ $sessions[$session]  }}</label>
     </div></p>
-@if ($manager)
+@if ($manager || $domain_manager)
     <p><div class="p-3">
         <label for="uuid" class="inline">授課教師：</label>
         <select id="uuid" name="uuid" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
@@ -38,7 +38,7 @@
         </select>
     </div></p>
 @else
-    <input type="hide" name="uuid" value="{{ Auth::user()->uuid }}">
+    <input type="hidden" name="uuid" value="{{ Auth::user()->uuid }}">
 @endif
     <p><div class="p-3">
         <label for="classroom" class="inline">授課班級：</label>
@@ -57,7 +57,6 @@
             @endforeach
         </select>
     </div></p>
-@if ($manager)
     <p><div class="p-3">
         <label for="domain" class="inline">教學領域：</label>
         <select id="domain" name="domain" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
@@ -66,9 +65,6 @@
             @endforeach
         </select>
     </div></p>
-@else
-    <input type="hide" name="domain" value="{{ $teacher->domains->first() }}">
-@endif
     <p><div class="p-3">
         <label for="unit" class="inline">單元名稱：</label>
         <input id="unit" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"

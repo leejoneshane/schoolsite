@@ -36,7 +36,7 @@ class RepairJob extends Model
     //取得此報修紀錄的分類
     public function kind()
     {
-        return $this->belongsTo('App\Models\RepairKind', 'id', 'kind_id');
+        return $this->belongsTo('App\Models\RepairKind', 'kind_id', 'id');
     }
 
     //取得此報修紀錄的所有回覆（由舊到新）

@@ -106,7 +106,7 @@
                     </button>
                         @endforeach
                     @endif
-                    @if (($manager || $domain_manager) && $sdate > $reserve_start && $dates[$i] <= section_between_date($section)->maxdate)
+                    @if ($sdate > $reserve_start && $dates[$i] <= section_between_date($section)->maxdate)
                     <button class="w-full py-2 bg-green-200 hover:bg-green-300 focus:ring-4 focus:ring-green-400 text-sm text-center"
                         onclick="booking('{{ $dates[$i]->format('Y-m-d') }}',{{ $i }},{{ $key }})">
                         我要預約

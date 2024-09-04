@@ -1,0 +1,391 @@
+2024-09-03 23:48:36,643 INFO Set uid to user 0 succeeded
+2024-09-03 23:48:36,645 INFO supervisord started with pid 1
+2024-09-03 23:48:37,661 INFO spawned: 'crond' with pid 7
+2024-09-03 23:48:37,665 INFO spawned: 'nginx' with pid 8
+2024-09-03 23:48:37,668 INFO spawned: 'php-fpm' with pid 9
+2024-09-03 23:48:37,671 INFO spawned: 'queue-app' with pid 10
+2024-09-03 23:48:37,675 INFO spawned: 'queue-default_00' with pid 11
+2024-09-03 23:48:37,678 INFO spawned: 'queue-default_01' with pid 12
+2024-09-03 23:48:37,681 INFO spawned: 'queue-default_02' with pid 13
+2024-09-03 23:48:37,687 INFO spawned: 'queue-default_03' with pid 14
+2024-09-03 23:48:37,689 INFO spawned: 'queue-default_04' with pid 15
+2024-09-03 23:48:37,701 INFO spawned: 'queue-default_05' with pid 16
+2024-09-03 23:48:37,708 INFO spawned: 'queue-default_06' with pid 17
+2024-09-03 23:48:37,719 INFO spawned: 'queue-default_07' with pid 18
+2024-09-03 23:48:37,988 WARN exited: queue-app (exit status 0; not expected)
+2024-09-03 23:48:37,989 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-03 23:48:37,994 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-03 23:48:38,012 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-03 23:48:38,018 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-03 23:48:38,019 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-03 23:48:38,027 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-03 23:48:38,027 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-03 23:48:38,037 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-03 23:48:39,041 INFO success: crond entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-03 23:48:39,042 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-03 23:48:39,042 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-03 23:48:39,046 INFO spawned: 'queue-app' with pid 28
+2024-09-03 23:48:39,049 INFO spawned: 'queue-default_00' with pid 29
+2024-09-03 23:48:39,053 INFO spawned: 'queue-default_01' with pid 30
+2024-09-03 23:48:39,057 INFO spawned: 'queue-default_02' with pid 31
+2024-09-03 23:48:39,059 INFO spawned: 'queue-default_03' with pid 32
+2024-09-03 23:48:39,063 INFO spawned: 'queue-default_04' with pid 33
+2024-09-03 23:48:39,067 INFO spawned: 'queue-default_05' with pid 34
+2024-09-03 23:48:39,069 INFO spawned: 'queue-default_06' with pid 35
+2024-09-03 23:48:39,079 INFO spawned: 'queue-default_07' with pid 36
+2024-09-03 23:48:39,216 WARN exited: queue-app (exit status 0; not expected)
+2024-09-03 23:48:39,311 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-03 23:48:39,311 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-03 23:48:39,328 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-03 23:48:39,341 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-03 23:48:39,341 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-03 23:48:39,342 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-03 23:48:39,350 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-03 23:48:39,356 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-03 23:48:41,367 INFO spawned: 'queue-app' with pid 37
+2024-09-03 23:48:41,371 INFO spawned: 'queue-default_00' with pid 38
+2024-09-03 23:48:41,374 INFO spawned: 'queue-default_01' with pid 39
+2024-09-03 23:48:41,376 INFO spawned: 'queue-default_02' with pid 40
+2024-09-03 23:48:41,378 INFO spawned: 'queue-default_03' with pid 41
+2024-09-03 23:48:41,382 INFO spawned: 'queue-default_04' with pid 42
+2024-09-03 23:48:41,385 INFO spawned: 'queue-default_05' with pid 43
+2024-09-03 23:48:41,388 INFO spawned: 'queue-default_06' with pid 44
+2024-09-03 23:48:41,393 INFO spawned: 'queue-default_07' with pid 45
+2024-09-03 23:48:41,563 WARN exited: queue-app (exit status 0; not expected)
+2024-09-03 23:48:41,564 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-03 23:48:41,639 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-03 23:48:41,640 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-03 23:48:41,640 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-03 23:48:41,649 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-03 23:48:41,670 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-03 23:48:41,674 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-03 23:48:41,684 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-03 23:48:44,706 INFO spawned: 'queue-app' with pid 46
+2024-09-03 23:48:44,710 INFO spawned: 'queue-default_00' with pid 47
+2024-09-03 23:48:44,715 INFO spawned: 'queue-default_01' with pid 48
+2024-09-03 23:48:44,718 INFO spawned: 'queue-default_02' with pid 49
+2024-09-03 23:48:44,720 INFO spawned: 'queue-default_03' with pid 50
+2024-09-03 23:48:44,723 INFO spawned: 'queue-default_04' with pid 51
+2024-09-03 23:48:44,728 INFO spawned: 'queue-default_05' with pid 52
+2024-09-03 23:48:44,733 INFO spawned: 'queue-default_06' with pid 53
+2024-09-03 23:48:44,735 INFO spawned: 'queue-default_07' with pid 54
+2024-09-03 23:48:44,944 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-03 23:48:44,958 INFO gave up: queue-default_00 entered FATAL state, too many start retries too quickly
+2024-09-03 23:48:44,958 WARN exited: queue-app (exit status 0; not expected)
+2024-09-03 23:48:44,966 INFO gave up: queue-app entered FATAL state, too many start retries too quickly
+2024-09-03 23:48:44,966 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-03 23:48:44,966 INFO gave up: queue-default_02 entered FATAL state, too many start retries too quickly
+2024-09-03 23:48:44,988 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-03 23:48:44,994 INFO gave up: queue-default_07 entered FATAL state, too many start retries too quickly
+2024-09-03 23:48:44,995 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-03 23:48:45,009 INFO gave up: queue-default_05 entered FATAL state, too many start retries too quickly
+2024-09-03 23:48:45,012 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-03 23:48:45,014 INFO gave up: queue-default_01 entered FATAL state, too many start retries too quickly
+2024-09-03 23:48:45,015 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-03 23:48:45,015 INFO gave up: queue-default_06 entered FATAL state, too many start retries too quickly
+2024-09-03 23:48:45,016 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-03 23:48:45,017 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-03 23:48:45,017 INFO gave up: queue-default_03 entered FATAL state, too many start retries too quickly
+2024-09-03 23:48:45,017 INFO gave up: queue-default_04 entered FATAL state, too many start retries too quickly
+2024-09-03 23:49:07,088 INFO reaped unknown pid 64 (terminated by SIGHUP)
+2024-09-03 23:55:11,577 WARN received SIGQUIT indicating exit request
+2024-09-03 23:55:11,579 INFO waiting for crond, nginx, php-fpm to die
+2024-09-03 23:55:13,615 INFO stopped: php-fpm (exit status 0)
+2024-09-03 23:55:13,661 INFO stopped: nginx (exit status 0)
+2024-09-03 23:55:13,661 WARN stopped: crond (terminated by SIGTERM)
+2024-09-03 23:56:17,032 INFO Set uid to user 0 succeeded
+2024-09-03 23:56:17,034 INFO supervisord started with pid 1
+2024-09-03 23:56:18,045 INFO spawned: 'crond' with pid 6
+2024-09-03 23:56:18,048 INFO spawned: 'nginx' with pid 7
+2024-09-03 23:56:18,051 INFO spawned: 'php-fpm' with pid 8
+2024-09-03 23:56:18,053 INFO spawned: 'queue-app' with pid 9
+2024-09-03 23:56:18,058 INFO spawned: 'queue-default_00' with pid 10
+2024-09-03 23:56:18,063 INFO spawned: 'queue-default_01' with pid 11
+2024-09-03 23:56:18,066 INFO spawned: 'queue-default_02' with pid 12
+2024-09-03 23:56:18,069 INFO spawned: 'queue-default_03' with pid 13
+2024-09-03 23:56:18,071 INFO spawned: 'queue-default_04' with pid 14
+2024-09-03 23:56:18,076 INFO spawned: 'queue-default_05' with pid 15
+2024-09-03 23:56:18,079 INFO spawned: 'queue-default_06' with pid 16
+2024-09-03 23:56:18,081 INFO spawned: 'queue-default_07' with pid 17
+2024-09-03 23:56:18,312 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-03 23:56:18,312 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-03 23:56:18,337 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-03 23:56:18,358 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-03 23:56:18,361 WARN exited: queue-app (exit status 0; not expected)
+2024-09-03 23:56:18,389 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-03 23:56:18,393 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-03 23:56:18,393 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-03 23:56:18,399 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-03 23:56:19,403 INFO success: crond entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-03 23:56:19,404 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-03 23:56:19,405 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-03 23:56:19,409 INFO spawned: 'queue-app' with pid 27
+2024-09-03 23:56:19,412 INFO spawned: 'queue-default_00' with pid 28
+2024-09-03 23:56:19,415 INFO spawned: 'queue-default_01' with pid 29
+2024-09-03 23:56:19,419 INFO spawned: 'queue-default_02' with pid 30
+2024-09-03 23:56:19,422 INFO spawned: 'queue-default_03' with pid 31
+2024-09-03 23:56:19,428 INFO spawned: 'queue-default_04' with pid 32
+2024-09-03 23:56:19,432 INFO spawned: 'queue-default_05' with pid 33
+2024-09-03 23:56:19,433 INFO spawned: 'queue-default_06' with pid 34
+2024-09-03 23:56:19,442 INFO spawned: 'queue-default_07' with pid 35
+2024-09-03 23:56:19,591 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-03 23:56:19,664 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-03 23:56:19,739 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-03 23:56:19,740 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-03 23:56:19,741 WARN exited: queue-app (exit status 0; not expected)
+2024-09-03 23:56:19,748 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-03 23:56:19,755 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-03 23:56:19,758 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-03 23:56:19,772 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-03 23:56:21,782 INFO spawned: 'queue-app' with pid 42
+2024-09-03 23:56:21,785 INFO spawned: 'queue-default_00' with pid 43
+2024-09-03 23:56:21,788 INFO spawned: 'queue-default_01' with pid 44
+2024-09-03 23:56:21,791 INFO spawned: 'queue-default_02' with pid 45
+2024-09-03 23:56:21,795 INFO spawned: 'queue-default_03' with pid 46
+2024-09-03 23:56:21,798 INFO spawned: 'queue-default_04' with pid 47
+2024-09-03 23:56:21,802 INFO spawned: 'queue-default_05' with pid 48
+2024-09-03 23:56:21,811 INFO spawned: 'queue-default_06' with pid 49
+2024-09-03 23:56:21,817 INFO spawned: 'queue-default_07' with pid 50
+2024-09-03 23:56:21,972 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-03 23:56:21,979 WARN exited: queue-app (exit status 0; not expected)
+2024-09-03 23:56:22,063 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-03 23:56:22,063 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-03 23:56:22,063 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-03 23:56:22,073 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-03 23:56:22,082 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-03 23:56:22,085 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-03 23:56:22,089 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-03 23:56:25,104 INFO spawned: 'queue-app' with pid 51
+2024-09-03 23:56:25,107 INFO spawned: 'queue-default_00' with pid 52
+2024-09-03 23:56:25,109 INFO spawned: 'queue-default_01' with pid 53
+2024-09-03 23:56:25,112 INFO spawned: 'queue-default_02' with pid 54
+2024-09-03 23:56:25,115 INFO spawned: 'queue-default_03' with pid 55
+2024-09-03 23:56:25,119 INFO spawned: 'queue-default_04' with pid 56
+2024-09-03 23:56:25,120 INFO spawned: 'queue-default_05' with pid 57
+2024-09-03 23:56:25,125 INFO spawned: 'queue-default_06' with pid 58
+2024-09-03 23:56:25,129 INFO spawned: 'queue-default_07' with pid 59
+2024-09-03 23:56:25,321 WARN exited: queue-app (exit status 0; not expected)
+2024-09-03 23:56:25,323 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-03 23:56:25,324 INFO gave up: queue-app entered FATAL state, too many start retries too quickly
+2024-09-03 23:56:25,324 INFO gave up: queue-default_02 entered FATAL state, too many start retries too quickly
+2024-09-03 23:56:25,358 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-03 23:56:25,358 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-03 23:56:25,367 INFO gave up: queue-default_05 entered FATAL state, too many start retries too quickly
+2024-09-03 23:56:25,368 INFO gave up: queue-default_07 entered FATAL state, too many start retries too quickly
+2024-09-03 23:56:25,368 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-03 23:56:25,394 INFO gave up: queue-default_00 entered FATAL state, too many start retries too quickly
+2024-09-03 23:56:25,394 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-03 23:56:25,394 INFO gave up: queue-default_06 entered FATAL state, too many start retries too quickly
+2024-09-03 23:56:25,399 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-03 23:56:25,399 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-03 23:56:25,399 INFO gave up: queue-default_01 entered FATAL state, too many start retries too quickly
+2024-09-03 23:56:25,399 INFO gave up: queue-default_03 entered FATAL state, too many start retries too quickly
+2024-09-03 23:56:25,401 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-03 23:56:26,404 INFO gave up: queue-default_04 entered FATAL state, too many start retries too quickly
+2024-09-03 23:57:47,792 INFO reaped unknown pid 71 (exit status 1)
+2024-09-04 00:00:29,117 INFO exited: php-fpm (exit status 0; expected)
+2024-09-04 00:00:30,123 INFO spawned: 'php-fpm' with pid 87
+2024-09-04 00:00:31,249 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-04 00:00:43,830 INFO exited: php-fpm (exit status 0; expected)
+2024-09-04 00:00:44,845 INFO spawned: 'php-fpm' with pid 99
+2024-09-04 00:00:45,962 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-04 00:01:23,973 INFO exited: php-fpm (exit status 0; expected)
+2024-09-04 00:01:24,986 INFO spawned: 'php-fpm' with pid 111
+2024-09-04 00:01:26,108 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-04 00:06:06,103 INFO reaped unknown pid 213 (terminated by SIGHUP)
+2024-09-04 00:06:50,237 WARN received SIGQUIT indicating exit request
+2024-09-04 00:06:50,238 INFO waiting for crond, nginx, php-fpm to die
+2024-09-04 00:06:52,275 INFO stopped: php-fpm (exit status 0)
+2024-09-04 00:06:52,316 INFO stopped: nginx (exit status 0)
+2024-09-04 00:06:52,316 WARN stopped: crond (terminated by SIGTERM)
+2024-09-04 00:06:52,674 INFO Set uid to user 0 succeeded
+2024-09-04 00:06:52,677 INFO supervisord started with pid 1
+2024-09-04 00:06:53,686 INFO spawned: 'crond' with pid 7
+2024-09-04 00:06:53,689 INFO spawned: 'nginx' with pid 8
+2024-09-04 00:06:53,691 INFO spawned: 'php-fpm' with pid 9
+2024-09-04 00:06:53,693 INFO spawned: 'queue-app' with pid 10
+2024-09-04 00:06:53,698 INFO spawned: 'queue-default_00' with pid 11
+2024-09-04 00:06:53,703 INFO spawned: 'queue-default_01' with pid 12
+2024-09-04 00:06:53,705 INFO spawned: 'queue-default_02' with pid 13
+2024-09-04 00:06:53,716 INFO spawned: 'queue-default_03' with pid 14
+2024-09-04 00:06:53,717 INFO spawned: 'queue-default_04' with pid 15
+2024-09-04 00:06:53,721 INFO spawned: 'queue-default_05' with pid 16
+2024-09-04 00:06:53,725 INFO spawned: 'queue-default_06' with pid 17
+2024-09-04 00:06:53,727 INFO spawned: 'queue-default_07' with pid 18
+2024-09-04 00:06:53,941 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-04 00:06:53,954 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-04 00:06:53,999 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-04 00:06:53,999 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-04 00:06:54,009 WARN exited: queue-app (exit status 0; not expected)
+2024-09-04 00:06:54,019 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-04 00:06:54,025 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-04 00:06:54,025 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-04 00:06:54,028 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-04 00:06:55,035 INFO success: crond entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-04 00:06:55,035 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-04 00:06:55,036 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-04 00:06:55,040 INFO spawned: 'queue-app' with pid 28
+2024-09-04 00:06:55,044 INFO spawned: 'queue-default_00' with pid 29
+2024-09-04 00:06:55,049 INFO spawned: 'queue-default_01' with pid 30
+2024-09-04 00:06:55,052 INFO spawned: 'queue-default_02' with pid 31
+2024-09-04 00:06:55,054 INFO spawned: 'queue-default_03' with pid 32
+2024-09-04 00:06:55,057 INFO spawned: 'queue-default_04' with pid 33
+2024-09-04 00:06:55,062 INFO spawned: 'queue-default_05' with pid 34
+2024-09-04 00:06:55,069 INFO spawned: 'queue-default_06' with pid 35
+2024-09-04 00:06:55,070 INFO spawned: 'queue-default_07' with pid 36
+2024-09-04 00:06:55,274 WARN exited: queue-app (exit status 0; not expected)
+2024-09-04 00:06:55,287 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-04 00:06:55,293 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-04 00:06:55,319 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-04 00:06:55,320 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-04 00:06:55,326 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-04 00:06:55,341 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-04 00:06:55,342 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-04 00:06:55,346 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-04 00:06:57,360 INFO spawned: 'queue-app' with pid 37
+2024-09-04 00:06:57,363 INFO spawned: 'queue-default_00' with pid 38
+2024-09-04 00:06:57,366 INFO spawned: 'queue-default_01' with pid 39
+2024-09-04 00:06:57,368 INFO spawned: 'queue-default_02' with pid 40
+2024-09-04 00:06:57,371 INFO spawned: 'queue-default_03' with pid 41
+2024-09-04 00:06:57,374 INFO spawned: 'queue-default_04' with pid 42
+2024-09-04 00:06:57,380 INFO spawned: 'queue-default_05' with pid 43
+2024-09-04 00:06:57,386 INFO spawned: 'queue-default_06' with pid 44
+2024-09-04 00:06:57,391 INFO spawned: 'queue-default_07' with pid 45
+2024-09-04 00:06:57,545 WARN exited: queue-app (exit status 0; not expected)
+2024-09-04 00:06:57,600 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-04 00:06:57,612 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-04 00:06:57,618 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-04 00:06:57,640 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-04 00:06:57,643 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-04 00:06:57,648 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-04 00:06:57,664 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-04 00:06:57,664 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-04 00:07:00,676 INFO spawned: 'queue-app' with pid 46
+2024-09-04 00:07:00,678 INFO spawned: 'queue-default_00' with pid 47
+2024-09-04 00:07:00,681 INFO spawned: 'queue-default_01' with pid 48
+2024-09-04 00:07:00,683 INFO spawned: 'queue-default_02' with pid 49
+2024-09-04 00:07:00,689 INFO spawned: 'queue-default_03' with pid 50
+2024-09-04 00:07:00,696 INFO spawned: 'queue-default_04' with pid 51
+2024-09-04 00:07:00,702 INFO spawned: 'queue-default_05' with pid 52
+2024-09-04 00:07:00,704 INFO spawned: 'queue-default_06' with pid 53
+2024-09-04 00:07:00,709 INFO spawned: 'queue-default_07' with pid 55
+2024-09-04 00:07:00,957 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-04 00:07:00,965 INFO gave up: queue-default_05 entered FATAL state, too many start retries too quickly
+2024-09-04 00:07:00,969 WARN exited: queue-app (exit status 0; not expected)
+2024-09-04 00:07:00,969 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-04 00:07:00,986 INFO gave up: queue-app entered FATAL state, too many start retries too quickly
+2024-09-04 00:07:00,990 INFO gave up: queue-default_00 entered FATAL state, too many start retries too quickly
+2024-09-04 00:07:00,991 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-04 00:07:01,004 INFO gave up: queue-default_07 entered FATAL state, too many start retries too quickly
+2024-09-04 00:07:01,004 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-04 00:07:01,007 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-04 00:07:01,008 INFO gave up: queue-default_01 entered FATAL state, too many start retries too quickly
+2024-09-04 00:07:01,008 INFO gave up: queue-default_06 entered FATAL state, too many start retries too quickly
+2024-09-04 00:07:01,011 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-04 00:07:01,014 INFO gave up: queue-default_02 entered FATAL state, too many start retries too quickly
+2024-09-04 00:07:01,017 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-04 00:07:01,049 INFO gave up: queue-default_03 entered FATAL state, too many start retries too quickly
+2024-09-04 00:07:01,049 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-04 00:07:01,049 INFO gave up: queue-default_04 entered FATAL state, too many start retries too quickly
+2024-09-04 00:08:10,761 INFO reaped unknown pid 65 (terminated by SIGHUP)
+2024-09-04 00:09:16,038 INFO reaped unknown pid 87 (terminated by SIGHUP)
+2024-09-04 00:18:13,642 WARN received SIGQUIT indicating exit request
+2024-09-04 00:18:13,645 INFO waiting for crond, nginx, php-fpm to die
+2024-09-04 00:18:15,684 INFO stopped: php-fpm (exit status 0)
+2024-09-04 00:18:16,727 INFO stopped: nginx (exit status 0)
+2024-09-04 00:18:16,728 INFO waiting for crond to die
+2024-09-04 00:18:16,729 WARN stopped: crond (terminated by SIGTERM)
+2024-09-04 00:19:51,100 INFO Set uid to user 0 succeeded
+2024-09-04 00:19:51,103 INFO supervisord started with pid 1
+2024-09-04 00:19:52,113 INFO spawned: 'crond' with pid 7
+2024-09-04 00:19:52,116 INFO spawned: 'nginx' with pid 8
+2024-09-04 00:19:52,118 INFO spawned: 'php-fpm' with pid 9
+2024-09-04 00:19:52,120 INFO spawned: 'queue-app' with pid 10
+2024-09-04 00:19:52,124 INFO spawned: 'queue-default_00' with pid 11
+2024-09-04 00:19:52,126 INFO spawned: 'queue-default_01' with pid 12
+2024-09-04 00:19:52,129 INFO spawned: 'queue-default_02' with pid 13
+2024-09-04 00:19:52,132 INFO spawned: 'queue-default_03' with pid 14
+2024-09-04 00:19:52,136 INFO spawned: 'queue-default_04' with pid 15
+2024-09-04 00:19:52,139 INFO spawned: 'queue-default_05' with pid 16
+2024-09-04 00:19:52,142 INFO spawned: 'queue-default_06' with pid 17
+2024-09-04 00:19:52,144 INFO spawned: 'queue-default_07' with pid 18
+2024-09-04 00:19:52,511 WARN exited: queue-app (exit status 0; not expected)
+2024-09-04 00:19:52,511 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-04 00:19:52,511 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-04 00:19:52,517 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-04 00:19:52,518 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-04 00:19:52,526 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-04 00:19:52,530 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-04 00:19:52,531 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-04 00:19:52,532 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-04 00:19:54,023 INFO success: crond entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-04 00:19:54,023 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-04 00:19:54,024 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2024-09-04 00:19:54,026 INFO spawned: 'queue-app' with pid 28
+2024-09-04 00:19:54,028 INFO spawned: 'queue-default_00' with pid 29
+2024-09-04 00:19:54,031 INFO spawned: 'queue-default_01' with pid 30
+2024-09-04 00:19:54,033 INFO spawned: 'queue-default_02' with pid 31
+2024-09-04 00:19:54,039 INFO spawned: 'queue-default_03' with pid 32
+2024-09-04 00:19:54,044 INFO spawned: 'queue-default_04' with pid 33
+2024-09-04 00:19:54,045 INFO spawned: 'queue-default_05' with pid 34
+2024-09-04 00:19:54,052 INFO spawned: 'queue-default_06' with pid 35
+2024-09-04 00:19:54,053 INFO spawned: 'queue-default_07' with pid 36
+2024-09-04 00:19:54,234 WARN exited: queue-app (exit status 0; not expected)
+2024-09-04 00:19:54,270 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-04 00:19:54,298 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-04 00:19:54,298 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-04 00:19:54,306 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-04 00:19:54,311 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-04 00:19:54,331 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-04 00:19:54,331 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-04 00:19:54,335 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-04 00:19:56,346 INFO spawned: 'queue-app' with pid 37
+2024-09-04 00:19:56,350 INFO spawned: 'queue-default_00' with pid 38
+2024-09-04 00:19:56,354 INFO spawned: 'queue-default_01' with pid 39
+2024-09-04 00:19:56,358 INFO spawned: 'queue-default_02' with pid 40
+2024-09-04 00:19:56,361 INFO spawned: 'queue-default_03' with pid 41
+2024-09-04 00:19:56,368 INFO spawned: 'queue-default_04' with pid 42
+2024-09-04 00:19:56,370 INFO spawned: 'queue-default_05' with pid 43
+2024-09-04 00:19:56,371 INFO spawned: 'queue-default_06' with pid 44
+2024-09-04 00:19:56,378 INFO spawned: 'queue-default_07' with pid 45
+2024-09-04 00:19:56,539 WARN exited: queue-app (exit status 0; not expected)
+2024-09-04 00:19:56,598 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-04 00:19:56,608 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-04 00:19:56,609 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-04 00:19:56,629 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-04 00:19:56,635 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-04 00:19:56,647 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-04 00:19:56,647 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-04 00:19:56,647 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-04 00:19:59,655 INFO spawned: 'queue-app' with pid 46
+2024-09-04 00:19:59,656 INFO spawned: 'queue-default_00' with pid 47
+2024-09-04 00:19:59,659 INFO spawned: 'queue-default_01' with pid 48
+2024-09-04 00:19:59,665 INFO spawned: 'queue-default_02' with pid 49
+2024-09-04 00:19:59,668 INFO spawned: 'queue-default_03' with pid 50
+2024-09-04 00:19:59,672 INFO spawned: 'queue-default_04' with pid 51
+2024-09-04 00:19:59,675 INFO spawned: 'queue-default_05' with pid 52
+2024-09-04 00:19:59,676 INFO spawned: 'queue-default_06' with pid 53
+2024-09-04 00:19:59,677 INFO spawned: 'queue-default_07' with pid 54
+2024-09-04 00:19:59,861 WARN exited: queue-default_01 (exit status 0; not expected)
+2024-09-04 00:19:59,884 INFO gave up: queue-default_01 entered FATAL state, too many start retries too quickly
+2024-09-04 00:19:59,885 WARN exited: queue-default_04 (exit status 0; not expected)
+2024-09-04 00:19:59,908 INFO gave up: queue-default_04 entered FATAL state, too many start retries too quickly
+2024-09-04 00:19:59,909 WARN exited: queue-app (exit status 0; not expected)
+2024-09-04 00:19:59,938 INFO gave up: queue-app entered FATAL state, too many start retries too quickly
+2024-09-04 00:19:59,940 WARN exited: queue-default_00 (exit status 0; not expected)
+2024-09-04 00:19:59,954 INFO gave up: queue-default_00 entered FATAL state, too many start retries too quickly
+2024-09-04 00:19:59,955 WARN exited: queue-default_07 (exit status 0; not expected)
+2024-09-04 00:19:59,955 INFO gave up: queue-default_07 entered FATAL state, too many start retries too quickly
+2024-09-04 00:19:59,956 WARN exited: queue-default_06 (exit status 0; not expected)
+2024-09-04 00:19:59,961 INFO gave up: queue-default_06 entered FATAL state, too many start retries too quickly
+2024-09-04 00:19:59,961 WARN exited: queue-default_05 (exit status 0; not expected)
+2024-09-04 00:19:59,965 INFO gave up: queue-default_05 entered FATAL state, too many start retries too quickly
+2024-09-04 00:19:59,965 WARN exited: queue-default_03 (exit status 0; not expected)
+2024-09-04 00:19:59,966 INFO gave up: queue-default_03 entered FATAL state, too many start retries too quickly
+2024-09-04 00:19:59,971 WARN exited: queue-default_02 (exit status 0; not expected)
+2024-09-04 00:20:00,978 INFO gave up: queue-default_02 entered FATAL state, too many start retries too quickly
+2024-09-04 00:21:49,384 WARN received SIGQUIT indicating exit request
+2024-09-04 00:21:49,385 INFO waiting for crond, nginx, php-fpm to die
+2024-09-04 00:21:51,422 INFO stopped: php-fpm (exit status 0)
+2024-09-04 00:21:51,465 INFO stopped: nginx (exit status 0)
+2024-09-04 00:21:51,466 WARN stopped: crond (terminated by SIGTERM)
