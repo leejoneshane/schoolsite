@@ -3,6 +3,13 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Jenssegers\Agent\Facades\Agent;
 
+const NOT_ENOUGH_GP = 1;
+const ALREADY_EXISTS = 2;
+const NOT_EXISTS = 3;
+const LOCK_ALREADY = 4;
+const MISS = 5;
+const YOU_CANNOT = 6; 
+
 function watch(Request $request, $action) {
     $device = Agent::device();
     $platform = Agent::platform();
