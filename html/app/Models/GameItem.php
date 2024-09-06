@@ -13,6 +13,7 @@ class GameItem extends Model
     //以下屬性可以批次寫入
     protected $fillable = [
         'name',      //道具名稱
+        'description',  //道具簡介
         'image_file',
         'object',    //作用對象：self 自己，party 隊伍，partner 指定的我方角色，target 指定的敵方角色，all 敵方隊伍中的所有角色
         'hit_rate',  //命中率，擊中判斷為 命中率-(對方敏捷力/100)
@@ -21,6 +22,7 @@ class GameItem extends Model
         'ap',        //對作用對象的攻擊力增減效益
         'dp',        //對作用對象的防禦力增減效益
         'sp',        //對作用對象的敏捷力增減效益
+        'status',    //解除角色狀態
         'gp',        //此道具的購買價格
     ];
 
@@ -40,7 +42,7 @@ class GameItem extends Model
     {
         $hit = $this->hit_rate;
         if ($this->object == 'target' || $this->object == 'all') {
-            $hit -= $character->sp / 100;
+            $hit -= $character->final_sp / 100;
         }
         if ($hit >= 1 || rand() < $hit) {
             if ($this->hp != 0) {
@@ -49,6 +51,8 @@ class GameItem extends Model
                 } else {
                     $character->hp += intval($character->max_hp * $this->hp);
                 }
+            } elseif ($this->status == 'DEAD') {
+                $character->hp = $this->hp;
             }
             if ($this->mp != 0) {
                 if ($this->mp > 1 || $this->mp < -1) {
@@ -56,6 +60,8 @@ class GameItem extends Model
                 } else {
                     $character->mp += intval($character->max_mp * $this->mp);
                 }
+            } elseif ($this->status == 'COMA') {
+                $character->mp = $this->mp;
             }
             if ($this->ap != 0) {
                 $character->temp_effect = 'ap';
@@ -72,6 +78,10 @@ class GameItem extends Model
                 $character->effect_value = $this->sp;
                 $character->effect_timeout = Carbon::now()->addMinutes(40);
             }
+            if ($character->hp < 1) $character->hp = 0;
+            if ($character->hp > $character->max_hp) $character->hp = $character->max_hp;
+            if ($character->mp < 1) $character->mp = 0;
+            if ($character->mp > $character->max_mp) $character->mp = $character->max_mp;
             $character->save();
             return 0;
         } else {

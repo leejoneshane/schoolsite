@@ -22,9 +22,9 @@ return new class extends Migration
             $table->integer('level')->default(1);
             $table->integer('xp');
             $table->integer('max_hp');
-            $table->integer('hp');
+            $table->float('hp');
             $table->integer('max_mp');
-            $table->integer('mp');
+            $table->float('mp');
             $table->integer('ap');
             $table->integer('dp');
             $table->integer('sp');

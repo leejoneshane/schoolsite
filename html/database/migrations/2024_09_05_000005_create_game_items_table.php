@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('game_items', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('description');
             $table->string('image_file')->nullable();
             $table->enum('object', ['self', 'party', 'partner', 'enemy', 'all']);
             $table->float('hit_rate')->default(1);
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->float('ap')->default(0);
             $table->float('dp')->default(0);
             $table->float('sp')->default(0);
+            $table->string('status')->nullable();
             $table->integer('gp')->default(0);
             $table->timestamps();
         });

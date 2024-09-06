@@ -74,6 +74,7 @@ class GameCharacter extends Model
         'final_ap',
         'final_dp',
         'final_sp',
+        'status',
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）
@@ -82,7 +83,7 @@ class GameCharacter extends Model
         'profession',
         'party',
         'teammate',
-        'skills',
+        'configure',
         'items',
     ];
 
@@ -155,6 +156,14 @@ class GameCharacter extends Model
         return $sp;
     }
 
+    //提供角色狀態
+    public function getStatusAttribute()
+    {
+        if ($this->hp < 1) return DEAD;
+        if ($this->mp < 1) return COMA;
+        return NORMAL;
+    }
+
     //更新角色時，自動進行升級
     public static function boot()
     {
@@ -170,12 +179,10 @@ class GameCharacter extends Model
     //檢查此角色是否可升級，若可以則進行升級
     public function levelup()
     {
-        foreach ($this->levelup_needed as $l => $n) {
-            if ($n > $this->xp) {
-                $this->level = $l - 1;
-                $this->save();
-                break;
-            }
+        while ($this->xp >= $this->levelup_needed[$this->level + 1]) {
+            $this->level += 1;
+            $this->hp = $this->max_hp;
+            $this->save();
         }
     }
 
@@ -200,7 +207,7 @@ class GameCharacter extends Model
     //取得此角色的夥伴
     public function teammate()
     {
-        return $this->party->members;
+        return $this->belongsTo('App\Models\GameCharacter', 'party_id', 'party_id');
     }
 
     //取得此角色可使用技能
@@ -217,14 +224,41 @@ class GameCharacter extends Model
         });
     }
 
+    //角色日常更新
+    public function newday()
+    {
+        $this->mp += $this->party->configure->daily_mp;
+        if ($this->hp < $this->max_hp && $this->party->effect_hp != 0) {
+            if ($this->party->effect_hp > 1 || $this->party->effect_hp < -1) {
+                $this->hp += $this->party->effect_hp;
+            } else {
+                $this->hp += intval($this->hp * $this->party->effect_hp);
+            }
+        }
+        if ($this->mp < $this->max_mp && $this->party->effect_mp != 0) {
+            if ($this->party->effect_mp > 1 || $this->party->effect_mp < -1) {
+                $this->mp += $this->party->effect_mp;
+            } else {
+                $this->mp += intval($this->mp * $this->party->effect_mp);
+            }
+        }
+        if ($this->hp < 1) $this->hp = 0;
+        if ($this->hp > $this->max_hp) $this->hp = $this->max_hp;
+        if ($this->mp < 1) $this->mp = 0;
+        if ($this->mp > $this->max_mp) $this->mp = $this->max_mp;
+        $this->save();
+    }
+
     //使用指定的道具
     public function use_skill($id, $uuids = null)
     {
+        if ($this->status == 'DEAD') return DEAD;
+        if ($this->status == 'COMA') return COMA;
         if (!$this->skills->contains('id', $id)) return NOT_EXISTS;
         $skill = GameSkill::find($id);
         $classroom = $this->student->class_id;
-        if ($skill->object != 'self' && !GameSence::is_lock($classroom)) return YOU_CANNOT;
-        if ($this->mp < $skill->cost_mp) return YOU_CANNOT;
+        if ($skill->object != 'self' && !GameSence::is_lock($classroom)) return PEACE;
+        if ($this->mp < $skill->cost_mp) return LESS_MP;
         if (is_null($uuids)) $uuids[] = $this->uuid;
         $skill->cast($this->uuid, $uuids);
     }
@@ -271,10 +305,11 @@ class GameCharacter extends Model
     //使用指定的道具
     public function use_item($id, $uuids = null)
     {
+        if ($this->status == 'DEAD') return DEAD;
         if (!$this->items->contains('id', $id)) return NOT_EXISTS;
         $item = GameItem::find($id);
         $classroom = $this->student->class_id;
-        if ($item->object != 'self' && !GameSence::is_lock($classroom)) return YOU_CANNOT;
+        if ($item->object != 'self' && !GameSence::is_lock($classroom)) return PEACE;
         DB::table('game_characters_items')
             ->where('uuid', $this->uuid)
             ->where('item_id', $item->id)

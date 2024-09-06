@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\GameBase;
 
 class GameParty extends Model
 {
@@ -30,7 +31,9 @@ class GameParty extends Model
         'classroom',
         'teacher',
         'members',
+        'foundation',
         'furnitures',
+        'configure',
     ];
 
     //以下屬性需進行資料庫欄位格式轉換
@@ -68,10 +71,38 @@ class GameParty extends Model
         return $this->belongsTo('App\Models\GameBase');
     }
 
+    //取得此班級組態
+    public function configure()
+    {
+        return $this->hasOne('App\Models\GameConfigure', 'classroom_id', 'classroom_id');
+    }
+
     //取得此隊伍的所有家具
     public function furnitures()
     {
         return $this->belongsToMany('App\Models\GameFurniture', 'game_parties_furnitures', 'party_id', 'furniture_id');
+    }
+
+    //變更據點
+    public function change_foundation($id)
+    {
+        $old = $this->foundation;
+        $new = GameBase::find($id);
+        if ($old) {
+            $this->effect_hp -= $old->hp;
+            $this->effect_mp -= $old->mp;
+            $this->effect_ap -= $old->ap;
+            $this->effect_dp -= $old->dp;
+            $this->effect_sp -= $old->sp;
+        }
+        if ($new) {
+            $this->effect_hp += $new->hp;
+            $this->effect_mp += $new->mp;
+            $this->effect_ap += $new->ap;
+            $this->effect_dp += $new->dp;
+            $this->effect_sp += $new->sp;
+        }
+        $this->save();
     }
 
     //購買指定的家具
@@ -85,6 +116,11 @@ class GameParty extends Model
             'furniture_id' => $furniture->id,
         ]);
         $this->treasury -= $furniture->gp;
+        $this->effect_hp += $furniture->hp;
+        $this->effect_mp += $furniture->mp;
+        $this->effect_ap += $furniture->ap;
+        $this->effect_dp += $furniture->dp;
+        $this->effect_sp += $furniture->sp;
         $this->save();
     }
 
@@ -94,7 +130,29 @@ class GameParty extends Model
         $furniture = $this->furnitures->firstWhere('id', $id); 
         if ($furniture) {
             DB::table('game_parties_furnitures')->where('party_id', $this->id)->where('furniture_id', $id)->delete();
+            $this->effect_hp -= $furniture->hp;
+            $this->effect_mp -= $furniture->mp;
+            $this->effect_ap -= $furniture->ap;
+            $this->effect_dp -= $furniture->dp;
+            $this->effect_sp -= $furniture->sp;
+            $this->save();
         }
+    }
+
+    //購買指定的家具
+    public function add_member($uuid)
+    {
+        $newgay = GameCharacter::find($uuid);
+        $newgay->party_id = $this->id;
+        $newgay->save();
+    }
+
+    //移除指定的家具
+    public function remove_member($uuid)
+    {
+        $gay = GameCharacter::find($uuid);
+        $gay->party_id = null;
+        $gay->save();
     }
 
 }

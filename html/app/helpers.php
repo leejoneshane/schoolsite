@@ -3,12 +3,17 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Jenssegers\Agent\Facades\Agent;
 
-const NOT_ENOUGH_GP = 1;
-const ALREADY_EXISTS = 2;
-const NOT_EXISTS = 3;
-const LOCK_ALREADY = 4;
-const MISS = 5;
-const YOU_CANNOT = 6; 
+const NOT_ENOUGH_GP = 1; //無法購買
+const ALREADY_EXISTS = 2; //不可重複購買
+const NOT_EXISTS = 3; //物品已用完
+const LOCK_ALREADY = 4; //班級已被鎖定
+const MISS = 5; //攻擊失敗或物品使用失敗
+const PEACE = 6; //非戰鬥時刻
+const LESS_MP = 7; //行動力不足
+const DEAD = 8; //角色已死亡
+const COMA = 9; //角色已昏迷
+const NORMAL = 10; //角色正常
+
 
 function watch(Request $request, $action) {
     $device = Agent::device();
