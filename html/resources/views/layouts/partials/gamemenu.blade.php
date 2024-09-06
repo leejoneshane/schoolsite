@@ -5,7 +5,7 @@
             <a href="/game/roster"><i class="text-2xl fa-solid fa-clipboard-user" alt="點名表"></i></a>
         </div>
         <div class="py-2 text-center">
-            <a href="/game/pickup"><i class="text-2xl fa-solid fa-shuffle" alt="抽籤機"></i></a>
+            <a href="/game/pickup"><i class="text-2xl fa-solid fa-dice-d20" alt="抽籤機"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="/game/timer"><i class="text-2xl fa-solid fa-stopwatch-20" alt="計時器"></i></a>
