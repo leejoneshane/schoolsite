@@ -3,11 +3,13 @@
 <head>
     @include('layouts.partials.head')
 </head>
-<body class="h-screen">
-    @include('layouts.partials.header')
-    @include('layouts.partials.nav')
+<body>
+    @include('layouts.partials.gameheader')
+    @teacher
+    @include('layouts.partials.gamenav')
+    @endteacher
     <div class="min-h-screen w-full flex bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-        @include('layouts.partials.aside')
+        @include('layouts.partials.gamemenu')
         @include('layouts.partials.content')
     </div>
     @include('layouts.partials.footer')

@@ -1,4 +1,4 @@
-<main class="w-full mb-32">
+<main class="w-full">
     <div class="m-5 relative bg-white dark:bg-gray-700 text-black dark:text-gray-200">
         <div>
             @if (isset($error) || session()->has('error'))
@@ -35,7 +35,7 @@
     </div>
 </main>
 <script nonce="selfhost">
-@auth
+    @auth
     function reply(uid) {
         var me = {{ auth()->user()->id }};
         var tell = prompt('您要告訴對方什麼？');
@@ -52,7 +52,7 @@
             });
         }
     }
-@endauth
+    @endauth
 
     document.addEventListener("DOMContentLoaded", function(event) { 
         window.Echo.channel('public').listen('PublicMessage', (e) => {

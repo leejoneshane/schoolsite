@@ -407,3 +407,8 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::get('website/watchdog', 'App\Http\Controllers\Admin\WatchdogController@index')->name('watchdog');
     Route::post('website/watchdog/export', 'App\Http\Controllers\Admin\WatchdogController@export')->name('watchdog.export');
 });
+
+// 遊戲平台
+Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
+    Route::get('/', 'App\Http\Controllers\Game\GameController@index')->name('game');
+});

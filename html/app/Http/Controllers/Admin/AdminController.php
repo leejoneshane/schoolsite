@@ -16,6 +16,14 @@ class AdminController extends Controller
      */
     public function __construct()
     {
+        if (!Menu::find('admin')) {
+            Menu::create([
+                'id' => 'admin',
+                'caption' => '管理選單',
+                'url' => '#',
+                'weight' => 0,
+            ]);
+        }
         if (!Menu::find('database')) {
             Menu::create([
                 'id' => 'database',

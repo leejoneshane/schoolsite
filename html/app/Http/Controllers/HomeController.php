@@ -13,6 +13,14 @@ class HomeController extends Controller
      */
     public function __construct()
     {
+        if (!Menu::find('main')) {
+            Menu::create([
+                'id' => 'main',
+                'caption' => '主選單',
+                'url' => '#',
+                'weight' => 0,
+            ]);
+        }
         if (!Menu::find('parenting')) {
             Menu::create([
                 'id' => 'parenting',
