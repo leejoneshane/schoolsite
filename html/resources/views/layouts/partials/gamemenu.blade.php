@@ -28,16 +28,16 @@
             <a href="/game/box"><i class="text-2xl fa-solid fa-toolbox" alt="道具箱"></i></a>
         </div>
         <div class="py-2 text-center">
-            <a href="/game/arena"><i class="text-2xl fa-brands fa-optin-monster" alt="競技場"></i></a>
+            <a href="/game/arena"><i class="text-2xl fa-solid fa-dragon" alt="競技場"></i></a>
         </div>
         <div class="py-2 text-center">
-            <a href="/game/dungeon"><i class="text-2xl fa-regular fa-dungeon" alt="地牢"></i></a>
+            <a href="/game/dungeon"><i class="text-2xl fa-solid fa-dungeon" alt="地牢"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="/game/travel"><i class="text-2xl fa-solid fa-map-location-dot" alt="冒險地圖"></i></a>
         </div>
         <div class="py-2 text-center">
-            <a href="/game/work_shop"><i class="text-2xl fa-solid fa-bath" alt="矮人工坊"></i></a>
+            <a href="/game/work_shop"><i class="text-2xl fa-solid fa-couch" alt="矮人工坊"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="/game/item_shop"><i class="text-2xl fa-solid fa-cart-shopping" alt="妖精道具屋"></i></a>
