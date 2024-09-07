@@ -62,7 +62,13 @@ class GameSkill extends Model
             }
         }
         foreach ($targets as $t) {
-            $result[$t->uuid] = $this->effect($me, $t);
+            if ($t->buff == 'invincible') {
+                $t->buff = null;
+                $t->save();
+                $result[$t->uuid] = MISS;
+            } else {
+                $result[$t->uuid] = $this->effect($me, $t);
+            }
         }
         $me->mp -= $this->cost_mp;
         if ($this->steal_mp > 0) $me->mp += $this->cost_mp * $this->steal_mp;
@@ -79,11 +85,6 @@ class GameSkill extends Model
     //套用技能效果
     public function effect($me, $character)
     {
-        if ($character->buff == 'invincible') {
-            $character->buff = null;
-            $character->save();
-            return MISS;
-        }
         $hit = $this->hit_rate;
         if ($this->object == 'target' || $this->object == 'all') {
             $hit += ($me->final_sp - $character->final_sp) / 100;
@@ -92,10 +93,12 @@ class GameSkill extends Model
             if ($this->ap > 0) {
                 if ($character->buff == 'reflex') {
                     $damage = ($this->ap + $character->final_ap) * 2 - $me->final_dp;
-                    if ($damage > 0) $me->hp -= $damage;
-                    if ($this->steal_hp > 0) {
-                        $me->hp += $damage * $this->steal_hp;
-                    }                    
+                    if ($damage > 0) {
+                        $me->hp -= $damage;
+                        if ($this->steal_hp > 0) {
+                            $me->hp += $damage * $this->steal_hp;
+                        }
+                    }
                 } else {
                     $damage = ($this->ap + $me->final_ap) * 2 - $character->final_dp;
                     if ($damage > 0) {
@@ -104,11 +107,15 @@ class GameSkill extends Model
                             foreach ($character->party->members as $c) {
                                 $c->hp -= intval($damage / $count);
                             }
+                            if ($this->steal_hp > 0) {
+                                $me->hp += $damage * $this->steal_hp;
+                            }
+                            $damage = intval($damage / $count);
                         } else {
-                             $character->hp -= $damage;  
-                        }
-                        if ($this->steal_hp > 0) {
-                            $me->hp += $damage * $this->steal_hp;
+                            $character->hp -= $damage;  
+                            if ($this->steal_hp > 0) {
+                                $me->hp += $damage * $this->steal_hp;
+                            }
                         }
                     }
                 }
@@ -121,13 +128,13 @@ class GameSkill extends Model
                         } else {
                             $character->hp += intval($character->max_hp * $this->effect_hp);
                         }
-                    }        
+                    }
                 } else {
                     if ($this->effect_hp > 1 || $this->effect_hp < -1) {
                         $character->hp += $this->effect_hp;
                     } else {
                         $character->hp += intval($character->max_hp * $this->effect_hp);
-                    }    
+                    }
                 }
             }
             if ($this->effect_mp != 0) {
@@ -138,13 +145,13 @@ class GameSkill extends Model
                         } else {
                             $character->mp += intval($character->max_mp * $this->effect_mp);
                         }
-                    }        
+                    }
                 } else {
                     if ($this->effect_mp > 1 || $this->effect_mp < -1) {
                         $character->mp += $this->effect_mp;
                     } else {
                         $character->mp += intval($character->max_mp * $this->effect_mp);
-                    }    
+                    }
                 }
             }
             if ($this->effect_ap != 0) {
@@ -172,7 +179,7 @@ class GameSkill extends Model
             if ($character->mp < 1) $character->mp = 0;
             if ($character->mp > $character->max_mp) $character->mp = $character->max_mp;
             $character->save();
-            return 0;
+            return $damage;
         } else {
             return MISS;
         }
