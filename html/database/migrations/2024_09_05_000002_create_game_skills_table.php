@@ -32,6 +32,7 @@ return new class extends Migration
             $table->float('effect_sp')->default(0);
             $table->integer('effect_times')->default(40);
             $table->string('status')->nullable();
+            $table->string('inspire')->nullable();
             $table->integer('earn_xp')->default(0);
             $table->integer('earn_gp')->default(0);
             $table->timestamps();

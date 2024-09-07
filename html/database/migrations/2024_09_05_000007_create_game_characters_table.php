@@ -32,6 +32,7 @@ return new class extends Migration
             $table->enum('temp_effect', ['ap', 'dp', 'sp']);
             $table->float('effect_value')->default(0);
             $table->timestamp('effect_timeout')->nullable();
+            $table->string('buff')->nullable();
             $table->timestamps();
         });
     }

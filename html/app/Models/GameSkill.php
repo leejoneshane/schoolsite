@@ -28,7 +28,8 @@ class GameSkill extends Model
         'effect_dp',   //對作用對象的防禦力增減效益
         'effect_sp',   //對作用對象的敏捷力增減效益
         'effect_times',//技能持續時間，以分鐘為單位
-        'status',      //解除角色狀態
+        'status',      //解除目標狀態，DEAD 死亡狀態復活，COMA 昏迷狀態回神
+        'inspire',     //賦予目標狀態，invincible 無敵，reflex 反射傷害，hatred 仇恨（集中傷害），apportion 分攤傷害
         'earn_xp',     //施展技能後，可獲得經驗值
         'earn_gp',     //施展技能後，可獲得金幣
     ];
@@ -48,10 +49,20 @@ class GameSkill extends Model
     public function cast($self, $uuids)
     {
         if (is_string($uuids)) $uuids[] = $uuids;
+        if ($this->object == 'self') $uuids = [$self];
+        $targets = null;
         $me = GameCharacter::find($self);
         foreach ($uuids as $uuid) {
             $character = GameCharacter::find($uuid);
-            $result[$uuid] = $this->effect($me, $character);
+            $targets[] = $character;
+            if ($character->buff == 'hatred') {
+                $targets = [ $character ];
+                $character->buff = null;
+                break;
+            }
+        }
+        foreach ($targets as $t) {
+            $result[$t->uuid] = $this->effect($me, $t);
         }
         $me->mp -= $this->cost_mp;
         if ($this->steal_mp > 0) $me->mp += $this->cost_mp * $this->steal_mp;
@@ -68,42 +79,72 @@ class GameSkill extends Model
     //套用技能效果
     public function effect($me, $character)
     {
+        if ($character->buff == 'invincible') {
+            $character->buff = null;
+            $character->save();
+            return MISS;
+        }
         $hit = $this->hit_rate;
         if ($this->object == 'target' || $this->object == 'all') {
             $hit += ($me->final_sp - $character->final_sp) / 100;
         }
         if ($hit >= 1 || rand() < $hit) {
             if ($this->ap > 0) {
-                $damage = ($this->ap + $me->final_ap) * 2 - $character->final_dp;
-                if ($damage > 0) $character->hp -= $damage;
-                if ($this->steal_hp > 0) {
-                    $me->hp += $damage * $this->steal_hp;
+                if ($character->buff == 'reflex') {
+                    $damage = ($this->ap + $character->final_ap) * 2 - $me->final_dp;
+                    if ($damage > 0) $me->hp -= $damage;
+                    if ($this->steal_hp > 0) {
+                        $me->hp += $damage * $this->steal_hp;
+                    }                    
+                } else {
+                    $damage = ($this->ap + $me->final_ap) * 2 - $character->final_dp;
+                    if ($damage > 0) {
+                        if ($character->buff == 'apportion') {
+                            $count = $character->party->members->count();
+                            foreach ($character->party->members as $c) {
+                                $c->hp -= intval($damage / $count);
+                            }
+                        } else {
+                             $character->hp -= $damage;  
+                        }
+                        if ($this->steal_hp > 0) {
+                            $me->hp += $damage * $this->steal_hp;
+                        }
+                    }
                 }
             }
             if ($this->effect_hp != 0) {
-                if ($this->effect_hp > 1 || $this->effect_hp < -1) {
-                    $character->hp += $this->effect_hp;
+                if ($character->status == 'DEAD') {
+                    if ($this->status == 'DEAD') {
+                        if ($this->effect_hp > 1 || $this->effect_hp < -1) {
+                            $character->hp += $this->effect_hp;
+                        } else {
+                            $character->hp += intval($character->max_hp * $this->effect_hp);
+                        }
+                    }        
                 } else {
-                    $character->hp += intval($character->max_hp * $this->effect_hp);
-                }
-            } elseif ($this->status == 'DEAD') {
-                if ($this->effect_hp > 1 || $this->effect_hp < -1) {
-                    $character->hp += $this->effect_hp;
-                } else {
-                    $character->hp += intval($character->max_hp * $this->effect_hp);
+                    if ($this->effect_hp > 1 || $this->effect_hp < -1) {
+                        $character->hp += $this->effect_hp;
+                    } else {
+                        $character->hp += intval($character->max_hp * $this->effect_hp);
+                    }    
                 }
             }
             if ($this->effect_mp != 0) {
-                if ($this->effect_mp > 1 || $this->effect_mp < -1) {
-                    $character->mp += $this->effect_mp;
+                if ($character->status == 'COMA') {
+                    if ($this->status == 'COMA') {
+                        if ($this->effect_mp > 1 || $this->effect_mp < -1) {
+                            $character->mp += $this->effect_mp;
+                        } else {
+                            $character->mp += intval($character->max_mp * $this->effect_mp);
+                        }
+                    }        
                 } else {
-                    $character->mp += intval($character->max_mp * $this->effect_mp);
-                }
-            } elseif ($this->status == 'COMA') {
-                if ($this->effect_mp > 1 || $this->effect_mp < -1) {
-                    $character->mp += $this->effect_mp;
-                } else {
-                    $character->mp += intval($character->max_mp * $this->effect_mp);
+                    if ($this->effect_mp > 1 || $this->effect_mp < -1) {
+                        $character->mp += $this->effect_mp;
+                    } else {
+                        $character->mp += intval($character->max_mp * $this->effect_mp);
+                    }    
                 }
             }
             if ($this->effect_ap != 0) {

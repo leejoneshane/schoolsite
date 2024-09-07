@@ -28,7 +28,7 @@
             <a href="/game/box"><i class="text-2xl fa-solid fa-toolbox" alt="道具箱"></i></a>
         </div>
         <div class="py-2 text-center">
-            <a href="/game/arena"><i class="text-2xl fa-solid fa-dragon" alt="競技場"></i></a>
+            <a href="/game/arena"><i class="text-2xl fa-brands fa-battle-net" alt="競技場"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="/game/dungeon"><i class="text-2xl fa-solid fa-dungeon" alt="地牢"></i></a>
