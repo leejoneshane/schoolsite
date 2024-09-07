@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Game;
 
 use App\Http\Controllers\Controller;
 use Intervention\Image\Image;
+use App\Models\GameFace;
 
 class AdminController extends Controller
 {
@@ -14,7 +15,7 @@ class AdminController extends Controller
         return view('game.faces', [ 'faces' => $faces ]);
     }
 
-    public function store()
+    public function store(Request $request)
     {
         request()->validate([
             'file' => 'mimes:jpeg,jpg,png,gif|required|max:10000'
