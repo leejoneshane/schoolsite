@@ -15,6 +15,16 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css">
 <link rel="stylesheet" href="/css/ckeditor.css">
+<style>
+.dropzone {
+    background: white;
+    border-radius: 5px;
+    border: 2px dashed rgb(0, 135, 247);
+    border-image: none;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
 
 <!-- Scripts -->
 <script src="https://unpkg.com/flowbite@1.5.3/dist/flowbite.js"></script>

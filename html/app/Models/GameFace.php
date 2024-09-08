@@ -16,12 +16,12 @@ class GameFace extends Model
 
     public function path()
     {
-        return public_path('game/faces/'.$this->file_name);
+        if ($this->avaliable) return public_path('images/faces/'.$this->file_name);
     }
 
     public function url()
     {
-        return asset('game/faces/'.$this->file_name);
+        if ($this->avaliable) return asset('images/faces/'.$this->file_name);
     }
 
     public function base64()

@@ -411,4 +411,8 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
 // 遊戲平台
 Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Game\GameController@index')->name('game');
+    Route::get('faces', 'App\Http\Controllers\Game\FaceController@gallery');
+    Route::post('faces', 'App\Http\Controllers\Game\FaceController@store')->name('game.faces');
+    Route::get('faces/browse', 'App\Http\Controllers\Game\FaceController@getImages')->name('game.faces_gallery');
+    Route::post('faces/destroy', 'App\Http\Controllers\Game\FaceController@destroy')->name('game.faces_remove');
 });

@@ -1,38 +1,62 @@
 @extends('layouts.game')
 
 @section('content')
-<div id="dropzone">
-    <form action="{{ route('game.upload_faces') }}" class="dropzone max-w-lg mt-12 mx-auto rounded-xl border-2 border-dotted border-cyan-500 bg-white" id="file-upload" enctype="multipart/form-data">
+<div class="dropzone-container">
+    <form method="POST" action="{{ route('game.faces') }}" class="dropzone dz-clickable" id="face-upload" enctype="multipart/form-data">
         @csrf
         <div class="dz-message">
-            請拖曳要上傳的圖片，放在這裡。<br>
+            <h1 class="text-5xl">角色臉孔管理</h1>
+            <p>請點擊這裡選取要上傳的圖片，或將圖片拖曳到這個區域。</p>
         </div>
     </form>
 </div>
-<div class="dz-preview dz-file-preview">
-    <div class="dz-details">
-      <div class="dz-filename"><span data-dz-name></span></div>
-      <div class="dz-size" data-dz-size></div>
-      <img data-dz-thumbnail />
-    </div>
-    <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
-    <div class="dz-success-mark"><span>✔</span></div>
-    <div class="dz-error-mark"><span>✘</span></div>
-    <div class="dz-error-message"><span data-dz-errormessage></span></div>
-  </div>
-<div id="gallery">
-@foreach ($faces as $face)
-    <img src="{{ $face->url() }}" class="border-2 border-black"/>
-@endforeach
-</div>
 <script>
-    var dropzone = new Dropzone('#file-upload', {
-        previewTemplate: document.querySelector('#preview-template').innerHTML,
-        parallelUploads: 3,
-        thumbnailHeight: 150,
-        thumbnailWidth: 150,
-        maxFilesize: 5,
-        filesizeBase: 1500,
+    Dropzone.options.faceUpload = {
+        url: '{{ route('game.faces') }}',
+        headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+        maxFiles: 5, 
+        maxFilesize: 4,
+        acceptedFiles: ".jpeg,.jpg,.png,.gif",
+        addRemoveLinks: true,
+        timeout: 50000,
+        init:function() {
+            // Get images
+            var myDropzone = this;
+            window.axios.get('{{ route('game.faces_gallery') }}')
+            .then( (response) => {
+                response.data.forEach( (element) => {
+                    var file = {name: element.name, size: element.size};
+                    myDropzone.options.addedfile.call(myDropzone, file);
+                    myDropzone.options.thumbnail.call(myDropzone, file, element.path);
+                    myDropzone.emit("complete", file);
+                });
+            });
+        },
+        removedfile: function(file) {
+            if (this.options.dictRemoveFile) {
+                return Dropzone.confirm("您確定要刪除此圖片嗎？", function() {
+                    if (file.previewElement.id != "") {
+                        var name = file.previewElement.id;
+                    } else {
+                        var name = file.name;
+                    }
+                    window.axios.post('{{ route('game.faces_remove') }}', {
+                        filename: name,
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8',
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    }).then( (response) => {
+                        alert(response.data.success + " 圖片檔已經成功刪除！");
+                    }).catch( (response) => {
+                        console.log(response.data);
+                    });
+                    var fileRef;
+                    return (fileRef = file.previewElement) != null ? fileRef.parentNode.removeChild(file.previewElement) : void 0;
+                });
+            }
+        },
         thumbnail: function (file, dataUrl) {
             if (file.previewElement) {
                 file.previewElement.classList.remove("dz-file-preview");
@@ -46,40 +70,29 @@
                     file.previewElement.classList.add("dz-image-preview");
                 }, 1);
             }
+        },
+        success: function(file, response) {
+                file.previewElement.id = response.success;
+                //console.log(file); 
+                // set new images names in dropzone’s preview box.
+                var olddatadzname = file.previewElement.querySelector("[data-dz-name]");   
+                file.previewElement.querySelector("img").alt = response.success;
+                olddatadzname.innerHTML = response.success;
+        },
+        error: function(file, response) {
+               if($.type(response) === "string")
+                    var message = response; //dropzone sends it's own error messages in string
+                else
+                    var message = response.message;
+                file.previewElement.classList.add("dz-error");
+                _ref = file.previewElement.querySelectorAll("[data-dz-errormessage]");
+                _results = [];
+                for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                    node = _ref[_i];
+                    _results.push(node.textContent = message);
+                }
+                return _results;
         }
-    });
-
-    var minSteps = 6,
-        maxSteps = 60,
-        timeBetweenSteps = 100,
-        bytesPerStep = 100000;
-
-    dropzone.uploadFiles = function (files) {
-        var self = this;
-        for (var i = 0; i < files.length; i++) {
-            var file = files[i];
-            totalSteps = Math.round(Math.min(maxSteps, Math.max(minSteps, file.size / bytesPerStep)));
-            for (var step = 0; step < totalSteps; step++) {
-                var duration = timeBetweenSteps * (step + 1);
-                setTimeout(function (file, totalSteps, step) {
-                    return function () {
-                        file.upload = {
-                            progress: 100 * (step + 1) / totalSteps,
-                            total: file.size,
-                            bytesSent: (step + 1) * file.size / totalSteps
-                        };
-                        self.emit('uploadprogress', file, file.upload.progress, file.upload
-                            .bytesSent);
-                        if (file.upload.progress == 100) {
-                            file.status = Dropzone.SUCCESS;
-                            self.emit("success", file, 'success', null);
-                            self.emit("complete", file);
-                            self.processQueue();
-                        }
-                    };
-                }(file, totalSteps, step), duration);
-            }
-        }
-    }
+    };
 </script>
 @endsection
