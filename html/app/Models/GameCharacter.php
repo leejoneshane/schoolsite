@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\GameSence;
 
@@ -51,7 +52,7 @@ class GameCharacter extends Model
     protected $fillable = [
         'uuid',       //學生uuid
         'title',      //角色稱號
-        'image_file', //頭像圖檔
+        'image_id',   //圖片編號
         'party_id',   //公會編號
         'class_id',   //職業代號
         'level',      //目前等級
@@ -182,6 +183,41 @@ class GameCharacter extends Model
     {
         while ($this->xp >= $this->levelup_needed[$this->level + 1]) {
             $this->level += 1;
+            if (rand() < $this->prefession->hp_lvlup) {
+                if ($this->prefession->hp_lvlup >= 1) {
+                    $this->max_hp += $this->prefession->hp_lvlup;
+                } else {
+                    $this->max_hp++;
+                }
+            }
+            if (rand() < $this->prefession->mp_lvlup) {
+                if ($this->prefession->mp_lvlup >= 1) {
+                    $this->max_mp += $this->prefession->mp_lvlup;
+                } else {
+                    $this->max_mp++;
+                }
+            }
+            if (rand() < $this->prefession->ap_lvlup) {
+                if ($this->prefession->ap_lvlup >= 1) {
+                    $this->ap += $this->prefession->ap_lvlup;
+                } else {
+                    $this->ap++;
+                }
+            }
+            if (rand() < $this->prefession->dp_lvlup) {
+                if ($this->prefession->dp_lvlup >= 1) {
+                    $this->dp += $this->prefession->dp_lvlup;
+                } else {
+                    $this->dp++;
+                }
+            }
+            if (rand() < $this->prefession->sp_lvlup) {
+                if ($this->prefession->sp_lvlup >= 1) {
+                    $this->sp += $this->prefession->sp_lvlup;
+                } else {
+                    $this->sp++;
+                }
+            }
             $this->hp = $this->max_hp;
             $this->save();
         }

@@ -411,8 +411,20 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
 // 遊戲平台
 Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Game\GameController@index')->name('game');
-    Route::get('faces', 'App\Http\Controllers\Game\FaceController@gallery');
-    Route::post('faces', 'App\Http\Controllers\Game\FaceController@store')->name('game.faces');
-    Route::get('faces/browse', 'App\Http\Controllers\Game\FaceController@getImages')->name('game.faces_gallery');
-    Route::post('faces/destroy', 'App\Http\Controllers\Game\FaceController@destroy')->name('game.faces_remove');
+    Route::get('classes', 'App\Http\Controllers\Game\ClassController@index')->name('game.classes');
+    Route::get('classes/add', 'App\Http\Controllers\Game\ClassController@add');
+    Route::post('classes/add', 'App\Http\Controllers\Game\ClassController@insert')->name('game.class_add');
+    Route::get('classes/edit/{class_id}', 'App\Http\Controllers\Game\ClassController@edit');
+    Route::post('classes/edit/{class_id}', 'App\Http\Controllers\Game\ClassController@update')->name('game.class_edit');
+    Route::post('classes/remove/{class_id}', 'App\Http\Controllers\Game\ClassController@remove')->name('game.class_remove');
+    Route::get('classes/images/{class_id}', 'App\Http\Controllers\Game\ClassController@gallery')->name('game.class_images');
+    Route::get('classes/scan', 'App\Http\Controllers\Game\ClassController@scan')->name('game.class_scanimages');
+    Route::post('classes/upload/{class_id}', 'App\Http\Controllers\Game\ClassController@store')->name('game.class_upload');
+    Route::post('classes/destroy', 'App\Http\Controllers\Game\ClassController@destroy')->name('game.class_removeimage');
+    Route::get('classes/faces/{class_id}', 'App\Http\Controllers\Game\ClassController@faces')->name('game.class_faces');
+    Route::post('classes/faces/upload/{image_id}', 'App\Http\Controllers\Game\ClassController@face_upload')->name('game.face_upload');
+    Route::get('picture', 'App\Http\Controllers\Game\ImageController@gallery')->name('game.gallery');
+    Route::post('picture/upload', 'App\Http\Controllers\Game\ImageController@store')->name('game.image_upload');
+    Route::get('picture/browse', 'App\Http\Controllers\Game\ImageController@getImages')->name('game.image_browse');
+    Route::post('picture/destroy', 'App\Http\Controllers\Game\ImageController@destroy')->name('game.image_remove');
 });

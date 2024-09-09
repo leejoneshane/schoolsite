@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/earlyaccess/cwtexkai.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.css"/>
 <link rel="stylesheet" href="/css/ckeditor.css">
 <style>
 .dropzone {
@@ -29,4 +30,6 @@
 <!-- Scripts -->
 <script src="https://unpkg.com/flowbite@1.5.3/dist/flowbite.js"></script>
 <script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.6/cropper.js"></script>
 @vite(['resources/css/tailwind.css','resources/scripts/main.ts'])

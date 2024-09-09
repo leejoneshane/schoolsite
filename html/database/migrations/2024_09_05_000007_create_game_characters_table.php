@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('game_characters', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
             $table->string('title');
-            $table->string('image_file')->nullable();
+            $table->integer('image_id');
             $table->integer('party_id')->nullable();
             $table->integer('class_id');
             $table->integer('level')->default(1);

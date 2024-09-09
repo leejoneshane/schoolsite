@@ -12,7 +12,7 @@ class GameClass extends Model
     //以下屬性可以批次寫入
     protected $fillable = [
         'name',      //職業名稱
-        'image_file',//身體圖檔
+        'description', //職業簡介
         'hp_lvlup',  //健康值升級比率，2 則每次升級加 2 點，0.5 則有 1/2 機率加 1 點 
         'mp_lvlup',  //行動力升級比率
         'ap_lvlup',  //攻擊力升級比率
@@ -28,12 +28,19 @@ class GameClass extends Model
     //以下屬性隱藏不顯示（toJson 時忽略）
     protected $hidden = [
         'skills',
+        'images',
     ];
 
-    //取得此角色的隊伍物件
+    //取得此職業的技能
     public function skills()
     {
         return $this->belongsToMany('App\Models\GameSkill', 'game_classes_skills', 'class_id', 'skill_id')->withPivot(['level'])->orderByPivot('level');
+    }
+
+    //取得此職業的圖片
+    public function images()
+    {
+        return $this->belongsToMany('App\Models\GameImage', 'game_classes_images', 'class_id', 'image_id')->orderByPivot('image_id');
     }
 
 }

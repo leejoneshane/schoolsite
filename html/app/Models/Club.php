@@ -94,7 +94,6 @@ class Club extends Model
             ->whereJsonContains('clubs.for_grade', (integer) $grade)
             ->orderBy('clubs.kind_id')
             ->get();
-
     }
 
     //篩選現在及未來學期實際有上課的社團，靜態函式

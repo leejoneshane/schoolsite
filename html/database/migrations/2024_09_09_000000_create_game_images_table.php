@@ -13,9 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('game_faces', function (Blueprint $table) {
+        Schema::create('game_images', function (Blueprint $table) {
             $table->id();
             $table->string('file_name');
+            $table->string('thumbnail');
             $table->timestamps();
         });
     }
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('game_faces');
+        Schema::dropIfExists('game_images');
     }
 };

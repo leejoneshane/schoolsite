@@ -189,6 +189,5 @@ function weekday(obj) {
     const dayOfWeek = new Date(mydate).getDay();
     target.innerHTML = ['日','一','二','三','四','五','六'][dayOfWeek];
 }
-
 </script>
 @endsection
