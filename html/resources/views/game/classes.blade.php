@@ -57,6 +57,10 @@
                 href="{{ route('game.class_faces', ['class_id' => $pro->id]) }}" title="臉部特寫">
                 <i class="fa-solid fa-image-portrait"></i>
             </a>
+            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+                href="{{ route('game.class_skills', ['class_id' => $pro->id]) }}" title="技能">
+                <i class="fa-solid fa-book-skull"></i>
+            </a>
             <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
                 onclick="
                     const myform = document.getElementById('remove');

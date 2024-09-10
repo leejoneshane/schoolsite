@@ -85,7 +85,7 @@ class Student extends Model
     //提供學生班級名稱
     public function getClassnameAttribute()
     {
-        return $this->classroom->name;
+        return ($this->classroom) ? $this->classroom->name : '已畢業';
     }
 
     //篩選指定學號的學生

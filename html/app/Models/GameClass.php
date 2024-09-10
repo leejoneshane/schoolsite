@@ -13,7 +13,7 @@ class GameClass extends Model
     protected $fillable = [
         'name',      //職業名稱
         'description', //職業簡介
-        'hp_lvlup',  //健康值升級比率，2 則每次升級加 2 點，0.5 則有 1/2 機率加 1 點 
+        'hp_lvlup',  //健康值升級比率，3 則每次升級加 1~3 點，0.5 則有 1/2 機率加 1 點 
         'mp_lvlup',  //行動力升級比率
         'ap_lvlup',  //攻擊力升級比率
         'dp_lvlup',  //防禦力升級比率

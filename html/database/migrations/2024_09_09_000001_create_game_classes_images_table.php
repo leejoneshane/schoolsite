@@ -17,7 +17,8 @@ return new class extends Migration
             $table->integer('class_id');
             $table->integer('image_id');
             $table->unique(['class_id', 'image_id']);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

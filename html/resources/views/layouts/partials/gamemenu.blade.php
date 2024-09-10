@@ -1,4 +1,4 @@
-<aside class="w-16 h-screen bg-teal-500" aria-label="Sidebar">
+<aside class="w-16 h-auto bg-teal-500" aria-label="Sidebar">
     <div class="overflow-y-auto">
         @teacher
         <div class="py-2 text-center">

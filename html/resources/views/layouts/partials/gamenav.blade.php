@@ -84,16 +84,16 @@
                   <a href="{{ route('game.classes') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">職業</a>
                 </li>
                 <li>
-                  <a href="/game/admin/skill" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">技能</a>
+                  <a href="{{ route('game.skills') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">技能</a>
                 </li>
                 <li>
-                  <a href="/game/admin/fundation" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">據點</a>
+                  <a href="/game/fundations" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">據點</a>
                 </li>
                 <li>
-                  <a href="/game/admin/furniture" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">家具</a>
+                  <a href="/game/furnitures" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">家具</a>
                 </li>
                 <li>
-                  <a href="/game/admin/item" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">道具</a>
+                  <a href="/game/items" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">道具</a>
                 </li>
               </ul>
           </div>

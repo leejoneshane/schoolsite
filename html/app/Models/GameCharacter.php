@@ -107,6 +107,10 @@ class GameCharacter extends Model
                 } else {
                     $ap += intval($this->ap * $this->effect_value);
                 }
+            } else {
+                $this->tmp_effect = null;
+                $this->effect_value = null;
+                $this->effect_times = null;
             }
         }
         return $ap;
@@ -131,6 +135,10 @@ class GameCharacter extends Model
                     $dp += intval($this->dp * $this->effect_value);
                 }
             }
+        } else {
+            $this->tmp_effect = null;
+            $this->effect_value = null;
+            $this->effect_times = null;
         }
         return $dp;
     }
@@ -154,6 +162,10 @@ class GameCharacter extends Model
                     $sp += intval($this->sp * $this->effect_value);
                 }
             }
+        } else {
+            $this->tmp_effect = null;
+            $this->effect_value = null;
+            $this->effect_times = null;
         }
         return $sp;
     }
@@ -185,35 +197,35 @@ class GameCharacter extends Model
             $this->level += 1;
             if (rand() < $this->prefession->hp_lvlup) {
                 if ($this->prefession->hp_lvlup >= 1) {
-                    $this->max_hp += $this->prefession->hp_lvlup;
+                    $this->max_hp += rand(1,$this->prefession->hp_lvlup);
                 } else {
                     $this->max_hp++;
                 }
             }
             if (rand() < $this->prefession->mp_lvlup) {
                 if ($this->prefession->mp_lvlup >= 1) {
-                    $this->max_mp += $this->prefession->mp_lvlup;
+                    $this->max_mp += rand(1, $this->prefession->mp_lvlup);
                 } else {
                     $this->max_mp++;
                 }
             }
             if (rand() < $this->prefession->ap_lvlup) {
                 if ($this->prefession->ap_lvlup >= 1) {
-                    $this->ap += $this->prefession->ap_lvlup;
+                    $this->ap += rand(1, $this->prefession->ap_lvlup);
                 } else {
                     $this->ap++;
                 }
             }
             if (rand() < $this->prefession->dp_lvlup) {
                 if ($this->prefession->dp_lvlup >= 1) {
-                    $this->dp += $this->prefession->dp_lvlup;
+                    $this->dp += rand(1, $this->prefession->dp_lvlup);
                 } else {
                     $this->dp++;
                 }
             }
             if (rand() < $this->prefession->sp_lvlup) {
                 if ($this->prefession->sp_lvlup >= 1) {
-                    $this->sp += $this->prefession->sp_lvlup;
+                    $this->sp += rand(1, $this->prefession->sp_lvlup);
                 } else {
                     $this->sp++;
                 }

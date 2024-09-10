@@ -18,7 +18,8 @@ return new class extends Migration
             $table->integer('skill_id');
             $table->integer('level');
             $table->unique(['class_id', 'skill_id']);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

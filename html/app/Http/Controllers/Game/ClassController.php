@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\GameClass;
 use App\Models\GameImage;
+use App\Models\GameSkill;
 use App\Models\Watchdog;
 
 class ClassController extends Controller
@@ -96,7 +97,7 @@ class ClassController extends Controller
             $pro->base_sp = $request->input('base_sp');
             $pro->save();
             Watchdog::watch($request, '修改遊戲職業：' . $pro->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('game.classes')->with('success', '已新增職業：'.$request->input('name').'！');
+            return redirect()->route('game.classes')->with('success', '已修改職業：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -111,7 +112,7 @@ class ClassController extends Controller
             Watchdog::watch($request, '刪除遊戲職業：' . $pro->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $pro->delete();
             DB::table('game_classes_images')->where('class_id', $class_id)->delete();
-            return redirect()->route('game.classes')->with('success', '已新增職業：'.$request->input('name').'！');
+            return redirect()->route('game.classes')->with('success', '已刪除職業：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -207,6 +208,38 @@ class ClassController extends Controller
             $pro = $new->profession;
             return view('game.class_faces', [ 'pro' => $pro ]);
         }
+    }
+
+    public function skills($class_id)
+    {
+        $pro = GameClass::find($class_id);
+        $exclude = $pro->skills->map(function ($sk) {
+            return $sk->id;
+        })->toArray();
+        $skills = GameSkill::all();
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('game.manager');
+        if ($user->is_admin || $manager) {
+            return view('game.class_skills', [ 'pro' => $pro, 'skills' => $skills, 'exclude' => $exclude ]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function skills_update(Request $request, $class_id)
+    {
+        DB::table('game_classes_skills')->where('class_id', $class_id)->delete();
+        if (!empty($request->skills)) {
+            foreach ($request->input('skills') as $i => $new) {
+                DB::table('game_classes_skills')->updateOrInsert([
+                    'class_id' => $class_id,
+                    'skill_id' => $new,
+                ],[
+                    'level' => $request->input('level')[$i],
+                ]);
+            }    
+        }
+        return redirect()->back()->with('success', '此職業的技能設定已經儲存！');
     }
 
 }

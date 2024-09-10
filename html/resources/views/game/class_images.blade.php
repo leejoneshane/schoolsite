@@ -10,7 +10,7 @@
 <h1 class="text-xl">職業名稱：{{ $pro->name }}</h1>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
-        僅接受去背的圖片，圖片格式為 PNG 或 GIF，圖片解析度不可以超過 200x300。
+        僅接受去背的圖片，圖片格式為 PNG 或 GIF，圖片解析度為直立式 3:4 (240x320)。
     </p>
 </div>
 <div class="dropzone-container">

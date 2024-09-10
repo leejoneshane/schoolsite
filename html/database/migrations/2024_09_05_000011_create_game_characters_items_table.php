@@ -18,7 +18,8 @@ return new class extends Migration
             $table->integer('item_id');
             $table->integer('quantity');
             $table->unique(['uuid', 'item_id']);
-            $table->timestamps();
+            $table->timestamp('created_at')->useCurrent();
+            $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });
     }
 

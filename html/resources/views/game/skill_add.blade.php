@@ -1,0 +1,164 @@
+@extends('layouts.game')
+
+@section('content')
+<div class="text-2xl font-bold leading-normal pb-5">
+    新增技能
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('game.skills') }}">
+        <i class="fa-solid fa-eject"></i>返回上一頁
+    </a>
+</div>
+<form id="add-class" action="{{ route('game.skill_add') }}" method="POST">
+    @csrf
+    <p><div class="p-3">
+        <label for="name" class="text-base">技能名稱：</label>
+        <input type="text" id="name" name="name" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
+    </div></p>
+    <p><div class="p-3">
+        <label for="description" class="text-base">技能描述：</label>
+        <textarea id="description" class="inline w-128 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+            name="description" rows="5" cols="120"></textarea>
+    </div></p>
+    <p><div class="p-3">
+        <label for="object" class="text-base">作用對象：</label>
+        <select id="object" name="object" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+            <option value="self">自己</option>
+            <option value="partner">隊友</option>
+            <option value="party">全隊</option>
+            <option value="target">對手</option>
+            <option value="all">所有對手</option>
+        </select>
+    </div></p>
+    <p><div class="p-3">
+        <label for="hit" class="text-base">命中率：</label>
+        <input id="hit" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+            type="number" name="hit_rate" min="0.1" max="1" step="0.1" value="1">
+        <br><span class="text-sm font-semibold">命中判定 = 命中率 +（自己敏捷點數 - 對方敏捷點數）/100</span>
+    </div></p>
+    <p><div class="p-3">
+        <label for="cost" class="text-base">消耗魔力：</label>
+        <input id="cost" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+            type="number" name="cost_mp" min="0" max="100" step="1" value="5">
+    </div></p>
+    <p><div class="p-3">
+        <label for="attack" class="text-base">攻擊力：</label>
+        <input id="attack" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+            type="number" name="ap" min="0" max="50" step="1" value="0">
+        <br><span class="text-sm font-semibold">攻擊威力 = (攻擊力 + 自己攻擊點數) - 對方防禦點數</span>
+    </div></p>
+    <p><div class="p-3">
+        <label class="inline text-2xl">偷盜效果</label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="stealhp" class="text-base">吸血率：
+            <input id="stealhp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="steal_hp" min="0" max="1" step="0.1" value="0">
+            <br><span class="text-sm font-semibold">自己補血點數 = 對方受傷點數 * 吸血率</span>
+        </label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="stealmp" class="text-base">回魔率：
+            <input id="stealmp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="steal_mp" min="0" max="1" step="0.1" value="0">
+            <br><span class="text-sm font-semibold">自己補魔點數 = 自己消耗的魔力 * 回魔率</span>
+        </label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="stealgp" class="text-base">扒竊率：
+            <input id="stealgp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+             type="number" name="steal_gp" min="0" max="0.45" step="0.05" value="0">
+            <br><span class="text-sm font-semibold">自己獲得的金幣 = 對方失去的金幣 = 對方的金幣數 * 扒竊率</span>
+        </label>
+    </div></p>
+    <p><div class="p-3">
+        <label class="inline text-2xl">狀態變化</label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="status" class="text-base">解除狀態：</label>
+        <select id="status" name="status" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+            <option value="">無</option>
+            <option value="DEAD">死亡</option>
+            <option value="COMA">昏迷</option>
+        </select>
+        <br><span class="text-sm font-semibold">在計算增減效益前執行</span>
+    </div></p>
+    <p><div class="p-3">
+        <label for="inspire" class="text-base">賦予狀態：</label>
+        <select id="inspire" name="inspire" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+            <option value="">無</option>
+            <option value="protect">護衛</option>
+            <option value="apportion">分散傷害</option>
+            <option value="reflex">傷害反射</option>
+            <option value="hatred">集中仇恨</option>
+            <option value="invincible">無敵狀態</option>
+            <option value="throw">投擲道具</option>
+        </select>
+        <br><span class="text-sm font-semibold">在計算增減效益前執行</span>
+    </div></p>
+    <p><div class="p-3">
+        <label class="inline text-2xl">對象的增減效益：</label>
+        <br><span class="font-semibold">對死亡者無效，魔力變化對昏迷者無效</span>
+    </div></p>
+    <p><div class="p-3">
+        <label for="effecthp" class="text-base">血量變化：
+            <input id="effecthp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="effect_hp" min="-50" max=50" step="0.1" value="0">
+            <br><span class="text-sm font-semibold">大於 0 = 治療，小於 0 = 受傷，整數為加或扣HP，小數為 MAX HP 的比率</span>
+        </label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="effectmp" class="text-base">魔力變化：
+            <input id="effectmp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="effect_mp" min="-50" max="50" step="0.1" value="0">
+            <br><span class="text-sm font-semibold">大於 0 = 回復精神，小於 0 = 精神傷害，整數為加或扣MP，小數為 MAX MP 的比率</span>
+        </label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="effectap" class="text-base">攻擊力變化：
+            <input id="effectap" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="effect_ap" min="-50" max="50" step="0.1" value="0">
+            <br><span class="text-sm font-semibold">大於 0 = 回復疲勞，小於 0 = 疲勞傷害，整數為加或扣AP，小數為 AP 的比率</span>
+        </label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="effectdp" class="text-base">防禦力變化：
+            <input id="effectdp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="effect_dp" min="-50" max="50" step="0.1" value="0">
+            <br><span class="text-sm font-semibold">大於 0 = 皮膚強化，小於 0 = 裝甲侵蝕，整數為加或扣DP，小數為 DP 的比率</span>
+        </label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="effectsp" class="text-base">敏捷力變化：
+            <input id="effectsp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="effect_sp" min="-50" max="50" step="0.1" value="0">
+            <br><span class="text-sm font-semibold">大於 0 = 重力減輕，小於 0 = 重力加倍，整數為加或扣SP，小數為 SP 的比率</span>
+        </label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="times" class="text-base">持續時間：
+            <input id="times" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="effect_times" min="0" max="480" step="10" value="0">
+            <br><span class="text-sm font-semibold">攻擊力、防禦力、敏捷力變化的持續時間，以分鐘為單位</span>
+        </label>
+    </div></p>
+    <p><div class="p-3">
+        <label class="inline text-2xl">技能使用回饋</label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="earnxp" class="text-base">獲取經驗：</label>
+        <input id="earnxp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+            type="number" name="earn_xp" min="0" max="100" step="1" value="0">
+    </div></p>
+    <p><div class="p-3">
+        <label for="earngp" class="text-base">獲取金幣：</label>
+        <input id="earngp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+            type="number" name="earn_gp" min="0" max="100" step="1" value="0">
+    </div></p>
+    <p class="p-6">
+        <div class="text-xl">
+            <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                新增
+            </button>
+        </div>
+    </p>
+</form>
+@endsection

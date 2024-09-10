@@ -33,6 +33,7 @@
             </div>
         </div>
     </div>
+    <div class="mb-32"></div>
 </main>
 <script nonce="selfhost">
     @auth

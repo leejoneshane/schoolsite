@@ -18,8 +18,7 @@ class GameSkill extends Model
         'object',      //作用對象：self 自己，party 隊伍，partner 指定的我方角色，target 指定的敵方角色，all 敵方隊伍中的所有角色
         'hit_rate',    //命中率，擊中判斷為 命中率＋（自己敏捷力-對方敏捷力）/100
         'cost_mp',     //消耗行動力
-        'level',       //可使用此技能之等級
-        'ap',          //此技能的攻擊百分率，攻擊威力計算為 (ap + 自己攻擊力) * 2 - 對方防禦力 = 對方實際受傷點數
+        'ap',          //此技能的攻擊百分率，攻擊威力計算為 (ap + 自己攻擊力) - 對方防禦力 = 對方實際受傷點數
         'steal_hp',    //此技能的吸血百分率，計算方式為 對方實際受傷點數 * steal_hp = 我方補血點數
         'steal_mp',    //此技能的吸魔百分率，計算方式為 cost_mp * steal_mp = 我方補魔點數
         'steal_gp',    //此技能的偷盜百分率，計算方式為 對方的 gp * steal_gp = 對方失去的金幣(我方獲得金幣數)
@@ -30,7 +29,7 @@ class GameSkill extends Model
         'effect_sp',   //對作用對象的敏捷力增減效益
         'effect_times',//技能持續時間，以分鐘為單位
         'status',      //解除目標狀態，DEAD 死亡狀態復活，COMA 昏迷狀態回神
-        'inspire',     //賦予目標狀態，invincible 無敵，reflex 反射傷害，hatred 仇恨（集中傷害），apportion 分攤傷害
+        'inspire',     //賦予目標狀態，invincible 無敵，reflex 反射傷害，protect 保護，protected 被保護，hatred 仇恨（集中傷害），apportion 分攤傷害
         'earn_xp',     //施展技能後，可獲得經驗值
         'earn_gp',     //施展技能後，可獲得金幣
     ];
@@ -46,9 +45,20 @@ class GameSkill extends Model
         return $this->belongsToMany('App\Models\GameClass', 'game_classes_skills', 'skill_id', 'class_id')->withPivot(['level']);
     }
 
+    //篩選指定職業的技能，靜態函式
+    public static function forClass($class_id)
+    {
+        return GameSkill::select('game_skills.*')
+            ->leftjoin('game_classes_skills', 'game_skills.id', '=', 'game_classes_skills.skill_id')
+            ->where('game_classes_skills.class_id', $class_id)
+            ->orderBy('game_classes_skills.level')
+            ->get();
+    }
+
     //施展指定的技能，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗
     public function cast($self, $uuids)
     {
+        $hatred = $protect = false;
         if (is_string($uuids)) $uuids[] = $uuids;
         if ($this->object == 'self') $uuids = [$self];
         $targets = null;
@@ -57,18 +67,27 @@ class GameSkill extends Model
             $character = GameCharacter::find($uuid);
             $targets[] = $character;
             if ($character->buff == 'hatred') {
-                $targets = [ $character ];
+                $hatred = $character;
                 $character->buff = null;
+                $character->save();
                 break;
             }
+            if ($character->buff == 'protect') {
+                $protect = $character;
+                $character->buff = null;
+                $character->save();
+            }
         }
+        if ($hatred) $targets = [ $hatred ];
         foreach ($targets as $t) {
             if ($t->buff == 'invincible') {
                 $t->buff = null;
                 $t->save();
                 $result[$t->uuid] = MISS;
-            } else {
-                $result[$t->uuid] = $this->effect($me, $t);
+            } elseif ($t->buff == 'protected') {
+                $t->buff = null;
+                $t->save();
+                $result[$t->uuid] = $this->effect($me, $protect);
             }
         }
         $me->mp -= $this->cost_mp;
@@ -93,7 +112,7 @@ class GameSkill extends Model
         if ($hit >= 1 || rand() < $hit) {
             if ($this->ap > 0) {
                 if ($character->buff == 'reflex') {
-                    $damage = ($this->ap + $character->final_ap) * 2 - $me->final_dp;
+                    $damage = ($this->ap + $character->final_ap) - $me->final_dp;
                     if ($damage > 0) {
                         $me->hp -= $damage;
                         if ($this->steal_hp > 0) {
@@ -101,7 +120,7 @@ class GameSkill extends Model
                         }
                     }
                 } else {
-                    $damage = ($this->ap + $me->final_ap) * 2 - $character->final_dp;
+                    $damage = $this->ap * 2 + ($me->final_ap - $character->final_dp);
                     if ($damage > 0) {
                         if ($character->buff == 'apportion') {
                             $count = $character->party->members->count();
@@ -120,6 +139,13 @@ class GameSkill extends Model
                         }
                     }
                 }
+            }
+            if ($this->inspire) {
+                if ($this->inspire == 'protect') {
+                    $me->buff = 'protect';
+                    $character->buff = 'protected';
+                }
+                $character->buff = $this->inspire;
             }
             if ($this->effect_hp != 0) {
                 if ($character->status == 'DEAD') {
@@ -155,17 +181,17 @@ class GameSkill extends Model
                     }
                 }
             }
-            if ($this->effect_ap != 0) {
+            if ($this->effect_ap != 0 && $character->status != 'DEAD') {
                 $character->temp_effect = 'ap';
                 $character->effect_value = $this->effect_ap;
                 $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
             }
-            if ($this->effect_dp != 0) {
+            if ($this->effect_dp != 0 && $character->status != 'DEAD') {
                 $character->temp_effect = 'dp';
                 $character->effect_value = $this->effect_dp;
                 $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
             }
-            if ($this->effect_sp != 0) {
+            if ($this->effect_sp != 0 && $character->status != 'DEAD') {
                 $character->temp_effect = 'sp';
                 $character->effect_value = $this->effect_sp;
                 $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
