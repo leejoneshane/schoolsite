@@ -64,7 +64,7 @@
     <td class="p-3">
         <label for="file" class="text-base">據點圖片：</label>
         <input id="file" type="file" name="file" accept=".jpg,.jpeg,.png" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
-        <br><span class="text-sm font-semibold">支援 .JPG .JPEG .PNG 圖片格式</span>
+        <br><span class="text-sm font-semibold">支援 .JPG .JPEG .PNG 圖片格式，解析度 800x600</span>
     </td>
     <p class="p-6">
         <div class="text-xl">
