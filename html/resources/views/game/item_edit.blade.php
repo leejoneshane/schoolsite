@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-class" action="{{ route('game.item_add') }}" method="POST" enctype="multipart/form-data">
+<form id="add-class" action="{{ route('game.item_edit', [ 'item_id' => $item->id ]) }}" method="POST" enctype="multipart/form-data">
     @csrf
     <p><div class="p-3">
         <label for="name" class="text-base">道具名稱：</label>

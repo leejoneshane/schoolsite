@@ -418,7 +418,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('classes/edit/{class_id}', 'App\Http\Controllers\Game\ClassController@update')->name('game.class_edit');
     Route::post('classes/remove/{class_id}', 'App\Http\Controllers\Game\ClassController@remove')->name('game.class_remove');
     Route::get('classes/images/{class_id?}', 'App\Http\Controllers\Game\ClassController@gallery')->name('game.class_images');
-    Route::get('classes/scan', 'App\Http\Controllers\Game\ClassController@scan')->name('game.class_scanimages');
+    Route::get('classes/scan/{class_id}', 'App\Http\Controllers\Game\ClassController@scan')->name('game.class_scanimages');
     Route::post('classes/upload/{class_id}', 'App\Http\Controllers\Game\ClassController@store')->name('game.class_upload');
     Route::post('classes/destroy', 'App\Http\Controllers\Game\ClassController@destroy')->name('game.class_removeimage');
     Route::get('classes/faces/{class_id?}', 'App\Http\Controllers\Game\ClassController@faces')->name('game.class_faces');

@@ -158,7 +158,7 @@ class ClassController extends Controller
         $data = [];
         $files = scandir(public_path(GAME_CHARACTER));
         foreach ($files as $file) {
-            if ($file !='.' && $file !='..' && in_array($file, $tableImages)) {       
+            if ($file !='.' && $file !='..' && in_array($file, $tableImages)) {
                 $obj['name'] = $file;
                 $file_path = public_path(GAME_CHARACTER.$file);
                 $obj['size'] = filesize($file_path);
@@ -172,12 +172,14 @@ class ClassController extends Controller
     public function destroy(Request $request)
     {
         $filename = $request->get('filename');
-        $object = GameImage::where('file_name', $filename);
+        $object = GameImage::where('file_name', $filename)->first();
         DB::table('game_classes_images')->where('image_id', $object->id)->delete();
         $path = public_path(GAME_CHARACTER.$object->file_name);
         if (file_exists($path)) unlink($path);
-        $path2 = public_path(GAME_FACE.$object->thumbnail);
-        if (file_exists($path2)) unlink($path2);
+        if ($object->thumbnail) {
+            $path2 = public_path(GAME_FACE.$object->thumbnail);
+            if (file_exists($path2)) unlink($path2);    
+        }
         $object->delete();
         return response()->json(['success' => $filename]);
     }

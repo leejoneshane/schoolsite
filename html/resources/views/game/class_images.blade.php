@@ -24,12 +24,12 @@
     </p>
 </div>
 <div class="dropzone-container">
-    <div class="dropzone dz-clickable" id="image-upload">
+    <form action="{{ route('game.class_upload', [ 'class_id' => $pro->id ]) }}" class="dropzone dz-clickable" id="image-upload" method="POST" enctype="multipart/form-data">
         <div class="dz-message">
             <h1 class="text-5xl">職業圖片管理</h1>
             <p>請點擊上傳圖片檔，或將圖片檔拖曳到這裡上傳。</p>
         </div>
-    </div>
+    </form>
 </div>
 <script nonce="selfhost">
 Dropzone.options.imageUpload = {
