@@ -120,11 +120,12 @@ class ClassController extends Controller
 
     public function gallery($class_id)
     {
+        $classes = GameClass::all();
         $pro = GameClass::find($class_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            return view('game.class_images', [ 'pro' => $pro ]);
+            return view('game.class_images', [ 'pro' => $pro, 'classes' => $classes ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -183,11 +184,12 @@ class ClassController extends Controller
 
     public function faces($class_id)
     {
+        $classes = GameClass::all();
         $pro = GameClass::find($class_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            return view('game.class_faces', [ 'pro' => $pro ]);
+            return view('game.class_faces', [ 'pro' => $pro, 'classes' => $classes ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -212,6 +214,7 @@ class ClassController extends Controller
 
     public function skills($class_id)
     {
+        $classes = GameClass::all();
         $pro = GameClass::find($class_id);
         $exclude = $pro->skills->map(function ($sk) {
             return $sk->id;
@@ -220,7 +223,7 @@ class ClassController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            return view('game.class_skills', [ 'pro' => $pro, 'skills' => $skills, 'exclude' => $exclude ]);
+            return view('game.class_skills', [ 'pro' => $pro, 'classes' => $classes, 'skills' => $skills ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }

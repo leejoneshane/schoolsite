@@ -87,7 +87,7 @@
                   <a href="{{ route('game.skills') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">技能</a>
                 </li>
                 <li>
-                  <a href="/game/fundations" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">據點</a>
+                  <a href="{{ route('game.bases') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">據點</a>
                 </li>
                 <li>
                   <a href="/game/furnitures" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">家具</a>

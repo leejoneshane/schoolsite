@@ -38,22 +38,22 @@ class GameImage extends Model
 
     public function path()
     {
-        if ($this->avaliable) return public_path(GAME_CHARACTER.$this->file_name);
+        return public_path(GAME_CHARACTER.$this->file_name);
     }
 
     public function thumb_path()
     {
-        if ($this->avaliable) return public_path(GAME_FACE.$this->file_name);
+        return public_path(GAME_FACE.$this->file_name);
     }
 
     public function url()
     {
-        if ($this->avaliable) return asset(GAME_CHARACTER.$this->file_name);
+        return asset(GAME_CHARACTER.$this->file_name);
     }
 
     public function thumb_url()
     {
-        if ($this->avaliable) return asset(GAME_FACE.$this->file_name);
+        return asset(GAME_FACE.$this->file_name);
     }
 
     public function base64()

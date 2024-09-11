@@ -37,7 +37,7 @@
         </div>
     </div>
 </div>
-<script>
+<script nonce="selfhost">
         var $modal = $('#modal');
         var image = document.getElementById('image');
         var cropper;

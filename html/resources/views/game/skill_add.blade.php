@@ -153,6 +153,11 @@
         <input id="earngp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
             type="number" name="earn_gp" min="0" max="100" step="1" value="0">
     </div></p>
+    <td class="p-3">
+        <label for="file" class="text-base">特效動畫：</label>
+        <input id="file" type="file" name="file" accept=".gif" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+        <br><span class="text-sm font-semibold">僅支援 .GIF 圖片格式</span>
+    </td>
     <p class="p-6">
         <div class="text-xl">
             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">

@@ -63,6 +63,13 @@ class SkillController extends Controller
                 'earn_xp' => $request->input('earn_xp'),
                 'earn_gp' => $request->input('earn_gp'),
             ]);
+            if ($request->hasFile('file')) {
+                $image = $request->file('file');
+                $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path(GAME_SKILL), $fileName);
+                $sk->gif_file = $fileName;
+                $sk->save();
+            }
             Watchdog::watch($request, '新增遊戲技能：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('game.skills')->with('success', '已新增技能：'.$request->input('name').'！');
         } else {
@@ -106,6 +113,12 @@ class SkillController extends Controller
             $sk->inspire = $request->input('inspire');
             $sk->earn_xp = $request->input('earn_xp');
             $sk->earn_gp = $request->input('earn_gp');
+            if ($request->hasFile('file')) {
+                $image = $request->file('file');
+                $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
+                $image->move(public_path(GAME_SKILL), $fileName);
+                $sk->gif_file = $fileName;
+            }
             $sk->save();
             Watchdog::watch($request, '修改遊戲技能：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('game.skills')->with('success', '已修改技能：'.$request->input('name').'！');

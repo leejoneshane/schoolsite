@@ -7,7 +7,17 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<h1 class="text-xl">職業名稱：{{ $pro->name }}</h1>
+<h1 class="text-xl">職業名稱：
+    <select class="form-select w-48 m-0 px-3 py-2 text-xl font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+    name="profession" onchange="
+        var section = this.value;
+        window.location.replace('{{ route('game.class_skills') }}/' + section );
+    ">
+        @foreach ($classes as $c)
+        <option {{ ($c->id == $pro->id) ? 'selected' : ''}} value="{{ $c->id }}">{{ $c->name }}</option>
+        @endforeach
+    </select>
+</h1>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
         請先到<a href="{{ route('game.skills') }}">技能頁面</a>新增技能，然後再將技能分配給職業。

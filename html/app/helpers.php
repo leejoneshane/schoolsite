@@ -3,9 +3,12 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Jenssegers\Agent\Facades\Agent;
 
-const GAME_BASE = 'images/game/'; //遊戲圖片路徑
 const GAME_CHARACTER = 'images/game/characters/'; //遊戲職業圖片路徑
 const GAME_FACE = 'images/game/faces/'; //遊戲臉孔圖片路徑
+const GAME_SKILL = 'images/game/skills/'; //遊戲技能圖片路徑
+const GAME_BASE = 'images/game/bases/'; //遊戲據點圖片路徑
+const GAME_FURNITURE = 'images/game/furnitures/'; //遊戲家具圖片路徑
+const GAME_ITEM = 'images/game/items/'; //遊戲道具圖片路徑
 const NOT_ENOUGH_GP = 1; //無法購買
 const ALREADY_EXISTS = 2; //不可重複購買
 const NOT_EXISTS = 3; //物品已用完
