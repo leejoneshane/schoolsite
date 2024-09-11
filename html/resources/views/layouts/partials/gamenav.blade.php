@@ -90,10 +90,10 @@
                   <a href="{{ route('game.bases') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">據點</a>
                 </li>
                 <li>
-                  <a href="/game/furnitures" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">家具</a>
+                  <a href="{{ route('game.furnitures') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">家具</a>
                 </li>
                 <li>
-                  <a href="/game/items" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">道具</a>
+                  <a href="{{ route('game.items') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">道具</a>
                 </li>
               </ul>
           </div>

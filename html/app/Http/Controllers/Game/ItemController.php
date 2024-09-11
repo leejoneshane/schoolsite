@@ -7,19 +7,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\User;
-use App\Models\GameBase;
+use App\Models\GameItem;
 use App\Models\Watchdog;
 
-class BaseController extends Controller
+class ItemController extends Controller
 {
 
     public function index()
     {
         $user = User::find(Auth::user()->id);
-        $bases = GameBase::all();
+        $items = GameItem::all();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            return view('game.bases', ['bases' => $bases]);
+            return view('game.items', ['items' => $items]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -30,7 +30,7 @@ class BaseController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            return view('game.base_add');
+            return view('game.item_add');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -41,14 +41,18 @@ class BaseController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $sk = GameBase::create([
+            $sk = GameItem::create([
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
+                'object' => $request->input('object'),
+                'hit_rate' => $request->input('hit_rate'),
                 'hp' => $request->input('hp'),
                 'mp' => $request->input('mp'),
                 'ap' => $request->input('ap'),
                 'dp' => $request->input('dp'),
                 'sp' => $request->input('sp'),
+                'status' => $request->input('status'),
+                'gp' => $request->input('gp'),
             ]);
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
@@ -57,38 +61,42 @@ class BaseController extends Controller
                 $sk->image_file = $fileName;
                 $sk->save();
             }
-            Watchdog::watch($request, '新增遊戲據點：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('game.bases')->with('success', '已新增據點：'.$request->input('name').'！');
+            Watchdog::watch($request, '新增遊戲道具：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            return redirect()->route('game.items')->with('success', '已新增道具：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function edit($base_id)
+    public function edit($item_id)
     {
-        $base = GameBase::find($base_id);
+        $item = GameItem::find($item_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            return view('game.base_edit', [ 'base' => $base ]);
+            return view('game.item_edit', [ 'item' => $item ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function update(Request $request, $base_id)
+    public function update(Request $request, $item_id)
     {
-        $sk = GameBase::find($base_id);
+        $sk = GameItem::find($item_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk->name = $request->input('name');
             $sk->description = $request->input('description');
+            $sk->object = $request->input('object');
+            $sk->hit_rate = $request->input('hit_rate');
             $sk->hp = $request->input('hp');
             $sk->mp = $request->input('mp');
             $sk->ap = $request->input('ap');
             $sk->dp = $request->input('dp');
             $sk->sp = $request->input('sp');
+            $sk->status = $request->input('status');
+            $sk->gp = $request->input('gp');
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
                 $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
@@ -96,22 +104,22 @@ class BaseController extends Controller
                 $sk->image_file = $fileName;
             }
             $sk->save();
-            Watchdog::watch($request, '修改遊戲據點：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('game.bases')->with('success', '已修改據點：'.$request->input('name').'！');
+            Watchdog::watch($request, '修改遊戲道具：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            return redirect()->route('game.items')->with('success', '已修改道具：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function remove(Request $request, $base_id)
+    public function remove(Request $request, $item_id)
     {
-        $sk = GameBase::find($base_id);
+        $sk = GameItem::find($item_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            Watchdog::watch($request, '刪除遊戲據點：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            Watchdog::watch($request, '刪除遊戲道具：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $sk->delete();
-            return redirect()->route('game.bases')->with('success', '已刪除據點：'.$request->input('name').'！');
+            return redirect()->route('game.items')->with('success', '已刪除道具：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }

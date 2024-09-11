@@ -437,4 +437,16 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('bases/edit/{base_id}', 'App\Http\Controllers\Game\BaseController@edit');
     Route::post('bases/edit/{base_id}', 'App\Http\Controllers\Game\BaseController@update')->name('game.base_edit');
     Route::post('bases/remove/{base_id}', 'App\Http\Controllers\Game\BaseController@remove')->name('game.base_remove');
+    Route::get('furnitures', 'App\Http\Controllers\Game\FurnitureController@index')->name('game.furnitures');
+    Route::get('furnitures/add', 'App\Http\Controllers\Game\FurnitureController@add');
+    Route::post('furnitures/add', 'App\Http\Controllers\Game\FurnitureController@insert')->name('game.furniture_add');
+    Route::get('furnitures/edit/{furniture_id}', 'App\Http\Controllers\Game\FurnitureController@edit');
+    Route::post('furnitures/edit/{furniture_id}', 'App\Http\Controllers\Game\FurnitureController@update')->name('game.furniture_edit');
+    Route::post('furnitures/remove/{furniture_id}', 'App\Http\Controllers\Game\FurnitureController@remove')->name('game.furniture_remove');
+    Route::get('items', 'App\Http\Controllers\Game\ItemController@index')->name('game.items');
+    Route::get('items/add', 'App\Http\Controllers\Game\ItemController@add');
+    Route::post('items/add', 'App\Http\Controllers\Game\ItemController@insert')->name('game.item_add');
+    Route::get('items/edit/{item_id}', 'App\Http\Controllers\Game\ItemController@edit');
+    Route::post('items/edit/{item_id}', 'App\Http\Controllers\Game\ItemController@update')->name('game.item_edit');
+    Route::post('items/remove/{item_id}', 'App\Http\Controllers\Game\ItemController@remove')->name('game.item_remove');
 });

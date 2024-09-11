@@ -1,4 +1,4 @@
-<main class="w-full">
+<main class="w-full mb-32">
     <div class="m-5 relative bg-white dark:bg-gray-700 text-black dark:text-gray-200">
         <div>
             @if (isset($error) || session()->has('error'))
@@ -33,7 +33,6 @@
             </div>
         </div>
     </div>
-    <div class="mb-32"></div>
 </main>
 <script nonce="selfhost">
     @auth

@@ -7,19 +7,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use App\Models\User;
-use App\Models\GameBase;
+use App\Models\GameFurniture;
 use App\Models\Watchdog;
 
-class BaseController extends Controller
+class FurnitureController extends Controller
 {
 
     public function index()
     {
         $user = User::find(Auth::user()->id);
-        $bases = GameBase::all();
+        $furnitures = GameFurniture::all()->sortBy('gp');
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            return view('game.bases', ['bases' => $bases]);
+            return view('game.furnitures', ['furnitures' => $furnitures]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -30,7 +30,7 @@ class BaseController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            return view('game.base_add');
+            return view('game.furniture_add');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -41,7 +41,7 @@ class BaseController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $sk = GameBase::create([
+            $sk = GameFurniture::create([
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
                 'hp' => $request->input('hp'),
@@ -49,16 +49,17 @@ class BaseController extends Controller
                 'ap' => $request->input('ap'),
                 'dp' => $request->input('dp'),
                 'sp' => $request->input('sp'),
+                'gp' => $request->input('gp'),
             ]);
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
                 $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path(GAME_BASE), $fileName);
+                $image->move(public_path(GAME_FURNITURE), $fileName);
                 $sk->image_file = $fileName;
                 $sk->save();
             }
-            Watchdog::watch($request, '新增遊戲據點：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('game.bases')->with('success', '已新增據點：'.$request->input('name').'！');
+            Watchdog::watch($request, '新增遊戲家具：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            return redirect()->route('game.furnitures')->with('success', '已新增家具：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -66,19 +67,19 @@ class BaseController extends Controller
 
     public function edit($base_id)
     {
-        $base = GameBase::find($base_id);
+        $furniture = GameFurniture::find($base_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            return view('game.base_edit', [ 'base' => $base ]);
+            return view('game.furniture_edit', [ 'furniture' => $furniture ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function update(Request $request, $base_id)
+    public function update(Request $request, $furniture_id)
     {
-        $sk = GameBase::find($base_id);
+        $sk = GameFurniture::find($furniture_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
@@ -89,29 +90,30 @@ class BaseController extends Controller
             $sk->ap = $request->input('ap');
             $sk->dp = $request->input('dp');
             $sk->sp = $request->input('sp');
+            $sk->gp = $request->input('gp');
             if ($request->hasFile('file')) {
                 $image = $request->file('file');
                 $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
-                $image->move(public_path(GAME_BASE), $fileName);
+                $image->move(public_path(GAME_FURNITURE), $fileName);
                 $sk->image_file = $fileName;
             }
             $sk->save();
-            Watchdog::watch($request, '修改遊戲據點：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('game.bases')->with('success', '已修改據點：'.$request->input('name').'！');
+            Watchdog::watch($request, '修改遊戲家具：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            return redirect()->route('game.furnitures')->with('success', '已修改家具：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function remove(Request $request, $base_id)
+    public function remove(Request $request, $furniture_id)
     {
-        $sk = GameBase::find($base_id);
+        $sk = GameFurniture::find($furniture_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            Watchdog::watch($request, '刪除遊戲據點：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            Watchdog::watch($request, '刪除遊戲家具：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $sk->delete();
-            return redirect()->route('game.bases')->with('success', '已刪除據點：'.$request->input('name').'！');
+            return redirect()->route('game.furnitures')->with('success', '已刪除家具：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
