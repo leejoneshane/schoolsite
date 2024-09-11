@@ -26,6 +26,26 @@ class GameItem extends Model
         'gp',        //此道具的購買價格
     ];
 
+    public function image_path()
+    {
+        return public_path(GAME_ITEM.$this->image_file);
+    }
+
+    public function image_url()
+    {
+        return asset(GAME_ITEM.$this->image_file);
+    }
+
+    public function image_base64()
+    {
+        return base64_encode(file_get_contents($this->image_path()));
+    }
+
+    public function image_avaliable()
+    {
+        return file_exists($this->image_path());
+    }
+
     //使用指定的道具，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗
     public function cast($uuids)
     {

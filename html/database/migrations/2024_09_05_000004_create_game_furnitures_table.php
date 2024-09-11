@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('game_furnitures', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('description');
             $table->string('image_file')->nullable();
             $table->float('hp');
             $table->float('mp');
