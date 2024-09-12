@@ -411,6 +411,9 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
 // 遊戲平台
 Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('/', 'App\Http\Controllers\Game\GameController@index')->name('game');
+    Route::post('lock', 'App\Http\Controllers\Game\GameController@lock')->name('game.lock');
+    Route::get('roster/{room_id}', 'App\Http\Controllers\Game\GameController@classroom')->name('game.room');
+    Route::post('absent', 'App\Http\Controllers\Game\GameController@absent')->name('game.absent');
     Route::get('classes', 'App\Http\Controllers\Game\ClassController@index')->name('game.classes');
     Route::get('classes/add', 'App\Http\Controllers\Game\ClassController@add');
     Route::post('classes/add', 'App\Http\Controllers\Game\ClassController@insert')->name('game.class_add');

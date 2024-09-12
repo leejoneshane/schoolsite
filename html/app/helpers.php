@@ -19,6 +19,8 @@ const LESS_MP = 7; //行動力不足
 const DEAD = 8; //角色已死亡
 const COMA = 9; //角色已昏迷
 const NORMAL = 10; //角色正常
+const LOCKED = 100; //班級鎖定成功
+const UNLOCKED = 101; //班級解鎖成功
 
 
 function watch(Request $request, $action) {

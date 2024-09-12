@@ -13,9 +13,8 @@ class GameParty extends Model
     //以下屬性可以批次寫入
     protected $fillable = [
         'classroom_id',
-        'uuid',        //建立教師
-        'name',        //公會名稱
         'group_no',    //第幾組
+        'name',        //公會名稱
         'description', //公會口號
         'base_id',     //公會基地的編號
         'effect_hp',   //據點對隊伍成員在健康上面的增益，2 則加 2 點，0.5 則加 50%
@@ -29,7 +28,6 @@ class GameParty extends Model
     //以下屬性隱藏不顯示（toJson 時忽略）
     protected $hidden = [
         'classroom',
-        'teacher',
         'members',
         'foundation',
         'furnitures',
@@ -41,10 +39,16 @@ class GameParty extends Model
         'furnitures' => 'array',
     ];
 
-    //篩選指定的班級和教師
-    public static function findBy($classroom, $uuid)
+    //篩選指定的班級
+    public static function findByClass($classroom)
     {
-        return GameParty::where('classroom_id', $classroom)->where('uuid', $uuid)->get();
+        return GameParty::where('classroom_id', $classroom)->get();
+    }
+
+    //篩選指定的班級
+    public static function findByGroup($classroom, $group)
+    {
+        return GameParty::where('classroom_id', $classroom)->where('group_no', $group)->first();
     }
 
     //取得此隊伍的所屬班級
@@ -53,16 +57,10 @@ class GameParty extends Model
         return $this->hasOne('App\Models\Classroom');
     }
 
-    //取得此隊伍的指導教師
-    public function teacher()
-    {
-        return $this->hasOne('App\Models\Teacher', 'uuid', 'uuid');
-    }
-
     //取得此隊伍的所有角色
     public function members()
     {
-        return $this->hasMany('App\Models\GameCharacter', 'party_id', 'id');
+        return $this->hasMany('App\Models\GameCharacter', 'party_id', 'id')->orderBy('seat');
     }
 
     //取得此隊伍的基地

@@ -7,6 +7,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 use App\View\Components\Menus;
 use App\View\Components\Messager;
+use App\View\Components\GameNav;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
@@ -38,6 +39,8 @@ class AppServiceProvider extends ServiceProvider
         Blade::component('messager', Messager::class);
 
         Blade::component('menus', Menus::class);
+
+        Blade::component('navigation', GameNav::class);
 
         Blade::if('admin', function () {
             return auth()->user() && auth()->user()->is_admin;

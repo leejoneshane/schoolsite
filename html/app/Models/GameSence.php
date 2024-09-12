@@ -36,10 +36,19 @@ class GameSence extends Model
             'uuid' => $uuid,
             'ended_at' => $endtime,
         ]);
+        return LOCKED;
+    }
+
+    //鎖定指定班級，靜態函式
+    public static function unlock($classroom_id, $uuid)
+    {
+        GameSence::where('ended_at', '<', Carbon::now())->delete();
+        GameSence::where('classroom_id', $classroom_id)->where('uuid', $uuid)->delete();
+        return UNLOCKED;
     }
 
     //取得指定班級鎖定者，靜態函式
-    public static function get_teacher($classroom_id)
+    public static function lockBy($classroom_id)
     {
         GameSence::where('ended_at', '<', Carbon::now())->delete();
         if (GameSence::is_lock($classroom_id)) {

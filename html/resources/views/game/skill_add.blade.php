@@ -101,14 +101,14 @@
     <p><div class="p-3">
         <label for="effecthp" class="text-base">血量變化：
             <input id="effecthp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="number" name="effect_hp" min="-50" max=50" step="0.1" value="0">
+                type="number" name="effect_hp" min="-200" max=200" step="0.1" value="0">
             <br><span class="text-sm font-semibold">大於 0 = 治療，小於 0 = 受傷，整數為加或扣HP，小數為 MAX HP 的比率</span>
         </label>
     </div></p>
     <p><div class="p-3">
         <label for="effectmp" class="text-base">魔力變化：
             <input id="effectmp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="number" name="effect_mp" min="-50" max="50" step="0.1" value="0">
+                type="number" name="effect_mp" min="-200" max="200" step="0.1" value="0">
             <br><span class="text-sm font-semibold">大於 0 = 回復精神，小於 0 = 精神傷害，整數為加或扣MP，小數為 MAX MP 的比率</span>
         </label>
     </div></p>
@@ -146,12 +146,12 @@
     <p><div class="p-3">
         <label for="earnxp" class="text-base">獲取經驗：</label>
         <input id="earnxp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-            type="number" name="earn_xp" min="0" max="100" step="1" value="0">
+            type="number" name="earn_xp" min="0" max="500" step="1" value="0">
     </div></p>
     <p><div class="p-3">
         <label for="earngp" class="text-base">獲取金幣：</label>
         <input id="earngp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-            type="number" name="earn_gp" min="0" max="100" step="1" value="0">
+            type="number" name="earn_gp" min="0" max="500" step="1" value="0">
     </div></p>
     <td class="p-3">
         <label for="file" class="text-base">特效動畫：</label>

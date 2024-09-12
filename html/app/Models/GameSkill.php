@@ -143,8 +143,8 @@ class GameSkill extends Model
                     $damage = $this->ap * 2 + ($me->final_ap - $character->final_dp);
                     if ($damage > 0) {
                         if ($character->buff == 'apportion') {
-                            $count = $character->party->members->count();
-                            foreach ($character->party->members as $c) {
+                            $count = $character->teammate->count();
+                            foreach ($character->teammate as $c) {
                                 $c->hp -= intval($damage / $count);
                             }
                             if ($this->steal_hp > 0) {

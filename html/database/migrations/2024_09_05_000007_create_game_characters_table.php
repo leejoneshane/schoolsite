@@ -15,24 +15,27 @@ return new class extends Migration
     {
         Schema::create('game_characters', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
-            $table->string('title');
-            $table->integer('image_id');
             $table->integer('party_id')->nullable();
-            $table->integer('class_id');
+            $table->integer('seat');
+            $table->string('title')->nullable();
+            $table->string('name');
+            $table->integer('class_id')->nullable();
+            $table->integer('image_id')->nullable();
             $table->integer('level')->default(1);
-            $table->integer('xp');
-            $table->integer('max_hp');
-            $table->float('hp');
-            $table->integer('max_mp');
-            $table->float('mp');
-            $table->integer('ap');
-            $table->integer('dp');
-            $table->integer('sp');
-            $table->integer('gp');
-            $table->enum('temp_effect', ['ap', 'dp', 'sp']);
+            $table->integer('xp')->default(0);
+            $table->integer('max_hp')->default(0);
+            $table->float('hp')->default(0);
+            $table->integer('max_mp')->default(0);
+            $table->float('mp')->default(0);
+            $table->integer('ap')->default(0);
+            $table->integer('dp')->default(0);
+            $table->integer('sp')->default(0);
+            $table->integer('gp')->default(0);
+            $table->string('temp_effect')->nullable();
             $table->float('effect_value')->default(0);
             $table->timestamp('effect_timeout')->nullable();
             $table->string('buff')->nullable();
+            $table->boolean('absent')->default(0);
             $table->timestamps();
         });
     }

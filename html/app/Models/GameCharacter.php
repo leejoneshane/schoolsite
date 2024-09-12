@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\GameSence;
+use App\Models\Classroom;
 
 class GameCharacter extends Model
 {
@@ -51,10 +52,12 @@ class GameCharacter extends Model
     //以下屬性可以批次寫入
     protected $fillable = [
         'uuid',       //學生uuid
-        'title',      //角色稱號
-        'image_id',   //圖片編號
         'party_id',   //公會編號
+        'seat',       //學生座號
+        'title',      //角色稱號
+        'name',       //角色姓名
         'class_id',   //職業代號
+        'image_id',   //圖片編號
         'level',      //目前等級
         'xp',         //累計經驗值
         'max_hp',     //最大健康值
@@ -69,6 +72,7 @@ class GameCharacter extends Model
         'effect_value',  //增益值，2 則加 2 點，0.5 則加 50%，-1 為扣 1 點，-0.3 為扣 30%
         'effect_timeout',//增益結束時間，timestamp
         'buff',          //特殊效果
+        'absent',        //缺席
     ];
 
     //以下為透過程式動態產生之屬性
@@ -85,9 +89,33 @@ class GameCharacter extends Model
         'profession',
         'party',
         'teammate',
-        'configure',
         'items',
     ];
+
+    //篩選指定的班級的所有角色
+    public static function findByClass($classroom)
+    {
+        return GameCharacter::where('classroom_id', $classroom)->get();
+    }
+
+    //篩選指定的公會的所有角色
+    public static function findByParty($party)
+    {
+        return GameCharacter::where('party_id', $party)->get();
+    }
+
+    //篩選指定的公會的所有已出席角色
+    public static function withoutAbsent($party)
+    {
+        return GameCharacter::where('party_id', $party)->where('absent', 0)->get();
+    }
+
+    //篩選無公會角色
+    public static function findNoParty($classroom)
+    {
+        $room = Classroom::find($classroom);
+        return GameCharacter::whereIn('uuid', $room->uuids())->whereNull('party_id')->get();
+    }
 
     //提供 AP 計算結果
     public function getFinalApAttribute()
@@ -253,10 +281,10 @@ class GameCharacter extends Model
         return $this->belongsTo('App\Models\GameParty', 'id', 'party_id');
     }
 
-    //取得此角色的夥伴
+    //取得此角色的已出席夥伴
     public function teammate()
     {
-        return $this->belongsTo('App\Models\GameCharacter', 'party_id', 'party_id');
+        return $this->belongsTo('App\Models\GameCharacter', 'party_id', 'party_id')->where('absent', 0);
     }
 
     //取得此角色可使用技能
@@ -295,6 +323,7 @@ class GameCharacter extends Model
         if ($this->hp > $this->max_hp) $this->hp = $this->max_hp;
         if ($this->mp < 1) $this->mp = 0;
         if ($this->mp > $this->max_mp) $this->mp = $this->max_mp;
+        $this->absent = false;
         $this->save();
     }
 

@@ -16,11 +16,10 @@ return new class extends Migration
         Schema::create('game_parties', function (Blueprint $table) {
             $table->id();
             $table->integer('classroom_id');
-            $table->uuid('uuid');
             $table->integer('group_no');
-            $table->string('name');
-            $table->string('description');
-            $table->integer('base_id');
+            $table->string('name')->nullable();
+            $table->string('description')->nullable();
+            $table->integer('base_id')->nullable();
             $table->float('effect_hp')->default(0);
             $table->float('effect_mp')->default(0);
             $table->float('effect_ap')->default(0);

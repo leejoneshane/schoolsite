@@ -2,7 +2,7 @@
     <div class="overflow-y-auto">
         @teacher
         <div class="py-2 text-center">
-            <a href="/game/roster"><i class="text-2xl fa-solid fa-clipboard-user" title="點名表"></i></a>
+            <a href="{{ route('game.room', [ 'room_id' => session('gameclass') ]) }}"><i class="text-2xl fa-solid fa-clipboard-user" title="點名表"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="/game/pickup"><i class="text-2xl fa-solid fa-dice-d20" title="抽籤機"></i></a>
