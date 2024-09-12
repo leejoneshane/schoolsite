@@ -258,9 +258,9 @@ class GameCharacter extends Model
                     $this->sp++;
                 }
             }
-            $this->hp = $this->max_hp;
-            $this->save();
         }
+        $this->hp = $this->max_hp;
+        $this->save();
     }
 
     //取得此角色的學生物件

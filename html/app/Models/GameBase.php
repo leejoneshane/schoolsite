@@ -38,7 +38,7 @@ class GameBase extends Model
 
     public function image_avaliable()
     {
-        return file_exists($this->image_path());
+        return $this->image_file && file_exists($this->image_path());
     }
 
 }

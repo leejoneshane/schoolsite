@@ -45,9 +45,7 @@
         <td class="p-2">{{ $s->seat }}</td>
         <td class="p-2">{{ $s->name }}</td>
         <td class="p-2">
-            <form action="{{ route('game.absent', [ 'uuid' => $s->uuid ]) }}">
-                <input type="checkbox" id="absent{{ $s->id }}" name="absent" value="yes" class="peer"{{ ($s->absent) ? ' checked' : '' }} onchange="this.form.submit();">
-            </form>
+            <input type="checkbox" id="absent_{{ $s->uuid }}" name="absent" value="yes" class="peer"{{ ($s->absent) ? ' checked' : '' }} onchange="absent('{{ $s->uuid }}');">
         </td>
         <td class="p-2">{{ ($s->profession) ? $s->profession->name : '無'}}</td>
         <td class="p-2">{{ $s->xp }}</td>
@@ -57,7 +55,7 @@
         <td class="p-2">{{ $s->gp }}</td>
         <td class="p-2">
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" title="編輯"
-                href="{{ route('students.edit', ['uuid' => $s->uuid]) }}">
+                href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
                 <i class="fa-solid fa-user-pen"></i>
             </a>
         </td>
@@ -108,9 +106,7 @@
         <td class="p-2">{{ $s->student->seat }}</td>
         <td class="p-2">{{ $s->name }}</td>
         <td class="p-2">
-            <form action="{{ route('game.absent', [ 'uuid' => $s->uuid ]) }}">
-                <input type="checkbox" id="absent{{ $s->id }}" name="absent" value="yes" class="peer"{{ ($s->absent) ? ' checked' : '' }} onchange="this.form.submit();">
-            </form>
+            <input type="checkbox" id="absent{{ $s->uuid }}" name="absent" value="yes" class="peer"{{ ($s->absent) ? ' checked' : '' }} onchange="absent('{{ $s->uuid }}');">
         </td>
         <td class="p-2">{{ ($s->profession) ? $s->profession->name : '無'}}</td>
         <td class="p-2">{{ $s->xp }}</td>
@@ -120,7 +116,7 @@
         <td class="p-2">{{ $s->gp }}</td>
         <td class="p-2">
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" title="編輯"
-                href="{{ route('students.edit', ['uuid' => $s->uuid]) }}">
+                href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
                 <i class="fa-solid fa-user-pen"></i>
             </a>
         </td>
@@ -128,4 +124,24 @@
     @endforeach
 </table>
 @endif
+<script nonce="selfhost">
+    function absent(uuid) {
+        if (document.getElementById('absent_' + uuid).checked) {
+            var value = 'yes';
+        } else {
+            var value = 'no';
+        }
+        window.axios.post('{{ route('game.absent') }}', {
+            uuid: uuid,
+            absent: value,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).catch( (response) => {
+            console.log(response.data);
+        });
+    }
+</script>
 @endsection
