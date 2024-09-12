@@ -1,12 +1,12 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="bg-gray-100 p-4 sm:p-8 md:p-16">
+<div class="bg-white sm:p-4 md:p-8">
     <div class="container mx-auto">
         <div class="grid grid-cols-1 gap-4">
         @foreach ($classes as $cls)
         <a href="{{ route('game.room', [ 'room_id' => $cls->id ]) }}"
-            class="relative flex h-full flex-col rounded-md border border-gray-200 bg-white p-2.5 hover:border-gray-400 hover:bg-teal-100 sm:rounded-lg sm:p-5">
+            class="relative flex h-full flex-col rounded-md border border-gray-200 bg-gray-100 p-2.5 hover:border-gray-400 hover:bg-teal-100 sm:rounded-lg sm:p-5">
             <span class="text-md mb-0 font-semibold text-gray-900 hover:text-black sm:mb-1.5 sm:text-xl">
                 {{ $cls->name }}
             </span>

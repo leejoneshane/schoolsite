@@ -1,7 +1,7 @@
 <header class="relative p-2">
     <div class="z-20 relative mx-auto">
         <h1 class="text-center font-mono font-bold text-5xl">
-            <span class="italic text-teal-200 hover:text-white" href="/">課堂大冒險</span>
+            <span class="italic text-teal-200">課堂大冒險</span>
         </h1>
     </div>
     <div class="absolute inset-0 h-auto z-10">
