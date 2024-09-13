@@ -22,6 +22,7 @@ class GameController extends Controller
     public function index(Request $request)
     {
         $request->session()->forget('gameclass');
+        $request->session()->forget('viewclass');
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Teacher') {
             $teacher = Teacher::find($user->uuid);
@@ -64,7 +65,13 @@ class GameController extends Controller
 
     public function classroom(Request $request, $room_id)
     {
-        $request->session()->put('gameclass', $room_id);
+        if (locked($room_id)) {
+            $request->session()->put('gameclass', $room_id);
+            $request->session()->forget('viewclass');
+        } else {
+            $request->session()->forget('gameclass');
+            $request->session()->put('viewclass', $room_id);
+        }
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         $teacher = Teacher::find(Auth::user()->uuid);

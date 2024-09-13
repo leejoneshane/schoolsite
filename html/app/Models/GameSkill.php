@@ -72,7 +72,7 @@ class GameSkill extends Model
 
     public function image_avaliable()
     {
-        return file_exists($this->image_path());
+        return $this->gif_file && file_exists($this->image_path());
     }
 
     //施展指定的技能，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗

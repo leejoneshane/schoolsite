@@ -1,7 +1,7 @@
 <?php
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use Jenssegers\Agent\Facades\Agent;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 const GAME_CHARACTER = 'images/game/characters/'; //遊戲職業圖片路徑
 const GAME_FACE = 'images/game/faces/'; //遊戲臉孔圖片路徑
@@ -22,24 +22,26 @@ const NORMAL = 10; //角色正常
 const LOCKED = 100; //班級鎖定成功
 const UNLOCKED = 101; //班級解鎖成功
 
+function locked($room_id = null) {
+    if ($room_id) {
+        return DB::table('game_sences')
+            ->where('classroom_id', $room_id)
+            ->where('uuid', Auth::user()->uuid)
+            ->where('ended_at', '>', Carbon::now())
+            ->exists();
+    } else {
+        return DB::table('game_sences')
+            ->where('classroom_id', Auth::user()->profile->class_id)
+            ->where('ended_at', '>', Carbon::now())
+            ->exists();
+    }
+}
 
-function watch(Request $request, $action) {
-    $device = Agent::device();
-    $platform = Agent::platform();
-    $platform .= Agent::version($platform);
-    $browser = Agent::browser();
-    $browser .= Agent::version($browser);
-    $robot = Agent::robot();
-    DB::table('watchdog')->insert([
-        'uuid' => $request->user()->uuid,
-        'ip' => $request->header('x-real-ip'),
-        'device' => $device,
-        'platform' => $platform,
-        'browser' => $browser,
-        'robot' => $robot,
-        'url' => $request->fullUrl(),
-        'action' => $action,
-    ]);
+function is_lock($room_id) {
+    return DB::table('game_sences')
+        ->where('classroom_id', $room_id)
+        ->where('ended_at', '<', Carbon::now())
+        ->exists();
 }
 
 function section_name($section = null) {

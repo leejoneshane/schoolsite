@@ -89,6 +89,9 @@
     </div></p>
     <td class="p-3">
         <label for="file" class="text-base">道具圖片：</label>
+        @if ($item->image_avaliable())
+        <img src="{{ $item->image_url() }}" />
+        @endif
         <input id="file" type="file" name="file" accept=".png,.gif" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
         <br><span class="text-sm font-semibold">支援 .PNG .GIF 圖片格式，須去背，解析度請勿大於 300x300</span>
     </td>

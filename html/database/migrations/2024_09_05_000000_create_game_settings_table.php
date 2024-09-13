@@ -19,6 +19,7 @@ return new class extends Migration
             $table->enum('type', ['positive', 'negative']);
             $table->float('effect_xp')->default(0);
             $table->float('effect_gp')->default(0);
+            $table->integer('effect_item')->nullable();
             $table->float('effect_hp')->default(0);
             $table->float('effect_mp')->default(0);
             $table->timestamps();

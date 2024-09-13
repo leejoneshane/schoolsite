@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\GameFurniture;
 use App\Models\Watchdog;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class FurnitureController extends Controller
 {
@@ -55,6 +57,11 @@ class FurnitureController extends Controller
                 $image = $request->file('file');
                 $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path(GAME_FURNITURE), $fileName);
+                $path = public_path(GAME_FURNITURE.$fileName);
+                $manager = new ImageManager(new Driver());
+                $file = $manager->read($path);
+                $file->scale(width: 300);
+                $file->toPng()->save($path);
                 $sk->image_file = $fileName;
                 $sk->save();
             }
@@ -95,6 +102,14 @@ class FurnitureController extends Controller
                 $image = $request->file('file');
                 $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path(GAME_FURNITURE), $fileName);
+                $path = public_path(GAME_FURNITURE.$fileName);
+                $manager = new ImageManager(new Driver());
+                $file = $manager->read($path);
+                $file->scale(width: 300);
+                $file->toPng()->save($path);
+                if ($sk->image_avaliable()) {
+                    unlink($sk->image_path());
+                }
                 $sk->image_file = $fileName;
             }
             $sk->save();

@@ -12,6 +12,8 @@ use App\Models\GameClass;
 use App\Models\GameImage;
 use App\Models\GameSkill;
 use App\Models\Watchdog;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class ClassController extends Controller
 {
@@ -140,6 +142,11 @@ class ClassController extends Controller
             $image = $request->file('file');
             $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path(GAME_CHARACTER), $fileName);
+            $path = public_path(GAME_CHARACTER.$fileName);
+            $manager = new ImageManager(new Driver());
+            $file = $manager->read($path);
+            $file->scale(width: 300);
+            $file->toPng()->save($path);
             $new = GameImage::create([ 'file_name' => $fileName ]);
             DB::table('game_classes_images')->insert([
                 'class_id' => $class_id,
@@ -206,7 +213,15 @@ class ClassController extends Controller
             $image = $request->file('face');
             $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
             $image->move(public_path(GAME_FACE), $fileName);
+            $path = public_path(GAME_CHARACTER.$fileName);
+            $manager = new ImageManager(new Driver());
+            $file = $manager->read($path);
+            $file->scale(width: 80);
+            $file->toPng()->save($path);
             $new = GameImage::find($image_id);
+            if ($new->thumb_avaliable()) {
+                unlink($new->thumb_path());
+            }
             $new->thumbnail = $fileName;
             $new->save();
             $pro = $new->profession;
@@ -242,7 +257,7 @@ class ClassController extends Controller
                 ],[
                     'level' => $request->input('level')[$i],
                 ]);
-            }    
+            }
         }
         return redirect()->back()->with('success', '此職業的技能設定已經儲存！');
     }

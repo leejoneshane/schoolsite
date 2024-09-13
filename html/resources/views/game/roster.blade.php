@@ -37,7 +37,7 @@
             GP
         </th>
         <th scope="col" class="p-2">
-            管理
+            編輯
         </th>
     </tr>
     @foreach ($p->members as $s)
@@ -45,7 +45,9 @@
         <td class="p-2">{{ $s->seat }}</td>
         <td class="p-2">{{ $s->name }}</td>
         <td class="p-2">
-            <input type="checkbox" id="absent_{{ $s->uuid }}" name="absent" value="yes" class="peer"{{ ($s->absent) ? ' checked' : '' }} onchange="absent('{{ $s->uuid }}');">
+            @locked($room->id)
+            <input type="checkbox" id="absent{{ $s->uuid }}" name="absent" value="yes" class="peer"{{ ($s->absent) ? ' checked' : '' }} onchange="absent('{{ $s->uuid }}');">
+            @endlocked
         </td>
         <td class="p-2">{{ ($s->profession) ? $s->profession->name : '無'}}</td>
         <td class="p-2">{{ $s->xp }}</td>
@@ -54,10 +56,11 @@
         <td class="p-2">{{ $s->mp }}/{{ $s->max_mp }}</td>
         <td class="p-2">{{ $s->gp }}</td>
         <td class="p-2">
-            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" title="編輯"
-                href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
+            @locked($room->id)
+            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
                 <i class="fa-solid fa-user-pen"></i>
             </a>
+            @endlocked
         </td>
     </tr>
     @endforeach
@@ -98,7 +101,7 @@
             GP
         </th>
         <th scope="col" class="p-2">
-            管理
+            編輯
         </th>
     </tr>
     @foreach ($partyless as $s)
@@ -106,7 +109,9 @@
         <td class="p-2">{{ $s->student->seat }}</td>
         <td class="p-2">{{ $s->name }}</td>
         <td class="p-2">
+            @locked($room->id)
             <input type="checkbox" id="absent{{ $s->uuid }}" name="absent" value="yes" class="peer"{{ ($s->absent) ? ' checked' : '' }} onchange="absent('{{ $s->uuid }}');">
+            @endlocked
         </td>
         <td class="p-2">{{ ($s->profession) ? $s->profession->name : '無'}}</td>
         <td class="p-2">{{ $s->xp }}</td>
@@ -115,10 +120,11 @@
         <td class="p-2">{{ $s->mp }}/{{ $s->max_mp }}</td>
         <td class="p-2">{{ $s->gp }}</td>
         <td class="p-2">
-            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" title="編輯"
-                href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
+            @locked($room->id)
+            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
                 <i class="fa-solid fa-user-pen"></i>
             </a>
+            @endlocked
         </td>
     </tr>
     @endforeach

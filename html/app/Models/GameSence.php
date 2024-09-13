@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class GameSence extends Model
@@ -48,14 +49,23 @@ class GameSence extends Model
     }
 
     //取得指定班級鎖定者，靜態函式
-    public static function lockBy($classroom_id)
+    public static function lockBy($room_id)
     {
         GameSence::where('ended_at', '<', Carbon::now())->delete();
-        if (GameSence::is_lock($classroom_id)) {
-            return GameSence::find($classroom_id)->teacher;
+        if (GameSence::is_lock($room_id)) {
+            return GameSence::find($room_id)->teacher;
         } else {
             return null;
         }
+    }
+
+    //取得指定班級鎖定者，靜態函式
+    public static function lockByMe($room_id)
+    {
+        GameSence::where('ended_at', '<', Carbon::now())->delete();
+        return GameSence::where('classroom_id', $room_id)
+            ->where('uuid', Auth::user()->uuid)
+            ->exists();
     }
 
     //取得鎖定此遊戲的教師

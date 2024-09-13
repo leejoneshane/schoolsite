@@ -9,6 +9,8 @@ use Illuminate\Support\Str;
 use App\Models\User;
 use App\Models\GameBase;
 use App\Models\Watchdog;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class BaseController extends Controller
 {
@@ -54,6 +56,14 @@ class BaseController extends Controller
                 $image = $request->file('file');
                 $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path(GAME_BASE), $fileName);
+                $path = public_path(GAME_BASE.$fileName);
+                $manager = new ImageManager(new Driver());
+                $file = $manager->read($path);
+                $file->scale(width: 800);
+                $file->toPng()->save($path);
+                if ($sk->image_avaliable()) {
+                    unlink($sk->image_path());
+                }
                 $sk->image_file = $fileName;
                 $sk->save();
             }
@@ -93,6 +103,11 @@ class BaseController extends Controller
                 $image = $request->file('file');
                 $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path(GAME_BASE), $fileName);
+                $path = public_path(GAME_BASE.$fileName);
+                $manager = new ImageManager(new Driver());
+                $file = $manager->read($path);
+                $file->scale(width: 800);
+                $file->toPng()->save($path);
                 $sk->image_file = $fileName;
             }
             $sk->save();

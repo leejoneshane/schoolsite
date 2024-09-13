@@ -1,12 +1,13 @@
 <aside class="w-16 h-auto bg-teal-500" aria-label="Sidebar">
     <div class="overflow-y-auto">
+        @teacher
         <div class="py-2 text-center">
             <a href="{{ route('game') }}"><i class="text-2xl fa-solid fa-house" title="首頁"></i></a>
         </div>
-        @teacher
         <div class="py-2 text-center">
             <a href="{{ session('gameclass') ? route('game.room', [ 'room_id' => session('gameclass') ]) : '#' }}"><i class="text-2xl fa-solid fa-clipboard-user" title="點名表"></i></a>
         </div>
+        @locked(session('gameclass'))
         <div class="py-2 text-center">
             <a href="/game/pickup"><i class="text-2xl fa-solid fa-dice-d20" title="抽籤機"></i></a>
         </div>
@@ -19,6 +20,7 @@
         <div class="py-2 text-center">
             <a href="/game/map"><i class="text-2xl fa-solid fa-map-location-dot" title="批改學習單"></i></a>
         </div>
+        @endlocked
         @endteacher
         @student
         <div class="py-2 text-center">
@@ -30,6 +32,7 @@
         <div class="py-2 text-center">
             <a href="/game/box"><i class="text-2xl fa-solid fa-toolbox" title="道具箱"></i></a>
         </div>
+        @locked
         <div class="py-2 text-center">
             <a href="/game/arena"><i class="text-2xl fa-brands fa-battle-net" title="競技場"></i></a>
         </div>
@@ -39,6 +42,7 @@
         <div class="py-2 text-center">
             <a href="/game/travel"><i class="text-2xl fa-solid fa-map-location-dot" title="冒險地圖"></i></a>
         </div>
+        @endlocked
         <div class="py-2 text-center">
             <a href="/game/work_shop"><i class="text-2xl fa-solid fa-couch" title="矮人工坊"></i></a>
         </div>

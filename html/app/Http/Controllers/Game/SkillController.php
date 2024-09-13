@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\GameSkill;
 use App\Models\Watchdog;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class SkillController extends Controller
 {
@@ -67,6 +69,11 @@ class SkillController extends Controller
                 $image = $request->file('file');
                 $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path(GAME_SKILL), $fileName);
+                $path = public_path(GAME_SKILL.$fileName);
+                $manager = new ImageManager(new Driver());
+                $file = $manager->read($path);
+                $file->scale(width: 300);
+                $file->toGif()->save($path);
                 $sk->gif_file = $fileName;
                 $sk->save();
             }
@@ -117,6 +124,14 @@ class SkillController extends Controller
                 $image = $request->file('file');
                 $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path(GAME_SKILL), $fileName);
+                $path = public_path(GAME_SKILL.$fileName);
+                $manager = new ImageManager(new Driver());
+                $file = $manager->read($path);
+                $file->scale(width: 300);
+                $file->toGif()->save($path);
+                if ($sk->image_avaliable()) {
+                    unlink($sk->image_path());
+                }
                 $sk->gif_file = $fileName;
             }
             $sk->save();

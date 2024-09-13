@@ -25,7 +25,7 @@
 </div>
 <div class="dropzone-container">
     <form action="{{ route('game.class_upload', [ 'class_id' => $pro->id ]) }}" class="dropzone dz-clickable" id="image-upload" method="POST" enctype="multipart/form-data">
-        <div class="dz-message">
+        <div id="message" class="dz-message">
             <h1 class="text-5xl">職業圖片管理</h1>
             <p>請點擊上傳圖片檔，或將圖片檔拖曳到這裡上傳。</p>
         </div>
@@ -57,13 +57,8 @@ Dropzone.options.imageUpload = {
     removedfile: function(file) {
         if (this.options.dictRemoveFile) {
             return Dropzone.confirm("您確定要刪除此圖片嗎？", function() {
-                if (file.previewElement.id != "") {
-                    var name = file.previewElement.id;
-                } else {
-                    var name = file.name;
-                }
                 window.axios.post('{{ route('game.class_removeimage') }}', {
-                    filename: name,
+                    filename: file.name,
                 }, {
                     headers: {
                         'Content-Type': 'application/json;charset=utf-8',
@@ -74,8 +69,7 @@ Dropzone.options.imageUpload = {
                 }).catch( (response) => {
                     console.log(response.data);
                 });
-                var fileRef;
-                return (fileRef = file.previewElement) != null ? fileRef.parentNode.removeChild(file.previewElement) : void 0;
+                document.getElementById('image-upload').removeChild(file.previewElement);
             });
         }
     },

@@ -454,4 +454,12 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('items/edit/{item_id}', 'App\Http\Controllers\Game\ItemController@edit');
     Route::post('items/edit/{item_id}', 'App\Http\Controllers\Game\ItemController@update')->name('game.item_edit');
     Route::post('items/remove/{item_id}', 'App\Http\Controllers\Game\ItemController@remove')->name('game.item_remove');
+    Route::get('rules/positive', 'App\Http\Controllers\Game\SettingsController@positive')->name('game.positive');
+    Route::get('rules/negative', 'App\Http\Controllers\Game\SettingsController@negative')->name('game.negative');
+    Route::get('rules/positive/add', 'App\Http\Controllers\Game\SettingsController@positive_add')->name('game.positive_add');
+    Route::get('rules/negative/add', 'App\Http\Controllers\Game\SettingsController@negative_add')->name('game.negative_add');
+    Route::post('rules/save', 'App\Http\Controllers\Game\SettingsController@insert')->name('game.rule_insert');
+    Route::get('rules/edit/{rule_id}', 'App\Http\Controllers\Game\SettingsController@edit');
+    Route::post('rules/edit/{rule_id}', 'App\Http\Controllers\Game\SettingsController@update')->name('game.rule_edit');
+    Route::post('rules/remove/{rule_id}', 'App\Http\Controllers\Game\SettingsController@remove')->name('game.rule_remove');
 });

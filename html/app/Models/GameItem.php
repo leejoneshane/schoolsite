@@ -43,7 +43,7 @@ class GameItem extends Model
 
     public function image_avaliable()
     {
-        return file_exists($this->image_path());
+        return $this->image_file && file_exists($this->image_path());
     }
 
     //使用指定的道具，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗

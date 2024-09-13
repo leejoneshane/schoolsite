@@ -40,8 +40,6 @@ class AppServiceProvider extends ServiceProvider
 
         Blade::component('menus', Menus::class);
 
-        Blade::component('navigation', GameNav::class);
-
         Blade::if('admin', function () {
             return auth()->user() && auth()->user()->is_admin;
         });
@@ -61,6 +59,10 @@ class AppServiceProvider extends ServiceProvider
 
         Blade::if('desktop', function () {
             return !((new Agent)->isMobile());
+        });
+
+        Blade::if('locked', function ($room_id = null) {
+            return locked($room_id);
         });
 
         Queue::before(function (JobProcessing $event) {

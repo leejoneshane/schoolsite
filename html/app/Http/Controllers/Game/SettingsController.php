@@ -1,0 +1,139 @@
+<?php
+
+namespace App\Http\Controllers\Game;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Models\GameSetting;
+use App\Models\GameItem;
+use App\Models\Watchdog;
+
+class SettingsController extends Controller
+{
+
+    public function positive()
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('game.manager');
+        if ($user->is_admin || $manager) {
+            $rules = GameSetting::positive($user->uuid);
+            return view('game.positive', ['rules' => $rules]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function negative()
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('game.manager');
+        if ($user->is_admin || $manager) {
+            $rules = GameSetting::negative($user->uuid);
+            return view('game.negative', ['rules' => $rules]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function positive_add()
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('game.manager');
+        if ($user->is_admin || $manager) {
+            $items = GameItem::all();
+            return view('game.positive_add', [ 'items' => $items]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function negative_add()
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('game.manager');
+        if ($user->is_admin || $manager) {
+            return view('game.negative_add');
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function insert(Request $request)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('game.manager');
+        if ($user->is_admin || $manager) {
+            $sk = GameSetting::create([
+                'uuid' => $user->uuid,
+                'description' => $request->input('description'),
+                'type' => 'positive',
+            ]);
+            if ($request->has('xp')) $sk->effect_xp = $request->input('xp');
+            if ($request->has('gp')) $sk->effect_gp = $request->input('gp');
+            if ($request->has('item')) $sk->effect_item = $request->input('item');
+            if ($request->has('hp')) $sk->effect_hp = $request->input('hp');
+            if ($request->has('mp')) $sk->effect_mp = $request->input('mp');
+            $sk->save();
+            Watchdog::watch($request, '新增遊戲教室條款：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            return redirect()->route('game.bases')->with('success', '已新增條款：'.$request->input('description').'！');
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function edit($rule_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('game.manager');
+        if ($user->is_admin || $manager) {
+            $rule = GameSetting::find($rule_id);
+            if ($rule->type == 'positive') {
+                $items = GameItem::all();
+                return view('game.positive_edit', [ 'rule' => $rule, 'items' => $items ]);
+            } else {
+                return view('game.negative_edit', [ 'rule' => $rule ]);
+            }
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function update(Request $request, $rule_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('game.manager');
+        if ($user->is_admin || $manager) {
+            $sk = GameSetting::find($rule_id);
+            $sk->uuid = $user->uuid;
+            if ($request->has('description')) $sk->description = $request->input('description');
+            if ($request->has('xp')) $sk->effect_xp = $request->input('xp');
+            if ($request->has('gp')) $sk->effect_gp = $request->input('gp');
+            if ($request->has('item')) $sk->effect_item = $request->input('item');
+            if ($request->has('hp')) $sk->effect_hp = $request->input('hp');
+            if ($request->has('mp')) $sk->effect_mp = $request->input('mp');
+            $sk->save();
+            Watchdog::watch($request, '修改遊戲教室條款：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            return redirect()->route('game.bases')->with('success', '已修改條款：'.$request->input('description').'！');
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function remove(Request $request, $rule_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('game.manager');
+        if ($user->is_admin || $manager) {
+            $sk = GameSetting::find($rule_id);
+            $description = $sk->description;
+            Watchdog::watch($request, '刪除遊戲教室條款：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            $sk->delete();
+            return redirect()->route('game.bases')->with('success', '已刪除條款：'.$description.'！');
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+}

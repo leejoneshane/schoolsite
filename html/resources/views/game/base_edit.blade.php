@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-class" action="{{ route('game.base_edit', [ 'base_id' => $base->id ]) }}" method="POST">
+<form id="add-class" action="{{ route('game.base_edit', [ 'base_id' => $base->id ]) }}" method="POST" enctype="multipart/form-data">
     @csrf
     <p><div class="p-3">
         <label for="name" class="text-base">據點名稱：</label>
