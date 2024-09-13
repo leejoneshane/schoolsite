@@ -59,8 +59,10 @@ class BaseController extends Controller
                 $path = public_path(GAME_BASE.$fileName);
                 $manager = new ImageManager(new Driver());
                 $file = $manager->read($path);
-                $file->scale(width: 800);
-                $file->toPng()->save($path);
+                if ($file->width() > 800) {
+                    $file->scale(width: 800);
+                    $file->toPng()->save($path);    
+                }    
                 if ($sk->image_avaliable()) {
                     unlink($sk->image_path());
                 }

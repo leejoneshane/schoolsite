@@ -127,8 +127,10 @@ class SkillController extends Controller
                 $path = public_path(GAME_SKILL.$fileName);
                 $manager = new ImageManager(new Driver());
                 $file = $manager->read($path);
-                $file->scale(width: 300);
-                $file->toGif()->save($path);
+                if ($file->width() > 300) {
+                    $file->scale(width: 300);
+                    $file->toPng()->save($path);    
+                }
                 if ($sk->image_avaliable()) {
                     unlink($sk->image_path());
                 }

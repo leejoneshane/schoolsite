@@ -8,9 +8,6 @@ class GameSetting extends Model
 {
 
     protected $table = 'game_settings';
-    protected $primaryKey = 'uuid';
-    public $incrementing = false;
-    protected $keyType = 'string';
 
     //以下屬性可以批次寫入
     protected $fillable = [

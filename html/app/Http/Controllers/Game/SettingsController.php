@@ -77,7 +77,11 @@ class SettingsController extends Controller
             if ($request->has('mp')) $sk->effect_mp = $request->input('mp');
             $sk->save();
             Watchdog::watch($request, '新增遊戲教室條款：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('game.bases')->with('success', '已新增條款：'.$request->input('description').'！');
+            if ($sk->type == 'positive') {
+                return redirect()->route('game.positive')->with('success', '已新增條款：'.$request->input('description').'！');
+            } else {
+                return redirect()->route('game.negative')->with('success', '已新增條款：'.$request->input('description').'！');
+            }
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -115,7 +119,11 @@ class SettingsController extends Controller
             if ($request->has('mp')) $sk->effect_mp = $request->input('mp');
             $sk->save();
             Watchdog::watch($request, '修改遊戲教室條款：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('game.bases')->with('success', '已修改條款：'.$request->input('description').'！');
+            if ($sk->type == 'positive') {
+                return redirect()->route('game.positive')->with('success', '已修改條款：'.$request->input('description').'！');
+            } else {
+                return redirect()->route('game.negative')->with('success', '已修改條款：'.$request->input('description').'！');
+            }
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }

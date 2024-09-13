@@ -145,8 +145,10 @@ class ClassController extends Controller
             $path = public_path(GAME_CHARACTER.$fileName);
             $manager = new ImageManager(new Driver());
             $file = $manager->read($path);
-            $file->scale(width: 300);
-            $file->toPng()->save($path);
+            if ($file->width() > 300) {
+                $file->scale(width: 300);
+                $file->toPng()->save($path);    
+            }
             $new = GameImage::create([ 'file_name' => $fileName ]);
             DB::table('game_classes_images')->insert([
                 'class_id' => $class_id,
@@ -216,7 +218,10 @@ class ClassController extends Controller
             $path = public_path(GAME_CHARACTER.$fileName);
             $manager = new ImageManager(new Driver());
             $file = $manager->read($path);
-            $file->scale(width: 80);
+            if ($file->width() > 80) {
+                $file->resize(80, 80);
+                $file->toPng()->save($path);    
+            }
             $file->toPng()->save($path);
             $new = GameImage::find($image_id);
             if ($new->thumb_avaliable()) {

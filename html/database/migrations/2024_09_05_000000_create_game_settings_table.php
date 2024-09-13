@@ -14,7 +14,8 @@ return new class extends Migration
     public function up()
     {
         Schema::create('game_settings', function (Blueprint $table) {
-            $table->uuid('uuid')->primary();
+            $table->id();
+            $table->uuid('uuid');
             $table->string('description');
             $table->enum('type', ['positive', 'negative']);
             $table->float('effect_xp')->default(0);

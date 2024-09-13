@@ -34,7 +34,7 @@
         <td class="p-2">{{ $sk->effect_item ? $sk->item->name : '' }}</td>
         <td class="p-2">
             <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
-                href="{{ route('game.rule_edit', ['skill_id' => $sk->id]) }}" title="編輯">
+                href="{{ route('game.rule_edit', ['rule_id' => $sk->id]) }}" title="編輯">
                 <i class="fa-solid fa-pen"></i>
             </a>
             <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
