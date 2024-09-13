@@ -41,10 +41,8 @@ class OrganizeVacancy extends Model
         'special' => 'boolean',
     ];
 
-    //建立職缺物件模型時，若省略學年，則預設為目前學年
-    public static function boot()
+    protected static function booted()
     {
-        parent::boot();
         self::creating(function($model) {
             if (empty($model->syear)) {
                 $model->syear = current_year();

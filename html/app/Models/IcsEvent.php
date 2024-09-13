@@ -73,9 +73,8 @@ class IcsEvent extends Model implements Subscribeable
     ];
 
     //建立、更新、刪除行事曆事件時，同步到 Gsuite 中
-    public static function boot()
+    protected static function booted()
     {
-        parent::boot();
         static::created(function($item)
         {
             $cal = new GCAL;

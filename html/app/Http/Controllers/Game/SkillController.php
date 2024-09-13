@@ -19,9 +19,9 @@ class SkillController extends Controller
     public function index()
     {
         $user = User::find(Auth::user()->id);
-        $skills = GameSkill::all()->sortBy('object');
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $skills = GameSkill::all()->sortBy('object');
             return view('game.skills', ['skills' => $skills]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
@@ -86,10 +86,10 @@ class SkillController extends Controller
 
     public function edit($skill_id)
     {
-        $skill = GameSkill::find($skill_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $skill = GameSkill::find($skill_id);
             return view('game.skill_edit', [ 'skill' => $skill ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
@@ -98,10 +98,10 @@ class SkillController extends Controller
 
     public function update(Request $request, $skill_id)
     {
-        $sk = GameSkill::find($skill_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $sk = GameSkill::find($skill_id);
             $sk->name = $request->input('name');
             $sk->description = $request->input('description');
             $sk->hit_rate = $request->input('hit_rate');
@@ -146,11 +146,14 @@ class SkillController extends Controller
 
     public function remove(Request $request, $skill_id)
     {
-        $sk = GameSkill::find($skill_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $sk = GameSkill::find($skill_id);
             Watchdog::watch($request, '刪除遊戲技能：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            if ($sk->image_avaliable()) {
+                unlink($sk->image_path());
+            }
             $sk->delete();
             DB::table('game_classes_skills')->where('skill_id', $skill_id)->delete();
             return redirect()->route('game.skills')->with('success', '已刪除技能：'.$request->input('name').'！');

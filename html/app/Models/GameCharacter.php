@@ -207,9 +207,8 @@ class GameCharacter extends Model
     }
 
     //更新角色時，自動進行升級
-    public static function boot()
+    protected static function booted()
     {
-        parent::boot();
         static::updated(function($item)
         {
             if ($item->xp > 0) {

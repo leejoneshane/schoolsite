@@ -20,6 +20,20 @@ class GameImage extends Model
         'profession',
     ];
 
+    //更新角色時，自動進行升級
+    protected static function booted()
+    {
+        self::deleting(function($item)
+        {
+            if ($item->avaliable()) {
+                unlink($item->path());
+            }
+            if ($item->thumb_avaliable()) {
+                unlink($item->thumb_path());
+            }
+        });
+    }
+
     //取得此圖片的職業
     public function profession()
     {
@@ -36,6 +50,16 @@ class GameImage extends Model
             ->get();
     }
 
+    //篩選指定怪物的圖片，靜態函式
+    public static function forMonster($monster_id)
+    {
+        return GameImage::select('game_images.*')
+            ->leftjoin('game_monsters_images', 'game_images.id', '=', 'game_monsters_images.image_id')
+            ->where('game_monsters_images.monster_id', $monster_id)
+            ->orderBy('game_images.id')
+            ->get();
+    }
+
     public function path()
     {
         return public_path(GAME_CHARACTER.$this->file_name);
@@ -43,7 +67,7 @@ class GameImage extends Model
 
     public function thumb_path()
     {
-        return public_path(GAME_FACE.$this->file_name);
+        return public_path(GAME_FACE.$this->thumbnail);
     }
 
     public function url()
@@ -53,7 +77,7 @@ class GameImage extends Model
 
     public function thumb_url()
     {
-        return asset(GAME_FACE.$this->file_name);
+        return asset(GAME_FACE.$this->thumbnail);
     }
 
     public function base64()
@@ -68,12 +92,12 @@ class GameImage extends Model
 
     public function avaliable()
     {
-        return file_exists($this->path());
+        return $this->file_name && file_exists($this->path());
     }
 
     public function thumb_avaliable()
     {
-        return file_exists($this->thumb_path());
+        return $this->thumbnail && file_exists($this->thumb_path());
     }
 
 }

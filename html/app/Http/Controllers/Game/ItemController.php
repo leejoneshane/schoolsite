@@ -18,9 +18,9 @@ class ItemController extends Controller
     public function index()
     {
         $user = User::find(Auth::user()->id);
-        $items = GameItem::all();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $items = GameItem::all();
             return view('game.items', ['items' => $items]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
@@ -77,10 +77,10 @@ class ItemController extends Controller
 
     public function edit($item_id)
     {
-        $item = GameItem::find($item_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $item = GameItem::find($item_id);
             return view('game.item_edit', [ 'item' => $item ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
@@ -89,10 +89,10 @@ class ItemController extends Controller
 
     public function update(Request $request, $item_id)
     {
-        $sk = GameItem::find($item_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $sk = GameItem::find($item_id);
             $sk->name = $request->input('name');
             $sk->description = $request->input('description');
             $sk->object = $request->input('object');
@@ -130,11 +130,14 @@ class ItemController extends Controller
 
     public function remove(Request $request, $item_id)
     {
-        $sk = GameItem::find($item_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $sk = GameItem::find($item_id);
             Watchdog::watch($request, '刪除遊戲道具：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            if ($sk->image_avaliable()) {
+                unlink($sk->image_path());
+            }
             $sk->delete();
             return redirect()->route('game.items')->with('success', '已刪除道具：'.$request->input('name').'！');
         } else {

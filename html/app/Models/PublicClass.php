@@ -90,9 +90,8 @@ class PublicClass extends Model
     ];
 
     //建立公開課時，若省略學期，則預設為目前學期
-    public static function boot()
+    protected static function booted()
     {
-        parent::boot();
         self::creating(function($model) {
             if (empty($model->section)) {
                 $model->section = current_section();

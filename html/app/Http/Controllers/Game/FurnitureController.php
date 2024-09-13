@@ -18,9 +18,9 @@ class FurnitureController extends Controller
     public function index()
     {
         $user = User::find(Auth::user()->id);
-        $furnitures = GameFurniture::all()->sortBy('gp');
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $furnitures = GameFurniture::all()->sortBy('gp');
             return view('game.furnitures', ['furnitures' => $furnitures]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
@@ -74,10 +74,10 @@ class FurnitureController extends Controller
 
     public function edit($base_id)
     {
-        $furniture = GameFurniture::find($base_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $furniture = GameFurniture::find($base_id);
             return view('game.furniture_edit', [ 'furniture' => $furniture ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
@@ -86,10 +86,10 @@ class FurnitureController extends Controller
 
     public function update(Request $request, $furniture_id)
     {
-        $sk = GameFurniture::find($furniture_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $sk = GameFurniture::find($furniture_id);
             $sk->name = $request->input('name');
             $sk->description = $request->input('description');
             $sk->hp = $request->input('hp');
@@ -124,11 +124,14 @@ class FurnitureController extends Controller
 
     public function remove(Request $request, $furniture_id)
     {
-        $sk = GameFurniture::find($furniture_id);
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $sk = GameFurniture::find($furniture_id);
             Watchdog::watch($request, '刪除遊戲家具：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            if ($sk->image_avaliable()) {
+                unlink($sk->image_path());
+            }
             $sk->delete();
             return redirect()->route('game.furnitures')->with('success', '已刪除家具：'.$request->input('name').'！');
         } else {

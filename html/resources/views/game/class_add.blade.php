@@ -44,7 +44,7 @@
         <div class="inline">
             <label for="base_hp" class="text-sm">最大健康值：</label>
             <input id="base_hp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="number" name="base_hp" min="10" max=100" step="1" value="10">
+                type="number" name="base_hp" min="10" max="100" step="1" value="10">
             <label for="base_mp" class="text-sm">最大行動力：</label>
             <input id="base_mp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
                 type="number" name="base_mp" min="10" max="100" step="1" value="10">

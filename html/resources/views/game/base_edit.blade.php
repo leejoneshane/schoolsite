@@ -25,7 +25,7 @@
     <p><div class="p-3">
         <label for="hp" class="text-base">血量變化：
             <input id="hp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="number" name="hp" min="-50" max=50" step="0.1" value="{{ $base->hp }}">
+                type="number" name="hp" min="-50" max="50" step="0.1" value="{{ $base->hp }}">
             <br><span class="text-sm font-semibold">大於 0 = 治療，小於 0 = 受傷，整數為加或扣HP，小數為 MAX HP 的比率</span>
         </label>
     </div></p>

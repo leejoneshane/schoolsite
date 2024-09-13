@@ -454,6 +454,18 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('items/edit/{item_id}', 'App\Http\Controllers\Game\ItemController@edit');
     Route::post('items/edit/{item_id}', 'App\Http\Controllers\Game\ItemController@update')->name('game.item_edit');
     Route::post('items/remove/{item_id}', 'App\Http\Controllers\Game\ItemController@remove')->name('game.item_remove');
+    Route::get('monsters', 'App\Http\Controllers\Game\MonsterController@index')->name('game.monsters');
+    Route::get('monsters/add', 'App\Http\Controllers\Game\MonsterController@add');
+    Route::post('monsters/add', 'App\Http\Controllers\Game\MonsterController@insert')->name('game.monster_add');
+    Route::get('monsters/edit/{monster_id}', 'App\Http\Controllers\Game\MonsterController@edit');
+    Route::post('monsters/edit/{monster_id}', 'App\Http\Controllers\Game\MonsterController@update')->name('game.monster_edit');
+    Route::post('monsters/remove/{monster_id}', 'App\Http\Controllers\Game\MonsterController@remove')->name('game.monster_remove');
+    Route::get('monsters/images/{monster_id?}', 'App\Http\Controllers\Game\MonsterController@gallery')->name('game.monster_images');
+    Route::get('monsters/scan/{monster_id}', 'App\Http\Controllers\Game\MonsterController@scan')->name('game.monster_scanimages');
+    Route::post('monsters/upload/{monster_id}', 'App\Http\Controllers\Game\MonsterController@store')->name('game.monster_upload');
+    Route::post('monsters/destroy', 'App\Http\Controllers\Game\MonsterController@destroy')->name('game.monster_removeimage');
+    Route::get('monsters/faces/{monster_id?}', 'App\Http\Controllers\Game\MonsterController@faces')->name('game.monster_faces');
+    Route::post('monsters/faces/upload/{image_id}', 'App\Http\Controllers\Game\MonsterController@face_upload')->name('game.monster_faceupload');
     Route::get('rules/positive', 'App\Http\Controllers\Game\SettingsController@positive')->name('game.positive');
     Route::get('rules/negative', 'App\Http\Controllers\Game\SettingsController@negative')->name('game.negative');
     Route::get('rules/positive/add', 'App\Http\Controllers\Game\SettingsController@positive_add')->name('game.positive_add');
