@@ -9,6 +9,7 @@
 </div>
 <form id="add-class" action="{{ route('game.rule_insert') }}" method="POST">
     @csrf
+    <input type="hidden" name="type" value="negative">
     <p><div class="p-3">
         <label for="description" class="text-base">條款內容：</label>
         <textarea id="description" class="inline w-128 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"

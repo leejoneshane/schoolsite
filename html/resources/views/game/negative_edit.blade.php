@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-class" action="{{ route('game.rule_edit') }}" method="POST">
+<form id="add-class" action="{{ route('game.rule_edit', [ 'rule_id' => $rule->id ]) }}" method="POST">
     @csrf
     <p><div class="p-3">
         <label for="description" class="text-base">條款內容：</label>

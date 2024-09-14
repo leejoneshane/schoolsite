@@ -21,24 +21,24 @@ class GameBase extends Model
         'sp',          //對成員的敏捷力增減效益
     ];
 
-    public function image_path()
+    public function path()
     {
         return public_path(GAME_BASE.$this->image_file);
     }
 
-    public function image_url()
+    public function url()
     {
         return asset(GAME_BASE.$this->image_file);
     }
 
-    public function image_base64()
+    public function base64()
     {
-        return base64_encode(file_get_contents($this->image_path()));
+        return base64_encode(file_get_contents($this->path()));
     }
 
-    public function image_avaliable()
+    public function avaliable()
     {
-        return $this->image_file && file_exists($this->image_path());
+        return $this->image_file && file_exists($this->path());
     }
 
 }

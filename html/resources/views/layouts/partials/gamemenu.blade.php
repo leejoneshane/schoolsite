@@ -37,7 +37,7 @@
             <a href="/game/arena"><i class="text-2xl fa-brands fa-battle-net" title="競技場"></i></a>
         </div>
         <div class="py-2 text-center">
-            <a href="/game/dungeon"><i class="text-2xl fa-solid fa-dungeon" title="地牢"></i></a>
+            <a href="/game/dungeon"><i class="text-2xl fa-solid fa-dungeon" title="地下城"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="/game/travel"><i class="text-2xl fa-solid fa-map-location-dot" title="冒險地圖"></i></a>

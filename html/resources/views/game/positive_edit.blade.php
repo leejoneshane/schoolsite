@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-class" action="{{ route('game.rule_edit') }}" method="POST">
+<form id="add-class" action="{{ route('game.rule_edit', [ 'rule_id' => $rule->id ]) }}" method="POST">
     @csrf
     <p><div class="p-3">
         <label for="description" class="text-base">條款內容：</label>
@@ -25,8 +25,8 @@
             type="number" name="gp" min="0" step="10" value="{{ $rule->effect_gp }}">
     </div></p>
     <p><div class="p-3">
-        <label for="object" class="text-base">道具獎勵：</label>
-        <select id="object" name="object" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <label for="item" class="text-base">道具獎勵：</label>
+        <select id="item" name="item" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
             <option value="">無</option>
             @foreach ($items as $item)
             <option value="{{ $item->id }}"{{ $rule->effect_item == $item->id ? ' selected' : '' }}>{{ $item->name }}</option>

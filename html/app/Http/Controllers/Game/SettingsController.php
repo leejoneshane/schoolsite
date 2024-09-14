@@ -65,11 +65,19 @@ class SettingsController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $sk = GameSetting::create([
-                'uuid' => $user->uuid,
-                'description' => $request->input('description'),
-                'type' => 'positive',
-            ]);
+            if ($request->input('type') == 'positive') {
+                $sk = GameSetting::create([
+                    'uuid' => $user->uuid,
+                    'description' => $request->input('description'),
+                    'type' => 'positive',
+                ]);
+            } else {
+                $sk = GameSetting::create([
+                    'uuid' => $user->uuid,
+                    'description' => $request->input('description'),
+                    'type' => 'negative',
+                ]);
+            }
             if ($request->has('xp')) $sk->effect_xp = $request->input('xp');
             if ($request->has('gp')) $sk->effect_gp = $request->input('gp');
             if ($request->has('item')) $sk->effect_item = $request->input('item');
@@ -77,7 +85,7 @@ class SettingsController extends Controller
             if ($request->has('mp')) $sk->effect_mp = $request->input('mp');
             $sk->save();
             Watchdog::watch($request, '新增遊戲教室條款：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            if ($sk->type == 'positive') {
+            if ($request->input('type') == 'positive') {
                 return redirect()->route('game.positive')->with('success', '已新增條款：'.$request->input('description').'！');
             } else {
                 return redirect()->route('game.negative')->with('success', '已新增條款：'.$request->input('description').'！');

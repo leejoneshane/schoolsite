@@ -474,4 +474,8 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('rules/edit/{rule_id}', 'App\Http\Controllers\Game\SettingsController@edit');
     Route::post('rules/edit/{rule_id}', 'App\Http\Controllers\Game\SettingsController@update')->name('game.rule_edit');
     Route::post('rules/remove/{rule_id}', 'App\Http\Controllers\Game\SettingsController@remove')->name('game.rule_remove');
+    Route::get('config/{room_id}', 'App\Http\Controllers\Game\ClassroomController@config');
+    Route::post('config/{room_id}', 'App\Http\Controllers\Game\ClassroomController@save_config')->name('game.classroom_config');
+    Route::get('group/edit/{room_id}', 'App\Http\Controllers\Game\ClassroomController@regroup')->name('game.regroup');
+    Route::post('group/change', 'App\Http\Controllers\Game\ClassroomController@change_group')->name('game.change_party');
 });

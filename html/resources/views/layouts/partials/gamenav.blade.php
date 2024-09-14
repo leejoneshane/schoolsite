@@ -65,13 +65,16 @@
           <div id="configure" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-auto dark:bg-gray-700 dark:divide-gray-600">
               <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
                 <li>
-                  <a href="/game/class/configure" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">遊戲元素</a>
+                  <a href="{{ route('game.classroom_config', [ 'room_id' => session('gameclass') ]) }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">遊戲規則</a>
                 </li>
                 <li>
-                  <a href="/game/class/party" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">公會調整</a>
+                  <a href="{{ route('game.regroup', [ 'room_id' => session('gameclass') ]) }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">公會調整</a>
                 </li>
                 <li>
-                  <a href="/game/class/character" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">角色調整</a>
+                  <a href="/game/class/party" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">角色調整</a>
+                </li>
+                <li>
+                  <a href="/game/class/character" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">指派地下城</a>
                 </li>
               </ul>
           </div>
