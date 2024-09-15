@@ -37,7 +37,7 @@ class GameImage extends Model
     //取得此圖片的職業
     public function profession()
     {
-        return $this->belongsToMany('App\Models\GameClass', 'game_classes_images', 'image_id', 'class_id')->orderByPivot('image_id');
+        return $this->belongsToMany('App\Models\GameClass', 'game_classes_images', 'image_id', 'class_id');
     }
 
     //篩選指定職業的圖片，靜態函式

@@ -16,7 +16,6 @@ class GameConfigure extends Model
     protected $fillable = [
         'classroom_id',
         'daily_mp',          //每日回復行動力
-        'regroup',           //允許重新分組
         'change_base',       //允許小組重選據點
         'change_class',      //允許學生更換職業
         'arena_open',        //開啟競技場（小組對戰功能）

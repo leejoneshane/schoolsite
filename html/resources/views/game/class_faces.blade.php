@@ -44,6 +44,7 @@
             <img src="{{ $img->thumb_url() }}" />
             @endif
             <form action="{{ route('game.face_upload', ['image_id' => $img->id]) }}" method="POST" enctype="multipart/form-data">
+                @csrf
                 <input type="file" name="face" accept=".png" class="block text-sm text-slate-500 py-2 px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
                 <button type="submit" class="inline py-2 px-6 rounded text-blue-300 hover:text-blue-600">重新上傳</button>
             </form>

@@ -57,8 +57,14 @@ class GameParty extends Model
         return $this->hasOne('App\Models\Classroom');
     }
 
-    //取得此隊伍的所有角色
+    //取得此隊伍不含缺席的角色
     public function members()
+    {
+        return $this->hasMany('App\Models\GameCharacter', 'party_id', 'id')->where('absent', 0)->orderBy('seat');
+    }
+
+    //取得此隊伍的所有角色（包含缺席）
+    public function withAdsent()
     {
         return $this->hasMany('App\Models\GameCharacter', 'party_id', 'id')->orderBy('seat');
     }

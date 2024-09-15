@@ -95,7 +95,8 @@ class GameCharacter extends Model
     //篩選指定的班級的所有角色
     public static function findByClass($classroom)
     {
-        return GameCharacter::where('classroom_id', $classroom)->get();
+        $uuids = Classroom::find($classroom)->uuids();
+        return GameCharacter::whereIn('uuid', $uuids)->orderBy('seat')->get();
     }
 
     //篩選指定的公會的所有角色
@@ -122,10 +123,13 @@ class GameCharacter extends Model
     {
         $ap = $this->ap;
         if ($this->party->effect_ap != 0) {
-            if ($this->party->effect_ap > 1 || $this->party->effect_ap < -1) {
-                $ap += $this->party->effect_ap;
-            } else {
-                $ap += intval($this->ap * $this->party->effect_ap);
+            $i = intval($this->party->effect_ap);
+            $d = $this->party->effect_ap - $i;
+            if ($i != 0) {
+                $this->ap += $i;
+            }
+            if ($d != 0) {
+                $this->ap += intval($this->ap * $d);
             }
         }
         if ($this->temp_effect == 'ap') {
@@ -138,7 +142,7 @@ class GameCharacter extends Model
             } else {
                 $this->tmp_effect = null;
                 $this->effect_value = null;
-                $this->effect_times = null;
+                $this->effect_timeout = null;
             }
         }
         return $ap;
@@ -149,10 +153,13 @@ class GameCharacter extends Model
     {
         $dp = $this->dp;
         if ($this->party->effect_dp != 0) {
-            if ($this->party->effect_dp > 1 || $this->party->effect_dp < -1) {
-                $dp += $this->party->effect_dp;
-            } else {
-                $dp += intval($this->dp * $this->party->effect_dp);
+            $i = intval($this->party->effect_dp);
+            $d = $this->party->effect_dp - $i;
+            if ($i != 0) {
+                $this->dp += $i;
+            }
+            if ($d != 0) {
+                $this->dp += intval($this->dp * $d);
             }
         }
         if ($this->temp_effect == 'dp') {
@@ -162,11 +169,11 @@ class GameCharacter extends Model
                 } else {
                     $dp += intval($this->dp * $this->effect_value);
                 }
+            } else {
+                $this->tmp_effect = null;
+                $this->effect_value = null;
+                $this->effect_timeout = null;
             }
-        } else {
-            $this->tmp_effect = null;
-            $this->effect_value = null;
-            $this->effect_times = null;
         }
         return $dp;
     }
@@ -176,10 +183,13 @@ class GameCharacter extends Model
     {
         $sp = $this->sp;
         if ($this->party->effect_sp != 0) {
-            if ($this->party->effect_sp > 1 || $this->party->effect_sp < -1) {
-                $sp += $this->party->effect_sp;
-            } else {
-                $sp += intval($this->sp * $this->party->effect_sp);
+            $i = intval($this->party->effect_sp);
+            $d = $this->party->effect_sp - $i;
+            if ($i != 0) {
+                $this->sp += $i;
+            }
+            if ($d != 0) {
+                $this->sp += intval($this->sp * $d);
             }
         }
         if ($this->temp_effect == 'sp') {
@@ -189,11 +199,11 @@ class GameCharacter extends Model
                 } else {
                     $sp += intval($this->sp * $this->effect_value);
                 }
+            } else {
+                $this->tmp_effect = null;
+                $this->effect_value = null;
+                $this->effect_timeout = null;
             }
-        } else {
-            $this->tmp_effect = null;
-            $this->effect_value = null;
-            $this->effect_times = null;
         }
         return $sp;
     }
@@ -277,7 +287,7 @@ class GameCharacter extends Model
     //取得此角色的隊伍物件
     public function party()
     {
-        return $this->belongsTo('App\Models\GameParty', 'id', 'party_id');
+        return $this->hasOne('App\Models\GameParty', 'id', 'party_id');
     }
 
     //取得此角色的已出席夥伴
@@ -304,24 +314,36 @@ class GameCharacter extends Model
     public function newday()
     {
         $this->mp += $this->party->configure->daily_mp;
-        if ($this->hp < $this->max_hp && $this->party->effect_hp != 0) {
-            if ($this->party->effect_hp > 1 || $this->party->effect_hp < -1) {
-                $this->hp += $this->party->effect_hp;
-            } else {
-                $this->hp += intval($this->hp * $this->party->effect_hp);
+        if ($this->party->effect_hp != 0) {
+            $i = intval($this->party->effect_hp);
+            $d = $this->party->effect_hp - $i;
+            if ($i != 0) {
+                $this->hp += $i;
+            }
+            if ($d != 0) {
+                $this->hp += intval($this->max_hp * $d);
             }
         }
-        if ($this->mp < $this->max_mp && $this->party->effect_mp != 0) {
-            if ($this->party->effect_mp > 1 || $this->party->effect_mp < -1) {
-                $this->mp += $this->party->effect_mp;
-            } else {
-                $this->mp += intval($this->mp * $this->party->effect_mp);
+        if ($this->party->effect_mp != 0) {
+            $i = intval($this->party->effect_mp);
+            $d = $this->party->effect_mp - $i;
+            if ($i != 0) {
+                $this->mp += $i;
+            }
+            if ($d != 0) {
+                $this->mp += intval($this->max_mp * $d);
             }
         }
-        if ($this->hp < 1) $this->hp = 0;
-        if ($this->hp > $this->max_hp) $this->hp = $this->max_hp;
-        if ($this->mp < 1) $this->mp = 0;
+        if ($this->mp < 1) {
+            $this->mp = 0;
+            $this->status = 'COMA';
+        }
         if ($this->mp > $this->max_mp) $this->mp = $this->max_mp;
+        if ($this->hp < 1) {
+            $this->hp = 0;
+            $this->status = 'DEAD';
+        }
+        if ($this->hp > $this->max_hp) $this->hp = $this->max_hp;
         $this->absent = false;
         $this->save();
     }

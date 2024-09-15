@@ -98,10 +98,16 @@ class GameItem extends Model
                 $character->effect_value = $this->sp;
                 $character->effect_timeout = Carbon::now()->addMinutes(40);
             }
-            if ($character->hp < 1) $character->hp = 0;
-            if ($character->hp > $character->max_hp) $character->hp = $character->max_hp;
-            if ($character->mp < 1) $character->mp = 0;
+            if ($character->mp < 1) {
+                $character->mp = 0;
+                $character->status = 'COMA';
+            }
             if ($character->mp > $character->max_mp) $character->mp = $character->max_mp;
+            if ($character->hp < 1) {
+                $character->hp = 0;
+                $character->status = 'DEAD';
+            }
+            if ($character->hp > $character->max_hp) $character->hp = $character->max_hp;
             $character->save();
             return 0;
         } else {

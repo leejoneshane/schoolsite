@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('game_configures', function (Blueprint $table) {
             $table->uuid('classroom_id')->primary();
             $table->integer('daily_mp')->default(4);
-            $table->boolean('regroup')->default(1);
             $table->boolean('change_base')->default(1);
             $table->boolean('change_class')->default(1);
             $table->boolean('arena_open')->default(1);

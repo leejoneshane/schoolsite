@@ -210,32 +210,29 @@ class ClassController extends Controller
         }
     }
 
-    public function face_update(Request $request, $image_id)
+    public function face_upload(Request $request, $image_id)
     {
         request()->validate([
             'face' => 'mimes:png|required|max:15000'
         ]);
-        if ($request->hasFile('face')) {
-            $image = $request->file('face');
-            $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path(GAME_FACE), $fileName);
-            $path = public_path(GAME_CHARACTER.$fileName);
-            $manager = new ImageManager(new Driver());
-            $file = $manager->read($path);
-            if ($file->width() > 80) {
-                $file->resize(80, 80);
-                $file->toPng()->save($path);    
-            }
+        $image = $request->file('face');
+        $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path(GAME_FACE), $fileName);
+        $path = public_path(GAME_FACE.$fileName);
+        $manager = new ImageManager(new Driver());
+        $file = $manager->read($path);
+        if ($file->width() > 80) {
+            $file->resize(80, 80);
             $file->toPng()->save($path);
-            $new = GameImage::find($image_id);
-            if ($new->thumb_avaliable()) {
-                unlink($new->thumb_path());
-            }
-            $new->thumbnail = $fileName;
-            $new->save();
-            $pro = $new->profession;
-            return view('game.class_faces', [ 'pro' => $pro ]);
         }
+        $new = GameImage::find($image_id);
+        if ($new->thumb_avaliable()) {
+            unlink($new->thumb_path());
+        }
+        $new->thumbnail = $fileName;
+        $new->save();
+        $pro = $new->profession->first();
+        return redirect()->route('game.class_faces', [ 'class_id' => $pro->id ]);
     }
 
     public function skills($class_id)

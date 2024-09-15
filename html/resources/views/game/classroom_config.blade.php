@@ -4,21 +4,12 @@
 <div class="text-2xl font-bold leading-normal pb-5">
     {{ $room->name }}遊戲規則
 </div>
-<form id="add-class" action="{{ route('game.classroom_config', [ 'room_id' => $room->id ]) }}" method="POST">
+<form id="add-class" action="{{ route('game.classroom_config') }}" method="POST">
     @csrf
     <p><div class="p-3">
         <label for="daily" class="text-base">每日回復 MP：</label>
         <input id="daily" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
             type="number" name="mp" min="1" max="50" step="1" value="{{ $config && $config->daily_mp ? $config->daily_mp : 4 }}">
-    </div></p>
-    <p><div class="p-3">
-        <span class="text-sm leading-normal text-gray-400 sm:block">
-            <label for="regroup" class="inline-flex relative items-center cursor-pointer">
-                <input type="checkbox" id="regroup" name="regroup" value="yes" class="sr-only peer"{{ $config && $config->regroup ? ' checked' : '' }}>
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                <span class="ml-3 text-gray-900 dark:text-gray-300">允許重新分組</span>
-            </label>
-        </span>
     </div></p>
     <p><div class="p-3">
         <span class="text-sm leading-normal text-gray-400 sm:block">
