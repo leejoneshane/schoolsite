@@ -5,7 +5,7 @@
     {{ $room->name }}重新分組
 </div>
 <div class="w-full h-full flex flex-row gap-x-10 justify-center">
-    <div id="nogroup" droppable="true" class="drop w-64 sm:w-48 h-screen flex-none bg-teal-100 rounded-lg p-5 space-y-2 justify-items-center">
+    <div id="nogroup" droppable="true" class="drop w-64 sm:w-48 h-screen flex-none bg-teal-100 rounded-lg p-5 space-y-2">
         <div class="w-full text-center text-lg">未分組</div>
         @foreach ($partyless as $s)
         <div id="{{ $s->uuid }}" draggable="true" class="drag w-48 sm:w-32 bg-teal-500 p-5 rounded-md text-white">{{ $s->seat }} {{ $s->name }}</div>
@@ -13,8 +13,14 @@
     </div>
     <div class="w-auto h-full bg-white grid grid-cols-3 gap-4">
         @foreach ($parties as $p)
-        <div id="p{{ $p->id }}" droppable="true" class="drop w-64 sm:w-48 border border-2 border-teal-500 rounded-lg p-5 space-y-2 justify-items-center">
-            <div class="w-full text-center text-lg">{{ $p->group_no }} {{ $p->name }}</div>
+        <div id="p{{ $p->id }}" droppable="true" class="drop w-64 sm:w-48 border border-2 border-teal-500 rounded-lg p-5 space-y-2">
+            <div class="w-full text-center text-lg">
+                {{ $p->group_no }} {{ $p->name }}
+                <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+                    href="{{ route('game.party_edit', ['party_id' => $p->id]) }}" title="編輯">
+                    <i class="fa-solid fa-pen"></i>
+                </a>
+            </div>
             @foreach ($p->members as $s)
             <div id="{{ $s->uuid }}" draggable="true" class="drag w-48 sm:w-32 bg-teal-500 p-5 rounded-md text-white">{{ $s->seat }} {{ $s->name }}</div>
             @endforeach

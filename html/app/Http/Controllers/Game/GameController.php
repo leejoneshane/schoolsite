@@ -63,6 +63,11 @@ class GameController extends Controller
         return response()->json(['success' => $result]);
     }
 
+    public function health()
+    {
+        return response()->json([ 'health' => GameSence::lockByMe(session('gameclass')) ]);
+    }
+
     public function classroom(Request $request, $room_id)
     {
         if (locked($room_id)) {

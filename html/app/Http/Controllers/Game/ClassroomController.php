@@ -10,6 +10,7 @@ use App\Models\Classroom;
 use App\Models\GameConfigure;
 use App\Models\GameParty;
 use App\Models\GameCharacter;
+use App\Models\GameBase;
 use App\Models\Watchdog;
 
 class ClassroomController extends Controller
@@ -107,6 +108,29 @@ class ClassroomController extends Controller
         }
         $character->save();
         return response()->json(['success' => $character->party_id]);
+    }
+
+    function party_edit($party_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('game.manager');
+        if ($user->is_admin || $manager) {
+            $party = GameParty::find($party_id);
+            $bases = GameBase::all();
+            return view('game.party_edit', [ 'party' => $party, 'bases' => $bases]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    function party_update(Request $request, $party_id)
+    {
+        $party = GameParty::find($party_id);
+        $party->name = $request->input('name');
+        $party->description = $request->input('description');
+        $party->base_id = $request->input('base');
+        $party->save();
+        return redirect()->route('game.regroup', [ 'room_id' => $party->classroom_id ]);
     }
 
 }

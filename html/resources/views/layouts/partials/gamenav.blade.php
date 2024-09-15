@@ -46,7 +46,7 @@
                   <a href="{{ route('game.negative') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">懲罰條款</a>
                 </li>
                 <li>
-                  <a href="/game/teacher/dungeon" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">地牢測驗</a>
+                  <a href="/game/teacher/dungeon" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">地下城試煉</a>
                 </li>
                 <li>
                   <a href="/game/teacher/map" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">冒險地圖</a>
@@ -121,3 +121,16 @@
     @endlocked
   </div>
 </nav>
+<script nonce="selfhost">
+    @auth
+    function health() {
+        window.axios.get('{{ route('game.health') }}')
+        .then(response => {
+            if (!(response.data.health)) {
+                window.location.replace('{{ route('game') }}');
+            }
+        });
+    }
+    window.setInterval(health, 60000);
+    @endauth
+</script>
