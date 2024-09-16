@@ -1,7 +1,7 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="bg-white sm:p-4 md:p-8">
+<div class="sm:p-4 md:p-8">
     <div class="container mx-auto">
         <div class="grid grid-cols-1 gap-4">
         @foreach ($classes as $cls)

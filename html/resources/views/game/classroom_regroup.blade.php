@@ -1,8 +1,11 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="text-2xl font-bold leading-normal pb-5">
+<div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
     {{ $room->name }}重新分組
+    <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ route('game.party_add') }}">
+        <i class="fa-solid fa-circle-plus"></i>新增公會
+    </a>
 </div>
 <div class="w-full h-full flex flex-row gap-x-10 justify-center">
     <div id="nogroup" droppable="true" class="drop w-60 h-screen flex-none bg-teal-100 rounded-lg p-5 space-y-2">
@@ -16,7 +19,7 @@
         <div id="p{{ $p->id }}" droppable="true" class="drop w-60 border border-2 border-teal-500 rounded-lg p-5 space-y-2">
             <div class="w-full text-center text-lg">
                 {{ $p->group_no }} {{ $p->name }}
-                <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
+                <a class="py-2 pr-6 text-blue-500 hover:text-blue-600"
                     href="{{ route('game.party_edit', ['party_id' => $p->id]) }}" title="編輯">
                     <i class="fa-solid fa-pen"></i>
                 </a>

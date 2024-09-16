@@ -3,7 +3,7 @@
 @section('content')
 <div class="inline text-3xl">{{ $room->name }}</div>
 <p><div class="pb-3">
-    <div class="inline text-xl">公會一覽</div>
+    <div class="inline text-xl drop-shadow-md">公會一覽</div>
     <table class="w-full h-full z-20 text-left font-normal pb-6">
         <tr>
             <th scope="col" class="p-2">
@@ -48,7 +48,7 @@
             <td class="p-2">{{ $p->fnudation->name }}</td>
             @else
             <td class="p-2">
-                <a class="text-blue-300 hover:text-blue-600" href="{{ route('game.party_edit', ['party_id' => $p->id]) }}">設定據點</a>
+                <a class="text-blue-500 hover:text-blue-600" href="{{ route('game.party_edit', ['party_id' => $p->id]) }}">設定據點</a>
             </td>
             @endif
             <td class="p-2">{{ $p->furnitures ? $p->furnitures->count() : '0' }}</td>
@@ -125,7 +125,7 @@
                 @if ($s->profession)  
                 {{ $s->profession->name }}
                 @else
-                <a href="{{ route('game.profession_setup', [ 'uuid' => $s->uuid ]) }}" class="text-blue-300 hover:text-blue-600">設定職業形象</a>
+                <a href="{{ route('game.profession_setup', [ 'uuid' => $s->uuid ]) }}" class="text-blue-500 hover:text-blue-600">設定職業形象</a>
                 @endif
             </td>
             <td class="p-2">{{ $s->xp }}</td>

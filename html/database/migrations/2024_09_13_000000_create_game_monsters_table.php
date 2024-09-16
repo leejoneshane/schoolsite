@@ -24,6 +24,11 @@ return new class extends Migration
             $table->integer('ap')->default(0);
             $table->integer('dp')->default(0);
             $table->integer('sp')->default(0);
+            $table->integer('xp')->default(0);
+            $table->integer('gp')->default(0);
+            $table->string('temp_effect')->nullable();
+            $table->float('effect_value')->default(0);
+            $table->timestamp('effect_timeout')->nullable();
             $table->timestamps();
         });
     }

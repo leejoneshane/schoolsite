@@ -55,6 +55,8 @@ class MonsterController extends Controller
                 'ap' => $request->input('ap'),
                 'dp' => $request->input('dp'),
                 'sp' => $request->input('sp'),
+                'xp' => $request->input('xp'),
+                'gp' => $request->input('gp'),
             ]);
             Watchdog::watch($request, '新增遊戲怪物：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('game.monsters')->with('success', '已新增怪物：'.$request->input('name').'！');
@@ -90,6 +92,8 @@ class MonsterController extends Controller
             $pro->ap = $request->input('ap');
             $pro->dp = $request->input('dp');
             $pro->sp = $request->input('sp');
+            $pro->xp = $request->input('xp');
+            $pro->gp = $request->input('gp');
             $pro->save();
             Watchdog::watch($request, '修改遊戲怪物：' . $pro->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('game.monsters')->with('success', '已修改怪物：'.$request->input('name').'！');
@@ -144,7 +148,7 @@ class MonsterController extends Controller
             $file = $manager->read($path);
             if ($file->width() > 300) {
                 $file->scale(width: 300);
-                $file->toPng()->save($path);    
+                $file->toPng()->save($path);
             }
             $new = GameImage::create([ 'file_name' => $fileName ]);
             DB::table('game_monsters_images')->insert([
@@ -184,7 +188,7 @@ class MonsterController extends Controller
         if (file_exists($path)) unlink($path);
         if ($object->thumbnail) {
             $path2 = public_path(GAME_MONSTER.$object->thumbnail);
-            if (file_exists($path2)) unlink($path2);    
+            if (file_exists($path2)) unlink($path2);
         }
         $object->delete();
         return response()->json(['success' => $filename]);
@@ -203,32 +207,28 @@ class MonsterController extends Controller
         }
     }
 
-    public function face_update(Request $request, $image_id)
+    public function face_upload(Request $request, $image_id)
     {
-        request()->validate([
-            'face' => 'mimes:png|required|max:15000'
-        ]);
-        if ($request->hasFile('face')) {
-            $image = $request->file('face');
-            $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path(GAME_MONSTER), $fileName);
-            $path = public_path(GAME_MONSTER.$fileName);
-            $manager = new ImageManager(new Driver());
-            $file = $manager->read($path);
-            if ($file->width() > 80) {
-                $file->resize(80, 80);
-                $file->toPng()->save($path);    
-            }
+        $image = $request->file('face');
+        $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path(GAME_MONSTER), $fileName);
+        $path = public_path(GAME_MONSTER.$fileName);
+        $manager = new ImageManager(new Driver());
+        $file = $manager->read($path);
+        if ($file->width() > 80) {
+            $file->resize(80, 80);
             $file->toPng()->save($path);
-            $new = GameImage::find($image_id);
-            if ($new->thumb_avaliable()) {
-                unlink($new->thumb_path());
-            }
-            $new->thumbnail = $fileName;
-            $new->save();
-            $pro = $new->profession;
-            return view('game.monster_faces', [ 'pro' => $pro ]);
         }
+        $file->toPng()->save($path);
+        $new = GameImage::find($image_id);
+        if ($new->thumbnail) {
+            $path2 = public_path(GAME_MONSTER.$new->thumbnail);
+            if (file_exists($path2)) unlink($path2);
+        }
+        $new->thumbnail = $fileName;
+        $new->save();
+        $pro = $new->monster->first();
+        return redirect()->route('game.monster_faces', [ 'monster_id' => $pro->id ]);
     }
 
 }

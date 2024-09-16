@@ -149,8 +149,8 @@ class ClassController extends Controller
             $path = public_path(GAME_CHARACTER.$fileName);
             $manager = new ImageManager(new Driver());
             $file = $manager->read($path);
-            if ($file->width() > 300) {
-                $file->scale(width: 300);
+            if ($file->width() > 450) {
+                $file->scale(width: 450);
                 $file->toPng()->save($path);    
             }
             $new = GameImage::create([ 'file_name' => $fileName ]);
@@ -226,8 +226,9 @@ class ClassController extends Controller
             $file->toPng()->save($path);
         }
         $new = GameImage::find($image_id);
-        if ($new->thumb_avaliable()) {
-            unlink($new->thumb_path());
+        if ($new->thumbnail) {
+            $path2 = public_path(GAME_FACE.$new->thumbnail);
+            if (file_exists($path2)) unlink($path2);
         }
         $new->thumbnail = $fileName;
         $new->save();

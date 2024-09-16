@@ -1,9 +1,9 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="text-2xl font-bold leading-normal pb-5">
+<div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
     編輯怪物
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('game.monsters') }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ route('game.monsters') }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
@@ -44,6 +44,17 @@
             <label for="base_sp" class="text-sm">敏捷力：</label>
             <input id="base_sp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
                 type="number" name="sp" min="10" max="50" step="1" value="{{ $monster->sp }}">
+        </div>
+    </div></p>
+    <p><div class="p-3">
+        <label class="inline">獲勝後的獎勵：</label>
+        <div class="inline">
+            <label for="xp" class="text-sm">經驗值：</label>
+            <input id="xp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="xp" min="0" step="10" value="{{ $monster->xp }}">
+            <label for="gp" class="text-sm">金幣：</label>
+            <input id="gp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="gp" min="0" step="1" value="{{ $monster->gp }}">
         </div>
     </div></p>
     <p class="p-6">

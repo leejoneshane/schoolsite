@@ -1,9 +1,9 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="text-2xl font-bold leading-normal pb-5">
+<div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
     設定技能
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('game.classes') }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ route('game.classes') }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
@@ -41,7 +41,7 @@
         <button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_skill(this);"><i class="fa-solid fa-circle-minus"></i></button>
         @endforeach
         </div>
-        <button id="nassign" type="button" class="py-2 px-6 rounded text-blue-300 hover:text-blue-600"
+        <button id="nassign" type="button" class="py-2 px-6 rounded text-blue-500 hover:text-blue-600"
             onclick="add_skill()"><i class="fa-solid fa-circle-plus"></i>
         </button>
     </p>

@@ -40,6 +40,12 @@ class GameImage extends Model
         return $this->belongsToMany('App\Models\GameClass', 'game_classes_images', 'image_id', 'class_id');
     }
 
+    //取得此圖片的怪物
+    public function monster()
+    {
+        return $this->belongsToMany('App\Models\GameMonster', 'game_monsters_images', 'image_id', 'monster_id');
+    }
+
     //篩選指定職業的圖片，靜態函式
     public static function forClass($class_id)
     {
@@ -65,9 +71,19 @@ class GameImage extends Model
         return public_path(GAME_CHARACTER.$this->file_name);
     }
 
+    public function m_path()
+    {
+        return public_path(GAME_MONSTER.$this->file_name);
+    }
+
     public function thumb_path()
     {
         return public_path(GAME_FACE.$this->thumbnail);
+    }
+
+    public function mthumb_path()
+    {
+        return public_path(GAME_MONSTER.$this->thumbnail);
     }
 
     public function url()
@@ -75,9 +91,19 @@ class GameImage extends Model
         return asset(GAME_CHARACTER.$this->file_name);
     }
 
+    public function m_url()
+    {
+        return asset(GAME_MONSTER.$this->file_name);
+    }
+
     public function thumb_url()
     {
         return asset(GAME_FACE.$this->thumbnail);
+    }
+
+    public function mthumb_url()
+    {
+        return asset(GAME_MONSTER.$this->thumbnail);
     }
 
     public function base64()
@@ -95,9 +121,19 @@ class GameImage extends Model
         return $this->file_name && file_exists($this->path());
     }
 
+    public function mavaliable()
+    {
+        return $this->file_name && file_exists($this->m_path());
+    }
+
     public function thumb_avaliable()
     {
         return $this->thumbnail && file_exists($this->thumb_path());
+    }
+
+    public function mthumb_avaliable()
+    {
+        return $this->thumbnail && file_exists($this->mthumb_path());
     }
 
 }

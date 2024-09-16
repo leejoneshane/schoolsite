@@ -20,6 +20,11 @@ class GameMonster extends Model
         'ap',          //基本攻擊力
         'dp',          //基本防禦力
         'sp',          //基本敏捷力
+        'xp',          //打敗怪物可獲得經驗值
+        'gp',          //打敗怪物可獲得金幣
+        'temp_effect',   //暫時增益:ap,mp,sp 其中之一
+        'effect_value',  //增益值，2 則加 2 點，0.5 則加 50%，-1 為扣 1 點，-0.3 為扣 30%
+        'effect_timeout',//增益結束時間，timestamp
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）

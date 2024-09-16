@@ -1,9 +1,9 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="text-2xl font-bold leading-normal pb-5">
+<div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
     管理職業圖片
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('game.classes') }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ route('game.classes') }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
@@ -20,7 +20,7 @@
 </h1>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
-        僅接受去背的圖片，圖片格式為 PNG 或 GIF，圖片解析度為直立式 3:4 (240x320)。
+        僅接受去背的圖片，圖片格式為 PNG 或 GIF，圖片解析度為直立式 3:4 (450x600)。
     </p>
 </div>
 <div class="dropzone-container">

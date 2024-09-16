@@ -82,7 +82,7 @@
             <td class="p-2">{{ $s->gp }}</td>
             <td class="p-2">
                 @locked($room->id)
-                <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
+                <a class="py-2 pr-6 text-blue-500 hover:text-blue-600" href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
                     <i class="fa-solid fa-user-pen"></i>
                 </a>
                 @endlocked
@@ -156,7 +156,7 @@
         <td class="p-2">{{ $s->gp }}</td>
         <td class="p-2">
             @locked($room->id)
-            <a class="py-2 pr-6 text-blue-300 hover:text-blue-600" href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
+            <a class="py-2 pr-6 text-blue-500 hover:text-blue-600" href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
                 <i class="fa-solid fa-user-pen"></i>
             </a>
             @endlocked

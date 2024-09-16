@@ -29,6 +29,12 @@ module.exports = {
             'serif': ['Noto Serif TC', ...defaultTheme.fontFamily.serif],
             'mono': ['cwTeXFangSong', ...defaultTheme.fontFamily.mono],
         },
+        extend: {
+            backgroundImage: {
+                'game-map': "url('/images/game/map.png')",
+                'game-map50': "url('/images/game/map50.png')",
+            }
+        }
     },
     plugins: [
         require('@tailwindcss/typography'),

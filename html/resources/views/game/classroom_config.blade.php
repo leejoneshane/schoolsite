@@ -1,7 +1,7 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="text-2xl font-bold leading-normal pb-5">
+<div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
     {{ $room->name }}遊戲規則
 </div>
 <form id="add-class" action="{{ route('game.classroom_config') }}" method="POST">
