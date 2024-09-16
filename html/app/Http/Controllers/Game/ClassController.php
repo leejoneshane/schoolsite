@@ -151,12 +151,13 @@ class ClassController extends Controller
             $file = $manager->read($path);
             if ($file->width() > 450) {
                 $file->scale(width: 450);
-                $file->toPng()->save($path);    
+                $file->toPng()->save($path);
             }
-            $new = GameImage::create([ 'file_name' => $fileName ]);
-            DB::table('game_classes_images')->insert([
-                'class_id' => $class_id,
-                'image_id' => $new->id,
+            $new = GameImage::create([ 'file_name' => GAME_CHARACTER.$fileName ]);
+            GameImage::create([ 
+                'owner_id' => $class_id,
+                'owner_type' => 'App\\Models\\GameClass',
+                'picture' => GAME_MONSTER.$fileName
             ]);
             return response()->json(['success' => $fileName]);
         }
@@ -166,7 +167,7 @@ class ClassController extends Controller
     {
         $images = GameImage::forClass($class_id);
         foreach ($images as $image) {
-            $tableImages[] = $image->file_name;
+            $tableImages[] = basename($image->picture);
         }
         $data = [];
         $files = scandir(public_path(GAME_CHARACTER));
@@ -185,13 +186,12 @@ class ClassController extends Controller
     public function destroy(Request $request)
     {
         $filename = $request->get('filename');
-        $object = GameImage::where('file_name', $filename)->first();
-        DB::table('game_classes_images')->where('image_id', $object->id)->delete();
-        $path = public_path(GAME_CHARACTER.$object->file_name);
+        $object = GameImage::where('picture', $filename)->first();
+        $path = public_path($object->picture);
         if (file_exists($path)) unlink($path);
         if ($object->thumbnail) {
-            $path2 = public_path(GAME_FACE.$object->thumbnail);
-            if (file_exists($path2)) unlink($path2);    
+            $path2 = public_path($object->thumbnail);
+            if (file_exists($path2)) unlink($path2);
         }
         $object->delete();
         return response()->json(['success' => $filename]);
@@ -217,8 +217,8 @@ class ClassController extends Controller
         ]);
         $image = $request->file('face');
         $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path(GAME_FACE), $fileName);
-        $path = public_path(GAME_FACE.$fileName);
+        $image->move(public_path(GAME_CHARACTER), $fileName);
+        $path = public_path(GAME_CHARACTER.$fileName);
         $manager = new ImageManager(new Driver());
         $file = $manager->read($path);
         if ($file->width() > 80) {
@@ -227,12 +227,12 @@ class ClassController extends Controller
         }
         $new = GameImage::find($image_id);
         if ($new->thumbnail) {
-            $path2 = public_path(GAME_FACE.$new->thumbnail);
+            $path2 = public_path($new->thumbnail);
             if (file_exists($path2)) unlink($path2);
         }
-        $new->thumbnail = $fileName;
+        $new->thumbnail = GAME_CHARACTER.$fileName;
         $new->save();
-        $pro = $new->profession->first();
+        $pro = $new->owner();
         return redirect()->route('game.class_faces', [ 'class_id' => $pro->id ]);
     }
 

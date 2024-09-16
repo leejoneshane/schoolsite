@@ -35,7 +35,7 @@ class GameMonster extends Model
     //取得此怪物的圖片
     public function images()
     {
-        return $this->belongsToMany('App\Models\GameImage', 'game_monsters_images', 'monster_id', 'image_id');
+        return $this->morphMany('App\Models\GameImage', 'owner');
     }
 
 }

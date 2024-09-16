@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('game_images', function (Blueprint $table) {
             $table->id();
-            $table->string('file_name');
+            $table->integer('owner_id');
+            $table->string('owner_type');
+            $table->string('picture');
             $table->string('thumbnail');
             $table->timestamps();
         });

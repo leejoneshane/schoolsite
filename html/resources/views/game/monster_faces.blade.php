@@ -38,10 +38,10 @@
     @foreach ($monster->images as $img)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">{{ $img->id }}</td>
-        <td class="p-2"><img src="{{ $img->m_url() }}" /></td>
+        <td class="p-2"><img src="{{ $img->url() }}" /></td>
         <td class="p-2">
-            @if ($img->mthumb_avaliable())
-            <img src="{{ $img->mthumb_url() }}" />
+            @if ($img->thumb_avaliable())
+            <img src="{{ $img->thumb_url() }}" />
             @endif
             <form action="{{ route('game.monster_faceupload', ['image_id' => $img->id]) }}" method="POST" enctype="multipart/form-data">
                 @csrf

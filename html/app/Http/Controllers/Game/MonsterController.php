@@ -150,10 +150,10 @@ class MonsterController extends Controller
                 $file->scale(width: 300);
                 $file->toPng()->save($path);
             }
-            $new = GameImage::create([ 'file_name' => $fileName ]);
-            DB::table('game_monsters_images')->insert([
-                'monster_id' => $monster_id,
-                'image_id' => $new->id,
+            GameImage::create([ 
+                'owner_id' => $monster_id,
+                'owner_type' => 'App\\Models\\GameMonster',
+                'file_name' => GAME_MONSTER.$fileName
             ]);
             return response()->json(['success' => $fileName]);
         }
@@ -163,7 +163,7 @@ class MonsterController extends Controller
     {
         $images = GameImage::forMonster($monster_id);
         foreach ($images as $image) {
-            $tableImages[] = $image->file_name;
+            $tableImages[] = basename($image->picture);
         }
         $data = [];
         $files = scandir(public_path(GAME_MONSTER));
@@ -184,10 +184,10 @@ class MonsterController extends Controller
         $filename = $request->get('filename');
         $object = GameImage::where('file_name', $filename)->first();
         DB::table('game_monsters_images')->where('image_id', $object->id)->delete();
-        $path = public_path(GAME_MONSTER.$object->file_name);
+        $path = public_path($object->picture);
         if (file_exists($path)) unlink($path);
         if ($object->thumbnail) {
-            $path2 = public_path(GAME_MONSTER.$object->thumbnail);
+            $path2 = public_path($object->thumbnail);
             if (file_exists($path2)) unlink($path2);
         }
         $object->delete();
@@ -222,12 +222,12 @@ class MonsterController extends Controller
         $file->toPng()->save($path);
         $new = GameImage::find($image_id);
         if ($new->thumbnail) {
-            $path2 = public_path(GAME_MONSTER.$new->thumbnail);
+            $path2 = public_path($new->thumbnail);
             if (file_exists($path2)) unlink($path2);
         }
-        $new->thumbnail = $fileName;
+        $new->thumbnail = GAME_MONSTER.$fileName;
         $new->save();
-        $pro = $new->monster->first();
+        $pro = $new->owner();
         return redirect()->route('game.monster_faces', [ 'monster_id' => $pro->id ]);
     }
 

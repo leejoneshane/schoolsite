@@ -40,7 +40,7 @@ class GameClass extends Model
     //取得此職業的圖片
     public function images()
     {
-        return $this->belongsToMany('App\Models\GameImage', 'game_classes_images', 'class_id', 'image_id')->orderByPivot('image_id');
+        return $this->morphMany('App\Models\GameImage', 'owner');
     }
 
 }

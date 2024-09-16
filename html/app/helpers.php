@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 const GAME_CHARACTER = 'images/game/characters/'; //遊戲職業圖片路徑
-const GAME_FACE = 'images/game/faces/'; //遊戲臉孔圖片路徑
 const GAME_SKILL = 'images/game/skills/'; //遊戲技能圖片路徑
 const GAME_BASE = 'images/game/bases/'; //遊戲據點圖片路徑
 const GAME_FURNITURE = 'images/game/furnitures/'; //遊戲家具圖片路徑
