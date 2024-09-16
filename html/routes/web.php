@@ -485,5 +485,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('characters/fast/{uuid}', 'App\Http\Controllers\Game\GameController@fast_update')->name('game.character_edit');
     Route::get('characters', 'App\Http\Controllers\Game\ClassroomController@characters')->name('game.characters');
     Route::get('characters/setup/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_edit');
-    Route::post('characters/setup/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_update')->name('game.profession_setup');
+    Route::post('characters/setup/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_class')->name('game.profession_setup');
+    Route::get('characters/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@image_edit');
+    Route::post('characters/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_image')->name('game.image_setup');
 });

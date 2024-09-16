@@ -187,10 +187,31 @@ class ClassroomController extends Controller
         }
     }
 
-    function character_update(Request $request, $uuid)
+    function character_class(Request $request, $uuid)
+    {
+        $pro = GameClass::find($request->input('class_id'));
+        $character = GameCharacter::find($uuid);
+        $character->class_id = $pro->id;
+        $character->max_hp = $pro->base_hp;
+        $character->hp = $pro->base_hp;
+        $character->max_mp = $pro->base_mp;
+        $character->mp = $pro->base_mp;
+        $character->ap = $pro->base_ap;
+        $character->dp = $pro->base_dp;
+        $character->sp = $pro->base_sp;
+        $character->save();
+        return view('game.image_setup', [ 'character' => $character ]);
+    }
+
+    function image_edit(Request $request, $uuid)
     {
         $character = GameCharacter::find($uuid);
-        $character->class_id = $request->input('class_id');
+        return view('game.image_setup', [ 'character' => $character ]);
+    }
+
+    function character_image(Request $request, $uuid)
+    {
+        $character = GameCharacter::find($uuid);
         $character->image_id = $request->input('image_id');
         $character->save();
         return redirect()->route('game.characters');

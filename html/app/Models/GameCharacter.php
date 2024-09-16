@@ -90,6 +90,7 @@ class GameCharacter extends Model
         'party',
         'teammate',
         'items',
+        'image',
     ];
 
     //篩選指定的班級的所有角色
@@ -282,6 +283,12 @@ class GameCharacter extends Model
     public function profession()
     {
         return $this->hasOne('App\Models\GameClass', 'id', 'class_id');
+    }
+
+    //取得此角色的隊伍物件
+    public function image()
+    {
+        return $this->hasOne('App\Models\GameImage', 'id', 'image_id');
     }
 
     //取得此角色的隊伍物件

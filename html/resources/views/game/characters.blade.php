@@ -123,7 +123,10 @@
             <td class="p-2">{{ $s->party ? $s->party->group_no : '無' }}</td>
             <td class="p-2">
                 @if ($s->profession)  
-                {{ $s->profession->name }}
+                <a href="{{ route('game.profession_setup', [ 'uuid' => $s->uuid ]) }}" class="text-blue-500 hover:text-blue-600">{{ $s->profession->name }}</a>
+                    @if (!$s->image)
+                    <a href="{{ route('game.image_setup', [ 'uuid' => $s->uuid ]) }}" class="text-blue-500 hover:text-blue-600">設定形象</a>
+                    @endif
                 @else
                 <a href="{{ route('game.profession_setup', [ 'uuid' => $s->uuid ]) }}" class="text-blue-500 hover:text-blue-600">設定職業形象</a>
                 @endif
@@ -139,7 +142,7 @@
             <td class="p-2">{{ $s->temp_effect }}</td>
             <td class="p-2">{{ $s->effect_value }}</td>
             <td class="p-2">{{ $s->effect_timeout ? date('m/d/Y H:i:s', $s->effect_timeout) : ''}}</td>
-            <td class="p-2">{{ $s->status }}</td>
+            <td class="p-2">{{ $s->status == DEAD ? '死亡' : '' }}{{ $s->status == COMA ? '昏迷' : '' }}{{ $s->status == NORMAL ? '正常' : '' }}</td>
         </tr>
         @endforeach
     </table>
