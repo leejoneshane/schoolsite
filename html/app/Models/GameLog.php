@@ -43,7 +43,6 @@ class GameLog extends Model
         }
         return GameLog::where('classroom_id', $room_id)
             ->whereRaw('DATE(created_at) = ?', $date->format('Y-m-d'))
-            ->latest()
             ->get();
     }
 
@@ -55,7 +54,6 @@ class GameLog extends Model
         }
         return GameLog::where('classroom_id', $room_id)
             ->where('uuid', $uuid)
-            ->latest()
             ->get();
     }
 

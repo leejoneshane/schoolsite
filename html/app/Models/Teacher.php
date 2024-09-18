@@ -12,7 +12,7 @@ use App\Models\Role;
 use App\Models\Domain;
 use App\Models\Classroom;
 use App\Models\Seniority;
-use App\Models\GameDelay;
+use App\Models\GameLog;
 
 class Teacher extends Model
 {
@@ -309,7 +309,16 @@ class Teacher extends Model
     //取得教師所有遊戲延遲處置列表
     public function game_delay()
     {
-        return $this->hasMany('App\Models\GameDelay', 'uuid', 'uuid')->where('act', 0)->orderBy('created_at')->get();
+        return $this->hasMany('App\Models\GameDelay', 'uuid', 'uuid')->where('act', 0)->orderBy('created_at');
+    }
+
+    //取得教師兩天內的遊戲日誌
+    public function game_logs($class_id)
+    {
+        return GameLog::where('classroom_id', $class_id)
+            ->whereRaw('DATE(created_at) > ?', Carbon::now()->subDay()->toDateString())
+            ->orderBy('created_at')
+            ->get();
     }
 
     //重新從 LDAP 同步教師個資

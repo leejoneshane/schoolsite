@@ -245,7 +245,7 @@ class GameController extends Controller
     public function negative_delay(Request $request)
     {
         $rule = GameSetting::find($request->input('rule'));
-        GameLog::create([
+        GameDelay::create([
             'classroom_id' => session('gameclass'),
             'uuid' => $request->input('uuid'),
             'characters' => $request->input('uuids'),
@@ -280,6 +280,15 @@ class GameController extends Controller
                 'content' => $character->seat.' '.$character->name.$message,
             ]);
         }
+        $delay->act = true;
+        $delay->save();
+    }
+
+    function pickup()
+    {
+        $parties = GameParty::findByClass(session('gameclass'));
+        $characters = GameCharacter::findByClass(session('gameclass'));
+
     }
 
 }
