@@ -232,7 +232,7 @@ class ClassController extends Controller
         }
         $new->thumbnail = GAME_CHARACTER.$fileName;
         $new->save();
-        $pro = $new->owner();
+        $pro = $new->owner;
         return redirect()->route('game.class_faces', [ 'class_id' => $pro->id ]);
     }
 

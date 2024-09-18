@@ -227,7 +227,7 @@ class MonsterController extends Controller
         }
         $new->thumbnail = GAME_MONSTER.$fileName;
         $new->save();
-        $pro = $new->owner();
+        $pro = $new->owner;
         return redirect()->route('game.monster_faces', [ 'monster_id' => $pro->id ]);
     }
 

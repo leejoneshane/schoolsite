@@ -14,6 +14,8 @@ use App\Models\GameSence;
 use App\Models\GameParty;
 use App\Models\GameCharacter;
 use App\Models\GameClass;
+use App\Models\GameItem;
+use App\Models\GameSetting;
 use App\Models\Watchdog;
 
 class GameController extends Controller
@@ -117,7 +119,10 @@ class GameController extends Controller
             }
         }
         $partyless = GameCharacter::findNoParty($room_id);
-        return view('game.roster', [ 'teacher' => $teacher, 'room' => $room, 'parties' => $parties, 'partyless' => $partyless ]);
+        $positive_rules = GameSetting::positive($request->user()->uuid);
+        $negative_rules = GameSetting::negative($request->user()->uuid);
+        $items = GameItem::all();
+        return view('game.roster', [ 'teacher' => $teacher, 'room' => $room, 'parties' => $parties, 'partyless' => $partyless, 'positive_rules' => $positive_rules, 'negative_rules' => $negative_rules, 'items' => $items ]);
     }
 
     public function absent(Request $request)
@@ -170,6 +175,21 @@ class GameController extends Controller
         }
         $room = $character->student->class_id;
         return redirect()->route('game.room', [ 'room_id' => $room ]);
+    }
+
+    public function positive_act(Request $request)
+    {
+
+    }
+
+    public function negative_act(Request $request)
+    {
+
+    }
+
+    public function negative_delay(Request $request)
+    {
+
     }
 
 }
