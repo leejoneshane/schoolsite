@@ -12,6 +12,7 @@ use App\Models\Role;
 use App\Models\Domain;
 use App\Models\Classroom;
 use App\Models\Seniority;
+use App\Models\GameDelay;
 
 class Teacher extends Model
 {
@@ -303,6 +304,12 @@ class Teacher extends Model
     public function last_survey()
     {
         return $this->hasMany('App\Models\OrganizeSurvey', 'uuid', 'uuid')->latest()->first();
+    }
+
+    //取得教師所有遊戲延遲處置列表
+    public function game_delay()
+    {
+        return $this->hasMany('App\Models\GameDelay', 'uuid', 'uuid')->where('act', 0)->orderBy('created_at')->get();
     }
 
     //重新從 LDAP 同步教師個資

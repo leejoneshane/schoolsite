@@ -85,7 +85,7 @@ class GameImage extends Model
 
     public function avaliable()
     {
-        return $this->file_name && file_exists($this->path());
+        return $this->picture && file_exists($this->path());
     }
 
     public function thumb_avaliable()

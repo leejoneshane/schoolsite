@@ -14,43 +14,22 @@ class GameLog extends Model
     protected $fillable = [
         'classroom_id', //班級
         'uuid',         //教師 uuid，若無可省略
-        'party',        //公會 id，若無可省略
-        'character',    //學生 uuid，若無可省略
-        'reason',       //原因（規則、條款、狀態），若無可省略
-        'action',       //動作（獎勵、懲罰、購買、出售、使用、施展、挑戰地下城、地圖冒險）
-        'object',       //對象（學生姓名、公會名稱、地下城名稱、地圖名稱），若無可省略
-        'content',      //內容（家具名稱、道具名稱、技能名稱），若無可省略
-        'result',       //結果（屬性變化、狀態變化、金幣變化、道具變化），若無可省略
+        'party_id',     //公會 id，若無可省略
+        'character_uuid', //學生 uuid，若無可省略
+        'content',      //日誌內容，若無可省略
     ];
 
     //紀錄遊戲日誌
     public static function log(Array $data)
     {
-        switch ($data['action']) {
-            case '獎勵':
-            case '懲罰':
-                    $log = GameLog::create([
-                    'classroom_id' => $data['classroom'],
-                    'uuid' => $data['uuid'],
-                    'reason' => GameSetting::find($data['rule'])->description,
-                    'action' => $data['action'],
-                    'object' => GameCharacter::find($data['object'])->name,
-                    'result' => $data['result'],
-                ]);
-                break;
-            case '購買家具':
-            case '出售家具':
-                $log = GameLog::create([
-                    'classroom_id' => $data['classroom'],
-                    'party' => $data['party'],
-                    'action' => $data['action'],
-                    'content' => GameFurniture::find($data['content'])->name,
-                    'result' => $data['result'],
-                ]);
-                break;
-            case 'buy':
-                break;
-        }
+        $log = GameLog::create([
+            'classroom_id' => $data['classroom'],
+        ]);
+        if ($data['uuid']) $log->uuid = $data['uuid'];
+        if ($data['party']) $log->party = $data['party'];
+        if ($data['character']) $log->character = $data['character'];
+        if ($data['content']) $log->content = $data['content'];
+        $log->save();
         return $log;
     }
 

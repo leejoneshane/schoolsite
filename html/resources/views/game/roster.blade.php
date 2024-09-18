@@ -18,7 +18,7 @@
 @foreach ($parties as $p)
 <p><div class="pb-3">
     @locked($room->id)
-    <input type="checkbox" id="group{{ $p->id }}" onchange="select_party({{ $p->id }});" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:bg-white disabled:border-gray-100">
+    <input type="checkbox" id="group{{ $p->id }}" data-party="{{ $p->id }}" onchange="select_party({{ $p->id }});" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:bg-white disabled:border-gray-100">
     @endlocked
     <div class="inline text-2xl">{{ $p->name }}</div>
     <br><span class="text-sm">{{ $p->description }}</span>
@@ -243,7 +243,7 @@
                     立即執行
                 </button>
                 <button id="delay" onclick="delay();" data-modal-toggle="defaultModal" type="button" class="hidden ms-3 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
-                    延後執行
+                    延遲處置
                 </button>
                 <button id="cancel" onclick="restore();" data-modal-toggle="defaultModal" type="button" class="hidden py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                     取消
@@ -267,11 +267,11 @@
         var node = document.getElementById(uuid);
         if (document.getElementById('absent' + uuid).checked) {
             var value = 'yes';
-            node.removeAttribute('checked');
-            node.setAttribute('disabled', true);
+            node.checked = false;
+            node.disabled = true;
         } else {
             var value = 'no';
-            node.removeAttribute('disabled');
+            node.disabled = false;
         }
         window.axios.post('{{ route('game.absent') }}', {
             uuid: uuid,
@@ -295,9 +295,13 @@
         var nodes = document.querySelectorAll('input[type="checkbox"][data-group]');
         nodes.forEach( (node) => {
             if (value == 'yes') {
-                node.setAttribute('checked', true);
+                if (document.getElementById('absent' + node.id).checked) {
+                    node.checked = false;
+                } else {
+                    node.checked = true;
+                }
             } else {
-                node.removeAttribute('checked');
+                node.checked = false;
             }
         });
     }
@@ -311,9 +315,13 @@
         var nodes = document.querySelectorAll('input[type="checkbox"][data-group="' + pid + '"]');
         nodes.forEach( (node) => {
             if (value == 'yes') {
-                node.setAttribute('checked', true);
+                if (document.getElementById('absent' + node.id).checked) {
+                    node.checked = false;
+                } else {
+                    node.checked = true;
+                }
             } else {
-                node.removeAttribute('checked');
+                node.checked = false;
             }
         });
     }
@@ -327,9 +335,13 @@
         var nodes = document.querySelectorAll('input[type="checkbox"][data-group="no"]');
         nodes.forEach( (node) => {
             if (value == 'yes') {
-                node.setAttribute('checked', true);
+                if (document.getElementById('absent' + node.id).checked) {
+                    node.checked = false;
+                } else {
+                    node.checked = true;
+                }
             } else {
-                node.removeAttribute('checked');
+                node.checked = false;
             }
         });
     }
@@ -442,6 +454,7 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
+        window.location.reload();
     }
 
     function negative_act() {
@@ -469,15 +482,15 @@
             uuids: uuids.toString(),
             rule: rule_id,
             reason: reason,
-            xp: xp,
-            gp: gp,
-            item: item,
+            hp: hp,
+            mp: mp,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
+        window.location.reload();
     }
 
     function delay() {
@@ -505,15 +518,15 @@
             uuids: uuids.toString(),
             rule: rule_id,
             reason: reason,
-            xp: xp,
-            gp: gp,
-            item: item,
+            hp: hp,
+            mp: mp,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
+        window.location.reload();
     }
 </script>
 @endsection

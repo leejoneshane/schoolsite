@@ -415,9 +415,10 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('health', 'App\Http\Controllers\Game\GameController@health')->name('game.health');
     Route::get('roster/{room_id}', 'App\Http\Controllers\Game\GameController@classroom')->name('game.room');
     Route::post('absent', 'App\Http\Controllers\Game\GameController@absent')->name('game.absent');
-    Route::post('positive/act', 'App\Http\Controllers\GameController@positive_act')->name('game.positive_act');
-    Route::post('negative/act', 'App\Http\Controllers\GameController@negative_act')->name('game.negative_act');
-    Route::post('negative/delay', 'App\Http\Controllers\GameController@negative_delay')->name('game.negative_delay');
+    Route::post('positive/act', 'App\Http\Controllers\Game\GameController@positive_act')->name('game.positive_act');
+    Route::post('negative/act', 'App\Http\Controllers\Game\GameController@negative_act')->name('game.negative_act');
+    Route::post('negative/delay', 'App\Http\Controllers\Game\GameController@negative_delay')->name('game.negative_delay');
+    Route::post('negative/regress/{delay_id}', 'App\Http\Controllers\Game\GameController@regress')->name('game.regress');
 
     Route::get('classes', 'App\Http\Controllers\Game\ClassController@index')->name('game.classes');
     Route::get('classes/add', 'App\Http\Controllers\Game\ClassController@add');

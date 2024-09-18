@@ -120,10 +120,16 @@ class ClassroomController extends Controller
 
     function party_insert(Request $request)
     {
+        $group_no = GameParty::findByClass(session('ganeclass'))->count();
+        $group_no ++;
         $party = GameParty::create([
+            'classroom_id' => session('ganeclass'),
+            'group_no' => $group_no,
             'name' => $request->input('name'),
-            'description' => $request->input('description'),
         ]);
+        if (!empty($request->input('description'))) {
+            $party->description = $request->input('description');
+        }
         if ($request->input('base') == 0) {
             $party->base_id = null;
         } else {

@@ -16,6 +16,8 @@ use App\Models\GameCharacter;
 use App\Models\GameClass;
 use App\Models\GameItem;
 use App\Models\GameSetting;
+use App\Models\GameDelay;
+use App\Models\GameLog;
 use App\Models\Watchdog;
 
 class GameController extends Controller
@@ -179,17 +181,105 @@ class GameController extends Controller
 
     public function positive_act(Request $request)
     {
-
+        $add = [];
+        $rule = GameSetting::find($request->input('rule'));
+        $message = '因為'.$rule->description.'獲得上天的祝福：';
+        if ($request->input('xp') > 0) {
+            $xp = $request->input('xp');
+            $add[] = '經驗值' . $xp . '點';
+        }
+        if ($request->input('gp') > 0) {
+            $gp = $request->input('gp');
+            $add[] = '金幣' . $gp . '枚';
+        }
+        if ($request->input('item') > 0) {
+            $item = GameItem::find($request->input('item'));
+            $add[] = '道具' . $item->name . '一個';
+        }
+        $message .= implode('、', $add).'。';
+        $uuids = explode(',', $request->input('uuids'));
+        foreach ($uuids as $uuid) {
+            $character = GameCharacter::find($uuid);
+            if (isset($xp)) $character->xp += $xp;
+            if (isset($gp)) $character->gp += $gp;
+            if (isset($item)) $character->get_item($item->id);
+            $character->save();
+            GameLog::create([
+                'classroom_id' => session('gameclass'),
+                'uuid' => $request->input('uuid'),
+                'character_uuid' => $character->uuid,
+                'content' => $character->seat.' '.$character->name.$message,
+            ]);
+        }
     }
 
     public function negative_act(Request $request)
     {
-
+        $add = [];
+        $rule = GameSetting::find($request->input('rule'));
+        $message = '因為'.$rule->description.'受到天罰損失：';
+        if ($request->input('hp') > 0) {
+            $hp = $request->input('hp');
+            $add[] = '生命力' . $hp . '點';
+        }
+        if ($request->input('mp') > 0) {
+            $mp = $request->input('mp');
+            $add[] = '法力（行動力）' . $mp . '點';
+        }
+        $message .= implode('、', $add).'。';
+        $uuids = explode(',', $request->input('uuids'));
+        foreach ($uuids as $uuid) {
+            $character = GameCharacter::find($uuid);
+            if (isset($hp)) $character->hp -= $hp;
+            if (isset($mp)) $character->mp -= $mp;
+            $character->save();
+            GameLog::create([
+                'classroom_id' => session('gameclass'),
+                'uuid' => $request->input('uuid'),
+                'character_uuid' => $character->uuid,
+                'content' => $character->seat.' '.$character->name.$message,
+            ]);
+        }
     }
 
     public function negative_delay(Request $request)
     {
+        $rule = GameSetting::find($request->input('rule'));
+        GameLog::create([
+            'classroom_id' => session('gameclass'),
+            'uuid' => $request->input('uuid'),
+            'characters' => $request->input('uuids'),
+            'rule' => $rule->id,
+            'hp' => $rule->hp,
+            'mp' => $rule->mp,
+        ]);
+    }
 
+    function regress($delay_id) {
+        $delay = GameDelay::find($delay_id);
+        $add = [];
+        $rule = GameSetting::find($delay->rule);
+        $message = '因為'.$rule->description.'受到天罰損失：';
+        if ($delay->hp > 0) {
+            $add[] = '生命力' . $delay->hp . '點';
+        }
+        if ($delay->mp > 0) {
+            $add[] = '法力（行動力）' . $delay->mp . '點';
+        }
+        $message .= implode('、', $add).'。';
+        $uuids = explode(',', $delay->characters);
+        foreach ($uuids as $uuid) {
+            $character = GameCharacter::find($uuid);
+            if (isset($hp)) $character->hp -= $delay->hp;
+            if (isset($mp)) $character->mp -= $delay->mp;
+            $character->save();
+            GameLog::create([
+                'classroom_id' => $delay->classroom_id,
+                'uuid' => $delay->uuid,
+                'character_uuid' => $character->uuid,
+                'content' => $character->seat.' '.$character->name.$message,
+            ]);
+        }
     }
 
 }

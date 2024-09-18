@@ -7,7 +7,7 @@
         <i class="fa-solid fa-circle-plus"></i>新增公會
     </a>
 </div>
-<div class="w-full h-full flex flex-row gap-x-10 justify-center">
+<div class="w-full h-full flex flex-row gap-x-10">
     <div id="nogroup" droppable="true" class="drop w-60 h-screen flex-none bg-teal-100 rounded-lg p-5 space-y-2">
         <div class="w-full text-center text-lg">未分組</div>
         @foreach ($partyless as $s)
