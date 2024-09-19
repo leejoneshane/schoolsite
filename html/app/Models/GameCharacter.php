@@ -337,7 +337,7 @@ class GameCharacter extends Model
     //角色日常更新
     public function newday()
     {
-        if ($this->party->configure) {
+        if ($this->party && $this->party->configure) {
             $this->mp += $this->party->configure->daily_mp;
             if ($this->party->effect_hp != 0) {
                 $i = intval($this->party->effect_hp);

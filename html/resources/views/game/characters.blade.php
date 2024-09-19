@@ -52,7 +52,7 @@
             </td>
             @endif
             <td class="p-2">{{ $p->furnitures ? $p->furnitures->count() : '0' }}</td>
-            <td class="p-2">{{ $p->withAbsent->count() }}</td>
+            <td class="p-2">{{ $p->withAbsent ? $p->withAbsent->count() : '0'}}</td>
             <td class="p-2">{{ $p->treasury }}</td>
             <td class="p-2">{{ $p->effect_hp }}</td>
             <td class="p-2">{{ $p->effect_mp }}</td>

@@ -111,8 +111,10 @@ class ClassroomController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            $group_no = GameParty::findByClass(session('ganeclass'))->count();
+            $group_no ++;
             $bases = GameBase::all();
-            return view('game.party_add', [ 'bases' => $bases]);
+            return view('game.party_add', [ 'group_no' => $group_no, 'bases' => $bases]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -120,11 +122,10 @@ class ClassroomController extends Controller
 
     function party_insert(Request $request)
     {
-        $group_no = GameParty::findByClass(session('ganeclass'))->count();
-        $group_no ++;
+
         $party = GameParty::create([
             'classroom_id' => session('ganeclass'),
-            'group_no' => $group_no,
+            'group_no' => $request->input('group_no'),
             'name' => $request->input('name'),
         ]);
         if (!empty($request->input('description'))) {
@@ -155,6 +156,7 @@ class ClassroomController extends Controller
     function party_update(Request $request, $party_id)
     {
         $party = GameParty::find($party_id);
+        $party->group_no = $request->input('group_no');
         $party->name = $request->input('name');
         $party->description = $request->input('description');
         if ($request->input('base') == 0) {

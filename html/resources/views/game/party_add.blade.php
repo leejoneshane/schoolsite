@@ -10,13 +10,15 @@
 <form id="add-class" action="{{ route('game.party_add') }}" method="POST">
     @csrf
     <p><div class="p-3">
-        <label for="name" class="text-base">公會名稱：</label>
-        <input type="text" id="name" name="name" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
+        <label for="group_no" class="text-base">序號：</label>
+        <input type="number" id="group_no" name="group_no" min="1" max="8" step="1" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
     </div></p>
     <p><div class="p-3">
-        <label for="description" class="text-base">公會宗旨（口號）：</label>
+        <input type="text" id="name" name="name" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" placeholder="請輸入公會名稱..." required>
+    </div></p>
+    <p><div class="p-3">
         <textarea id="description" class="inline w-128 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            name="description" rows="5" cols="120"></textarea>
+            name="description" rows="5" cols="120" placeholder="請輸入公會成立宗旨、目標、或口號..."></textarea>
     </div></p>
     <td class="p-3">
         <label class="text-base">選擇據點：</label>

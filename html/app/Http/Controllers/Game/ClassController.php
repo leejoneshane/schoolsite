@@ -187,13 +187,15 @@ class ClassController extends Controller
     {
         $filename = $request->get('filename');
         $object = GameImage::where('picture', 'like', '%'.$filename)->first();
-        $path = public_path($object->picture);
-        if (file_exists($path)) unlink($path);
-        if ($object->thumbnail) {
-            $path2 = public_path($object->thumbnail);
-            if (file_exists($path2)) unlink($path2);
+        if ($object) {
+            $path = public_path($object->picture);
+            if (file_exists($path)) unlink($path);
+            if ($object->thumbnail) {
+                $path2 = public_path($object->thumbnail);
+                if (file_exists($path2)) unlink($path2);
+            }
+            $object->delete();    
         }
-        $object->delete();
         return response()->json(['success' => $filename]);
     }
 
