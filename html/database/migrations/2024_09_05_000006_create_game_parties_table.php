@@ -26,6 +26,7 @@ return new class extends Migration
             $table->float('effect_dp')->default(0);
             $table->float('effect_sp')->default(0);
             $table->integer('treasury')->default(0);
+            $table->integer('pick_up')->default(0);
             $table->timestamps();
         });
     }

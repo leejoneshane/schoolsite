@@ -37,6 +37,59 @@ class GameController extends Controller
                 } else {
                     $cls->lockBy = null;
                 }
+                $error = [];
+                $parties = GameParty::findByClass($cls->id);
+                if ($parties->count() < 1) {
+                    $error[] = '尚未分組';
+                }
+                $count = 0;
+                $data = [];
+                $noparty = GameCharacter::findNoParty($cls->id);
+                if ($noparty->count() > 0) {
+                    foreach ($noparty as $c) {
+                        $count ++;
+                        $data[] = $c->name;
+                    }
+                    if ($count < 10) {
+                        $error[] = '以下學生沒有組別：'.implode('、', $data);
+                    } else {
+                        $error[] = '共有'.$count.'位學生沒有組別';
+                    }
+                }
+                $count1 = 0;
+                $count2 = 0;
+                $data1 = [];
+                $data2 = [];
+                $characters = GameCharacter::findByClass($cls->id);
+                foreach ($characters as $char) {
+                    if (!$char->class_id) {
+                        $count1 ++;
+                        $data1[] = $char->name;
+                    }
+                    if (!$char->image_id) {
+                        $count2 ++;
+                        $data2[] = $char->name;
+                    }
+                }
+                if ($count1 > 0) {
+                    if ($count1 < 10) {
+                        $error[] = '以下學生尚未設定職業：'.implode('、', $data1);
+                    } else {
+                        $error[] = '共有'.$count1.'位尚未設定職業';
+                    }    
+                }
+                if ($count2 > 0) {
+                    if ($count2 < 10) {
+                        $error[] = '以下學生尚未選擇角色圖像：'.implode('、', $data2);
+                    } else {
+                        $error[] = '共有'.$count2.'位尚未選擇角色圖像';
+                    }    
+                }
+                if (count($error) > 0) {
+                    $cls->error = implode('，', $error).'。';
+                } else {
+                    $cls->error = null;
+                }
             }
             return view('game.index', [ 'classes' => $classes ]);
         } else {
@@ -182,8 +235,12 @@ class GameController extends Controller
     public function positive_act(Request $request)
     {
         $add = [];
-        $rule = GameSetting::find($request->input('rule'));
-        $message = '因為'.$rule->description.'獲得上天的祝福：';
+        if ($request->input('rule') > 0) {
+            $rule = GameSetting::find($request->input('rule'));
+            $message = '因為'.$rule->description.'獲得上天的祝福：';
+        } else {
+            $message = '因為'.$request->input('reason').'獲得上天的祝福：';
+        }
         if ($request->input('xp') > 0) {
             $xp = $request->input('xp');
             $add[] = '經驗值' . $xp . '點';
@@ -200,24 +257,30 @@ class GameController extends Controller
         $uuids = explode(',', $request->input('uuids'));
         foreach ($uuids as $uuid) {
             $character = GameCharacter::find($uuid);
-            if (isset($xp)) $character->xp += $xp;
-            if (isset($gp)) $character->gp += $gp;
-            if (isset($item)) $character->get_item($item->id);
-            $character->save();
-            GameLog::create([
-                'classroom_id' => session('gameclass'),
-                'uuid' => $request->input('uuid'),
-                'character_uuid' => $character->uuid,
-                'content' => $character->seat.' '.$character->name.$message,
-            ]);
+            if ($character->class_id) {
+                if (isset($xp)) $character->xp += $xp;
+                if (isset($gp)) $character->gp += $gp;
+                if (isset($item)) $character->get_item($item->id);
+                $character->save();
+                GameLog::create([
+                    'classroom_id' => session('gameclass'),
+                    'uuid' => $request->input('uuid'),
+                    'character_uuid' => $character->uuid,
+                    'content' => $character->seat.' '.$character->name.$message,
+                ]);
+            }
         }
     }
 
     public function negative_act(Request $request)
     {
         $add = [];
-        $rule = GameSetting::find($request->input('rule'));
-        $message = '因為'.$rule->description.'受到天罰損失：';
+        if ($request->input('rule') > 0) {
+            $rule = GameSetting::find($request->input('rule'));
+            $message = '因為'.$rule->description.'受到天罰損失：';
+        } else {
+            $message = '因為'.$request->input('reason').'受到天罰損失：';
+        }
         if ($request->input('hp') > 0) {
             $hp = $request->input('hp');
             $add[] = '生命力' . $hp . '點';
@@ -230,36 +293,57 @@ class GameController extends Controller
         $uuids = explode(',', $request->input('uuids'));
         foreach ($uuids as $uuid) {
             $character = GameCharacter::find($uuid);
-            if (isset($hp)) $character->hp -= $hp;
-            if (isset($mp)) $character->mp -= $mp;
-            $character->save();
-            GameLog::create([
-                'classroom_id' => session('gameclass'),
-                'uuid' => $request->input('uuid'),
-                'character_uuid' => $character->uuid,
-                'content' => $character->seat.' '.$character->name.$message,
-            ]);
+            if ($character->class_id) {
+                if ($character->status != DEAD) {
+                    if (isset($hp)) $character->hp -= $hp;
+                }
+                if ($character->status != COMA) {
+                    if (isset($mp)) $character->mp -= $mp;
+                }
+                $character->save();
+                GameLog::create([
+                    'classroom_id' => session('gameclass'),
+                    'uuid' => $request->input('uuid'),
+                    'character_uuid' => $character->uuid,
+                    'content' => $character->seat.' '.$character->name.$message,
+                ]);
+            }
         }
     }
 
     public function negative_delay(Request $request)
     {
-        $rule = GameSetting::find($request->input('rule'));
-        GameDelay::create([
-            'classroom_id' => session('gameclass'),
-            'uuid' => $request->input('uuid'),
-            'characters' => $request->input('uuids'),
-            'rule' => $rule->id,
-            'hp' => $rule->hp,
-            'mp' => $rule->mp,
-        ]);
+        if ($request->input('rule') > 0) {
+            $rule = GameSetting::find($request->input('rule'));
+            GameDelay::create([
+                'classroom_id' => session('gameclass'),
+                'uuid' => $request->input('uuid'),
+                'characters' => $request->input('uuids'),
+                'rule' => $rule->id,
+                'hp' => $request->input('hp'),
+                'mp' => $request->input('mp'),
+            ]);
+        } else {
+            GameDelay::create([
+                'classroom_id' => session('gameclass'),
+                'uuid' => $request->input('uuid'),
+                'characters' => $request->input('uuids'),
+                'reason' => $request->input('reason'),
+                'hp' => $request->input('hp'),
+                'mp' => $request->input('mp'),
+            ]);
+        }
     }
 
     function regress($delay_id) {
         $delay = GameDelay::find($delay_id);
         $add = [];
-        $rule = GameSetting::find($delay->rule);
-        $message = '因為'.$rule->description.'受到天罰損失：';
+        if ($delay->rule) {
+            $rule = GameSetting::find($delay->rule);
+            $message = '因為'.$rule->description.'受到天罰損失：';
+        } else {
+            $message = '因為'.$rule->reason.'受到天罰損失：';
+        }
         if ($delay->hp > 0) {
             $add[] = '生命力' . $delay->hp . '點';
         }
@@ -270,25 +354,35 @@ class GameController extends Controller
         $uuids = explode(',', $delay->characters);
         foreach ($uuids as $uuid) {
             $character = GameCharacter::find($uuid);
-            if (isset($hp)) $character->hp -= $delay->hp;
-            if (isset($mp)) $character->mp -= $delay->mp;
-            $character->save();
-            GameLog::create([
-                'classroom_id' => $delay->classroom_id,
-                'uuid' => $delay->uuid,
-                'character_uuid' => $character->uuid,
-                'content' => $character->seat.' '.$character->name.$message,
-            ]);
+            if ($character->class_id) {
+                if ($character->status != DEAD) {
+                    if (isset($hp)) $character->hp -= $delay->hp;
+                }
+                if ($character->status != COMA) {
+                    if (isset($mp)) $character->mp -= $delay->mp;
+                }
+                $character->save();
+                GameLog::create([
+                    'classroom_id' => $delay->classroom_id,
+                    'uuid' => $delay->uuid,
+                    'character_uuid' => $character->uuid,
+                    'content' => $character->seat.' '.$character->name.$message,
+                ]);
+            }
         }
         $delay->act = true;
         $delay->save();
     }
 
-    function pickup()
+    function pickup(Request $request, $room_id)
     {
-        $parties = GameParty::findByClass(session('gameclass'));
-        $characters = GameCharacter::findByClass(session('gameclass'));
-
+        $room = Classroom::find($room_id);
+        $parties = GameParty::wheel($room_id);
+        $characters = GameCharacter::wheel($room_id);
+        $positive_rules = GameSetting::positive($request->user()->uuid);
+        $negative_rules = GameSetting::negative($request->user()->uuid);
+        $items = GameItem::all();
+        return view('game.wheel', [ 'room' => $room, 'parties' => $parties, 'characters' => $characters, 'positive_rules' => $positive_rules, 'negative_rules' => $negative_rules, 'items' => $items ]);
     }
 
 }

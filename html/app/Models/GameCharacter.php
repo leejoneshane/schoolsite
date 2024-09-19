@@ -73,6 +73,7 @@ class GameCharacter extends Model
         'effect_timeout',//增益結束時間，timestamp
         'buff',          //特殊效果
         'absent',        //缺席
+        'pick_up',       //中籤次數
     ];
 
     //以下為透過程式動態產生之屬性
@@ -92,6 +93,31 @@ class GameCharacter extends Model
         'items',
         'image',
     ];
+
+    //更新角色時，自動進行升級
+    protected static function booted()
+    {
+        static::updated(function($item)
+        {
+            if ($item->xp > 0) {
+                $item->levelup();
+            }
+        });
+    }
+
+    //選取可抽籤的角色，靜態函式
+    public static function wheel($room_id)
+    {
+        $uuids = Classroom::find($room_id)->uuids();
+        $data = GameCharacter::select(DB::raw('MIN(pick_up) AS min, MAX(pick_up) AS max'))
+            ->whereIn('uuid', $uuids)
+            ->get()->first();
+        if ($data->min == $data->max) {
+            return GameCharacter::findByClass($room_id);
+        } else {
+            return GameCharacter::whereIn('uuid', $uuids)->where('pick_up', $data->min)->get();
+        }
+    }
 
     //篩選指定的班級的所有角色
     public static function findByClass($classroom)
@@ -217,60 +243,51 @@ class GameCharacter extends Model
         return NORMAL;
     }
 
-    //更新角色時，自動進行升級
-    protected static function booted()
-    {
-        static::updated(function($item)
-        {
-            if ($item->xp > 0) {
-                $item->levelup();
-            }
-        });
-    }
-
     //檢查此角色是否可升級，若可以則進行升級
     public function levelup()
     {
-        while ($this->xp >= $this->levelup_needed[$this->level + 1]) {
-            $this->level += 1;
-            if (rand() < $this->prefession->hp_lvlup) {
-                if ($this->prefession->hp_lvlup >= 1) {
-                    $this->max_hp += rand(1,$this->prefession->hp_lvlup);
-                } else {
-                    $this->max_hp++;
+        if ($this->prefession) {
+            while ($this->xp >= static::$levelup_needed[$this->level + 1]) {
+                $this->level += 1;
+                if (rand() < $this->prefession->hp_lvlup) {
+                    if ($this->prefession->hp_lvlup >= 1) {
+                        $this->max_hp += rand(1,$this->prefession->hp_lvlup);
+                    } else {
+                        $this->max_hp++;
+                    }
+                }
+                if (rand() < $this->prefession->mp_lvlup) {
+                    if ($this->prefession->mp_lvlup >= 1) {
+                        $this->max_mp += rand(1, $this->prefession->mp_lvlup);
+                    } else {
+                        $this->max_mp++;
+                    }
+                }
+                if (rand() < $this->prefession->ap_lvlup) {
+                    if ($this->prefession->ap_lvlup >= 1) {
+                        $this->ap += rand(1, $this->prefession->ap_lvlup);
+                    } else {
+                        $this->ap++;
+                    }
+                }
+                if (rand() < $this->prefession->dp_lvlup) {
+                    if ($this->prefession->dp_lvlup >= 1) {
+                        $this->dp += rand(1, $this->prefession->dp_lvlup);
+                    } else {
+                        $this->dp++;
+                    }
+                }
+                if (rand() < $this->prefession->sp_lvlup) {
+                    if ($this->prefession->sp_lvlup >= 1) {
+                        $this->sp += rand(1, $this->prefession->sp_lvlup);
+                    } else {
+                        $this->sp++;
+                    }
                 }
             }
-            if (rand() < $this->prefession->mp_lvlup) {
-                if ($this->prefession->mp_lvlup >= 1) {
-                    $this->max_mp += rand(1, $this->prefession->mp_lvlup);
-                } else {
-                    $this->max_mp++;
-                }
-            }
-            if (rand() < $this->prefession->ap_lvlup) {
-                if ($this->prefession->ap_lvlup >= 1) {
-                    $this->ap += rand(1, $this->prefession->ap_lvlup);
-                } else {
-                    $this->ap++;
-                }
-            }
-            if (rand() < $this->prefession->dp_lvlup) {
-                if ($this->prefession->dp_lvlup >= 1) {
-                    $this->dp += rand(1, $this->prefession->dp_lvlup);
-                } else {
-                    $this->dp++;
-                }
-            }
-            if (rand() < $this->prefession->sp_lvlup) {
-                if ($this->prefession->sp_lvlup >= 1) {
-                    $this->sp += rand(1, $this->prefession->sp_lvlup);
-                } else {
-                    $this->sp++;
-                }
-            }
+            $this->hp = $this->max_hp;
+            $this->save();    
         }
-        $this->hp = $this->max_hp;
-        $this->save();
     }
 
     //取得此角色的學生物件
@@ -320,39 +337,41 @@ class GameCharacter extends Model
     //角色日常更新
     public function newday()
     {
-        $this->mp += $this->party->configure->daily_mp;
-        if ($this->party->effect_hp != 0) {
-            $i = intval($this->party->effect_hp);
-            $d = $this->party->effect_hp - $i;
-            if ($i != 0) {
-                $this->hp += $i;
+        if ($this->party->configure) {
+            $this->mp += $this->party->configure->daily_mp;
+            if ($this->party->effect_hp != 0) {
+                $i = intval($this->party->effect_hp);
+                $d = $this->party->effect_hp - $i;
+                if ($i != 0) {
+                    $this->hp += $i;
+                }
+                if ($d != 0) {
+                    $this->hp += intval($this->max_hp * $d);
+                }
             }
-            if ($d != 0) {
-                $this->hp += intval($this->max_hp * $d);
+            if ($this->party->effect_mp != 0) {
+                $i = intval($this->party->effect_mp);
+                $d = $this->party->effect_mp - $i;
+                if ($i != 0) {
+                    $this->mp += $i;
+                }
+                if ($d != 0) {
+                    $this->mp += intval($this->max_mp * $d);
+                }
             }
-        }
-        if ($this->party->effect_mp != 0) {
-            $i = intval($this->party->effect_mp);
-            $d = $this->party->effect_mp - $i;
-            if ($i != 0) {
-                $this->mp += $i;
+            if ($this->mp < 1) {
+                $this->mp = 0;
+                $this->status = 'COMA';
             }
-            if ($d != 0) {
-                $this->mp += intval($this->max_mp * $d);
+            if ($this->mp > $this->max_mp) $this->mp = $this->max_mp;
+            if ($this->hp < 1) {
+                $this->hp = 0;
+                $this->status = 'DEAD';
             }
+            if ($this->hp > $this->max_hp) $this->hp = $this->max_hp;
+            $this->absent = false;
+            $this->save();    
         }
-        if ($this->mp < 1) {
-            $this->mp = 0;
-            $this->status = 'COMA';
-        }
-        if ($this->mp > $this->max_mp) $this->mp = $this->max_mp;
-        if ($this->hp < 1) {
-            $this->hp = 0;
-            $this->status = 'DEAD';
-        }
-        if ($this->hp > $this->max_hp) $this->hp = $this->max_hp;
-        $this->absent = false;
-        $this->save();
     }
 
     //使用指定的道具

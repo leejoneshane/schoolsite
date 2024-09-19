@@ -149,15 +149,14 @@ class ClassController extends Controller
             $path = public_path(GAME_CHARACTER.$fileName);
             $manager = new ImageManager(new Driver());
             $file = $manager->read($path);
-            if ($file->width() > 450) {
-                $file->scale(width: 450);
+            if ($file->width() > 900) {
+                $file->scale(width: 900);
                 $file->toPng()->save($path);
             }
-            $new = GameImage::create([ 'file_name' => GAME_CHARACTER.$fileName ]);
             GameImage::create([ 
                 'owner_id' => $class_id,
                 'owner_type' => 'App\\Models\\GameClass',
-                'picture' => GAME_MONSTER.$fileName
+                'picture' => GAME_CHARACTER.$fileName,
             ]);
             return response()->json(['success' => $fileName]);
         }
@@ -165,6 +164,7 @@ class ClassController extends Controller
 
     public function scan($class_id)
     {
+        $tableImages = [];
         $images = GameImage::forClass($class_id);
         foreach ($images as $image) {
             $tableImages[] = basename($image->picture);
@@ -186,7 +186,7 @@ class ClassController extends Controller
     public function destroy(Request $request)
     {
         $filename = $request->get('filename');
-        $object = GameImage::where('picture', $filename)->first();
+        $object = GameImage::where('picture', 'like', '%'.$filename)->first();
         $path = public_path($object->picture);
         if (file_exists($path)) unlink($path);
         if ($object->thumbnail) {
@@ -221,8 +221,8 @@ class ClassController extends Controller
         $path = public_path(GAME_CHARACTER.$fileName);
         $manager = new ImageManager(new Driver());
         $file = $manager->read($path);
-        if ($file->width() > 80) {
-            $file->resize(80, 80);
+        if ($file->width() > 200) {
+            $file->resize(200, 200);
             $file->toPng()->save($path);
         }
         $new = GameImage::find($image_id);

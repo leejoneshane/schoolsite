@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 use App\Models\GameBase;
 
 class GameParty extends Model
@@ -23,6 +24,7 @@ class GameParty extends Model
         'effect_dp',   //據點對隊伍成員在防禦力上面的增益
         'effect_sp',   //據點對隊伍成員在敏捷力上面的增益
         'treasury',    //據點金庫
+        'pick_up',     //中籤次數
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）
@@ -38,6 +40,19 @@ class GameParty extends Model
     protected $casts = [
         'furnitures' => 'array',
     ];
+
+    //選取可抽籤的公會
+    public static function wheel($room_id)
+    {
+        $data = GameParty::select(DB::raw('MIN(pick_up) AS min, MAX(pick_up) AS max'))
+            ->where('classroom_id', $room_id)
+            ->get()->first();
+        if ($data->min == $data->max) {
+            return GameParty::findByClass($room_id);
+        } else {
+            return GameParty::where('classroom_id', $room_id)->where('pick_up', $data->min)->get();
+        }
+    }
 
     //篩選指定的班級
     public static function findByClass($classroom)
@@ -64,7 +79,7 @@ class GameParty extends Model
     }
 
     //取得此隊伍的所有角色（包含缺席）
-    public function withAdsent()
+    public function withAbsent()
     {
         return $this->hasMany('App\Models\GameCharacter', 'party_id', 'id')->orderBy('seat');
     }
@@ -143,7 +158,7 @@ class GameParty extends Model
         }
     }
 
-    //購買指定的家具
+    //加入指定的成員
     public function add_member($uuid)
     {
         $newgay = GameCharacter::find($uuid);
@@ -151,7 +166,7 @@ class GameParty extends Model
         $newgay->save();
     }
 
-    //移除指定的家具
+    //移除指定的成員
     public function remove_member($uuid)
     {
         $gay = GameCharacter::find($uuid);

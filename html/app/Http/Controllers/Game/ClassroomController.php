@@ -166,6 +166,17 @@ class ClassroomController extends Controller
         return redirect()->back();
     }
 
+    function party_remove(Request $request, $party_id)
+    {
+        $party = GameParty::find($party_id);
+        foreach ($party->withAbsent as $char) {
+            $char->party_id = null;
+            $char->save();
+        }
+        $party->delete();
+        return redirect()->back();
+    }
+
     function characters()
     {
         $user = User::find(Auth::user()->id);

@@ -419,6 +419,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('negative/act', 'App\Http\Controllers\Game\GameController@negative_act')->name('game.negative_act');
     Route::post('negative/delay', 'App\Http\Controllers\Game\GameController@negative_delay')->name('game.negative_delay');
     Route::post('negative/regress/{delay_id}', 'App\Http\Controllers\Game\GameController@regress')->name('game.regress');
+    Route::get('pickup/{room_id}', 'App\Http\Controllers\Game\GameController@pickup')->name('game.pickup');
 
     Route::get('classes', 'App\Http\Controllers\Game\ClassController@index')->name('game.classes');
     Route::get('classes/add', 'App\Http\Controllers\Game\ClassController@add');
@@ -486,6 +487,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('group/add', 'App\Http\Controllers\Game\ClassroomController@party_insert')->name('game.party_add');
     Route::get('group/edit/{party_id}', 'App\Http\Controllers\Game\ClassroomController@party_edit');
     Route::post('group/edit/{party_id}', 'App\Http\Controllers\Game\ClassroomController@party_update')->name('game.party_edit');
+    Route::post('group/remove/{party_id}', 'App\Http\Controllers\Game\ClassroomController@party_remove')->name('game.party_remove');
     Route::get('characters/fast/{uuid}', 'App\Http\Controllers\Game\GameController@fast_edit');
     Route::post('characters/fast/{uuid}', 'App\Http\Controllers\Game\GameController@fast_update')->name('game.character_edit');
     Route::get('characters', 'App\Http\Controllers\Game\ClassroomController@characters')->name('game.characters');

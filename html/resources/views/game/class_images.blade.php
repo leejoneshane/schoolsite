@@ -20,7 +20,7 @@
 </h1>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
-        僅接受去背的圖片，圖片格式為 PNG 或 GIF，圖片解析度為直立式 3:4 (450x600)。
+        僅接受去背的圖片，圖片格式為 PNG 或 GIF，圖片解析度為直立式 3:4 (900x1200)。
     </p>
 </div>
 <div class="dropzone-container">

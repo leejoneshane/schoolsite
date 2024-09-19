@@ -36,6 +36,7 @@ return new class extends Migration
             $table->timestamp('effect_timeout')->nullable();
             $table->string('buff')->nullable();
             $table->boolean('absent')->default(0);
+            $table->integer('pick_up')->default(0);
             $table->timestamps();
         });
     }

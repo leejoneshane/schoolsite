@@ -18,6 +18,7 @@ class GameDelay extends Model
         'uuid',         //教師 uuid
         'characters',   //受處罰學生的 uuid (Json 格式)
         'rule',         //違反條款的內容
+        'reason',       //臨時條款的內容
         'hp',           //應扣健康值
         'mp',           //應扣行動力
         'act',          //是否已執行

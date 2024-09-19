@@ -200,7 +200,7 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\TelescopeServiceProvider::class,
         App\Providers\TpeduServiceProvider::class,
-        App\Providers\ADServiceProvider::class,
+//        App\Providers\ADServiceProvider::class,
         App\Providers\GsuiteServiceProvider::class,
         App\Providers\GcalendarServiceProvider::class,
     ],

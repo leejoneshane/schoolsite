@@ -9,7 +9,7 @@
         </div>
         @locked(session('gameclass'))
         <div class="py-2 text-center">
-            <a href="/game/pickup"><i class="text-2xl fa-solid fa-dice-d20" title="抽籤機"></i></a>
+            <a href="{{ session('gameclass') ? route('game.pickup', [ 'room_id' => session('gameclass') ]) : '#' }}"><i class="text-2xl fa-solid fa-dice-d20" title="抽籤機"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="/game/timer"><i class="text-2xl fa-solid fa-stopwatch-20" title="計時器"></i></a>

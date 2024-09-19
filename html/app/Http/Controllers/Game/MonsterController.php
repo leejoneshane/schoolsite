@@ -146,14 +146,14 @@ class MonsterController extends Controller
             $path = public_path(GAME_MONSTER.$fileName);
             $manager = new ImageManager(new Driver());
             $file = $manager->read($path);
-            if ($file->width() > 300) {
-                $file->scale(width: 300);
+            if ($file->width() > 900) {
+                $file->scale(width: 900);
                 $file->toPng()->save($path);
             }
             GameImage::create([ 
                 'owner_id' => $monster_id,
                 'owner_type' => 'App\\Models\\GameMonster',
-                'file_name' => GAME_MONSTER.$fileName
+                'picture' => GAME_MONSTER.$fileName,
             ]);
             return response()->json(['success' => $fileName]);
         }
@@ -161,6 +161,7 @@ class MonsterController extends Controller
 
     public function scan($monster_id)
     {
+        $tableImages = [];
         $images = GameImage::forMonster($monster_id);
         foreach ($images as $image) {
             $tableImages[] = basename($image->picture);
@@ -215,8 +216,8 @@ class MonsterController extends Controller
         $path = public_path(GAME_MONSTER.$fileName);
         $manager = new ImageManager(new Driver());
         $file = $manager->read($path);
-        if ($file->width() > 80) {
-            $file->resize(80, 80);
+        if ($file->width() > 200) {
+            $file->resize(200, 200);
             $file->toPng()->save($path);
         }
         $file->toPng()->save($path);

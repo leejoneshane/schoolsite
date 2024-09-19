@@ -33,6 +33,7 @@ module.exports = {
             backgroundImage: {
                 'game-map': "url('/images/game/map.png')",
                 'game-map50': "url('/images/game/map50.png')",
+                'game-wheel': "url('/images/game/wheel.png')",
             }
         }
     },

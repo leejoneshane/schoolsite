@@ -20,7 +20,7 @@
 </h1>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
-        請先下載角色圖片，然後使用<a class="px-2 text-blue-500" href="https://fengyuanchen.github.io/cropperjs/">切圖工具</a>剪裁臉部特寫後再上傳，圖片格式為 PNG，圖片解析度固定為 80x80。
+        請先下載角色圖片，然後使用<a target="_blank" class="px-2 text-blue-500" href="https://fengyuanchen.github.io/cropperjs/">切圖工具</a>剪裁臉部特寫後再上傳，圖片格式為 PNG，圖片解析度固定為 200x200。
     </p>
 </div>
 <table class="w-full py-4 text-left font-normal">

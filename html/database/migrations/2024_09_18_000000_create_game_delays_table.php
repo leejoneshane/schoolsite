@@ -19,6 +19,7 @@ return new class extends Migration
             $table->uuid('uuid');
             $table->json('characters');
             $table->integer('rule')->nullable();
+            $table->string('reason')->nullable();
             $table->integer('hp')->default(0);
             $table->integer('mp')->default(0);
             $table->boolean('act')->default(0);
