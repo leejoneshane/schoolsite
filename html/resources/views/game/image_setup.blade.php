@@ -2,16 +2,16 @@
 
 @section('content')
 <div class="h-full flex">
-<div class="w-1/2 h-full mt-80 flex">
+<div class="w-1/2 h-full mt-20 grid grid-cols-4 grid-flow-row gap-1">
     @foreach ($character->profession->images as $img)
-    <div id="{{ $img->id }}" class="z-10 inline-flex flex-col w-20 h-20 p-2 text-gray-500 bg-white bg-opacity-50 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-blue-500 hover:bg-opacity-50 hover:border-blue-500"
+    <div id="{{ $img->id }}" class="z-10 inline-flex flex-col w-40 h-40 p-2 text-gray-500 bg-white bg-opacity-50 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-blue-500 hover:bg-opacity-50 hover:border-blue-500"
          onmouseover="show({{$img->id}})" onclick="setup({{$img->id}});">
-        <img src="{{ $img && $img->avaliable() ? $img->thumb_url() : '' }}" class="w-20 z-20" />
+        <img src="{{ $img && $img->avaliable() ? $img->thumb_url() : '' }}" class="w-40 h-40 z-20" />
     </div>
     @endforeach
 </div>
-<div class="w-1/2 h-full inline-flex place-items-center">
-    <img src="" id="big" class="w-auto h-auto" />
+<div class="w-1/2 h-full">
+    <img src="" id="big" class="absolute w-1/3 bottom-0 right-20 z-50" />
 </div>
 </div>
 <form class="hidden" id="save" action="{{ route('game.image_setup', [ 'uuid' => $character->uuid ]) }}" method="POST">
