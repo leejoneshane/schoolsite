@@ -242,7 +242,7 @@
                 <button id="confirm2" onclick="negative_act();" data-modal-toggle="defaultModal" type="button" class="hidden text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     立即執行
                 </button>
-                <button id="delay" onclick="delay();" data-modal-toggle="defaultModal" type="button" class="hidden ms-3 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
+                <button id="delay" onclick="negative_delay();" data-modal-toggle="defaultModal" type="button" class="hidden ms-3 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">
                     延遲處置
                 </button>
                 <button id="cancel" onclick="restore();" data-modal-toggle="defaultModal" type="button" class="hidden py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
@@ -493,7 +493,7 @@
         window.location.reload();
     }
 
-    function delay() {
+    function negative_delay() {
         var nodes = document.querySelectorAll('input[type="checkbox"][data-group]:checked');
         nodes.forEach( (node) => {
             uuids.push(node.id);
