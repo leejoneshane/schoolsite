@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Classroom;
+use App\Models\Seats;
 use App\Models\GameConfigure;
 use App\Models\GameParty;
 use App\Models\GameCharacter;
@@ -234,6 +236,177 @@ class ClassroomController extends Controller
         $character->image_id = $request->input('image_id');
         $character->save();
         return redirect()->route('game.characters');
+    }
+
+    function reset()
+    {
+        $room = Classroom::find(session('gameclass'));
+        return view('game.classroom_reset', [ 'room' => $room ]);
+    }
+
+    function do_reset(Request $request)
+    {
+        $room_id = session('gameclass');
+        $myclass = Classroom::find($room_id);
+        $students = $myclass->students;
+        foreach ($students as $stu) {
+            $character = GameCharacter::find($stu->uuid);
+            if (!$character) {
+                GameCharacter::create([
+                    'uuid' => $stu->uuid,
+                    'classroom_id' => $room_id,
+                    'party_id' => null,
+                    'seat' => $stu->seat,
+                    'name' => $stu->realname,
+                ]);    
+            }
+        }
+        if ($request->input('party') == 'yes') {
+            GameParty::where('classroom_id', $room_id)->delete();
+            $seats = Seats::where('uuid', $request->user()->uuid)->where('class_id', $room_id)->first();
+            if (!$seats) $seats = Seats::findByClass($room_id)->first();
+            if ($seats) {
+                $grouped = $seats->students->groupBy(function ($stu) {
+                    return $stu->pivot->group_no;
+                });
+                foreach ($grouped as $gno => $students) {
+                    $party = GameParty::create([
+                        'classroom_id' => $room_id,
+                        'group_no' => $gno,
+                        'name' => '第'.$gno.'組',
+                    ]);
+                    foreach ($students as $stu) {
+                        GameCharacter::create([
+                            'uuid' => $stu->uuid,
+                            'classroom_id' => $room_id,
+                            'party_id' => $party->id,
+                            'seat' => $stu->seat,
+                            'name' => $stu->realname,
+                        ]);
+                    }
+                }
+                $parties = GameParty::findByClass($room_id);
+            }
+        } else {
+            if ($request->input('base') == 'yes') {
+                $parties = GameParty::findByClass($room_id);
+                foreach ($parties as $p) {
+                    if ($p->fundation) {
+                        $p->effect_hp -= $p->fundation->hp;
+                        $p->effect_mp -= $p->fundation->mp;
+                        $p->effect_ap -= $p->fundation->ap;
+                        $p->effect_dp -= $p->fundation->dp;
+                        $p->effect_sp -= $p->fundation->sp;
+                    }
+                    $p->base_id = null;
+                    $p->save();
+                }
+            }
+            if ($request->input('furniture') == 'yes') {
+                $parties = GameParty::findByClass($room_id);
+                foreach ($parties as $p) {
+                    DB::table('game_parties_furnitures')->where('party_id', $p->id)->delete();
+                    if ($p->fundation) {
+                        $p->effect_hp = $p->fundation->hp;
+                        $p->effect_mp = $p->fundation->mp;
+                        $p->effect_ap = $p->fundation->ap;
+                        $p->effect_dp = $p->fundation->dp;
+                        $p->effect_sp = $p->fundation->sp;
+                    } else {
+                        $p->effect_hp = 0;
+                        $p->effect_mp = 0;
+                        $p->effect_ap = 0;
+                        $p->effect_dp = 0;
+                        $p->effect_sp = 0;
+                    }
+                    $p->save();
+                }
+            }
+            if ($request->input('treasury') == 'yes') {
+                GameParty::where('classroom_id', $room_id)->update([
+                    'treasury' => 0,
+                ]);
+            }
+        }
+        if ($request->input('character') == 'yes') {
+            foreach ($students as $stu) {
+                $character = GameCharacter::find($stu->uuid);
+                $character->classroom_id = $room_id;
+                $character->party_id = null;
+                $character->seat = $stu->seat;
+                $character->title = null;
+                $character->name = $stu->realname;
+                $character->class_id = null;
+                $character->image_id = null;
+                $character->level = 1;
+                $character->xp = 0;
+                $character->max_hp = 0;
+                $character->hp = 0;
+                $character->max_mp = 0;
+                $character->mp = 0;
+                $character->ap = 0;
+                $character->dp = 0;
+                $character->sp = 0;
+                $character->gp = 0;
+                $character->temp_effect = null;
+                $character->effect_value = 0;
+                $character->effect_timeout = null;
+                $character->buff = null;
+                $character->absent = 0;
+                $character->pick_up = 0;
+                $character->save();
+            }
+        } else {
+            if ($request->input('profession') == 'yes') {
+                foreach ($students as $stu) {
+                    $character = GameCharacter::find($stu->uuid);
+                    $character->classroom_id = $room_id;
+                    $character->party_id = null;
+                    $character->seat = $stu->seat;
+                    $character->class_id = null;
+                    $character->image_id = null;
+                    $character->save();
+                }
+            }
+            if ($request->input('level') == 'yes') {
+                foreach ($students as $stu) {
+                    $character = GameCharacter::find($stu->uuid);
+                    $character->force_levelup($request->input('levelup'));
+                }
+            }
+            if ($request->input('item') == 'yes') {
+                foreach ($students as $stu) {
+                    DB::table('game_characters_items')->where('uuid', $stu->uuid)->delete();
+                }
+            }
+            if ($request->input('gold') == 'yes') {
+                foreach ($students as $stu) {
+                    $character = GameCharacter::find($stu->uuid);
+                    $character->gp = 0;
+                    $character->save();
+                }
+            }
+            if ($request->input('point') == 'yes') {
+                foreach ($students as $stu) {
+                    $character = GameCharacter::find($stu->uuid);
+                    $character->hp = $character->max_hp;
+                    $character->mp = $character->max_mp;
+                    $character->temp_effect = null;
+                    $character->effect_value = 0;
+                    $character->effect_timeout = null;
+                    $character->buff = null;
+                    $character->save();
+                }
+            }
+            if ($request->input('pickup') == 'yes') {
+                foreach ($students as $stu) {
+                    $character = GameCharacter::find($stu->uuid);
+                    $character->pick_up = 0;
+                    $character->save();
+                }
+            }
+        }
+        return redirect()->route('game');
     }
 
 }

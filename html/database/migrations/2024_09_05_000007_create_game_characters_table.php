@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('game_characters', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
+            $table->string('classroom_id')->nullable();
             $table->integer('party_id')->nullable();
             $table->integer('seat');
             $table->string('title')->nullable();

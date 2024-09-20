@@ -79,6 +79,9 @@
                 <li>
                   <a href="/game/class/character" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">指派地下城</a>
                 </li>
+                <li>
+                  <a href="{{ route('game.reset') }}" class="block px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-red-900">重新遊戲</a>
+                </li>
               </ul>
           </div>
         </li>

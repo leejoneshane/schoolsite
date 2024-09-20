@@ -154,6 +154,7 @@ class GameController extends Controller
                     foreach ($students as $stu) {
                         GameCharacter::create([
                             'uuid' => $stu->uuid,
+                            'classroom_id' => $room_id,
                             'party_id' => $party->id,
                             'seat' => $stu->seat,
                             'name' => $stu->realname,
@@ -165,9 +166,17 @@ class GameController extends Controller
         }
         foreach ($room->students as $stu) {
             $char = GameCharacter::find($stu->uuid);
-            if (!$char) {
+            if ($char) {
+                if ($char->classroom_id != $room_id) {
+                    $char->classroom_id = $room_id;
+                    $char->seat = $stu->seat;
+                    $char->name = $stu->realname;
+                    $char->save();
+                }
+            } else {
                 GameCharacter::create([
                     'uuid' => $stu->uuid,
+                    'classroom_id' => $room_id,
                     'seat' => $stu->seat,
                     'name' => $stu->realname,
                 ]);
@@ -342,7 +351,7 @@ class GameController extends Controller
             $rule = GameSetting::find($delay->rule);
             $message = '因為'.$rule->description.'受到天罰損失：';
         } else {
-            $message = '因為'.$rule->reason.'受到天罰損失：';
+            $message = '因為'.$delay->reason.'受到天罰損失：';
         }
         if ($delay->hp > 0) {
             $add[] = '生命力' . $delay->hp . '點';

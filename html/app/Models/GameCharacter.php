@@ -52,6 +52,7 @@ class GameCharacter extends Model
     //以下屬性可以批次寫入
     protected $fillable = [
         'uuid',       //學生uuid
+        'classroom_id',   //班級代號
         'party_id',   //公會編號
         'seat',       //學生座號
         'title',      //角色稱號
@@ -130,7 +131,14 @@ class GameCharacter extends Model
     public static function findByClass($classroom)
     {
         $uuids = Classroom::find($classroom)->uuids();
-        return GameCharacter::whereIn('uuid', $uuids)->orderBy('seat')->get();
+        $students = GameCharacter::whereIn('uuid', $uuids)->orderBy('seat')->get();
+        foreach ($students as $stu) {
+            if (!$stu->classroom_id) {
+                $stu->classroom_id = $classroom;
+                $stu->save();
+            }
+        }
+        return $students;
     }
 
     //篩選指定的公會的所有角色
@@ -295,6 +303,14 @@ class GameCharacter extends Model
             $this->hp = $this->max_hp;
             $this->save();    
         }
+    }
+
+    //檢查此角色是否可升級，若可以則進行升級
+    public function force_levelup($level)
+    {
+        $this->xp = static::$levelup_needed[$level];
+        $this->save();
+        $this->levelup();
     }
 
     //取得此角色的學生物件

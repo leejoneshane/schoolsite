@@ -3,28 +3,34 @@
 @section('content')
 <div class="w-full h-full flex">
     <div class="w-1/2 items-center flex flex-col">
-        <img id="choise_character" src="" class="hidden" />
-        <img id="choise_party" src="" class="hidden" />
-        <span class="text-lg text-white sm:block drop-shadow-lg">
-            <label for="choise" class="inline-flex relative items-center cursor-pointer">
-                <input type="checkbox" id="choise" name="choise" value="yes" class="sr-only peer" onchange="choise_party();">
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                <span class="ml-3 leading-normal">抽選公會</span>
+        <img id="choise_character" src="{{ asset('images/game/one.png') }}" class="mt-10" />
+        <img id="choise_party" src="{{ asset('images/game/group.png') }}" class="hidden mt-10" />
+        <div class="text-lg text-white sm:block drop-shadow-lg">
+            <label for="choise" class="ml-3 cursor-pointer">抽選角色</label>
+            <label for="choise" class="relative align-center inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="choise" name="choise" value="yes" class="sr-only peer" onchange="change();">
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
             </label>
-        </span>
+            <label for="choise" class="ml-3 cursor-pointer">抽選公會</label>
+        </div>
     </div>
     <div class="w-1/2 text-center flex flex-col">
         <div id="buttons">
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" data-modal-toggle="defaultModal" onclick="openModal(1);">
-            <i class="fa-solid fa-plus"></i>獎勵
-        </button>
-        <button class="ml-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" data-modal-toggle="defaultModal" onclick="openModal(2);">
-            <i class="fa-solid fa-minus"></i>懲罰
-        </button>
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" data-modal-toggle="defaultModal" onclick="openModal(1);">
+                <i class="fa-solid fa-plus"></i>獎勵
+            </button>
+            <button class="ml-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" data-modal-toggle="defaultModal" onclick="openModal(2);">
+                <i class="fa-solid fa-minus"></i>懲罰
+            </button>
         </div>
+        <div id="hit" class="h-96"></div>
+        <div id="next">
+            <button class="ml-6 bg-amber-300 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-full" onclick="pick_up();">
+                <i class="fa-solid fa-rotate-left"></i>下一個
+            </button>
+        </div>    
     </div>
 </div>
-
 <div id="defaultModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
@@ -126,6 +132,19 @@
     var main = document.getElementsByTagName('main')[0];
     main.classList.remove('bg-game-map50');
     main.classList.add('bg-game-wheel');
+
+    function change() {
+        const box = document.getElementById('choise');
+        const one = document.getElementById('choise_character');
+        const group = document.getElementById('choise_party');
+        if (box.checked) {
+            one.classList.add('hidden');
+            group.classList.remove('hidden');
+        } else {
+            one.classList.remove('hidden');
+            group.classList.add('hidden');
+        }
+    }
 
     function wheel_party() {
 
