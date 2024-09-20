@@ -85,9 +85,9 @@ class GameParty extends Model
     }
 
     //取得此隊伍的基地
-    public function foundation()
+    public function fundation()
     {
-        return $this->belongsTo('App\Models\GameBase');
+        return $this->hasOne('App\Models\GameBase', 'id', 'base_id');
     }
 
     //取得此班級組態

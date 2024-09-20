@@ -107,7 +107,6 @@ class GameItem extends Model
                 $character->hp = 0;
                 $character->status = 'DEAD';
             }
-            if ($character->hp > $character->max_hp) $character->hp = $character->max_hp;
             $character->save();
             return 0;
         } else {

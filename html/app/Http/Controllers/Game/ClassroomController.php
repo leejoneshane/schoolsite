@@ -111,10 +111,10 @@ class ClassroomController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $group_no = GameParty::findByClass(session('ganeclass'))->count();
+            $group_no = GameParty::findByClass(session('gameclass'))->count();
             $group_no ++;
             $bases = GameBase::all();
-            return view('game.party_add', [ 'group_no' => $group_no, 'bases' => $bases]);
+            return view('game.party_add', [ 'group_no' => $group_no, 'bases' => $bases, 'url' => url()->previous()]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -124,7 +124,7 @@ class ClassroomController extends Controller
     {
 
         $party = GameParty::create([
-            'classroom_id' => session('ganeclass'),
+            'classroom_id' => session('gameclass'),
             'group_no' => $request->input('group_no'),
             'name' => $request->input('name'),
         ]);
@@ -137,7 +137,7 @@ class ClassroomController extends Controller
             $party->base_id = $request->input('base');
         }
         $party->save();
-        return redirect()->back();
+        return redirect()->to($request->input('url'));
     }
 
     function party_edit($party_id)
@@ -147,7 +147,7 @@ class ClassroomController extends Controller
         if ($user->is_admin || $manager) {
             $party = GameParty::find($party_id);
             $bases = GameBase::all();
-            return view('game.party_edit', [ 'party' => $party, 'bases' => $bases]);
+            return view('game.party_edit', [ 'party' => $party, 'bases' => $bases, 'url' => url()->previous()]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -165,7 +165,7 @@ class ClassroomController extends Controller
             $party->base_id = $request->input('base');
         }
         $party->save();
-        return redirect()->back();
+        return redirect()->to($request->input('url'));
     }
 
     function party_remove(Request $request, $party_id)

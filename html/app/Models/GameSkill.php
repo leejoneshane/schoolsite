@@ -114,10 +114,6 @@ class GameSkill extends Model
         if ($this->steal_mp > 0) $me->mp += $this->cost_mp * $this->steal_mp;
         $me->xp += $this->earn_xp;
         $me->gp += $this->earn_gp;
-        if ($me->hp < 1) $me->hp = 0;
-        if ($me->hp > $me->max_hp) $me->hp = $me->max_hp;
-        if ($me->mp < 1) $me->mp = 0;
-        if ($me->mp > $me->max_mp) $me->mp = $me->max_mp;
         $me->save();
         return $result;
     }
@@ -230,7 +226,6 @@ class GameSkill extends Model
                 $character->hp = 0;
                 $character->status = 'DEAD';
             }
-            if ($character->hp > $character->max_hp) $character->hp = $character->max_hp;
             $character->save();
             return $damage;
         } else {

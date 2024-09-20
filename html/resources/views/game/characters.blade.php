@@ -39,13 +39,13 @@
             <th scope="col" class="p-2">
                 SP增益
             </th>
-        </tr>    
+        </tr>
         @foreach ($parties as $p)
         <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
             <td class="p-2">{{ $p->name }}</td>
             <td class="p-2">{{ $p->description }}</td>
-            @if ($p->base_id)
-            <td class="p-2">{{ $p->fnudation->name }}</td>
+            @if ($p->base_id && $p->fundation)
+            <td class="p-2">{{ $p->fundation->name }}</td>
             @else
             <td class="p-2">
                 <a class="text-blue-500 hover:text-blue-600" href="{{ route('game.party_edit', ['party_id' => $p->id]) }}">設定據點</a>
@@ -116,7 +116,7 @@
                 狀態
             </th>
         </tr>    
-        @foreach ($characters as $s)    
+        @foreach ($characters as $s)
         <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
             <td class="p-2">{{ $s->seat }}</td>
             <td class="p-2">{{ $s->name }}</td>

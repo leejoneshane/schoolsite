@@ -97,6 +97,13 @@ class GameCharacter extends Model
     //更新角色時，自動進行升級
     protected static function booted()
     {
+        self::updating(function ($item) {
+            if ($item->hp < 1) $item->hp = 0;
+            if ($item->hp > $item->max_hp) $item->hp = $item->max_hp;
+            if ($item->mp < 1) $item->mp = 0;
+            if ($item->mp > $item->max_mp) $item->mp = $item->max_mp;
+        });
+
         static::updated(function($item)
         {
             if ($item->xp > 0) {

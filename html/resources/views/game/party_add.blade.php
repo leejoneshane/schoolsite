@@ -3,15 +3,16 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
     新增公會
-    <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ url()->previous() }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ $url }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
 <form id="add-class" action="{{ route('game.party_add') }}" method="POST">
     @csrf
+    <input type="hidden" name="url" value="{{ $url }}">
     <p><div class="p-3">
         <label for="group_no" class="text-base">序號：</label>
-        <input type="number" id="group_no" name="group_no" min="1" max="8" step="1" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
+        <input type="number" id="group_no" name="group_no" min="1" max="8" step="1" value="{{ $group_no }}" class="inline w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
     </div></p>
     <p><div class="p-3">
         <input type="text" id="name" name="name" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" placeholder="請輸入公會名稱..." required>

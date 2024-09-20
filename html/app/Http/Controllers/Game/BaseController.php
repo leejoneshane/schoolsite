@@ -126,6 +126,9 @@ class BaseController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
+            GameParty::where('base_id', $sk->id)->update([
+                'base_id' => null,
+            ]);
             Watchdog::watch($request, '刪除遊戲據點：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $sk->delete();
             return redirect()->route('game.bases')->with('success', '已刪除據點：'.$request->input('name').'！');

@@ -23,8 +23,8 @@
     <div class="inline text-2xl">{{ $p->name }}</div>
     <br><span class="text-sm">{{ $p->description }}</span>
 </div></p>
-<div class="relative inline-flex items-center justify-between w-full py-4 rounded-md border border-teal-300 mb-6 bg-[url('{{ $p->foundation && $p->foundation->avaliable() ? $p->foundation->url : '' }}')] bg-cover bg-center z-0">
-    <div class="absolute w-full h-full z-10 opacity-30 bg-white" /></div>
+<div class="relative inline-flex items-center justify-between w-full py-4 rounded-md border border-teal-300 mb-6 bg-cover bg-center z-0" style="background-image: url('{{ $p->fundation && $p->fundation->avaliable() ? $p->fundation->url() : '' }}')">
+    <div class="absolute w-full h-full z-10 opacity-30" /></div>
     <table class="w-full h-full z-20 text-left font-normal">
         <tr class="font-semibold text-lg">
             <th scope="col" class="w-4">
@@ -61,7 +61,7 @@
             </th>
         </tr>
         @foreach ($p->members as $s)
-        <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+        <tr class="!bg-opacity-80 odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
             <td>
                 @locked($room->id)
                 <input type="checkbox" id="{{ $s->uuid }}" data-group="{{ $p->id }}" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:bg-white disabled:border-gray-100">
