@@ -126,6 +126,12 @@ class GameCharacter extends Model
         }
     }
 
+    //選取可抽籤的角色，靜態函式
+    public static function withoutAbsent($room_id)
+    {
+        return GameCharacter::where('classroom_id', $room_id)->where('absent', 0)->get();
+    }
+
     //篩選指定的班級的所有角色
     public static function findByClass($classroom)
     {
@@ -138,12 +144,6 @@ class GameCharacter extends Model
     public static function findByParty($party)
     {
         return GameCharacter::where('party_id', $party)->get();
-    }
-
-    //篩選指定的公會的所有已出席角色
-    public static function withoutAbsent($party)
-    {
-        return GameCharacter::where('party_id', $party)->where('absent', 0)->get();
     }
 
     //篩選無公會角色

@@ -415,4 +415,20 @@ class GameController extends Controller
         }
     }
 
+    function timer($room_id)
+    {
+        $room = Classroom::find($room_id);
+        $items = GameItem::all();
+        $parties = GameParty::findByClass($room_id);
+        return view('game.timer', [ 'room' => $room, 'parties' => $parties, 'items' => $items ]);
+    }
+
+    function silence($room_id)
+    {
+        $room = Classroom::find($room_id);
+        $items = GameItem::all();
+        $characters = GameCharacter::withoutAbsent($room_id);
+        return view('game.silence', [ 'room' => $room, 'characters' => $characters, 'items' => $items ]);
+    }
+
 }

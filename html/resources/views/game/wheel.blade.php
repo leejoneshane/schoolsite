@@ -131,8 +131,7 @@
     @endforeach
 
     var main = document.getElementsByTagName('main')[0];
-    main.classList.remove('bg-game-map50');
-    main.classList.add('bg-game-wheel');
+    main.classList.replace('bg-game-map50', 'bg-game-wheel');
     var spin = document.getElementById('hit');
 
     function stop() {

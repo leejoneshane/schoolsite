@@ -9,13 +9,13 @@
         </div>
         @locked(session('gameclass'))
         <div class="py-2 text-center">
-            <a href="{{ session('gameclass') ? route('game.pickup', [ 'room_id' => session('gameclass') ]) : '#' }}"><i class="text-2xl fa-solid fa-dice-d20" title="抽籤機"></i></a>
+            <a href="{{ route('game.pickup', [ 'room_id' => session('gameclass') ]) }}"><i class="text-2xl fa-solid fa-dice-d20" title="抽籤機"></i></a>
         </div>
         <div class="py-2 text-center">
-            <a href="/game/timer"><i class="text-2xl fa-solid fa-stopwatch-20" title="計時器"></i></a>
+            <a href="{{ route('game.timer', [ 'room_id' => session('gameclass') ]) }}"><i class="text-2xl fa-solid fa-stopwatch-20" title="計時器"></i></a>
         </div>
         <div class="py-2 text-center">
-            <a href="/game/silence"><i class="text-2xl fa-solid fa-ear-listen" title="分貝計"></i></a>
+            <a href="{{ route('game.silence', [ 'room_id' => session('gameclass') ]) }}"><i class="text-2xl fa-solid fa-ear-listen" title="分貝計"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="/game/map"><i class="text-2xl fa-solid fa-map-location-dot" title="批改學習單"></i></a>

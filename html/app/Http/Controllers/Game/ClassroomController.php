@@ -213,13 +213,15 @@ class ClassroomController extends Controller
         $pro = GameClass::find($request->input('class_id'));
         $character = GameCharacter::find($uuid);
         $character->class_id = $pro->id;
-        $character->max_hp = $pro->base_hp;
-        $character->hp = $pro->base_hp;
-        $character->max_mp = $pro->base_mp;
-        $character->mp = $pro->base_mp;
-        $character->ap = $pro->base_ap;
-        $character->dp = $pro->base_dp;
-        $character->sp = $pro->base_sp;
+        if ($character->level == 1) {
+            $character->max_hp = $pro->base_hp;
+            $character->hp = $pro->base_hp;
+            $character->max_mp = $pro->base_mp;
+            $character->mp = $pro->base_mp;
+            $character->ap = $pro->base_ap;
+            $character->dp = $pro->base_dp;
+            $character->sp = $pro->base_sp;    
+        }
         $character->save();
         return view('game.image_setup', [ 'character' => $character ]);
     }
@@ -365,9 +367,6 @@ class ClassroomController extends Controller
             if ($request->input('profession') == 'yes') {
                 foreach ($students as $stu) {
                     $character = GameCharacter::find($stu->uuid);
-                    $character->classroom_id = $room_id;
-                    $character->party_id = null;
-                    $character->seat = $stu->seat;
                     $character->class_id = null;
                     $character->image_id = null;
                     $character->save();
