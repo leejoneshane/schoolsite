@@ -327,6 +327,11 @@ class ClassroomController extends Controller
                     'treasury' => 0,
                 ]);
             }
+            if ($request->input('pick1') == 'yes') {
+                GameParty::where('classroom_id', $room_id)->update([
+                    'pick_up' => 0,
+                ]);
+            }
         }
         if ($request->input('character') == 'yes') {
             foreach ($students as $stu) {
@@ -398,7 +403,7 @@ class ClassroomController extends Controller
                     $character->save();
                 }
             }
-            if ($request->input('pickup') == 'yes') {
+            if ($request->input('pick2') == 'yes') {
                 foreach ($students as $stu) {
                     $character = GameCharacter::find($stu->uuid);
                     $character->pick_up = 0;

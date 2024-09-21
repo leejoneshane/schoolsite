@@ -419,7 +419,8 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('negative/act', 'App\Http\Controllers\Game\GameController@negative_act')->name('game.negative_act');
     Route::post('negative/delay', 'App\Http\Controllers\Game\GameController@negative_delay')->name('game.negative_delay');
     Route::post('negative/regress/{delay_id}', 'App\Http\Controllers\Game\GameController@regress')->name('game.regress');
-    Route::get('pickup/{room_id}', 'App\Http\Controllers\Game\GameController@pickup')->name('game.pickup');
+    Route::get('pickup/{room_id}', 'App\Http\Controllers\Game\GameController@pickup');
+    Route::post('pickup/{room_id}', 'App\Http\Controllers\Game\GameController@random_pickup')->name('game.pickup');
 
     Route::get('classes', 'App\Http\Controllers\Game\ClassController@index')->name('game.classes');
     Route::get('classes/add', 'App\Http\Controllers\Game\ClassController@add');

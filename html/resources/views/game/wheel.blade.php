@@ -3,8 +3,8 @@
 @section('content')
 <div class="w-full h-full flex">
     <div class="w-1/2 items-center flex flex-col">
-        <img id="choise_character" src="{{ asset('images/game/one.png') }}" class="mt-10" />
-        <img id="choise_party" src="{{ asset('images/game/group.png') }}" class="hidden mt-10" />
+        <img id="choise_character" src="{{ asset('images/game/one.png') }}" class="mt-0" />
+        <img id="choise_party" src="{{ asset('images/game/group.png') }}" class="hidden mt-0" />
         <div class="text-lg text-white sm:block drop-shadow-lg">
             <label for="choise" class="ml-3 cursor-pointer">抽選角色</label>
             <label for="choise" class="relative align-center inline-flex items-center cursor-pointer">
@@ -15,7 +15,7 @@
         </div>
     </div>
     <div class="w-1/2 text-center flex flex-col">
-        <div id="buttons">
+        <div id="buttons" class="mt-20">
             <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" data-modal-toggle="defaultModal" onclick="openModal(1);">
                 <i class="fa-solid fa-plus"></i>獎勵
             </button>
@@ -23,7 +23,7 @@
                 <i class="fa-solid fa-minus"></i>懲罰
             </button>
         </div>
-        <div id="hit" class="h-96"></div>
+        <div id="hit" class="min-h-96 min-w-96 flex justify-center"></div>
         <div id="next">
             <button class="ml-6 bg-amber-300 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-full" onclick="pick_up();">
                 <i class="fa-solid fa-rotate-left"></i>下一個
@@ -119,6 +119,7 @@
     </div>
 </div>
 <script nonce="selfhost">
+    var type = 0;
     var uuids = [];
     var positive = [];
     @foreach ($positive_rules as $rule)
@@ -132,6 +133,11 @@
     var main = document.getElementsByTagName('main')[0];
     main.classList.remove('bg-game-map50');
     main.classList.add('bg-game-wheel');
+    var spin = document.getElementById('hit');
+
+    function stop() {
+        spin.classList.remove('animate-spin');
+    }
 
     function change() {
         const box = document.getElementById('choise');
@@ -140,18 +146,84 @@
         if (box.checked) {
             one.classList.add('hidden');
             group.classList.remove('hidden');
+            type = 1;
         } else {
             one.classList.remove('hidden');
             group.classList.add('hidden');
+            type = 0;
         }
     }
 
-    function wheel_party() {
-
-    }
-
-    function wheel_character() {
-
+    function pick_up() {
+        window.axios.post('{{ route('game.pickup', [ 'room_id' => $room->id ]) }}', {
+            type: type,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Cache-Control': 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0'
+            }
+        }).then(function (response) {
+            spin.innerHTML = '';
+            var table = document.createElement('table');
+            table.classList.add('text-2xl','text-white','drop-shadow-md');
+            var body = document.createElement('tbody');
+            if (type == 0) {
+                var character = response.data.uuids[0];
+                var tr = document.createElement('tr');
+                var td = document.createElement('td');
+                td.setAttribute('colSpan', '2');
+                td.classList.add('text-center');
+                if (character.title) {
+                    td.appendChild(document.createTextNode(character.title));
+                }
+                tr.appendChild(td);
+                body.appendChild(tr);
+                tr = document.createElement('tr');
+                td = document.createElement('td');
+                td.classList.add('text-right');
+                td.appendChild(document.createTextNode(character.seat));
+                tr.appendChild(td);
+                td = document.createElement('td');
+                td.classList.add('text-left');
+                td.appendChild(document.createTextNode(character.name));
+                tr.appendChild(td);
+                body.appendChild(tr);
+                table.appendChild(body);
+                uuids = [ character.uuid ];
+            } else {
+                var table = document.createElement('table');
+                table.classList.add('text-2xl','text-white','drop-shadow-md');
+                var body = document.createElement('tbody');
+                var tr = document.createElement('tr');
+                var td = document.createElement('td');
+                td.setAttribute('colSpan', '2');
+                td.classList.add('text-center');
+                td.appendChild(document.createTextNode(response.data.name));
+                tr.appendChild(td);
+                body.appendChild(tr);
+                uuids = [];
+                var loop = 0;
+                response.data.uuids.forEach( (character) => {
+                    tr = document.createElement('tr');
+                    td = document.createElement('td');
+                    td.classList.add('text-right');
+                    td.appendChild(document.createTextNode(character.seat));
+                    tr.appendChild(td);
+                    td = document.createElement('td');
+                    td.classList.add('text-left');
+                    td.appendChild(document.createTextNode(character.name));
+                    tr.appendChild(td);
+                    body.appendChild(tr);
+                    uuids[loop] = character.uuid;
+                    loop ++;
+                });
+            }
+            table.appendChild(body);
+            spin.appendChild(table);
+            spin.classList.add('animate-spin');
+            setTimeout(stop, 1000);
+        });
     }
 
     function openModal(type) {
@@ -164,39 +236,26 @@
         const btn3 = document.getElementById('confirm2');
         const btn4 = document.getElementById('delay');
         const btn5 = document.getElementById('cancel');
-        const nodes = document.querySelectorAll('input[type="checkbox"][data-group]:checked');
-        if (nodes.length < 1) {
-            header.innerHTML = '請先選擇對象！';
-            msg.classList.add('hidden');
-            pos.classList.add('hidden');
+        if (type == 1) {
+            header.innerHTML = '請選擇獎勵條款：';
+            msg.classList.remove('hidden');
+            pos.classList.remove('hidden');
             neg.classList.add('hidden');
-            btn1.classList.remove('hidden');
-            btn2.classList.add('hidden');
+            btn1.classList.add('hidden');
+            btn2.classList.remove('hidden');
             btn3.classList.add('hidden');
             btn4.classList.add('hidden');
-            btn5.classList.add('hidden');
+            btn5.classList.remove('hidden');
         } else {
-            if (type == 1) {
-                header.innerHTML = '請選擇獎勵條款：';
-                msg.classList.remove('hidden');
-                pos.classList.remove('hidden');
-                neg.classList.add('hidden');
-                btn1.classList.add('hidden');
-                btn2.classList.remove('hidden');
-                btn3.classList.add('hidden');
-                btn4.classList.add('hidden');
-                btn5.classList.remove('hidden');
-            } else {
-                header.innerHTML = '請選擇懲罰條款：';
-                msg.classList.remove('hidden');
-                pos.classList.add('hidden');
-                neg.classList.remove('hidden');
-                btn1.classList.add('hidden');
-                btn2.classList.add('hidden');
-                btn3.classList.remove('hidden');
-                btn4.classList.remove('hidden');
-                btn5.classList.remove('hidden');
-            }
+            header.innerHTML = '請選擇懲罰條款：';
+            msg.classList.remove('hidden');
+            pos.classList.add('hidden');
+            neg.classList.remove('hidden');
+            btn1.classList.add('hidden');
+            btn2.classList.add('hidden');
+            btn3.classList.remove('hidden');
+            btn4.classList.remove('hidden');
+            btn5.classList.remove('hidden');
         }
     }
 
@@ -227,10 +286,6 @@
     }
 
     function positive_act() {
-        var nodes = document.querySelectorAll('input[type="checkbox"][data-group]:checked');
-        nodes.forEach( (node) => {
-            uuids.push(node.id);
-        });
         var rule = document.querySelector('input[name="positive"]:checked');
         if (rule == null) {
             alert('您未選擇條款！')
@@ -266,10 +321,6 @@
     }
 
     function negative_act() {
-        var nodes = document.querySelectorAll('input[type="checkbox"][data-group]:checked');
-        nodes.forEach( (node) => {
-            uuids.push(node.id);
-        });
         var rule = document.querySelector('input[name="negative"]:checked');
         if (rule == null) {
             alert('您未選擇條款！')
@@ -302,10 +353,6 @@
     }
 
     function negative_delay() {
-        var nodes = document.querySelectorAll('input[type="checkbox"][data-group]:checked');
-        nodes.forEach( (node) => {
-            uuids.push(node.id);
-        });
         var rule = document.querySelector('input[name="negative"]:checked');
         if (rule == null) {
             alert('您未選擇條款！')

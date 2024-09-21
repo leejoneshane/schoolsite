@@ -383,15 +383,36 @@ class GameController extends Controller
         $delay->save();
     }
 
-    function pickup(Request $request, $room_id)
+    function pickup($room_id)
     {
         $room = Classroom::find($room_id);
-        $parties = GameParty::wheel($room_id);
-        $characters = GameCharacter::wheel($room_id);
-        $positive_rules = GameSetting::positive($request->user()->uuid);
-        $negative_rules = GameSetting::negative($request->user()->uuid);
+        $positive_rules = GameSetting::positive(Auth::user()->uuid);
+        $negative_rules = GameSetting::negative(Auth::user()->uuid);
         $items = GameItem::all();
-        return view('game.wheel', [ 'room' => $room, 'parties' => $parties, 'characters' => $characters, 'positive_rules' => $positive_rules, 'negative_rules' => $negative_rules, 'items' => $items ]);
+        return view('game.wheel', [ 'room' => $room, 'positive_rules' => $positive_rules, 'negative_rules' => $negative_rules, 'items' => $items ]);
+    }
+
+    function random_pickup(Request $request, $room_id)
+    {
+        if ($request->input('type') == 0) {
+            $pick = GameCharacter::wheel($room_id)->random();
+            $pick->pick_up ++;
+            $pick->save();
+            $uuids[] = $pick;
+            return response()->json([ 'type' => 0, 'uuids' => $uuids ]);
+        } else {
+            $pick = GameParty::wheel($room_id)->random();
+            $pick->pick_up ++;
+            $pick->save();
+            foreach ($pick->members as $m) {
+                if ($m->absent == 0) {
+                    $m->pick_up ++;
+                    $m->save();
+                    $uuids[] = $m;
+                }
+            }
+            return response()->json([ 'type' => 1, 'name' => $pick->name, 'uuids' => $uuids ]);
+        }
     }
 
 }

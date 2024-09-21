@@ -116,14 +116,13 @@ class GameCharacter extends Model
     //選取可抽籤的角色，靜態函式
     public static function wheel($room_id)
     {
-        $uuids = Classroom::find($room_id)->uuids();
         $data = GameCharacter::select(DB::raw('MIN(pick_up) AS min, MAX(pick_up) AS max'))
-            ->whereIn('uuid', $uuids)
+            ->where('classroom_id', $room_id)
             ->get()->first();
         if ($data->min == $data->max) {
-            return GameCharacter::findByClass($room_id);
+            return GameCharacter::where('classroom_id', $room_id)->where('absent', 0)->get();
         } else {
-            return GameCharacter::whereIn('uuid', $uuids)->where('pick_up', $data->min)->get();
+            return GameCharacter::where('classroom_id', $room_id)->where('pick_up', $data->min)->where('absent', 0)->get();
         }
     }
 
@@ -132,12 +131,6 @@ class GameCharacter extends Model
     {
         $uuids = Classroom::find($classroom)->uuids();
         $students = GameCharacter::whereIn('uuid', $uuids)->orderBy('seat')->get();
-        foreach ($students as $stu) {
-            if (!$stu->classroom_id) {
-                $stu->classroom_id = $classroom;
-                $stu->save();
-            }
-        }
         return $students;
     }
 

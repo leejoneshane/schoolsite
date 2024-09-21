@@ -42,6 +42,13 @@
                     <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">清空金庫</span>
                 </label>        
             </li>
+            <li>
+                <label for="pick1" class="inline-flex relative items-center cursor-pointer">
+                    <input type="checkbox" id="pick1" name="pick1" value="yes" class="sr-only peer">
+                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                    <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">重設公會抽籤序</span>
+                </label>
+            </li>
         </ul>
     </div></p>
     <p><div class="ml-10 p-3 text-base">
@@ -90,8 +97,8 @@
                 </label>
             </li>
             <li>
-                <label for="pickup" class="inline-flex relative items-center cursor-pointer">
-                    <input type="checkbox" id="pickup" name="pickup" value="yes" class="sr-only peer">
+                <label for="pick2" class="inline-flex relative items-center cursor-pointer">
+                    <input type="checkbox" id="pick2" name="pick2" value="yes" class="sr-only peer">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                     <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">重設角色抽籤序</span>
                 </label>
