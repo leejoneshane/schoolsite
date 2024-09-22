@@ -14,6 +14,7 @@ use App\Models\GameSence;
 use App\Models\GameParty;
 use App\Models\GameCharacter;
 use App\Models\GameClass;
+use App\Models\GameSkill;
 use App\Models\GameItem;
 use App\Models\GameSetting;
 use App\Models\GameDelay;
@@ -241,6 +242,97 @@ class GameController extends Controller
         return redirect()->route('game.room', [ 'room_id' => $room ]);
     }
 
+    public function get_skills(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $char = GameCharacter::find($uuid);
+        if (!$char->class_id) {
+            return response()->json([]);
+        }
+        $skills = GameSkill::forClass($char->class_id)->filter( function ($skill) use ($char) {
+            if ($skill->level <= $char->level) {
+                if ($skill->object == 'self' || $skill->object == 'partner' || $skill->object == 'party') {
+                    if ($skill->cost_mp <= $char->mp) return true;
+                }
+            }
+            return false;
+        });
+        return response()->json([ 'skills' => $skills ]);
+    }
+
+    public function get_items(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $char = GameCharacter::find($uuid);
+        $items = $char->items->filter( function ($item) use ($char) {
+            return ($item->object == 'self' || $item->object == 'partner' || $item->object == 'party');
+        });
+        return response()->json([ 'items' => $items ]);
+    }
+
+    public function get_teammate(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $char = GameCharacter::find($uuid);
+        return response()->json([ 'teammate' => $char->teammate ]);
+    }
+
+    public function skill_cast(Request $request)
+    {
+        $me = GameCharacter::find($request->input('uuid'));
+        $skill = GameSkill::find($request->input('skill'));
+        if ($skill->object == 'self') {
+            $me->use_skill($skill->id);
+        } else {
+            $uuids = explode(',', $request->input('uuids'));
+            if (count($uuids) > 1) {
+                $me->use_skill($skill->id, $uuids);
+            } else {
+                if ($skill->object == 'party') {
+                    $uuids = $me->teammate->map(function ($man) {
+                        return $man->uuid;
+                    });
+                    $me->use_skill($skill->id, $uuids);
+                } elseif ($skill->object == 'all') {
+                    $uuids = GameCharacter::find($uuids[0])->teammate->map(function ($man) {
+                        return $man->uuid;
+                    });
+                    $me->use_skill($skill->id, $uuids);
+                } else {
+                    $me->use_skill($skill->id, $uuids[0]);
+                }
+            }
+        }
+    }
+
+    public function item_use(Request $request)
+    {
+        $me = GameCharacter::find($request->input('uuid'));
+        $item = GameItem::find($request->input('item'));
+        if ($item->object == 'self') {
+            $me->use_item($item->id);
+        } else {
+            $uuids = explode(',', $request->input('uuids'));
+            if (count($uuids) > 1) {
+                $me->use_item($item->id, $uuids);
+            } else {
+                if ($item->object == 'party') {
+                    $uuids = $me->teammate->map(function ($man) {
+                        return $man->uuid;
+                    });
+                    $me->use_item($item->id, $uuids);
+                } elseif ($item->object == 'all') {
+                    $uuids = GameCharacter::find($uuids[0])->teammate->map(function ($man) {
+                        return $man->uuid;
+                    });
+                    $me->use_item($item->id, $uuids);
+                } else {
+                    $me->use_item($item->id, $uuids[0]);
+                }
+            }
+        }
+    }
+
     public function positive_act(Request $request)
     {
         $add = [];
@@ -344,7 +436,7 @@ class GameController extends Controller
         }
     }
 
-    function regress($delay_id) {
+    public function regress($delay_id) {
         $delay = GameDelay::find($delay_id);
         $add = [];
         if ($delay->rule) {
@@ -383,7 +475,7 @@ class GameController extends Controller
         $delay->save();
     }
 
-    function pickup($room_id)
+    public function pickup($room_id)
     {
         $room = Classroom::find($room_id);
         $positive_rules = GameSetting::positive(Auth::user()->uuid);
@@ -392,7 +484,7 @@ class GameController extends Controller
         return view('game.wheel', [ 'room' => $room, 'positive_rules' => $positive_rules, 'negative_rules' => $negative_rules, 'items' => $items ]);
     }
 
-    function random_pickup(Request $request, $room_id)
+    public function random_pickup(Request $request, $room_id)
     {
         if ($request->input('type') == 0) {
             $pick = GameCharacter::wheel($room_id)->random();
@@ -415,7 +507,7 @@ class GameController extends Controller
         }
     }
 
-    function timer($room_id)
+    public function timer($room_id)
     {
         $room = Classroom::find($room_id);
         $items = GameItem::all();
@@ -423,7 +515,7 @@ class GameController extends Controller
         return view('game.timer', [ 'room' => $room, 'parties' => $parties, 'items' => $items ]);
     }
 
-    function silence($room_id)
+    public function silence($room_id)
     {
         $room = Classroom::find($room_id);
         $items = GameItem::all();

@@ -414,6 +414,13 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('lock', 'App\Http\Controllers\Game\GameController@lock')->name('game.lock');
     Route::get('health', 'App\Http\Controllers\Game\GameController@health')->name('game.health');
     Route::get('roster/{room_id}', 'App\Http\Controllers\Game\GameController@classroom')->name('game.room');
+    Route::get('character/fast/{uuid}', 'App\Http\Controllers\Game\GameController@fast_edit');
+    Route::post('character/fast/{uuid}', 'App\Http\Controllers\Game\GameController@fast_update')->name('game.character_edit');
+    Route::post('character/skills', 'App\Http\Controllers\Game\GameController@get_skills')->name('game.get_skills');
+    Route::post('character/items', 'App\Http\Controllers\Game\GameController@get_items')->name('game.get_items');
+    Route::post('character/teammate', 'App\Http\Controllers\Game\GameController@get_teammate')->name('game.get_teammate');
+    Route::post('character/skill/cast', 'App\Http\Controllers\Game\GameController@skill_cast')->name('game.skill_cast');
+    Route::post('character/item/use', 'App\Http\Controllers\Game\GameController@item_use')->name('game.item_use');
     Route::post('absent', 'App\Http\Controllers\Game\GameController@absent')->name('game.absent');
     Route::post('positive/act', 'App\Http\Controllers\Game\GameController@positive_act')->name('game.positive_act');
     Route::post('negative/act', 'App\Http\Controllers\Game\GameController@negative_act')->name('game.negative_act');
@@ -474,7 +481,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('monsters/destroy', 'App\Http\Controllers\Game\MonsterController@destroy')->name('game.monster_removeimage');
     Route::get('monsters/faces/edit/{monster_id?}', 'App\Http\Controllers\Game\MonsterController@faces')->name('game.monster_faces');
     Route::post('monsters/faces/upload/{image_id}', 'App\Http\Controllers\Game\MonsterController@face_upload')->name('game.monster_faceupload');
-    
+
     Route::get('rules/positive', 'App\Http\Controllers\Game\SettingsController@positive')->name('game.positive');
     Route::get('rules/negative', 'App\Http\Controllers\Game\SettingsController@negative')->name('game.negative');
     Route::get('rules/positive/add', 'App\Http\Controllers\Game\SettingsController@positive_add')->name('game.positive_add');
@@ -483,7 +490,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('rules/edit/{rule_id}', 'App\Http\Controllers\Game\SettingsController@edit');
     Route::post('rules/edit/{rule_id}', 'App\Http\Controllers\Game\SettingsController@update')->name('game.rule_edit');
     Route::post('rules/remove/{rule_id}', 'App\Http\Controllers\Game\SettingsController@remove')->name('game.rule_remove');
-    
+
     Route::get('configure', 'App\Http\Controllers\Game\ClassroomController@config');
     Route::post('configure', 'App\Http\Controllers\Game\ClassroomController@save_config')->name('game.classroom_config');
     Route::get('groups', 'App\Http\Controllers\Game\ClassroomController@regroup')->name('game.regroup');
@@ -493,13 +500,11 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('group/edit/{party_id}', 'App\Http\Controllers\Game\ClassroomController@party_edit');
     Route::post('group/edit/{party_id}', 'App\Http\Controllers\Game\ClassroomController@party_update')->name('game.party_edit');
     Route::post('group/remove/{party_id}', 'App\Http\Controllers\Game\ClassroomController@party_remove')->name('game.party_remove');
-    Route::get('characters/fast/{uuid}', 'App\Http\Controllers\Game\GameController@fast_edit');
-    Route::post('characters/fast/{uuid}', 'App\Http\Controllers\Game\GameController@fast_update')->name('game.character_edit');
-    Route::get('characters', 'App\Http\Controllers\Game\ClassroomController@characters')->name('game.characters');
-    Route::get('characters/setup/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_edit');
-    Route::post('characters/setup/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_class')->name('game.profession_setup');
-    Route::get('characters/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@image_edit');
-    Route::post('characters/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_image')->name('game.image_setup');
+    Route::get('classroom/characters', 'App\Http\Controllers\Game\ClassroomController@characters')->name('game.characters');
+    Route::get('classroom/setup/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_edit');
+    Route::post('classroom/setup/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_class')->name('game.profession_setup');
+    Route::get('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@image_edit');
+    Route::post('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_image')->name('game.image_setup');
     Route::get('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@reset');
     Route::post('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@do_reset')->name('game.reset');
 });

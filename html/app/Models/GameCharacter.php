@@ -254,47 +254,47 @@ class GameCharacter extends Model
     //檢查此角色是否可升級，若可以則進行升級
     public function levelup()
     {
-        if ($this->prefession) {
+        if ($this->profession) {
             while ($this->xp >= static::$levelup_needed[$this->level + 1]) {
-                $this->level += 1;
-                if (rand() < $this->prefession->hp_lvlup) {
-                    if ($this->prefession->hp_lvlup >= 1) {
-                        $this->max_hp += rand(1,$this->prefession->hp_lvlup);
+                $this->level ++;
+                if (rand() < $this->profession->hp_lvlup) {
+                    if ($this->profession->hp_lvlup >= 1) {
+                        $this->max_hp += rand(1,$this->profession->hp_lvlup);
                     } else {
                         $this->max_hp++;
                     }
                 }
-                if (rand() < $this->prefession->mp_lvlup) {
-                    if ($this->prefession->mp_lvlup >= 1) {
-                        $this->max_mp += rand(1, $this->prefession->mp_lvlup);
+                if (rand() < $this->profession->mp_lvlup) {
+                    if ($this->profession->mp_lvlup >= 1) {
+                        $this->max_mp += rand(1, $this->profession->mp_lvlup);
                     } else {
                         $this->max_mp++;
                     }
                 }
-                if (rand() < $this->prefession->ap_lvlup) {
-                    if ($this->prefession->ap_lvlup >= 1) {
-                        $this->ap += rand(1, $this->prefession->ap_lvlup);
+                if (rand() < $this->profession->ap_lvlup) {
+                    if ($this->profession->ap_lvlup >= 1) {
+                        $this->ap += rand(1, $this->profession->ap_lvlup);
                     } else {
                         $this->ap++;
                     }
                 }
-                if (rand() < $this->prefession->dp_lvlup) {
-                    if ($this->prefession->dp_lvlup >= 1) {
-                        $this->dp += rand(1, $this->prefession->dp_lvlup);
+                if (rand() < $this->profession->dp_lvlup) {
+                    if ($this->profession->dp_lvlup >= 1) {
+                        $this->dp += rand(1, $this->profession->dp_lvlup);
                     } else {
                         $this->dp++;
                     }
                 }
-                if (rand() < $this->prefession->sp_lvlup) {
-                    if ($this->prefession->sp_lvlup >= 1) {
-                        $this->sp += rand(1, $this->prefession->sp_lvlup);
+                if (rand() < $this->profession->sp_lvlup) {
+                    if ($this->profession->sp_lvlup >= 1) {
+                        $this->sp += rand(1, $this->profession->sp_lvlup);
                     } else {
                         $this->sp++;
                     }
                 }
+                $this->hp = $this->max_hp;
+                $this->save();    
             }
-            $this->hp = $this->max_hp;
-            $this->save();    
         }
     }
 

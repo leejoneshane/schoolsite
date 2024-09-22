@@ -48,7 +48,7 @@ class GameSkill extends Model
     //篩選指定職業的技能，靜態函式
     public static function forClass($class_id)
     {
-        return GameSkill::select('game_skills.*')
+        return GameSkill::select('game_skills.*', 'game_classes_skills.level')
             ->leftjoin('game_classes_skills', 'game_skills.id', '=', 'game_classes_skills.skill_id')
             ->where('game_classes_skills.class_id', $class_id)
             ->orderBy('game_classes_skills.level')
