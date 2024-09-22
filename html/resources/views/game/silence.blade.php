@@ -4,8 +4,19 @@
 <div class="flex flex-col">
     <div class="w-full">
         <div id="text" class="leading-none text-white text-[30rem]"></div>
-        <div class="w-full h-6 bg-gray-200 rounded-full dark:bg-gray-700">
-            <div id="bar" class="h-6 bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: 100%">100%</div>
+        <div class="volume-group w-full h-12 bg-black flex items-center gap-4 p-10">
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
         </div>
     </div>
     <div class="w-full p-2 bg-blue-100 bg-opacity-50">
@@ -32,8 +43,8 @@
         </div>
         <div class="w-1/4 bg-blue-100 bg-opacity-50 flex flex-col">
             <div class="text-white rounded-lg drop-shadow-lg">
-                計時<input type="number" id="timeout" min="1" max="30" value="5" class="bg-transparent">分鐘，
-                不超過<input type="number" id="volume" min="1" max="100" value="60" class="bg-transparent">分貝
+                計時<input type="number" id="timeout" min="1" max="30" value="5" class="p-0 bg-transparent">分鐘，
+                不超過<input type="number" id="volume" min="1" max="100" value="60" class="p-0 bg-transparent">分貝
             </div>
             <div class="inline-flex">
                 <button id="start" class="ml-6 bg-green-300 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-full" onclick="start();">
@@ -57,6 +68,10 @@
     </div>
 </div>
 <script nonce="selfhost">
+    var audioContext;
+    const volumeCells = document.querySelectorAll(".volume-cell")
+    activeSound();
+
     var reason1 = '在靜謐山谷中安然度過危機';
     var reason2 = '挑戰靜謐山谷失敗';
     var uuids = [];
@@ -82,6 +97,44 @@
     var elem_start = document.getElementById('start');
     var elem_stop = document.getElementById('stop');
     elem_stop.disabled = true;
+
+    function activeSound () {
+        try {
+            navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+            navigator.getUserMedia({ audio: true, video: false }, onMicrophoneGranted, onMicrophoneDenied);
+        } catch(e) {
+            alert(e);
+        }
+    }
+
+    async function onMicrophoneGranted(stream) {
+        audioContext = new AudioContext();
+        let microphone = audioContext.createMediaStreamSource(stream);
+        await audioContext.audioWorklet.addModule("{{ asset('js/processor.js')}}");
+        const node = new AudioWorkletNode(audioContext, 'vumeter');
+        node.port.onmessage = function (event) {
+            handleVolumeCellColor(event.data.volume);
+        };
+        microphone.connect(node).connect(audioContext.destination);
+    }
+
+    function onMicrophoneDenied() {
+        console.log('denied')
+    }
+
+    function handleVolumeCellColor(volume) {
+        const allVolumeCells = [...volumeCells]
+        const numberOfCells = Math.round(volume)
+        const cellsToColored = allVolumeCells.slice(0, numberOfCells)
+
+        for (const cell of allVolumeCells) {
+            cell.classList.add('bg-gray-300');
+        }
+
+        for (const cell of cellsToColored) {
+            cell.classList.add('bg-blue-300');
+        }
+    }
 
     function start() {
         targetSeconds = elem_count.value * 60;

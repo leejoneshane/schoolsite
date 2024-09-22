@@ -663,6 +663,7 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( response => {
+            skills = [];
             for (var k in response.data.skills) {
                 var skill = response.data.skills[k];
                 skills[skill.id] = skill;
@@ -710,6 +711,7 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( response => {
+            items = [];
             for (var k in response.data.items) {
                 var item = response.data.items[k];
                 items[item.id] = item;

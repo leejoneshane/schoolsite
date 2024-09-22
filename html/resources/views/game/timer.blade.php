@@ -32,7 +32,7 @@
         </div>
         <div class="w-1/4 bg-blue-100 bg-opacity-50 flex flex-col">
             <div class="ml-20 text-white rounded-lg drop-shadow-lg">
-                計時<input type="number" id="timeout" min="1" max="30" value="5" class="bg-transparent">分鐘
+                計時<input type="number" id="timeout" min="1" max="30" value="5" class="p-0 bg-transparent">分鐘
             </div>
             <div class="inline-flex">
                 <button id="start" class="ml-6 bg-green-300 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-full" onclick="start();">
@@ -179,7 +179,7 @@
         var min = Math.floor(seconds / 60); 
         min = min.toString().padStart(2, '0');
         sec = sec.toString().padStart(2, '0');
-        text.innerHTML = min + ":" + sec;		
+        text.innerHTML = min + ":" + sec;
     }
 
     function positive_act() {
