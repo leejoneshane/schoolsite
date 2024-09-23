@@ -309,7 +309,10 @@ class Teacher extends Model
     //取得教師所有遊戲延遲處置列表
     public function game_delay()
     {
-        return $this->hasMany('App\Models\GameDelay', 'uuid', 'uuid')->where('act', 0)->orderBy('created_at');
+        $room_id = session('gameclass');
+        return $this->hasMany('App\Models\GameDelay', 'uuid', 'uuid')
+            ->where('classroom_id', $room_id)
+            ->where('act', 0)->orderBy('created_at');
     }
 
     //取得教師兩天內的遊戲日誌

@@ -4,26 +4,15 @@
 <div class="flex flex-col">
     <div class="w-full">
         <div id="text" class="leading-none text-white text-[30rem]"></div>
-        <div class="volume-group w-full h-12 bg-black flex items-center gap-4 p-10">
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
-            <div class="volume-cell w-4 h-8 bg-gray-300"></div>
+        <div class="relative w-full h-12 bg-gray-200 dark:bg-gray-700">
+            <div id="bar" class="h-12 bg-red-600 p-1 text-lg text-center leading-none" style="width: 100%"></div>
+            <div id="mark" class="absolute top-0 w-1 h-12 bg-blue-600" style="left: 60%"></div>
         </div>
-    </div>
     <div class="w-full p-2 bg-blue-100 bg-opacity-50">
         <p>靜謐山谷：在時間內保持安靜，悄悄通過山谷，完成任務獲得經驗值。如果在時間停止前發出太大的聲音，將給予懲罰。</p>
     </div>
     <div class="flex flex-row">
-        <div class="w-1/3 flex flex-col bg-blue-100 bg-opacity-50">
+        <div class="w-1/2 flex flex-col bg-blue-100 bg-opacity-50">
             <div class="ml-5 p-2 text-white rounded-lg drop-shadow-lg">
                 <span>獎勵設定：</span>
                 XP:<input type="number" id="xp" name="xp" value="50" class="inline w-16 bg-transparent border p-0"> 
@@ -41,10 +30,10 @@
                 MP:<input type="number" id="mp" name="mp" value="0" class="inline w-16 bg-transparent border p-0"> 
             </div>
         </div>
-        <div class="w-1/4 bg-blue-100 bg-opacity-50 flex flex-col">
+        <div class="w-1/2 bg-blue-100 bg-opacity-50 flex flex-col">
             <div class="text-white rounded-lg drop-shadow-lg">
                 計時<input type="number" id="timeout" min="1" max="30" value="5" class="p-0 bg-transparent">分鐘，
-                不超過<input type="number" id="volume" min="1" max="100" value="60" class="p-0 bg-transparent">分貝
+                不超過<input type="number" id="volume" min="1" max="100" value="60" class="p-0 bg-transparent" onchange="show_mark();">分貝
             </div>
             <div class="inline-flex">
                 <button id="start" class="ml-6 bg-green-300 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-full" onclick="start();">
@@ -55,23 +44,10 @@
                 </button>    
             </div>
         </div>
-        <div class="w-5/12 bg-blue-100 bg-opacity-50 text-center flex flex-col">
-            <div id="buttons">
-                <button class="bg-blue-500 hover:bg-blue-700 disabled:bg-gray-500 text-white font-bold py-2 px-4 rounded-full" onclick="positive_act();">
-                    <i class="fa-solid fa-plus"></i>發送獎勵
-                </button>
-                <button class="ml-6 bg-red-500 hover:bg-red-700 disabled:bg-gray-500 text-white font-bold py-2 px-4 rounded-full" onclick="negative_act();">
-                    <i class="fa-solid fa-minus"></i>發送懲罰
-                </button>
-            </div>
-        </div>    
     </div>
 </div>
 <script nonce="selfhost">
     var audioContext;
-    const volumeCells = document.querySelectorAll(".volume-cell")
-    activeSound();
-
     var reason1 = '在靜謐山谷中安然度過危機';
     var reason2 = '挑戰靜謐山谷失敗';
     var uuids = [];
@@ -119,24 +95,27 @@
     }
 
     function onMicrophoneDenied() {
-        console.log('denied')
+        console.log('denied');
     }
 
     function handleVolumeCellColor(volume) {
-        const allVolumeCells = [...volumeCells]
-        const numberOfCells = Math.round(volume)
-        const cellsToColored = allVolumeCells.slice(0, numberOfCells)
-
-        for (const cell of allVolumeCells) {
-            cell.classList.add('bg-gray-300');
-        }
-
-        for (const cell of cellsToColored) {
-            cell.classList.add('bg-blue-300');
+        var max = document.getElementById('volume').value;
+        bar.style.width = volume + "%";
+        bar.innerHTML = Math.floor(volume);
+        if (volume > max) {
+            stop();
+            negative_act();
         }
     }
 
+    function show_mark() {
+        var max = document.getElementById('volume').value;
+        var mark = document.getElementById('mark');
+        mark.style.left = max + "%";
+    }
+
     function start() {
+        activeSound();
         targetSeconds = elem_count.value * 60;
         startTime = new Date().getTime();
         update(targetSeconds);
@@ -170,30 +149,19 @@
         if (remainingTime <= 0) {
             clearInterval(timerId);
             update(0);
+            positive_act();
         }
     }
 
     function update (seconds) {
-        var percent = Math.round((seconds / targetSeconds) * 100);
-        bar.style.width = percent + "%";
-        bar.innerHTML = percent + "%";
-
         var sec = seconds % 60;  
         var min = Math.floor(seconds / 60); 
         min = min.toString().padStart(2, '0');
         sec = sec.toString().padStart(2, '0');
-        text.innerHTML = min + ":" + sec;		
+        text.innerHTML = min + ":" + sec;
     }
 
     function positive_act() {
-        uuids = [];
-        var nodes = document.querySelectorAll('input[type="checkbox"][data-group]:checked');
-        nodes.forEach( node => {
-            parties[node.id].forEach( char => {
-                uuids.push(char); 
-            });
-        });
-
         var percent = remainingTime / targetSeconds;
         var xp = elem_xp.value * percent;
         var gp = elem_gp.value * percent;
@@ -215,14 +183,6 @@
     }
 
     function negative_act() {
-        uuids = [];
-        var nodes = document.querySelectorAll('input[type="checkbox"][data-group]:checked');
-        nodes.forEach( node => {
-            parties[node.id].forEach( char => {
-                uuids.push(char); 
-            });
-        });
-
         var hp = elem_hp.value;
         var mp = elem_mp.value;
         window.axios.post('{{ route('game.negative_act') }}', {

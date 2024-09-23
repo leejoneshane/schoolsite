@@ -187,7 +187,8 @@ class GameController extends Controller
         $positive_rules = GameSetting::positive($request->user()->uuid);
         $negative_rules = GameSetting::negative($request->user()->uuid);
         $items = GameItem::all();
-        return view('game.roster', [ 'teacher' => $teacher, 'room' => $room, 'parties' => $parties, 'partyless' => $partyless, 'positive_rules' => $positive_rules, 'negative_rules' => $negative_rules, 'items' => $items ]);
+        $classes = GameClass::all();
+        return view('game.roster', [ 'teacher' => $teacher, 'room' => $room, 'parties' => $parties, 'partyless' => $partyless, 'positive_rules' => $positive_rules, 'negative_rules' => $negative_rules, 'items' => $items, 'classes' => $classes ]);
     }
 
     public function absent(Request $request)
@@ -206,20 +207,9 @@ class GameController extends Controller
         return response()->json(['success' => $char->absent]);
     }
 
-    public function fast_edit($uuid)
+    public function fast_update(Request $request)
     {
-        $user = User::find(Auth::user()->id);
-        if ($user->user_type == 'Student') return response()->json(['error' => '您沒有權限使用此功能！'], 403);
-        $character = GameCharacter::find($uuid);
-        $room = $character->student->class_id;
-        $parties = GameParty::findByClass($room);
-        $classes = GameClass::all();
-        return view('game.character_edit', [ 'character' => $character, 'parties' => $parties, 'classes' => $classes ]);
-    }
-
-    public function fast_update(Request $request, $uuid)
-    {
-        $character = GameCharacter::find($uuid);
+        $character = GameCharacter::find($request->input('uuid'));
         if ($character->party_id != $request->input('party')) {
             $character->party_id = $request->input('party');
         }
@@ -229,17 +219,15 @@ class GameController extends Controller
         if ($character->class_id != $request->input('profession')) {
             $pro = GameClass::find($request->input('profession'));
             $character->class_id = $pro->id;
-            $character->level = 1;
-            $character->max_hp = $pro->base_hp;
-            $character->max_mp = $pro->base_mp;
-            $character->ap = $pro->base_ap;
-            $character->dp = $pro->base_dp;
-            $character->sp = $pro->base_sp;
+            if ($character->level == 1) {
+                $character->max_hp = $pro->base_hp;
+                $character->max_mp = $pro->base_mp;
+                $character->ap = $pro->base_ap;
+                $character->dp = $pro->base_dp;
+                $character->sp = $pro->base_sp;    
+            }
             $character->save();
-            $character->levelup();
         }
-        $room = $character->student->class_id;
-        return redirect()->route('game.room', [ 'room_id' => $room ]);
     }
 
     public function get_skills(Request $request)
@@ -249,14 +237,7 @@ class GameController extends Controller
         if (!$char->class_id) {
             return response()->json([]);
         }
-        $skills = GameSkill::forClass($char->class_id)->filter( function ($skill) use ($char) {
-            if ($skill->level <= $char->level) {
-                if ($skill->object == 'self' || $skill->object == 'partner' || $skill->object == 'party') {
-                    if ($skill->cost_mp <= $char->mp) return true;
-                }
-            }
-            return false;
-        });
+        $skills = $char->passive_skills();
         return response()->json([ 'skills' => $skills ]);
     }
 
@@ -264,9 +245,7 @@ class GameController extends Controller
     {
         $uuid = $request->input('uuid');
         $char = GameCharacter::find($uuid);
-        $items = $char->items->filter( function ($item) use ($char) {
-            return ($item->object == 'self' || $item->object == 'partner' || $item->object == 'party');
-        });
+        $items = $char->useable_items();
         return response()->json([ 'items' => $items ]);
     }
 
@@ -275,6 +254,13 @@ class GameController extends Controller
         $uuid = $request->input('uuid');
         $char = GameCharacter::find($uuid);
         return response()->json([ 'teammate' => $char->teammate ]);
+    }
+
+    public function get_character(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $char = GameCharacter::find($uuid);
+        return response()->json($char);
     }
 
     public function skill_cast(Request $request)
@@ -358,7 +344,7 @@ class GameController extends Controller
         $uuids = explode(',', $request->input('uuids'));
         foreach ($uuids as $uuid) {
             $character = GameCharacter::find($uuid);
-            if ($character->class_id) {
+            if ($character && $character->class_id) {
                 if (isset($xp)) $character->xp += $xp;
                 if (isset($gp)) $character->gp += $gp;
                 if (isset($item)) $character->get_item($item->id);
@@ -394,7 +380,7 @@ class GameController extends Controller
         $uuids = explode(',', $request->input('uuids'));
         foreach ($uuids as $uuid) {
             $character = GameCharacter::find($uuid);
-            if ($character->class_id) {
+            if ($character && $character->class_id) {
                 if ($character->status != DEAD) {
                     if (isset($hp)) $character->hp -= $hp;
                 }
@@ -414,12 +400,13 @@ class GameController extends Controller
 
     public function negative_delay(Request $request)
     {
+        $characters = explode(',', $request->input('uuids'));
         if ($request->input('rule') > 0) {
             $rule = GameSetting::find($request->input('rule'));
             GameDelay::create([
                 'classroom_id' => session('gameclass'),
                 'uuid' => $request->input('uuid'),
-                'characters' => $request->input('uuids'),
+                'characters' => $characters,
                 'rule' => $rule->id,
                 'hp' => $request->input('hp'),
                 'mp' => $request->input('mp'),
@@ -428,7 +415,7 @@ class GameController extends Controller
             GameDelay::create([
                 'classroom_id' => session('gameclass'),
                 'uuid' => $request->input('uuid'),
-                'characters' => $request->input('uuids'),
+                'characters' => $characters,
                 'reason' => $request->input('reason'),
                 'hp' => $request->input('hp'),
                 'mp' => $request->input('mp'),
@@ -452,8 +439,7 @@ class GameController extends Controller
             $add[] = '法力（行動力）' . $delay->mp . '點';
         }
         $message .= implode('、', $add).'。';
-        $uuids = explode(',', $delay->characters);
-        foreach ($uuids as $uuid) {
+        foreach ($delay->characters as $uuid) {
             $character = GameCharacter::find($uuid);
             if ($character->class_id) {
                 if ($character->status != DEAD) {
@@ -473,6 +459,7 @@ class GameController extends Controller
         }
         $delay->act = true;
         $delay->save();
+        return redirect()->back();
     }
 
     public function pickup($room_id)
@@ -487,23 +474,32 @@ class GameController extends Controller
     public function random_pickup(Request $request, $room_id)
     {
         if ($request->input('type') == 0) {
-            $pick = GameCharacter::wheel($room_id)->random();
-            $pick->pick_up ++;
-            $pick->save();
-            $uuids[] = $pick;
-            return response()->json([ 'type' => 0, 'uuids' => $uuids ]);
-        } else {
-            $pick = GameParty::wheel($room_id)->random();
-            $pick->pick_up ++;
-            $pick->save();
-            foreach ($pick->members as $m) {
-                if ($m->absent == 0) {
-                    $m->pick_up ++;
-                    $m->save();
-                    $uuids[] = $m;
-                }
+            $uuids = [];
+            $picks = GameCharacter::wheel($room_id);
+            if ($picks->count() > 0) {
+                $pick = $picks->random();
+                $pick->pick_up ++;
+                $pick->save();
+                $uuids[] = $pick;
             }
-            return response()->json([ 'type' => 1, 'name' => $pick->name, 'uuids' => $uuids ]);
+            return response()->json([ 'type' => 0, 'uuids' => $uuids ]);    
+        } else {
+            $uuids = [];
+            $picks = GameParty::wheel($room_id);
+            if ($picks->count() > 0) {
+                $pick = $picks->random();
+                $pick->pick_up ++;
+                $pick->save();
+                foreach ($pick->members as $m) {
+                    if ($m->absent == 0) {
+                        $m->pick_up ++;
+                        $m->save();
+                        $uuids[] = $m;
+                    }
+                }
+                return response()->json([ 'type' => 1, 'name' => $pick->name, 'uuids' => $uuids ]);
+            }
+            return response()->json([ 'type' => 1, 'name' => '', 'uuids' => [] ]);
         }
     }
 

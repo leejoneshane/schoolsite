@@ -46,6 +46,7 @@ class ItemController extends Controller
             $sk = GameItem::create([
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
+                'passive' => ($request->input('passive') == 'yes'),
                 'object' => $request->input('object'),
                 'hit_rate' => $request->input('hit_rate'),
                 'hp' => $request->input('hp'),
@@ -95,6 +96,7 @@ class ItemController extends Controller
             $sk = GameItem::find($item_id);
             $sk->name = $request->input('name');
             $sk->description = $request->input('description');
+            $sk->passive = ($request->input('passive') == 'yes');
             $sk->object = $request->input('object');
             $sk->hit_rate = $request->input('hit_rate');
             $sk->hp = $request->input('hp');

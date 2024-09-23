@@ -37,6 +37,12 @@ class GameClass extends Model
         return $this->belongsToMany('App\Models\GameSkill', 'game_classes_skills', 'class_id', 'skill_id')->withPivot(['level'])->orderByPivot('level');
     }
 
+    //取得此職業的技能
+    public function passive()
+    {
+        return $this->belongsToMany('App\Models\GameSkill', 'game_classes_skills', 'class_id', 'skill_id')->where('passive', 1)->withPivot(['level'])->orderByPivot('level');
+    }
+
     //取得此職業的圖片
     public function images()
     {

@@ -157,14 +157,16 @@ class GameCharacter extends Model
     public function getFinalApAttribute()
     {
         $ap = $this->ap;
-        if ($this->party->effect_ap != 0) {
-            $i = intval($this->party->effect_ap);
-            $d = $this->party->effect_ap - $i;
-            if ($i != 0) {
-                $this->ap += $i;
-            }
-            if ($d != 0) {
-                $this->ap += intval($this->ap * $d);
+        if ($this->party) {
+            if ($this->party->effect_ap != 0) {
+                $i = intval($this->party->effect_ap);
+                $d = $this->party->effect_ap - $i;
+                if ($i != 0) {
+                    $this->ap += $i;
+                }
+                if ($d != 0) {
+                    $this->ap += intval($this->ap * $d);
+                }
             }
         }
         if ($this->temp_effect == 'ap') {
@@ -187,14 +189,16 @@ class GameCharacter extends Model
     public function getFinalDpAttribute()
     {
         $dp = $this->dp;
-        if ($this->party->effect_dp != 0) {
-            $i = intval($this->party->effect_dp);
-            $d = $this->party->effect_dp - $i;
-            if ($i != 0) {
-                $this->dp += $i;
-            }
-            if ($d != 0) {
-                $this->dp += intval($this->dp * $d);
+        if ($this->party) {
+            if ($this->party->effect_dp != 0) {
+                $i = intval($this->party->effect_dp);
+                $d = $this->party->effect_dp - $i;
+                if ($i != 0) {
+                    $this->dp += $i;
+                }
+                if ($d != 0) {
+                    $this->dp += intval($this->dp * $d);
+                }
             }
         }
         if ($this->temp_effect == 'dp') {
@@ -217,14 +221,16 @@ class GameCharacter extends Model
     public function getFinalSpAttribute()
     {
         $sp = $this->sp;
-        if ($this->party->effect_sp != 0) {
-            $i = intval($this->party->effect_sp);
-            $d = $this->party->effect_sp - $i;
-            if ($i != 0) {
-                $this->sp += $i;
-            }
-            if ($d != 0) {
-                $this->sp += intval($this->sp * $d);
+        if ($this->party) {
+            if ($this->party->effect_sp != 0) {
+                $i = intval($this->party->effect_sp);
+                $d = $this->party->effect_sp - $i;
+                if ($i != 0) {
+                    $this->sp += $i;
+                }
+                if ($d != 0) {
+                    $this->sp += intval($this->sp * $d);
+                }
             }
         }
         if ($this->temp_effect == 'sp') {
@@ -302,6 +308,15 @@ class GameCharacter extends Model
     public function force_levelup($level)
     {
         $this->xp = static::$levelup_needed[$level];
+        if ($level == 1) {
+            $this->max_hp = $this->profession->base_hp;
+            $this->hp = $this->profession->base_hp;
+            $this->max_mp = $this->profession->base_mp;
+            $this->mp = $this->profession->base_mp;
+            $this->ap = $this->profession->base_ap;
+            $this->dp = $this->profession->base_dp;
+            $this->sp = $this->profession->base_sp;    
+        }
         $this->save();
         $this->levelup();
     }
@@ -336,24 +351,41 @@ class GameCharacter extends Model
         return $this->belongsTo('App\Models\GameCharacter', 'party_id', 'party_id')->where('absent', 0);
     }
 
-    //取得此角色可使用技能
+    //取得此角色擁有的道具
     public function items()
     {
         return $this->belongsToMany('App\Models\GameItem', 'game_characters_items', 'uuid', 'item_id')->withPivot(['quantity']);
+    }
+
+    //取得此角色可使用道具
+    public function useable_items()
+    {
+        return $this->items->reject(function ($item) {
+            return $item->passive == 0;
+        });
     }
 
     //取得此角色可使用技能
     public function skills()
     {
         return $this->profession->skills->reject(function ($skill) {
-            return $skill->level > $this->level;
+            return $skill->level > $this->level || $skill->cost_mp > $this->mp;
+        });
+    }
+
+    //取得此角色可使用被動技能
+    public function passive_skills()
+    {
+        return $this->profession->passive->reject(function ($skill) {
+            return $skill->level > $this->level || $skill->cost_mp > $this->mp;
         });
     }
 
     //角色日常更新
     public function newday()
     {
-        if ($this->party && $this->party->configure) {
+        if (!$this->party) return;
+        if ($this->party->configure) {
             $this->mp += $this->party->configure->daily_mp;
             if ($this->party->effect_hp != 0) {
                 $i = intval($this->party->effect_hp);
@@ -386,16 +418,16 @@ class GameCharacter extends Model
             }
             if ($this->hp > $this->max_hp) $this->hp = $this->max_hp;
             $this->absent = false;
-            $this->save();    
+            $this->save();
         }
     }
 
-    //使用指定的道具
+    //使用指定的技能
     public function use_skill($id, $uuids = null)
     {
         if ($this->status == 'DEAD') return DEAD;
         if ($this->status == 'COMA') return COMA;
-        if (!$this->skills->contains('id', $id)) return NOT_EXISTS;
+        if (!$this->skills()->contains('id', $id)) return NOT_EXISTS;
         $skill = GameSkill::find($id);
         $classroom = $this->student->class_id;
         if ($skill->object != 'self' && !GameSence::is_lock($classroom)) return PEACE;

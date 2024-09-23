@@ -15,6 +15,7 @@ class GameItem extends Model
         'name',      //道具名稱
         'description',  //道具簡介
         'image_file',
+        'passive',   //是否為被動道具(非戰鬥用道具)
         'object',    //作用對象：self 自己，party 隊伍，partner 指定的我方角色，target 指定的敵方角色，all 敵方隊伍中的所有角色
         'hit_rate',  //命中率，擊中判斷為 命中率-(對方敏捷力/100)
         'hp',        //對作用對象的健康值增減效益，2 則加 2 點，0.5 則加 50%，-1 為扣 1 點，-0.3 為扣 30%
@@ -25,6 +26,17 @@ class GameItem extends Model
         'status',    //解除角色狀態
         'gp',        //此道具的購買價格
     ];
+
+    //以下屬性需進行資料庫欄位格式轉換
+    protected $casts = [
+        'passive' => 'boolean',
+    ];
+
+    //篩選指定職業的技能，靜態函式
+    public static function passive()
+    {
+        return GameSkill::where('passive', 1)->get();
+    }
 
     public function image_path()
     {
@@ -64,7 +76,8 @@ class GameItem extends Model
         if ($this->object == 'target' || $this->object == 'all') {
             $hit -= $character->final_sp / 100;
         }
-        if ($hit >= 1 || rand() < $hit) {
+        $rnd = mt_rand()/mt_getrandmax();
+        if ($hit >= 1 || $rnd < $hit) {
             if ($this->hp != 0) {
                 if ($this->hp > 1 || $this->hp < -1) {
                     $character->hp += $this->hp;

@@ -260,7 +260,7 @@ class ClassroomController extends Controller
                     'party_id' => null,
                     'seat' => $stu->seat,
                     'name' => $stu->realname,
-                ]);    
+                ]);
             }
         }
         if ($request->input('party') == 'yes') {
@@ -278,8 +278,9 @@ class ClassroomController extends Controller
                         'name' => '第'.$gno.'組',
                     ]);
                     foreach ($students as $stu) {
-                        GameCharacter::create([
+                        GameCharacter::updateOrCreate([
                             'uuid' => $stu->uuid,
+                        ],[
                             'classroom_id' => $room_id,
                             'party_id' => $party->id,
                             'seat' => $stu->seat,
@@ -338,11 +339,7 @@ class ClassroomController extends Controller
         if ($request->input('character') == 'yes') {
             foreach ($students as $stu) {
                 $character = GameCharacter::find($stu->uuid);
-                $character->classroom_id = $room_id;
-                $character->party_id = null;
-                $character->seat = $stu->seat;
                 $character->title = null;
-                $character->name = $stu->realname;
                 $character->class_id = null;
                 $character->image_id = null;
                 $character->level = 1;
@@ -362,6 +359,7 @@ class ClassroomController extends Controller
                 $character->absent = 0;
                 $character->pick_up = 0;
                 $character->save();
+                $character->force_levelup(1);
             }
         } else {
             if ($request->input('profession') == 'yes') {

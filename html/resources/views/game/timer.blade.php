@@ -93,7 +93,7 @@
 
     var main = document.getElementsByTagName('main')[0];
     main.classList.replace('bg-game-map50', 'bg-game-timer');
-    var seconds = 0;
+    var targetSeconds = 0;
     var timerId;
     var startTime;
     var pauseTime;

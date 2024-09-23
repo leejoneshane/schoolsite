@@ -103,6 +103,9 @@ class GameDelay extends Model
     //取得產生此紀錄的學生
     public function students()
     {
+        if (is_string($this->characters)) {
+            $this->characters[] = $this->characters;
+        }
         return Student::whereIn('uuid', $this->characters)->get();
     }
 

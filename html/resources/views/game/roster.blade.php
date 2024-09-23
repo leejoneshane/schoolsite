@@ -102,9 +102,9 @@
             <td class="p-2">{{ $s->gp }}</td>
             <td class="p-2">
                 @locked($room->id)
-                <a class="py-2 pr-6 text-blue-500 hover:text-blue-600" href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
+                <button class="ml-6 bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_character('{{ $s->uuid }}')">
                     <i class="fa-solid fa-user-pen"></i>
-                </a>
+                </button>
                 @endlocked
             </td>
         </tr>
@@ -196,9 +196,9 @@
         <td class="p-2">{{ $s->gp }}</td>
         <td class="p-2">
             @locked($room->id)
-            <a class="py-2 pr-6 text-blue-500 hover:text-blue-600" href="{{ route('game.character_edit', ['uuid' => $s->uuid]) }}">
+            <button class="ml-6 bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_character('{{ $s->uuid }}')">
                 <i class="fa-solid fa-user-pen"></i>
-            </a>
+            </button>
             @endlocked
         </td>
     </tr>
@@ -370,7 +370,47 @@
                 <button onclick="cast();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     立即使用
                 </button>
-                <button onclick="teammateModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                <button onclick="teamModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    取消
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="editModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[80] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+    <div class="relative w-auto h-full max-w-2xl md:h-auto">
+        <div class="relative bg-white rounded-lg shadow dark:bg-blue-700">
+            <div class="p-4 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-center text-xl font-semibold text-gray-900 dark:text-white">快速編輯</h3>
+            </div>
+            <div class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                <p><div class="p-3">
+                    <label for="party" class="text-base">隸屬公會：</label>
+                    <select id="party" name="party" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+                        @foreach ($parties as $p)
+                        <option value="{{ $p->id }}">{{ $p->group_no }} {{ $p->name }}</option>
+                        @endforeach
+                    </select>
+                </div></p>
+                <p><div class="p-3">
+                    <label for="title" class="text-base">榮譽稱號：</label>
+                    <input id="title" class="w-1/3 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                        type="text" name="title" value="">
+                </div></p>
+                <p><div class="p-3">
+                    <label for="profession" class="text-base">職業：</label>
+                    <select id="profession" name="profession" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+                        @foreach ($classes as $c)
+                        <option value="{{ $c->id }}">{{ $c->name }}</option>
+                        @endforeach
+                    </select>
+                </div></p>
+            </div>
+            <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button onclick="fastedit();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    修改
+                </button>
+                <button onclick="editModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                     取消
                 </button>
             </div>
@@ -406,6 +446,8 @@
     const itemsModal = new window.Modal($targetEl);
     $targetEl = document.getElementById('teammateModal');
     const teamModal = new window.Modal($targetEl);
+    $targetEl = document.getElementById('editModal');
+    const editModal = new window.Modal($targetEl);
 
     function absent(uuid) {
         var node = document.getElementById(uuid);
@@ -682,9 +724,13 @@
                     label.setAttribute('for', 'skill' + skill.id);
                     label.classList.add('inline-block','w-full','p-2','text-gray-500','bg-white','rounded-lg','border-2','border-gray-200','cursor-pointer','peer-checked:border-blue-600','hover:text-teal-600','peer-checked:text-blue-600','hover:bg-teal-50');
                     var name = document.createElement('div');
-                    name.classList.add('inline-block','w-96','text-base');
+                    name.classList.add('inline-block','w-80','text-base');
                     name.innerHTML = skill.name;
                     label.appendChild(name);
+                    var cost = document.createElement('div');
+                    cost.classList.add('inline-block','w-16','text-base');
+                    cost.innerHTML = '-' + skill.cost_mp + 'MP';
+                    label.appendChild(cost);
                     var help = document.createElement('div');
                     help.classList.add('inline-block','w-96','text-sm');
                     help.innerHTML = skill.description;
@@ -753,7 +799,7 @@
 
     function skill_cast() {
         var skill_obj = document.querySelector('input[name="skill"]:checked');
-        if (rule == null) {
+        if (skill_obj == null) {
             var msg = document.getElementById('message');
             msg.innerHTML = '您尚未選擇技能！';
             warnModal.show();
@@ -805,7 +851,7 @@
                     });
                 }
             });
-            teammateModal.show();
+            teamModal.show();
         } else {
             window.axios.post('{{ route('game.skill_cast') }}', {
                 uuid: character,
@@ -823,7 +869,7 @@
 
     function item_use() {
         var item_obj = document.querySelector('input[name="item"]:checked');
-        if (rule == null) {
+        if (item_obj == null) {
             var msg = document.getElementById('message');
             msg.innerHTML = '您尚未選擇道具！';
             warnModal.show();
@@ -875,7 +921,7 @@
                     });
                 }
             });
-            teammateModal.show();
+            teamModal.show();
         } else {
             window.axios.post('{{ route('game.item_use') }}', {
                 uuid: character,
@@ -934,6 +980,62 @@
             });
             window.location.reload();
         }
+    }
+
+    function prepare_character(uuid) {
+        character = uuid;
+        window.axios.post('{{ route('game.get_character') }}', {
+            uuid: character,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then( response => {
+            var temp = response.data;
+            var party = document.getElementById('party');
+            for (var op in party.options) {
+                if (party.options[op].value == temp.party_id) {
+                    party.options[op].selected = true;
+                } else {
+                    party.options[op].selected = false;
+                }
+            }
+            var title = document.getElementById('title');
+            if (temp.title) {
+                title.value = temp.title;
+            } else {
+                title.value = '';
+            }
+            var myclass = document.getElementById('profession');
+            for (var op in myclass.options) {
+                if (myclass.options[op].value == temp.class_id) {
+                    myclass.options[op].selected = true;
+                } else {
+                    myclass.options[op].selected = false;
+                }
+            }
+            editModal.show();
+        });
+    }
+
+    function fastedit() {
+        editModal.hide();
+        var party = document.getElementById('party').value;
+        var title = document.getElementById('title').value;
+        var profession = document.getElementById('profession').value;
+        window.axios.post('{{ route('game.character_edit') }}', {
+            uuid: character,
+            party: party,
+            title: title,
+            profession: profession,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        });
+        window.location.reload();
     }
 </script>
 @endsection

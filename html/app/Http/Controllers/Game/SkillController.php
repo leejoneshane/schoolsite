@@ -47,6 +47,7 @@ class SkillController extends Controller
             $sk = GameSkill::create([
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
+                'passive' => ($request->input('passive') == 'yes'),
                 'object' => $request->input('object'),
                 'hit_rate' => $request->input('hit_rate'),
                 'cost_mp' => $request->input('cost_mp'),
@@ -104,6 +105,8 @@ class SkillController extends Controller
             $sk = GameSkill::find($skill_id);
             $sk->name = $request->input('name');
             $sk->description = $request->input('description');
+            $sk->passive = ($request->input('passive') == 'yes');
+            $sk->object = $request->input('object');
             $sk->hit_rate = $request->input('hit_rate');
             $sk->cost_mp = $request->input('cost_mp');
             $sk->ap = $request->input('ap');

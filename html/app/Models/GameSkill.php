@@ -15,6 +15,7 @@ class GameSkill extends Model
         'name',        //技能名稱
         'description', //技能簡介
         'gif_file',    //特效圖檔
+        'passive',     //是否為被動技能(非戰鬥用技能)
         'object',      //作用對象：self 自己，party 隊伍，partner 指定的我方角色，target 指定的敵方角色，all 敵方隊伍中的所有角色
         'hit_rate',    //命中率，擊中判斷為 命中率＋（自己敏捷力-對方敏捷力）/100
         'cost_mp',     //消耗行動力
@@ -29,7 +30,7 @@ class GameSkill extends Model
         'effect_sp',   //對作用對象的敏捷力增減效益
         'effect_times',//技能持續時間，以分鐘為單位
         'status',      //解除目標狀態，DEAD 死亡狀態復活，COMA 昏迷狀態回神
-        'inspire',     //賦予目標狀態，invincible 無敵，reflex 反射傷害，protect 保護，protected 被保護，hatred 仇恨（集中傷害），apportion 分攤傷害
+        'inspire',     //賦予目標狀態，invincible 無敵，reflex 反射傷害，protect 保護，protected 被保護，hatred 仇恨（集中傷害），apportion 分攤傷害，throw 投射道具
         'earn_xp',     //施展技能後，可獲得經驗值
         'earn_gp',     //施展技能後，可獲得金幣
     ];
@@ -37,6 +38,11 @@ class GameSkill extends Model
     //以下屬性隱藏不顯示（toJson 時忽略）
     protected $hidden = [
         'professions',
+    ];
+
+    //以下屬性需進行資料庫欄位格式轉換
+    protected $casts = [
+        'passive' => 'boolean',
     ];
 
     //取得此技能包含於哪些職業
@@ -51,6 +57,17 @@ class GameSkill extends Model
         return GameSkill::select('game_skills.*', 'game_classes_skills.level')
             ->leftjoin('game_classes_skills', 'game_skills.id', '=', 'game_classes_skills.skill_id')
             ->where('game_classes_skills.class_id', $class_id)
+            ->orderBy('game_classes_skills.level')
+            ->get();
+    }
+
+    //篩選指定職業的技能，靜態函式
+    public static function passive($class_id)
+    {
+        return GameSkill::select('game_skills.*', 'game_classes_skills.level')
+            ->leftjoin('game_classes_skills', 'game_skills.id', '=', 'game_classes_skills.skill_id')
+            ->where('game_classes_skills.class_id', $class_id)
+            ->where('game_skills.passive', 1)
             ->orderBy('game_classes_skills.level')
             ->get();
     }
@@ -78,6 +95,7 @@ class GameSkill extends Model
     //施展指定的技能，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗
     public function cast($self, $uuids)
     {
+        $result = [];
         $hatred = $protect = false;
         if (is_string($uuids)) $uuids[] = $uuids;
         if ($this->object == 'self') $uuids = [$self];
@@ -108,6 +126,8 @@ class GameSkill extends Model
                 $t->buff = null;
                 $t->save();
                 $result[$t->uuid] = $this->effect($me, $protect);
+            } else {
+                $result[$t->uuid] = $this->effect($me, $t);
             }
         }
         $me->mp -= $this->cost_mp;
@@ -125,7 +145,9 @@ class GameSkill extends Model
         if ($this->object == 'target' || $this->object == 'all') {
             $hit += ($me->final_sp - $character->final_sp) / 100;
         }
-        if ($hit >= 1 || rand() < $hit) {
+        $rnd = mt_rand()/mt_getrandmax();
+        if ($hit >= 1 || $rnd < $hit) {
+            $damage = 0;
             if ($this->ap > 0) {
                 if ($character->buff == 'reflex') {
                     $damage = ($this->ap + $character->final_ap) - $me->final_dp;
