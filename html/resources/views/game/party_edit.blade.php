@@ -22,6 +22,15 @@
         <textarea id="description" class="inline w-128 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             name="description" rows="5" cols="120" placeholder="請輸入公會成立宗旨、目標、或口號...">{{ $party->description }}</textarea>
     </div></p>
+    <p><div class="p-3">
+        <label for="leader" class="text-base">公會長：</label>
+        <select id="leader" name="leader" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+            <option value="">尚未設定</option>
+            @foreach ($party->withAbsent as $c)
+            <option value="{{ $c->uuid }}"{{ $c->uuid == $party->uuid ? ' selected' : '' }}>{{ $c->name }}</option>
+            @endforeach
+        </select>
+    </div></p>
     <td class="p-3">
         <label class="text-base">選擇據點：</label>
         <ul class="grid w-full gap-6 md:grid-cols-5">

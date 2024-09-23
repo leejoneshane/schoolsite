@@ -42,9 +42,6 @@
                 職業
             </th>
             <th scope="col" class="p-2">
-                XP
-            </th>
-            <th scope="col" class="p-2">
                 等級
             </th>
             @locked($room->id)
@@ -60,6 +57,18 @@
             </th>
             <th scope="col" class="p-2">
                 MP
+            </th>
+            <th scope="col" class="p-2">
+                AP
+            </th>
+            <th scope="col" class="p-2">
+                DP
+            </th>
+            <th scope="col" class="p-2">
+                SP
+            </th>
+            <th scope="col" class="p-2">
+                XP
             </th>
             <th scope="col" class="p-2">
                 GP
@@ -83,26 +92,29 @@
                 @endlocked
             </td>
             <td class="p-2">{{ ($s->profession) ? $s->profession->name : '無'}}</td>
-            <td class="p-2">{{ $s->xp }}</td>
             <td class="p-2">{{ $s->level }}</td>
             @locked($room->id)
             <td class="p-2">
-                <button class="ml-6 bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_skill('{{ $s->uuid }}')">
+                <button class="bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_skill('{{ $s->uuid }}')">
                     <i class="fa-solid fa-book-open"></i>
                 </button>
             </td>
             <td class="p-2">
-                <button class="ml-6 bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_item('{{ $s->uuid }}')">
+                <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_item('{{ $s->uuid }}')">
                     <i class="fa-solid fa-sack-xmark"></i>
                 </button>
             </td>
             @endlocked
             <td class="p-2">{{ $s->hp }}/{{ $s->max_hp }}</td>
             <td class="p-2">{{ $s->mp }}/{{ $s->max_mp }}</td>
+            <td class="p-2">{{ $s->final_ap }}</td>
+            <td class="p-2">{{ $s->final_dp }}</td>
+            <td class="p-2">{{ $s->final_sp }}</td>
+            <td class="p-2">{{ $s->xp }}</td>
             <td class="p-2">{{ $s->gp }}</td>
             <td class="p-2">
                 @locked($room->id)
-                <button class="ml-6 bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_character('{{ $s->uuid }}')">
+                <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_character('{{ $s->uuid }}')">
                     <i class="fa-solid fa-user-pen"></i>
                 </button>
                 @endlocked

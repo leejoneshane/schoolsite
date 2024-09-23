@@ -19,6 +19,7 @@ return new class extends Migration
             $table->integer('group_no');
             $table->string('name')->nullable();
             $table->string('description')->nullable();
+            $table->uuid('uuid')->nullable();
             $table->integer('base_id')->nullable();
             $table->float('effect_hp')->default(0);
             $table->float('effect_mp')->default(0);

@@ -17,6 +17,7 @@ class GameParty extends Model
         'group_no',    //第幾組
         'name',        //公會名稱
         'description', //公會口號
+        'uuid',      //組長
         'base_id',     //公會基地的編號
         'effect_hp',   //據點對隊伍成員在健康上面的增益，2 則加 2 點，0.5 則加 50%
         'effect_mp',   //據點對隊伍成員在行動力上面的增益
@@ -34,6 +35,7 @@ class GameParty extends Model
         'foundation',
         'furnitures',
         'configure',
+        'leader',
     ];
 
     //以下屬性需進行資料庫欄位格式轉換
@@ -78,10 +80,16 @@ class GameParty extends Model
         return $this->hasMany('App\Models\GameCharacter', 'party_id', 'id')->where('absent', 0)->orderBy('seat');
     }
 
+    //取得此隊伍的組長
+    public function leader()
+    {
+        return $this->hasOne('App\Models\GameCharacter', 'uuid', 'uuid');
+    }
+
     //取得此隊伍的所有角色（包含缺席）
     public function withAbsent()
     {
-        return $this->hasMany('App\Models\GameCharacter', 'party_id', 'id')->orderBy('seat');
+        return $this->hasMany('App\Models\GameCharacter', 'party_id', 'id');
     }
 
     //取得此隊伍的基地

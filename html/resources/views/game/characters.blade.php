@@ -13,6 +13,9 @@
                 公會口號
             </th>
             <th scope="col" class="p-2">
+                公會長
+            </th>
+            <th scope="col" class="p-2">
                 據點
             </th>
             <th scope="col" class="p-2">
@@ -44,6 +47,7 @@
         <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
             <td class="p-2">{{ $p->name }}</td>
             <td class="p-2">{{ $p->description }}</td>
+            <td class="p-2">{{ $p->leader ? $p->leader->name : '尚未設定' }}</td>
             @if ($p->base_id && $p->fundation)
             <td class="p-2">{{ $p->fundation->name }}</td>
             @else
@@ -80,9 +84,6 @@
                 職業
             </th>
             <th scope="col" class="p-2">
-                XP
-            </th>
-            <th scope="col" class="p-2">
                 Level
             </th>
             <th scope="col" class="p-2">
@@ -99,6 +100,9 @@
             </th>
             <th scope="col" class="p-2">
                 SP
+            </th>
+            <th scope="col" class="p-2">
+                XP
             </th>
             <th scope="col" class="p-2">
                 GP
@@ -131,13 +135,13 @@
                 <a href="{{ route('game.profession_setup', [ 'uuid' => $s->uuid ]) }}" class="text-blue-500 hover:text-blue-600">設定職業形象</a>
                 @endif
             </td>
-            <td class="p-2">{{ $s->xp }}</td>
             <td class="p-2">{{ $s->level }}</td>
             <td class="p-2">{{ $s->hp }}/{{ $s->max_hp }}</td>
             <td class="p-2">{{ $s->mp }}/{{ $s->max_mp }}</td>
             <td class="p-2">{{ $s->ap }}</td>
             <td class="p-2">{{ $s->dp }}</td>
             <td class="p-2">{{ $s->sp }}</td>
+            <td class="p-2">{{ $s->xp }}</td>
             <td class="p-2">{{ $s->gp }}</td>
             <td class="p-2">{{ $s->temp_effect }}</td>
             <td class="p-2">{{ $s->effect_value }}</td>

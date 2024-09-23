@@ -161,6 +161,7 @@ class ClassroomController extends Controller
         $party->group_no = $request->input('group_no');
         $party->name = $request->input('name');
         $party->description = $request->input('description');
+        $party->uuid = $request->input('leader');
         if ($request->input('base') == 0) {
             $party->base_id = null;
         } else {
