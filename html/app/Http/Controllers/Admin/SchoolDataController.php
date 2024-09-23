@@ -361,6 +361,8 @@ class SchoolDataController extends Controller
                 DB::table('assignment')->where('id', $old->id)->delete();
             } 
         }
+        $new_classes = array_values($new_classes);
+        $new_subjects = array_values($new_subjects);
         if (!empty($new_classes)) {
             for ($i=0; $i<count($new_classes); $i++) {
                 DB::table('assignment')->insertOrIgnore([
