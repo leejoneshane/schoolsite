@@ -11,7 +11,7 @@
     @endforeach
 </div>
 <div class="w-1/2 h-full">
-    <img src="" id="big" class="absolute w-1/3 bottom-0 right-20 z-50" />
+    <img src="" id="big" class="absolute h-screen bottom-0 right-20 z-50" />
 </div>
 </div>
 <form class="hidden" id="save" action="{{ route('game.image_setup', [ 'uuid' => $character->uuid ]) }}" method="POST">
