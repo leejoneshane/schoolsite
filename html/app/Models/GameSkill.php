@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\GameParty;
+use App\Models\GameCharacter;
 use Carbon\Carbon;
 
 class GameSkill extends Model
@@ -30,7 +32,7 @@ class GameSkill extends Model
         'effect_sp',   //對作用對象的敏捷力增減效益
         'effect_times',//技能持續時間，以分鐘為單位
         'status',      //解除目標狀態，DEAD 死亡狀態復活，COMA 昏迷狀態回神
-        'inspire',     //賦予目標狀態，invincible 無敵，reflex 反射傷害，protect 保護，protected 被保護，hatred 仇恨（集中傷害），apportion 分攤傷害，throw 投射道具
+        'inspire',     //賦予目標狀態，invincible 無敵，reflex 反射傷害，protect 保護，protected 被保護，hatred 仇恨（集中傷害），apportion 分攤傷害，throw 投射道具, weak 虛弱
         'earn_xp',     //施展技能後，可獲得經驗值
         'earn_gp',     //施展技能後，可獲得金幣
     ];
@@ -93,42 +95,65 @@ class GameSkill extends Model
     }
 
     //施展指定的技能，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗
-    public function cast($self, $uuids)
+    public function cast($self, $uuid = null, $party_id = null, $item_id = null)
     {
         $result = [];
         $hatred = $protect = false;
-        if (is_string($uuids)) $uuids[] = $uuids;
-        if ($this->object == 'self') $uuids = [$self];
-        $targets = null;
         $me = GameCharacter::find($self);
-        foreach ($uuids as $uuid) {
-            $character = GameCharacter::find($uuid);
-            $targets[] = $character;
-            if ($character->buff == 'hatred') {
-                $hatred = $character;
-                $character->buff = null;
-                $character->save();
-                break;
-            }
-            if ($character->buff == 'protect') {
-                $protect = $character;
-                $character->buff = null;
-                $character->save();
-            }
-        }
-        if ($hatred) $targets = [ $hatred ];
-        foreach ($targets as $t) {
-            if ($t->buff == 'invincible') {
-                $t->buff = null;
-                $t->save();
-                $result[$t->uuid] = MISS;
-            } elseif ($t->buff == 'protected') {
-                $t->buff = null;
-                $t->save();
-                $result[$t->uuid] = $this->effect($me, $protect);
+        if ($this->inspire == "throw") {
+            $item = GameItem::find($item_id);
+            $item->cast($self, $uuid, $party_id);
+        } else {
+            if ($party_id) {
+                $party = GameParty::find($party_id);
+                if ($this->object == 'all') {
+                    $targets = null;
+                    foreach ($party->members as $m) {
+                        $targets[] = $m;
+                        if ($m->buff == 'hatred') {
+                            $hatred = $m;
+                            $m->buff = null;
+                            $m->save();
+                            break;
+                        }
+                        if ($m->buff == 'protect') {
+                            $protect = $m;
+                            $m->buff = null;
+                            $m->save();
+                        }
+                    }
+                    if ($hatred) $targets = [ $hatred ];
+                    foreach ($targets as $t) {
+                        if ($t->buff == 'invincible') {
+                            $t->buff = null;
+                            $t->save();
+                            $result[$t->uuid] = MISS;
+                        } elseif ($t->buff == 'protected') {
+                            $t->buff = null;
+                            $t->save();
+                            $result[$t->uuid] = $this->effect_enemy($me, $protect);
+                        } else {
+                            $result[$t->uuid] = $this->effect_enemy($me, $t);
+                        }
+                    }
+                } elseif ($this->object == 'party') {
+                    foreach ($party->members as $m) {
+                        $result[$m->uuid] = $this->effect_friend($me, $m);
+                    }
+                }
+            } elseif ($uuid) {
+                $target = GameCharacter::find($uuid);
+                if ($this->object == 'target') {
+                    $result[$uuid] = $this->effect_enemy($me, $target);
+                }
+                if ($this->object == 'partner') { 
+                    $result[$uuid] = $this->effect_friend($me, $target);
+                }
             } else {
-                $result[$t->uuid] = $this->effect($me, $t);
-            }
+                if ($this->object == 'self') { 
+                    $result[$self] = $this->effect_friend($me);
+                }
+            }    
         }
         $me->mp -= $this->cost_mp;
         if ($this->steal_mp > 0) $me->mp += $this->cost_mp * $this->steal_mp;
@@ -138,52 +163,109 @@ class GameSkill extends Model
         return $result;
     }
 
+    public function effect_friend($me, $character = null)
+    {
+        if (!$character) $character = $me;
+        $hit = $this->hit_rate;
+        $rnd = mt_rand()/mt_getrandmax();
+        if ($hit >= 1 || $rnd < $hit) {
+            if ($this->inspire) {
+                if ($this->inspire == 'protect') {
+                    $me->buff = 'protect';
+                    $character->buff = 'protected';
+                }
+                if ($this->inspire != 'throw') {
+                    $character->buff = $this->inspire;
+                }
+            }
+            if ($this->effect_hp != 0) {
+                if ($character->status == 'DEAD') {
+                    if ($this->status == 'DEAD') {
+                        if ($this->effect_hp > 1 || $this->effect_hp < -1) {
+                            $character->hp += $this->effect_hp;
+                        } else {
+                            $character->hp += intval($character->max_hp * $this->effect_hp);
+                        }
+                    }
+                } else {
+                    if ($this->effect_hp > 1 || $this->effect_hp < -1) {
+                        $character->hp += $this->effect_hp;
+                    } else {
+                        $character->hp += intval($character->max_hp * $this->effect_hp);
+                    }
+                }
+            }
+            if ($this->effect_mp != 0) {
+                if ($character->status == 'COMA') {
+                    if ($this->status == 'COMA') {
+                        if ($this->effect_mp > 1 || $this->effect_mp < -1) {
+                            $character->mp += $this->effect_mp;
+                        } else {
+                            $character->mp += intval($character->max_mp * $this->effect_mp);
+                        }
+                    }
+                } else {
+                    if ($this->effect_mp > 1 || $this->effect_mp < -1) {
+                        $character->mp += $this->effect_mp;
+                    } else {
+                        $character->mp += intval($character->max_mp * $this->effect_mp);
+                    }
+                }
+            }
+            if ($this->effect_ap != 0 && $character->status != 'DEAD') {
+                $character->temp_effect = 'ap';
+                $character->effect_value = $this->effect_ap;
+                $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            if ($this->effect_dp != 0 && $character->status != 'DEAD') {
+                $character->temp_effect = 'dp';
+                $character->effect_value = $this->effect_dp;
+                $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            if ($this->effect_sp != 0 && $character->status != 'DEAD') {
+                $character->temp_effect = 'sp';
+                $character->effect_value = $this->effect_sp;
+                $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            $character->save();
+            return 0;
+        } else {
+            return MISS;
+        }
+    }
+
     //套用技能效果
-    public function effect($me, $character)
+    public function effect_enemy($me, $character)
     {
         $hit = $this->hit_rate;
-        if ($this->object == 'target' || $this->object == 'all') {
-            $hit += ($me->final_sp - $character->final_sp) / 100;
-        }
+        $hit += ($me->final_sp - $character->final_sp) / 100;
         $rnd = mt_rand()/mt_getrandmax();
         if ($hit >= 1 || $rnd < $hit) {
             $damage = 0;
             if ($this->ap > 0) {
                 if ($character->buff == 'reflex') {
                     $damage = ($this->ap + $character->final_ap) - $me->final_dp;
-                    if ($damage > 0) {
-                        $me->hp -= $damage;
-                        if ($this->steal_hp > 0) {
-                            $me->hp += $damage * $this->steal_hp;
-                        }
-                    }
+                    if ($damage > 0) $me->hp -= $damage;
                 } else {
                     $damage = $this->ap * 2 + ($me->final_ap - $character->final_dp);
                     if ($damage > 0) {
                         if ($character->buff == 'apportion') {
-                            $count = $character->teammate->count();
-                            foreach ($character->teammate as $c) {
-                                $c->hp -= intval($damage / $count);
-                            }
-                            if ($this->steal_hp > 0) {
-                                $me->hp += $damage * $this->steal_hp;
-                            }
+                            $count = $character->members->count();
                             $damage = intval($damage / $count);
+                            foreach ($character->members as $c) {
+                                if ($c->buff != 'reflex' && $c->buff != 'protected' && $c->buff != 'invincible') {
+                                    $c->hp -= $damage / $count;
+                                }
+                            }
                         } else {
                             $character->hp -= $damage;  
-                            if ($this->steal_hp > 0) {
-                                $me->hp += $damage * $this->steal_hp;
-                            }
+
                         }
                     }
                 }
-            }
-            if ($this->inspire) {
-                if ($this->inspire == 'protect') {
-                    $me->buff = 'protect';
-                    $character->buff = 'protected';
+                if ($damage > 0 && $this->steal_hp > 0) {
+                    $me->hp += $damage * $this->steal_hp;
                 }
-                $character->buff = $this->inspire;
             }
             if ($this->effect_hp != 0) {
                 if ($character->status == 'DEAD') {
@@ -239,14 +321,9 @@ class GameSkill extends Model
                 $character->gp -= $gold;
                 $me->gp += $gold;
             }
-            if ($character->mp < 1) {
-                $character->mp = 0;
-                $character->status = 'COMA';
-            }
-            if ($character->mp > $character->max_mp) $character->mp = $character->max_mp;
-            if ($character->hp < 1) {
-                $character->hp = 0;
-                $character->status = 'DEAD';
+            if ($this->inspire) {
+                $character->buff = $this->inspire;
+                $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
             }
             $character->save();
             return $damage;

@@ -182,6 +182,9 @@ class GameCharacter extends Model
                 $this->effect_timeout = null;
             }
         }
+        if ($this->buff == 'weak') {
+            $ap = intval($ap * 0.5);
+        }
         return $ap;
     }
 
@@ -214,6 +217,9 @@ class GameCharacter extends Model
                 $this->effect_timeout = null;
             }
         }
+        if ($this->buff == 'weak') {
+            $dp = intval($dp * 0.5);
+        }
         return $dp;
     }
 
@@ -245,6 +251,9 @@ class GameCharacter extends Model
                 $this->effect_value = null;
                 $this->effect_timeout = null;
             }
+        }
+        if ($this->buff == 'weak') {
+            $sp = intval($sp * 0.5);
         }
         return $sp;
     }
@@ -345,16 +354,26 @@ class GameCharacter extends Model
         return $this->hasOne('App\Models\GameParty', 'id', 'party_id');
     }
 
-    //取得此角色的已出席夥伴
+    //取得此角色的已出席夥伴，不包含自己
     public function teammate()
     {
-        return $this->belongsTo('App\Models\GameCharacter', 'party_id', 'party_id')->where('absent', 0);
+        return $this->belongsTo('App\Models\GameCharacter', 'party_id', 'party_id')
+            ->where('uuid', '!=', $this->uuid)
+            ->where('absent', 0);
+    }
+
+    //取得此角色的已出席夥伴
+    public function members()
+    {
+        return $this->belongsTo('App\Models\GameCharacter', 'party_id', 'party_id')
+            ->where('absent', 0);
     }
 
     //取得此角色擁有的道具
     public function items()
     {
-        return $this->belongsToMany('App\Models\GameItem', 'game_characters_items', 'uuid', 'item_id')->withPivot(['quantity']);
+        return $this->belongsToMany('App\Models\GameItem', 'game_characters_items', 'uuid', 'item_id')
+            ->withPivot(['quantity']);
     }
 
     //取得此角色可使用道具
@@ -423,17 +442,24 @@ class GameCharacter extends Model
     }
 
     //使用指定的技能
-    public function use_skill($id, $uuids = null)
+    public function use_skill($id, $uuid = null, $party_id = null, $item_id = null)
     {
         if ($this->status == 'DEAD') return DEAD;
         if ($this->status == 'COMA') return COMA;
-        if (!$this->skills()->contains('id', $id)) return NOT_EXISTS;
+        if ($this->buff == 'paralysis') {
+            if ($this->effect_timeout >= Carbon::now()) {
+                return COMA;
+            } else {
+                $this->effect_timeout = null;
+                $this->buff = null;
+                $this->save();
+            }
+        }
+        if (!($this->skills()->contains('id', $id))) return NOT_EXISTS;
         $skill = GameSkill::find($id);
         $classroom = $this->student->class_id;
-        if ($skill->object != 'self' && !GameSence::is_lock($classroom)) return PEACE;
-        if ($this->mp < $skill->cost_mp) return LESS_MP;
-        if (is_null($uuids)) $uuids[] = $this->uuid;
-        $skill->cast($this->uuid, $uuids);
+        if (!$skill->passive && !GameSence::is_lock($classroom)) return PEACE;
+        $skill->cast($this->uuid, $uuid, $party_id, $item_id);
     }
 
     //購買指定的道具
@@ -476,13 +502,23 @@ class GameCharacter extends Model
     }
 
     //使用指定的道具
-    public function use_item($id, $uuids = null)
+    public function use_item($id, $uuid = null, $party_id = null)
     {
         if ($this->status == 'DEAD') return DEAD;
-        if (!$this->items->contains('id', $id)) return NOT_EXISTS;
+        if ($this->buff == 'paralysis') {
+            if ($this->effect_timeout >= Carbon::now()) {
+                return COMA;
+            } else {
+                $this->effect_timeout = null;
+                $this->buff = null;
+                $this->save();
+            }
+        }
+        if (!($this->items->contains('id', $id))) return NOT_EXISTS;
         $item = GameItem::find($id);
         $classroom = $this->student->class_id;
-        if ($item->object != 'self' && !GameSence::is_lock($classroom)) return PEACE;
+        if (!$item->passive && !GameSence::is_lock($classroom)) return PEACE;
+        $item->cast($this->uuid, $uuid, $party_id);
         DB::table('game_characters_items')
             ->where('uuid', $this->uuid)
             ->where('item_id', $item->id)
@@ -492,8 +528,6 @@ class GameCharacter extends Model
             ->where('item_id', $item->id)
             ->where('quantity', '<', 1)
             ->delete();
-        if (is_null($uuids)) $uuids[] = $this->uuid;
-        $item->cast($uuids);
     }
 
 }

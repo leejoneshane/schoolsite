@@ -24,6 +24,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->job(new SendNewsLetters)->daily();
         $schedule->job(new GameDailyRenew)->daily();
+        $schedule->job(new GamePoisoned)->everyMinute();
     }
 
     /**

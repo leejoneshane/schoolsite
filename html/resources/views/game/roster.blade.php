@@ -431,9 +431,9 @@
 </div>
 <script nonce="selfhost">
     var character;
-    var data_target;
     var data_type;
-    var data_id;
+    var data_skill;
+    var data_item;
     var skills = [];
     var items = [];
     var uuids = [];
@@ -611,7 +611,6 @@
         }
         restore();
         window.axios.post('{{ route('game.positive_act') }}', {
-            uuid: '{{ Auth::user()->uuid }}',
             uuids: uuids.toString(),
             rule: rule_id,
             reason: reason,
@@ -651,7 +650,6 @@
         }
         restore();
         window.axios.post('{{ route('game.negative_act') }}', {
-            uuid: '{{ Auth::user()->uuid }}',
             uuids: uuids.toString(),
             rule: rule_id,
             reason: reason,
@@ -690,7 +688,6 @@
         }
         restore();
         window.axios.post('{{ route('game.negative_delay') }}', {
-            uuid: '{{ Auth::user()->uuid }}',
             uuids: uuids.toString(),
             rule: rule_id,
             reason: reason,
@@ -819,8 +816,14 @@
         }
         skillsModal.hide();
         data_type = 'skill';
-        data_id = skill_obj.value;
-        data_target = skills[data_id].object;
+        data_skill = skill_obj.value;
+        var data_target = skills[data_skill].object;
+        var data_inspire = skills[data_skill].inspire;
+        if (data_inspire == 'throw') {
+            data_type = 'skill_then_item';
+            prepare_item(character);
+            return;
+        }
         if (data_target == 'partner') {
             var ul = document.getElementById('memberList');
             ul.innerHTML = '';
@@ -866,8 +869,8 @@
             teamModal.show();
         } else {
             window.axios.post('{{ route('game.skill_cast') }}', {
+                self: character,
                 uuid: character,
-                uuids: character,
                 skill: data_id,
             }, {
                 headers: {
@@ -888,10 +891,14 @@
             return;
         }
         itemsModal.hide();
-        data_type = 'item';
-        data_id = item_obj.value;
-        data_target = items[data_id].object;
-        if (data_target == 'partner') {
+        if (data_type == 'skill_then_item') {
+            data_type = 'item_after_skill';
+        } else {
+            data_type = 'item';
+        }
+        data_item = item_obj.value;
+        var data_target = items[data_id].object;
+        if (data_target == 'partner' || data_type == 'item_after_skill') {
             var ul = document.getElementById('memberList');
             ul.innerHTML = '';
             window.axios.post('{{ route('game.get_teammate') }}', {
@@ -960,9 +967,31 @@
             }
             teammateModal.hide();
             window.axios.post('{{ route('game.skill_cast') }}', {
-                uuid: character,
-                uuids: obj.value,
-                item: data_id,
+                self: character,
+                target: obj.value,
+                skill: data_skill,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+            window.location.reload();
+        }
+        if (data_type == 'item_after_skill') {
+            var obj = document.querySelector('input[name="teammate"]:checked');
+            if (obj == null) {
+                var msg = document.getElementById('message');
+                msg.innerHTML = '您尚未選擇技能施展對象！';
+                warnModal.show();
+                return;
+            }
+            teammateModal.hide();
+            window.axios.post('{{ route('game.skill_cast') }}', {
+                self: character,
+                target: obj.value,
+                skill: data_skill,
+                item: data_item,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -983,7 +1012,7 @@
             window.axios.post('{{ route('game.item_use') }}', {
                 uuid: character,
                 uuids: obj.value,
-                item: data_id,
+                item: data_item,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',

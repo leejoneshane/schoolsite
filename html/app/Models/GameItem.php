@@ -59,12 +59,19 @@ class GameItem extends Model
     }
 
     //使用指定的道具，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗
-    public function cast($uuids)
+    public function cast($owner, $uuid = null, $party_id = null)
     {
-        if (is_string($uuids)) $uuids[] = $uuids;
-        foreach ($uuids as $uuid) {
+        if ($party_id) {
+            $party = GameParty::find($party_id);
+            foreach ($party->members as $m) {
+                $result[$m->uuid] = $this->effect($m);
+            }
+        } elseif ($uuid) {
             $character = GameCharacter::find($uuid);
             $result[$uuid] = $this->effect($character);
+        } else {
+            $character = GameCharacter::find($owner);
+            $result[$owner] = $this->effect($character);
         }
         return $result;
     }
@@ -79,22 +86,38 @@ class GameItem extends Model
         $rnd = mt_rand()/mt_getrandmax();
         if ($hit >= 1 || $rnd < $hit) {
             if ($this->hp != 0) {
-                if ($this->hp > 1 || $this->hp < -1) {
-                    $character->hp += $this->hp;
+                if ($character->status == 'DEAD') {
+                    if ($this->status == 'DEAD') {
+                        if ($this->hp > 1 || $this->hp < -1) {
+                            $character->hp += $this->hp;
+                        } else {
+                            $character->hp += intval($character->max_hp * $this->hp);
+                        }
+                    }
                 } else {
-                    $character->hp += intval($character->max_hp * $this->hp);
+                    if ($this->hp > 1 || $this->hp < -1) {
+                        $character->hp += $this->hp;
+                    } else {
+                        $character->hp += intval($character->max_hp * $this->hp);
+                    }
                 }
-            } elseif ($this->status == 'DEAD') {
-                $character->hp = $this->hp;
             }
             if ($this->mp != 0) {
-                if ($this->mp > 1 || $this->mp < -1) {
-                    $character->mp += $this->mp;
+                if ($character->status == 'COMA') {
+                    if ($this->status == 'COMA') {
+                        if ($this->mp > 1 || $this->mp < -1) {
+                            $character->mp += $this->mp;
+                        } else {
+                            $character->mp += intval($character->max_hp * $this->mp);
+                        }
+                    }
                 } else {
-                    $character->mp += intval($character->max_mp * $this->mp);
+                    if ($this->mp > 1 || $this->mp < -1) {
+                        $character->mp += $this->mp;
+                    } else {
+                        $character->mp += intval($character->max_hp * $this->mp);
+                    }
                 }
-            } elseif ($this->status == 'COMA') {
-                $character->mp = $this->mp;
             }
             if ($this->ap != 0) {
                 $character->temp_effect = 'ap';
@@ -110,15 +133,6 @@ class GameItem extends Model
                 $character->temp_effect = 'sp';
                 $character->effect_value = $this->sp;
                 $character->effect_timeout = Carbon::now()->addMinutes(40);
-            }
-            if ($character->mp < 1) {
-                $character->mp = 0;
-                $character->status = 'COMA';
-            }
-            if ($character->mp > $character->max_mp) $character->mp = $character->max_mp;
-            if ($character->hp < 1) {
-                $character->hp = 0;
-                $character->status = 'DEAD';
             }
             $character->save();
             return 0;
