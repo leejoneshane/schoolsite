@@ -77,14 +77,14 @@ class GameController extends Controller
                         $error[] = '以下學生尚未設定職業：'.implode('、', $data1);
                     } else {
                         $error[] = '共有'.$count1.'位尚未設定職業';
-                    }    
+                    }
                 }
                 if ($count2 > 0) {
                     if ($count2 < 10) {
                         $error[] = '以下學生尚未選擇角色圖像：'.implode('、', $data2);
                     } else {
                         $error[] = '共有'.$count2.'位尚未選擇角色圖像';
-                    }    
+                    }
                 }
                 if (count($error) > 0) {
                     $cls->error = implode('，', $error).'。';

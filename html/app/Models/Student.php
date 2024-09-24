@@ -142,6 +142,11 @@ class Student extends Model
         return $this->hasMany('App\Models\ClubEnroll', 'uuid', 'uuid')->where('accepted', true);
     }
 
+    //取得此學生的遊戲角色
+    public function character() {
+        return $this->hasOne('App\Models\GameCharacter', 'uuid', 'uuid');
+    }
+
     //取得此學生指定學年的所有社團報名資訊
     public function section_enrolls($section = null)
     {

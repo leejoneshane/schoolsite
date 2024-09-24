@@ -507,4 +507,9 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_image')->name('game.image_setup');
     Route::get('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@reset');
     Route::post('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@do_reset')->name('game.reset');
+
+    Route::get('online', 'App\Http\Controllers\Game\MessagerController@list')->name('game.listener');
+    Route::post('talkto', 'App\Http\Controllers\Game\MessagerController@personal')->name('game.hookup');
+    Route::post('partytalk', 'App\Http\Controllers\Game\MessagerController@party')->name('game.talky');
+    Route::post('broadcast', 'App\Http\Controllers\Game\MessagerController@classroom')->name('game.broadcast');
 });
