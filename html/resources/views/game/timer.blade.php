@@ -196,7 +196,6 @@
         var gp = elem_gp.value * percent;
         var item = elem_item.value;
         window.axios.post('{{ route('game.positive_act') }}', {
-            uuid: '{{ Auth::user()->uuid }}',
             uuids: uuids.toString(),
             reason: reason1,
             xp: xp,
@@ -223,7 +222,6 @@
         var hp = elem_hp.value;
         var mp = elem_mp.value;
         window.axios.post('{{ route('game.negative_act') }}', {
-            uuid: '{{ Auth::user()->uuid }}',
             uuids: uuids.toString(),
             reason: reason2,
             hp: hp,

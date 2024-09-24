@@ -46,8 +46,23 @@
         </div>
     </div>
 </div>
+<div id="warnModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[80] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+    <div class="relative w-auto h-full max-w-2xl md:h-auto">
+        <div class="relative bg-teal-300 rounded-lg shadow dark:bg-blue-700">
+            <div class="p-4 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-center text-xl font-semibold text-gray-900 dark:text-white">通知</h3>
+            </div>
+            <div id="message" class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
+            </div>
+            <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button onclick="warnModal.hide();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    我知道了
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 <script nonce="selfhost">
-    var audioContext;
     var reason1 = '在靜謐山谷中安然度過危機';
     var reason2 = '挑戰靜謐山谷失敗';
     var uuids = [];
@@ -57,7 +72,11 @@
 
     var main = document.getElementsByTagName('main')[0];
     main.classList.replace('bg-game-map50', 'bg-game-sound');
-    var seconds = 0;
+    var $targetEl = document.getElementById('warnModal');
+    const warnModal = new window.Modal($targetEl);
+
+    var audioContext;
+    var targetSeconds = 0;
     var timerId;
     var startTime;
     var pauseTime;
@@ -179,7 +198,9 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
-        window.location.reload();
+        var msg = document.getElementById('message');
+        msg.innerHTML = '恭喜，獎勵已經發送給全班！';
+        warnModal.show();
     }
 
     function negative_act() {
@@ -197,7 +218,9 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
-        window.location.reload();
+        var msg = document.getElementById('message');
+        msg.innerHTML = '糟糕，挑戰失敗，所有人遭到懲罰！';
+        warnModal.show();
     }
 </script>
 @endsection

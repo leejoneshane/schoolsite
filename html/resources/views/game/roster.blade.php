@@ -870,8 +870,8 @@
         } else {
             window.axios.post('{{ route('game.skill_cast') }}', {
                 self: character,
-                uuid: character,
-                skill: data_id,
+                target: character,
+                skill: data_skill,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -943,9 +943,9 @@
             teamModal.show();
         } else {
             window.axios.post('{{ route('game.item_use') }}', {
-                uuid: character,
-                uuids: character,
-                item: data_id,
+                self: character,
+                target: character,
+                item: data_item,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -1010,8 +1010,8 @@
             }
             teammateModal.hide();
             window.axios.post('{{ route('game.item_use') }}', {
-                uuid: character,
-                uuids: obj.value,
+                self: character,
+                target: obj.value,
                 item: data_item,
             }, {
                 headers: {

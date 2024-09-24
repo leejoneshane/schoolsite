@@ -316,7 +316,6 @@
         }
         restore();
         window.axios.post('{{ route('game.positive_act') }}', {
-            uuid: '{{ Auth::user()->uuid }}',
             uuids: uuids.toString(),
             rule: rule_id,
             reason: reason,
@@ -352,7 +351,6 @@
         }
         restore();
         window.axios.post('{{ route('game.negative_act') }}', {
-            uuid: '{{ Auth::user()->uuid }}',
             uuids: uuids.toString(),
             rule: rule_id,
             reason: reason,
@@ -387,7 +385,6 @@
         }
         restore();
         window.axios.post('{{ route('game.negative_delay') }}', {
-            uuid: '{{ Auth::user()->uuid }}',
             uuids: uuids.toString(),
             rule: rule_id,
             reason: reason,
