@@ -16,7 +16,7 @@ class NoProfession
             if ($character->profession) {
                 return $next($request);
             } else {
-                return redirect()->route('game.profession_setup');
+                return redirect()->route('game.player_profession');
             }
         }
         return redirect()->route('login');

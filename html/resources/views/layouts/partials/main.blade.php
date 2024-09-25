@@ -89,7 +89,7 @@
         });
         @endif
 
-        window.Echo.private('personal.{{ auth()->user()->id }}').listen('GameCharacterChannel', (e) => {
+        window.Echo.private('character.{{ auth()->user()->id }}').listen('GameCharacterChannel', (e) => {
             let rnd = Math.floor(Math.random() * 100000);
             let popup = document.createElement('div');
             popup.id = 'messager_' + rnd;

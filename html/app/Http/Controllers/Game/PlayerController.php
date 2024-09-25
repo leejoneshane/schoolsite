@@ -35,6 +35,45 @@ class PlayerController extends Controller
         }
     }
 
+    function character_edit($uuid)
+    {
+        $character = GameCharacter::find($uuid);
+        $classes = GameClass::all();
+        return view('game.profession_setup', [ 'character' => $character, 'classes' => $classes]);
+    }
+
+    function character_class(Request $request, $uuid)
+    {
+        $pro = GameClass::find($request->input('class_id'));
+        $character = GameCharacter::find($uuid);
+        $character->class_id = $pro->id;
+        if ($character->level == 1) {
+            $character->max_hp = $pro->base_hp;
+            $character->hp = $pro->base_hp;
+            $character->max_mp = $pro->base_mp;
+            $character->mp = $pro->base_mp;
+            $character->ap = $pro->base_ap;
+            $character->dp = $pro->base_dp;
+            $character->sp = $pro->base_sp;    
+        }
+        $character->save();
+        return view('game.image_setup', [ 'character' => $character ]);
+    }
+
+    function image_edit(Request $request, $uuid)
+    {
+        $character = GameCharacter::find($uuid);
+        return view('game.image_setup', [ 'character' => $character ]);
+    }
+
+    function character_image(Request $request, $uuid)
+    {
+        $character = GameCharacter::find($uuid);
+        $character->image_id = $request->input('image_id');
+        $character->save();
+        return redirect()->route('game.player');
+    }
+
     public function skill_cast(Request $request)
     {
         $me = GameCharacter::find($request->input('self'));

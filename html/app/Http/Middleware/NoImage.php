@@ -16,7 +16,7 @@ class NoImage
             if ($character->image) {
                 return $next($request);
             } else {
-                return redirect()->route('game.image_setup');
+                return redirect()->route('game.player_image');
             }
         }
         return redirect()->route('login');

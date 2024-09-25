@@ -514,5 +514,9 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
         Route::post('partytalk', 'App\Http\Controllers\Game\MessagerController@party')->name('game.party_channel');
         Route::post('broadcast', 'App\Http\Controllers\Game\MessagerController@classroom')->name('game.room_channel');
         Route::get('/', 'App\Http\Controllers\Game\PlayerController@index')->name('game.player');
+        Route::get('profession/{uuid}', 'App\Http\Controllers\Game\PlayerController@character_edit');
+        Route::post('profession/{uuid}', 'App\Http\Controllers\Game\PlayerController@character_class')->name('game.player_profession');
+        Route::get('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\PlayerController@image_edit');
+        Route::post('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\PlayerController@character_image')->name('game.player_image');
     });
 });

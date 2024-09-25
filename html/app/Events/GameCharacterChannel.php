@@ -33,6 +33,6 @@ class GameCharacterChannel implements ShouldBroadcastNow
      */
     public function broadcastOn() : Channel
     {
-        return new PrivateChannel('personal.' . $this->to);
+        return new PrivateChannel('character.' . $this->to);
     }
 }
