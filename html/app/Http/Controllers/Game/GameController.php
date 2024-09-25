@@ -94,9 +94,7 @@ class GameController extends Controller
             }
             return view('game.index', [ 'classes' => $classes ]);
         } else {
-            $student = Student::find($user->uuid);
-            $character = GameCharacter::find($user->uuid);
-            return view('game.character', [ 'student' => $student, 'character' => $character ]);
+            return redirect()->route('game.player');
         }
     }
 

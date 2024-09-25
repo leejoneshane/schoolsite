@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Models\GameCharacter;
 use Carbon\Carbon;
 
 const GAME_CHARACTER = 'images/game/characters/'; //遊戲職業圖片路徑
@@ -42,6 +43,12 @@ function is_lock($room_id) {
         ->where('classroom_id', $room_id)
         ->where('ended_at', '<', Carbon::now())
         ->exists();
+}
+
+function player() {
+    $uuid = auth()->user()->uuid;
+    $character = GameCharacter::find($uuid);
+    return $character;
 }
 
 function section_name($section = null) {
