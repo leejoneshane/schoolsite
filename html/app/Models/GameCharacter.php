@@ -375,16 +375,16 @@ class GameCharacter extends Model
     //取得此角色的已出席夥伴，不包含自己
     public function teammate()
     {
-        return $this->belongsTo('App\Models\GameCharacter', 'party_id', 'party_id')
+        return GameCharacter::where('party_id', $this->party_id)
             ->where('uuid', '!=', $this->uuid)
-            ->where('absent', 0);
+            ->where('absent', 0)->get();
     }
 
     //取得此角色的已出席夥伴
     public function members()
     {
-        return $this->belongsTo('App\Models\GameCharacter', 'party_id', 'party_id')
-            ->where('absent', 0);
+        return GameCharacter::where('party_id', $this->party_id)
+            ->where('absent', 0)->get();
     }
 
     //取得此角色擁有的道具

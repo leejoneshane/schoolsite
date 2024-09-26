@@ -21,7 +21,7 @@
 </div>
 <div id="description" class="bg-white bg-opacity-50 rounded-lg m-10 px-3">
 </div>
-<form class="hidden" id="save" action="{{ route('game.profession_setup', [ 'uuid' => $character->uuid ]) }}" method="POST">
+<form class="hidden" id="save" action="{{ $action }}" method="POST">
     @csrf
     <input id="classid" type="hidden" name="class_id" value="">
 </form>

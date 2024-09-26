@@ -29,7 +29,8 @@ class PlayerController extends Controller
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             $character = GameCharacter::find($user->uuid);
-            return view('game.player', [ 'character' => $character ]);
+            $skills = GameSkill::forClass($character->class_id);
+            return view('game.player', [ 'character' => $character, 'skills' => $skills, ]);
         } else {
             return redirect()->route('game');
         }
@@ -39,7 +40,7 @@ class PlayerController extends Controller
     {
         $character = GameCharacter::find($uuid);
         $classes = GameClass::all();
-        return view('game.profession_setup', [ 'character' => $character, 'classes' => $classes]);
+        return view('game.profession_setup', [ 'action' => route('game.play_profession', [ 'uuid' => $character->uuid ]), 'character' => $character, 'classes' => $classes]);
     }
 
     function character_class(Request $request, $uuid)
@@ -57,13 +58,13 @@ class PlayerController extends Controller
             $character->sp = $pro->base_sp;    
         }
         $character->save();
-        return view('game.image_setup', [ 'character' => $character ]);
+        return view('game.image_setup', [ 'action' => route('game.play_image', [ 'uuid' => $character->uuid ]), 'character' => $character ]);
     }
 
     function image_edit(Request $request, $uuid)
     {
         $character = GameCharacter::find($uuid);
-        return view('game.image_setup', [ 'character' => $character ]);
+        return view('game.image_setup', [ 'action' => route('game.play_image', [ 'uuid' => $character->uuid ]), 'character' => $character ]);
     }
 
     function character_image(Request $request, $uuid)
@@ -72,6 +73,22 @@ class PlayerController extends Controller
         $character->image_id = $request->input('image_id');
         $character->save();
         return redirect()->route('game.player');
+    }
+
+    public function party()
+    {
+        $user = User::find(Auth::user()->id);
+        $character = GameCharacter::find($user->uuid);
+        $party = $character->party;
+        return view('game.fundation', [ 'character' => $character, 'party' => $party ]);
+    }
+
+    public function get_items(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $char = GameCharacter::find($uuid);
+        $items = $char->items;
+        return response()->json([ 'items' => $items ]);
     }
 
     public function skill_cast(Request $request)

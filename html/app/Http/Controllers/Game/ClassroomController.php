@@ -203,7 +203,7 @@ class ClassroomController extends Controller
         if ($user->is_admin || $manager) {
             $character = GameCharacter::find($uuid);
             $classes = GameClass::all();
-            return view('game.profession_setup', [ 'character' => $character, 'classes' => $classes]);
+            return view('game.profession_setup', [ 'action' => route('game.profession_setup', [ 'uuid' => $character->uuid ]), 'character' => $character, 'classes' => $classes]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -224,13 +224,13 @@ class ClassroomController extends Controller
             $character->sp = $pro->base_sp;    
         }
         $character->save();
-        return view('game.image_setup', [ 'character' => $character ]);
+        return view('game.image_setup', [ 'action' => route('game.image_setup', [ 'uuid' => $character->uuid ]), 'character' => $character ]);
     }
 
     function image_edit(Request $request, $uuid)
     {
         $character = GameCharacter::find($uuid);
-        return view('game.image_setup', [ 'character' => $character ]);
+        return view('game.image_setup', [ 'action' => route('game.image_setup', [ 'uuid' => $character->uuid ]), 'character' => $character ]);
     }
 
     function character_image(Request $request, $uuid)

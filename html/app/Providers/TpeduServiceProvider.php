@@ -419,6 +419,7 @@ class TpeduServiceProvider extends ServiceProvider
                 }
             }
             $emp->save();
+            $emp->touch();
             if ($emp->trashed()) $emp->restore();
             return true;
         }

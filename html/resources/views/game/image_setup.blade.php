@@ -14,7 +14,7 @@
     <img src="" id="big" class="absolute h-screen bottom-0 right-20 z-50" />
 </div>
 </div>
-<form class="hidden" id="save" action="{{ route('game.image_setup', [ 'uuid' => $character->uuid ]) }}" method="POST">
+<form class="hidden" id="save" action="{{ $action }}" method="POST">
     @csrf
     <input id="data" type="hidden" name="image_id" value="">
 </form>

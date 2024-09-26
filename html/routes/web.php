@@ -509,14 +509,16 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@do_reset')->name('game.reset');
 
     Route::group(['prefix' => 'player', 'middleware' => [ 'student', 'noprofession', 'noimage', ] ], function () {
+        Route::get('/', 'App\Http\Controllers\Game\PlayerController@index')->name('game.player');
+        Route::get('party', 'App\Http\Controllers\Game\PlayerController@party')->name('game.party');
         Route::get('online', 'App\Http\Controllers\Game\MessagerController@list')->name('game.online');
         Route::post('talkto', 'App\Http\Controllers\Game\MessagerController@personal')->name('game.private');
         Route::post('partytalk', 'App\Http\Controllers\Game\MessagerController@party')->name('game.party_channel');
         Route::post('broadcast', 'App\Http\Controllers\Game\MessagerController@classroom')->name('game.room_channel');
-        Route::get('/', 'App\Http\Controllers\Game\PlayerController@index')->name('game.player');
         Route::get('profession/{uuid}', 'App\Http\Controllers\Game\PlayerController@character_edit');
         Route::post('profession/{uuid}', 'App\Http\Controllers\Game\PlayerController@character_class')->name('game.player_profession');
-        Route::get('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\PlayerController@image_edit');
-        Route::post('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\PlayerController@character_image')->name('game.player_image');
+        Route::get('image/{uuid}', 'App\Http\Controllers\Game\PlayerController@image_edit');
+        Route::post('image/{uuid}', 'App\Http\Controllers\Game\PlayerController@character_image')->name('game.player_image');
+        Route::post('items/scan', 'App\Http\Controllers\Game\PlayerController@get_items')->name('game.get_myitems');
     });
 });

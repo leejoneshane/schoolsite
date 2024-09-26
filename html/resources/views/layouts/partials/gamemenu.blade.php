@@ -24,13 +24,10 @@
         @endteacher
         @student
         <div class="py-2 text-center">
-            <a href="/game/me"><i class="text-2xl fa-solid fa-person-hiking" title="我的角色"></i></a>
+            <a href="{{ route('game.player') }}"><i class="text-2xl fa-solid fa-person-hiking" title="我的角色"></i></a>
         </div>
         <div class="py-2 text-center">
-            <a href="/game/party"><i class="text-2xl fa-solid fa-place-of-worship" title="公會"></i></a>
-        </div>
-        <div class="py-2 text-center">
-            <a href="/game/box"><i class="text-2xl fa-solid fa-toolbox" title="道具箱"></i></a>
+            <a href="{{ route('game.party') }}"><i class="text-2xl fa-solid fa-place-of-worship" title="公會"></i></a>
         </div>
         @locked
         <div class="py-2 text-center">

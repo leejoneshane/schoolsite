@@ -38,6 +38,7 @@ module.exports = {
                 'game-sound': "url('/images/game/sound.png')",
                 'game-book': "url('/images/game/book.png')",
                 'game-bag': "url('/images/game/bag.png')",
+                'game-chest': "url('/images/game/chest.png')",
             }
         }
     },
