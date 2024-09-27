@@ -13,7 +13,7 @@ class NoProfession
         if (Auth::guard($guard)->user()->user_type == 'Student') {
             $user = Auth::guard($guard)->user();
             $character = GameCharacter::find($user->uuid); 
-            if ($character->profession) {
+            if ($character && $character->profession) {
                 return $next($request);
             } else {
                 return redirect()->route('game.player_profession');

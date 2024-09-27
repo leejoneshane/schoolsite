@@ -151,10 +151,13 @@ class GameParty extends Model
     //購買指定的家具
     public function buy_furniture($id)
     {
-        $furniture = $this->furnitures->firstWhere('id', $id); 
-        if ($furniture) return ALREADY_EXISTS;
+        if ($this->furnitures) {
+            $furniture = $this->furnitures->firstWhere('id', $id); 
+            if ($furniture) return ALREADY_EXISTS;
+            if ($this->furnitures->count() > 4) return FUNDATION_FULLED;
+        }
+        $furniture = GameFurniture::find($id); 
         if ($this->treasury < $furniture->gp) return NOT_ENOUGH_GP;
-        if ($this->furnitures->count() > 4) return FUNDATION_FULLED;
         DB::table('game_parties_furnitures')->insert([
             'party_id' => $this->id,
             'furniture_id' => $furniture->id,
@@ -171,16 +174,18 @@ class GameParty extends Model
     //移除指定的家具
     public function sell_furniture($id)
     {
-        $furniture = $this->furnitures->firstWhere('id', $id); 
-        if ($furniture) {
-            DB::table('game_parties_furnitures')->where('party_id', $this->id)->where('furniture_id', $id)->delete();
-            $this->treasury += $furniture->gp;
-            $this->effect_hp -= $furniture->hp;
-            $this->effect_mp -= $furniture->mp;
-            $this->effect_ap -= $furniture->ap;
-            $this->effect_dp -= $furniture->dp;
-            $this->effect_sp -= $furniture->sp;
-            $this->save();
+        if ($this->furnitures) {
+            $furniture = $this->furnitures->firstWhere('id', $id); 
+            if ($furniture) {
+                DB::table('game_parties_furnitures')->where('party_id', $this->id)->where('furniture_id', $id)->delete();
+                $this->treasury += $furniture->gp;
+                $this->effect_hp -= $furniture->hp;
+                $this->effect_mp -= $furniture->mp;
+                $this->effect_ap -= $furniture->ap;
+                $this->effect_dp -= $furniture->dp;
+                $this->effect_sp -= $furniture->sp;
+                $this->save();
+            }    
         }
     }
 
@@ -188,16 +193,20 @@ class GameParty extends Model
     public function add_member($uuid)
     {
         $newgay = GameCharacter::find($uuid);
-        $newgay->party_id = $this->id;
-        $newgay->save();
+        if ($newgay) {
+            $newgay->party_id = $this->id;
+            $newgay->save();    
+        }
     }
 
     //移除指定的成員
     public function remove_member($uuid)
     {
         $gay = GameCharacter::find($uuid);
-        $gay->party_id = null;
-        $gay->save();
+        if ($gay) {
+            $gay->party_id = null;
+            $gay->save();    
+        }
     }
 
 }

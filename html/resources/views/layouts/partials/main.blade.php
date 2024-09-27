@@ -61,7 +61,7 @@
             new window.Dismiss(popup, { triggerEl: btn });
         });
 
-        @if (player()->party)
+        @if (player() && player()->party)
         window.Echo.channel('party.{{ player()->party_id }}').listen('GameRoomChannel', (e) => {
             let rnd = Math.floor(Math.random() * 100000);
             let popup = document.createElement('div');

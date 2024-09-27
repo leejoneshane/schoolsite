@@ -453,12 +453,10 @@ class GameCharacter extends Model
             }
             if ($this->mp < 1) {
                 $this->mp = 0;
-                $this->status = 'COMA';
             }
             if ($this->mp > $this->max_mp) $this->mp = $this->max_mp;
             if ($this->hp < 1) {
                 $this->hp = 0;
-                $this->status = 'DEAD';
             }
             if ($this->hp > $this->max_hp) $this->hp = $this->max_hp;
             $this->absent = false;

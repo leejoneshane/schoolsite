@@ -13,7 +13,7 @@ class NoImage
         if (Auth::guard($guard)->user()->user_type == 'Student') {
             $user = Auth::guard($guard)->user();
             $character = GameCharacter::find($user->uuid); 
-            if ($character->image) {
+            if ($character && $character->image) {
                 return $next($request);
             } else {
                 return redirect()->route('game.player_image');

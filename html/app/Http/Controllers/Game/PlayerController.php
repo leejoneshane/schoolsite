@@ -30,6 +30,15 @@ class PlayerController extends Controller
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             $character = GameCharacter::find($user->uuid);
+            if (!$character) {
+                $stu = Student::find(Auth::user()->uuid);
+                GameCharacter::create([
+                    'uuid' => $stu->uuid,
+                    'classroom_id' => $stu->class_id,
+                    'seat' => $stu->seat,
+                    'name' => $stu->realname,
+                ]);
+            }    
             $skills = GameSkill::forClass($character->class_id);
             return view('game.player', [ 'character' => $character, 'skills' => $skills, ]);
         } else {
@@ -40,6 +49,15 @@ class PlayerController extends Controller
     function character_edit()
     {
         $character = GameCharacter::find(Auth::user()->uuid);
+        if (!$character) {
+            $stu = Student::find(Auth::user()->uuid);
+            GameCharacter::create([
+                'uuid' => $stu->uuid,
+                'classroom_id' => $stu->class_id,
+                'seat' => $stu->seat,
+                'name' => $stu->realname,
+            ]);
+        }
         $classes = GameClass::all();
         return view('game.profession_setup', [ 'action' => route('game.player_profession'), 'character' => $character, 'classes' => $classes]);
     }
@@ -65,6 +83,15 @@ class PlayerController extends Controller
     function image_edit(Request $request)
     {
         $character = GameCharacter::find(Auth::user()->uuid);
+        if (!$character) {
+            $stu = Student::find(Auth::user()->uuid);
+            GameCharacter::create([
+                'uuid' => $stu->uuid,
+                'classroom_id' => $stu->class_id,
+                'seat' => $stu->seat,
+                'name' => $stu->realname,
+            ]);
+        }
         return view('game.image_setup', [ 'action' => route('game.play_image'), 'character' => $character ]);
     }
 

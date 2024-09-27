@@ -14,10 +14,10 @@
             @endforeach
         </div>
         <div class="w-full inline-flex flex-row justify-center rounded bg-transparent font-extrabold drop-shadow-md p-8 z-20">
-            <input type="text" id="name" name="name" value="{{ $party->name }}" class="w-64 h-8 text-3xl text-white rounded border-0 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none bg-transparent" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;" 
+            <input type="text" id="name" name="name" value="{{ $party ? $party->name : '' }}" class="w-64 h-8 text-3xl text-white rounded border-0 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none bg-transparent" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;" 
                 placeholder="請輸入公會名稱..." onchange="change_name();"{{ ($character->uuid != $party->uuid) ? ' disabled' : '' }}>
             <textarea id="description" class="z-20 w-96 text-3xl text-white rounded border-0 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none bg-transparent" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;" 
-                name="description" rows="2" cols="12" placeholder="請輸入公會成立宗旨、目標、或口號..." onchange="change_desc();"{{ ($character->uuid != $party->uuid) ? ' disabled' : '' }}>{{ $party->description }}</textarea>
+                name="description" rows="2" cols="12" placeholder="請輸入公會成立宗旨、目標、或口號..." onchange="change_desc();"{{ ($character->uuid != $party->uuid) ? ' disabled' : '' }}>{{ $party ? $party->description : '' }}</textarea>
             <div class="text-3xl text-white" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
                 @if ($character->uuid == $party->uuid)
                 <label for="leader">公會長：</label>
