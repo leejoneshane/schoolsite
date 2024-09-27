@@ -55,13 +55,21 @@
                 <tr>
                     <td class="w-24">每日回復HP</td>
                     <td class="w-16">
+                        @if ($party->effect_hp > 0)
                         <span class="text-blue-500">{{ $party->effect_hp }}</span>
+                        @else
+                        <span class="text-red-500">{{ $party->effect_hp }}</span>
+                        @endif
                     </td>
                 </tr>
                 <tr>
                     <td>每日回復MP</td>
                     <td>
+                        @if ($party->effect_mp > 0)
                         <span class="text-blue-500">{{ $party->effect_mp }}</span>
+                        @else
+                        <span class="text-red-500">{{ $party->effect_mp }}</span>
+                        @endif
                     </td>
                 </tr>
                 <tr>
