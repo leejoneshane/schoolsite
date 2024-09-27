@@ -18,11 +18,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('description');
             $table->string('image_file')->nullable();
-            $table->float('hp');
-            $table->float('mp');
-            $table->float('ap');
-            $table->float('dp');
-            $table->float('sp');
+            $table->float('hp')->default(0);
+            $table->float('mp')->default(0);
+            $table->float('ap')->default(0);
+            $table->float('dp')->default(0);
+            $table->float('sp')->default(0);
             $table->timestamps();
         });
     }

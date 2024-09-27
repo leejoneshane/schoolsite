@@ -88,6 +88,7 @@ class GameCharacter extends Model
 
     //以下屬性隱藏不顯示（toJson 時忽略）
     protected $hidden = [
+        'configure',
         'student',
         'profession',
         'party',
@@ -348,6 +349,12 @@ class GameCharacter extends Model
         $this->levelup();
     }
 
+    //取得此班級組態
+    public function configure()
+    {
+        return $this->hasOne('App\Models\GameConfigure', 'classroom_id', 'classroom_id');
+    }
+
     //取得此角色的學生物件
     public function student()
     {
@@ -477,7 +484,9 @@ class GameCharacter extends Model
         $skill = GameSkill::find($id);
         $classroom = $this->student->class_id;
         if (!$skill->passive && !GameSence::is_lock($classroom)) return PEACE;
-        $skill->cast($this->uuid, $uuid, $party_id, $item_id);
+        if ($this->party_id) {
+            $skill->cast($this->uuid, $uuid, $party_id, $item_id);
+        }
     }
 
     //購買指定的道具
@@ -519,6 +528,26 @@ class GameCharacter extends Model
         }
     }
 
+    ///失去指定的道具
+    public function loss_item($id)
+    {
+        $item = GameItem::find($id);
+        $record = $this->items->firstWhere('id', $id); 
+        if ($record) {
+            if ($record->pivot->quantity > 1) {
+                DB::table('game_characters_items')
+                ->where('uuid', $this->uuid)
+                ->where('item_id', $item->id)
+                ->decrement('quantity');
+            } else {
+                DB::table('game_characters_items')
+                ->where('uuid', $this->uuid)
+                ->where('item_id', $item->id)
+                ->delete();
+            }
+        }
+    }
+
     //使用指定的道具
     public function use_item($id, $uuid = null, $party_id = null)
     {
@@ -536,16 +565,18 @@ class GameCharacter extends Model
         $item = GameItem::find($id);
         $classroom = $this->student->class_id;
         if (!$item->passive && !GameSence::is_lock($classroom)) return PEACE;
-        $item->cast($this->uuid, $uuid, $party_id);
-        DB::table('game_characters_items')
-            ->where('uuid', $this->uuid)
-            ->where('item_id', $item->id)
-            ->decrement('quantity');
-        DB::table('game_characters_items')
-            ->where('uuid', $this->uuid)
-            ->where('item_id', $item->id)
-            ->where('quantity', '<', 1)
-            ->delete();
+        if ($this->party_id) {
+            $item->cast($this->uuid, $uuid, $party_id);
+            DB::table('game_characters_items')
+                ->where('uuid', $this->uuid)
+                ->where('item_id', $item->id)
+                ->decrement('quantity');
+            DB::table('game_characters_items')
+                ->where('uuid', $this->uuid)
+                ->where('item_id', $item->id)
+                ->where('quantity', '<', 1)
+                ->delete();
+        }
     }
 
 }

@@ -507,18 +507,27 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_image')->name('game.image_setup');
     Route::get('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@reset');
     Route::post('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@do_reset')->name('game.reset');
+    
+    Route::get('profession', 'App\Http\Controllers\Game\PlayerController@character_edit');
+    Route::post('profession', 'App\Http\Controllers\Game\PlayerController@character_class')->name('game.player_profession');
+    Route::get('image', 'App\Http\Controllers\Game\PlayerController@image_edit');
+    Route::post('image', 'App\Http\Controllers\Game\PlayerController@character_image')->name('game.player_image');
 
-    Route::group(['prefix' => 'player', 'middleware' => [ 'student', 'noprofession', 'noimage', ] ], function () {
+    Route::group(['prefix' => 'player', 'middleware' => [ 'student', 'noprofession', 'noimage' ] ], function () {
         Route::get('/', 'App\Http\Controllers\Game\PlayerController@index')->name('game.player');
         Route::get('party', 'App\Http\Controllers\Game\PlayerController@party')->name('game.party');
         Route::get('online', 'App\Http\Controllers\Game\MessagerController@list')->name('game.online');
         Route::post('talkto', 'App\Http\Controllers\Game\MessagerController@personal')->name('game.private');
         Route::post('partytalk', 'App\Http\Controllers\Game\MessagerController@party')->name('game.party_channel');
         Route::post('broadcast', 'App\Http\Controllers\Game\MessagerController@classroom')->name('game.room_channel');
-        Route::get('profession/{uuid}', 'App\Http\Controllers\Game\PlayerController@character_edit');
-        Route::post('profession/{uuid}', 'App\Http\Controllers\Game\PlayerController@character_class')->name('game.player_profession');
-        Route::get('image/{uuid}', 'App\Http\Controllers\Game\PlayerController@image_edit');
-        Route::post('image/{uuid}', 'App\Http\Controllers\Game\PlayerController@character_image')->name('game.player_image');
         Route::post('items/scan', 'App\Http\Controllers\Game\PlayerController@get_items')->name('game.get_myitems');
+        Route::post('party/name', 'App\Http\Controllers\Game\PlayerController@party_name')->name('game.party_name');
+        Route::post('party/desc', 'App\Http\Controllers\Game\PlayerController@party_desc')->name('game.party_desc');
+        Route::post('party/leader', 'App\Http\Controllers\Game\PlayerController@party_leader')->name('game.party_leader');
+        Route::post('party/base', 'App\Http\Controllers\Game\PlayerController@party_base')->name('game.party_base');
+        Route::post('furniture/sell', 'App\Http\Controllers\Game\PlayerController@sell_furniture')->name('game.sell_furniture');
+        Route::post('donate/cash', 'App\Http\Controllers\Game\PlayerController@donate')->name('game.donate');
+        Route::post('donate/item', 'App\Http\Controllers\Game\PlayerController@given')->name('game.given');
     });
 });
+

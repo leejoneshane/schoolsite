@@ -61,17 +61,56 @@ class GameItem extends Model
     //使用指定的道具，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗
     public function cast($owner, $uuid = null, $party_id = null)
     {
+        $self = GameCharacter::find($owner);
         if ($party_id) {
             $party = GameParty::find($party_id);
+            $message = $self->name.'對'.$party->name.'使用道具'.$this->name;
+            broadcast(new GamePartyChannel($self->party_id, $message.'！'));
+            if ($self->party_id != $party_id) {
+                broadcast(new GamePartyChannel($party_id, $message.'！'));
+            }
             foreach ($party->members as $m) {
                 $result[$m->uuid] = $this->effect($m);
+                if ($result[$m->uuid] == MISS) {
+                    broadcast(new GamePartyChannel($self->party_id, $m->name.'未命中！'));
+                    if ($self->party_id != $party_id) {
+                        broadcast(new GamePartyChannel($party_id, $m->name.'未命中！'));
+                    }
+                } else {
+                    broadcast(new GamePartyChannel($self->party_id, $m->name.'命中！'));
+                    if ($self->party_id != $party_id) {
+                        broadcast(new GamePartyChannel($party_id, $m->name.'命中！'));
+                    }
+                }
             }
         } elseif ($uuid) {
             $character = GameCharacter::find($uuid);
-            $result[$uuid] = $this->effect($character);
+            if ($character->party_id) {
+                $result[$uuid] = $this->effect($character);
+                $message = $self->name.'對'.$character->name.'使用道具'.$this->name;
+                if ($result[$uuid] == MISS) {
+                    broadcast(new GamePartyChannel($self->party_id, $message.'失敗！'));
+                } else {
+                    broadcast(new GamePartyChannel($self->party_id, $message.'成功！'));
+                }
+                if ($self->party_id != $character->party_id) {
+                    if ($result[$uuid] == MISS) {
+                        broadcast(new GamePartyChannel($character->party_id, $message.'失敗！'));
+                    } else {
+                        broadcast(new GamePartyChannel($character->party_id, $message.'成功！'));
+                    }
+                }
+            }
         } else {
-            $character = GameCharacter::find($owner);
-            $result[$owner] = $this->effect($character);
+            $result[$owner] = $this->effect($self);
+            $message = $self->name.'對自己使用道具'.$this->name;
+            if ($self->party_id) {
+                if ($result[$owner] == MISS) {
+                    broadcast(new GamePartyChannel($self->party_id, $message.'失敗！'));
+                } else {
+                    broadcast(new GamePartyChannel($self->party_id, $message.'成功！'));
+                }
+            }
         }
         return $result;
     }

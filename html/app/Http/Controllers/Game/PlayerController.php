@@ -11,6 +11,7 @@ use App\Models\Student;
 use App\Models\Classroom;
 use App\Models\Seats;
 use App\Models\GameSence;
+use App\Models\GameBase;
 use App\Models\GameParty;
 use App\Models\GameCharacter;
 use App\Models\GameClass;
@@ -36,17 +37,17 @@ class PlayerController extends Controller
         }
     }
 
-    function character_edit($uuid)
+    function character_edit()
     {
-        $character = GameCharacter::find($uuid);
+        $character = GameCharacter::find(Auth::user()->uuid);
         $classes = GameClass::all();
-        return view('game.profession_setup', [ 'action' => route('game.play_profession', [ 'uuid' => $character->uuid ]), 'character' => $character, 'classes' => $classes]);
+        return view('game.profession_setup', [ 'action' => route('game.player_profession'), 'character' => $character, 'classes' => $classes]);
     }
 
-    function character_class(Request $request, $uuid)
+    function character_class(Request $request)
     {
         $pro = GameClass::find($request->input('class_id'));
-        $character = GameCharacter::find($uuid);
+        $character = GameCharacter::find(Auth::user()->uuid);
         $character->class_id = $pro->id;
         if ($character->level == 1) {
             $character->max_hp = $pro->base_hp;
@@ -58,29 +59,21 @@ class PlayerController extends Controller
             $character->sp = $pro->base_sp;    
         }
         $character->save();
-        return view('game.image_setup', [ 'action' => route('game.play_image', [ 'uuid' => $character->uuid ]), 'character' => $character ]);
+        return view('game.image_setup', [ 'action' => route('game.player_image'), 'character' => $character ]);
     }
 
-    function image_edit(Request $request, $uuid)
+    function image_edit(Request $request)
     {
-        $character = GameCharacter::find($uuid);
-        return view('game.image_setup', [ 'action' => route('game.play_image', [ 'uuid' => $character->uuid ]), 'character' => $character ]);
+        $character = GameCharacter::find(Auth::user()->uuid);
+        return view('game.image_setup', [ 'action' => route('game.play_image'), 'character' => $character ]);
     }
 
-    function character_image(Request $request, $uuid)
+    function character_image(Request $request)
     {
-        $character = GameCharacter::find($uuid);
+        $character = GameCharacter::find(Auth::user()->uuid);
         $character->image_id = $request->input('image_id');
         $character->save();
         return redirect()->route('game.player');
-    }
-
-    public function party()
-    {
-        $user = User::find(Auth::user()->id);
-        $character = GameCharacter::find($user->uuid);
-        $party = $character->party;
-        return view('game.fundation', [ 'character' => $character, 'party' => $party ]);
     }
 
     public function get_items(Request $request)
@@ -89,6 +82,83 @@ class PlayerController extends Controller
         $char = GameCharacter::find($uuid);
         $items = $char->items;
         return response()->json([ 'items' => $items ]);
+    }
+
+    public function party()
+    {
+        $user = User::find(Auth::user()->id);
+        $character = GameCharacter::find($user->uuid);
+        $party = $character->party;
+        if ($party) {
+            if (!($party->uuid)) {
+                $party->uuid = $character->uuid;
+                $party->save();
+            }
+            $bases = GameBase::all();
+            return view('game.fundation', [ 'character' => $character, 'party' => $party, 'bases' => $bases ]);
+        } else {
+            return redirect()->route('game.player')->with('error', '您尚未加入公會，無法使用據點！');
+        }
+    }
+
+    public function party_name(Request $request)
+    {
+        $party = GameParty::find($request->input('party'));
+        $party->name = $request->input('name');
+        $party->save();
+        return response()->json([ 'success' => $party ]);
+    }
+
+    public function party_desc(Request $request)
+    {
+        $party = GameParty::find($request->input('party'));
+        $party->description = $request->input('desc');
+        $party->save();
+        return response()->json([ 'success' => $party ]);
+    }
+
+    public function party_leader(Request $request)
+    {
+        $party = GameParty::find($request->input('party'));
+        $party->uuid = $request->input('leader');
+        $party->save();
+        return response()->json([ 'success' => $party ]);
+    }
+
+    public function party_base(Request $request)
+    {
+        $party = GameParty::find($request->input('party'));
+        $party->change_foundation($request->input('base'));
+        return response()->json([ 'success' => $party ]);
+    }
+
+    public function sell_furniture(Request $request)
+    {
+        $party = GameParty::find($request->input('party'));
+        $party->sell_furniture($request->input('furniture'));
+        return response()->json([ 'success' => $party ]);
+    }
+
+    public function donate(Request $request)
+    {
+        $banker = GameCharacter::find($request->input('uuid'));
+        $party = GameParty::find($request->input('party'));
+        $cash = $request->input('cash');
+        $banker->gp -= $cash;
+        $banker->save();
+        $party->treasury += $cash;
+        $party->save();
+        return response()->json([ 'success' => $party ]);
+    }
+
+    public function given(Request $request)
+    {
+        $owner = GameCharacter::find($request->input('uuid'));
+        $target = GameCharacter::find($request->input('target'));
+        $item_id = $request->input('item');
+        $owner->loss_item($item_id);
+        $target->get_item($item_id);
+        return response()->json([ 'success' => $item_id ]);
     }
 
     public function skill_cast(Request $request)

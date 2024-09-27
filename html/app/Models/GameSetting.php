@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\GameCharacter;
+use App\Events\GamePartyChannel;
 
 class GameSetting extends Model
 {
@@ -91,6 +92,9 @@ class GameSetting extends Model
                 'character_uuid' => $character->uuid,
                 'content' => $character->seat.' '.$character->name.$message,
             ]);
+            if ($character->party_id) {
+                broadcast(new GamePartyChannel($character->party_id, $character->seat.' '.$character->name.$message));
+            }
         }
     }
 
@@ -200,6 +204,9 @@ class GameSetting extends Model
                 'character_uuid' => $target->uuid,
                 'content' => $message,
             ]);
+            if ($target->party_id) {
+                broadcast(new GamePartyChannel($target->party_id, $message));
+            }
         }
     }
 

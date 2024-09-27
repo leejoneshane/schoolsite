@@ -134,11 +134,10 @@ class ClassroomController extends Controller
             $party->description = $request->input('description');
         }
         if ($request->input('base') == 0) {
-            $party->base_id = null;
+            $party->remove_fundation();
         } else {
-            $party->base_id = $request->input('base');
+            $party->change_fundation($request->input('base'));
         }
-        $party->save();
         return redirect()->to($request->input('url'));
     }
 
@@ -163,11 +162,10 @@ class ClassroomController extends Controller
         $party->description = $request->input('description');
         $party->uuid = $request->input('leader');
         if ($request->input('base') == 0) {
-            $party->base_id = null;
+            $party->remove_fundation();
         } else {
-            $party->base_id = $request->input('base');
+            $party->change_fundation($request->input('base'));
         }
-        $party->save();
         return redirect()->to($request->input('url'));
     }
 

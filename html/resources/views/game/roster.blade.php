@@ -733,13 +733,31 @@
                     label.setAttribute('for', 'skill' + skill.id);
                     label.classList.add('inline-block','w-full','p-2','text-gray-500','bg-white','rounded-lg','border-2','border-gray-200','cursor-pointer','peer-checked:border-blue-600','hover:text-teal-600','peer-checked:text-blue-600','hover:bg-teal-50');
                     var name = document.createElement('div');
-                    name.classList.add('inline-block','w-80','text-base');
+                    name.classList.add('inline-block','w-auto','text-base');
                     name.innerHTML = skill.name;
                     label.appendChild(name);
                     var cost = document.createElement('div');
                     cost.classList.add('inline-block','w-16','text-base');
                     cost.innerHTML = '-' + skill.cost_mp + 'MP';
                     label.appendChild(cost);
+                    if (skill.ap > 0) {
+                        var ap = document.createElement('div');
+                        ap.classList.add('inline-block','w-16','text-base');
+                        ap.innerHTML = skill.ap + 'AP';
+                        label.appendChild(ap);
+                    }
+                    if (skill.xp > 0) {
+                        var xp = document.createElement('div');
+                        xp.classList.add('inline-block','w-16','text-base');
+                        xp.innerHTML = skill.xp + 'XP';
+                        label.appendChild(xp);
+                    }
+                    if (skill.gp > 0) {
+                        var gp = document.createElement('div');
+                        gp.classList.add('inline-block','w-16','text-base');
+                        gp.innerHTML = skill.gp + 'GP';
+                        label.appendChild(gp);
+                    }
                     var help = document.createElement('div');
                     help.classList.add('inline-block','w-96','text-sm');
                     help.innerHTML = skill.description;
@@ -785,15 +803,45 @@
                     label.setAttribute('for', 'bag' + item.id);
                     label.classList.add('inline-block','w-full','p-2','text-gray-500','bg-white','rounded-lg','border-2','border-gray-200','cursor-pointer','peer-checked:border-blue-600','hover:text-teal-600','peer-checked:text-blue-600','hover:bg-teal-50');
                     var name = document.createElement('div');
-                    name.classList.add('inline-block','w-80','text-base');
+                    name.classList.add('inline-block','w-auto','text-base');
                     name.innerHTML = item.name;
                     label.appendChild(name);
                     var quantity = document.createElement('div');
-                    quantity.classList.add('inline-block','w-16','text-base');
-                    quantity.innerHTML = item.pivot.quantity;
+                    quantity.classList.add('inline-block','w-16','text-base','pl-4');
+                    quantity.innerHTML = item.pivot.quantity + '個';
                     label.appendChild(quantity);
+                    if (item.hp > 0) {
+                        var hp = document.createElement('div');
+                        hp.classList.add('inline-block','w-16','text-base','pl-4');
+                        hp.innerHTML = item.hp + 'HP';
+                        label.appendChild(hp);
+                    }
+                    if (item.mp > 0) {
+                        var mp = document.createElement('div');
+                        mp.classList.add('inline-block','w-16','text-base','pl-4');
+                        mp.innerHTML = item.mp + 'MP';
+                        label.appendChild(mp);
+                    }
+                    if (item.ap > 0) {
+                        var ap = document.createElement('div');
+                        ap.classList.add('inline-block','w-16','text-base','pl-4');
+                        ap.innerHTML = item.ap + 'AP';
+                        label.appendChild(ap);
+                    }
+                    if (item.dp > 0) {
+                        var dp = document.createElement('div');
+                        dp.classList.add('inline-block','w-16','text-base','pl-4');
+                        dp.innerHTML = item.dp + 'DP';
+                        label.appendChild(dp);
+                    }
+                    if (item.sp > 0) {
+                        var sp = document.createElement('div');
+                        sp.classList.add('inline-block','w-16','text-base','pl-4');
+                        sp.innerHTML = item.sp + 'SP';
+                        label.appendChild(sp);
+                    }
                     var help = document.createElement('div');
-                    help.classList.add('inline-block','w-96','text-sm');
+                    help.classList.add('inline-block','w-full','text-sm');
                     help.innerHTML = item.description;
                     label.appendChild(help);
                     li.appendChild(label);

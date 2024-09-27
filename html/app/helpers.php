@@ -22,6 +22,7 @@ const COMA = 9; //角色已昏迷
 const NORMAL = 10; //角色正常
 const LOCKED = 100; //班級鎖定成功
 const UNLOCKED = 101; //班級解鎖成功
+const FUNDATION_FULLED = 11; //據點空格已滿，無法採購家具
 
 function locked($room_id = null) {
     if ($room_id) {

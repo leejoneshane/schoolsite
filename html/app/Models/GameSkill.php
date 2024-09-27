@@ -106,6 +106,11 @@ class GameSkill extends Model
         } else {
             if ($party_id) {
                 $party = GameParty::find($party_id);
+                $message = $me->name.'對'.$party->name.'施展技能'.$this->name;
+                broadcast(new GamePartyChannel($me->party_id, $message.'！'));
+                if ($me->party_id != $party_id) {
+                    broadcast(new GamePartyChannel($party_id, $message.'！'));
+                }
                 if ($this->object == 'all') {
                     $targets = null;
                     foreach ($party->members as $m) {
@@ -135,23 +140,54 @@ class GameSkill extends Model
                         } else {
                             $result[$t->uuid] = $this->effect_enemy($me, $t);
                         }
+                        if ($result[$t->uuid] == MISS) {
+                            broadcast(new GamePartyChannel($me->party_id, $t->name.'未命中！'));
+                            broadcast(new GamePartyChannel($party_id, $t->name.'未命中！'));
+                        } else {
+                            broadcast(new GamePartyChannel($me->party_id, $t->name.'命中！'));
+                            broadcast(new GamePartyChannel($party_id, $t->name.'命中！'));
+                        }
                     }
                 } elseif ($this->object == 'party') {
                     foreach ($party->members as $m) {
                         $result[$m->uuid] = $this->effect_friend($me, $m);
+                        if ($result[$m->uuid] == MISS) {
+                            broadcast(new GamePartyChannel($me->party_id, $m->name.'未命中！'));
+                        } else {
+                            broadcast(new GamePartyChannel($me->party_id, $m->name.'命中！'));
+                        }
                     }
                 }
             } elseif ($uuid) {
                 $target = GameCharacter::find($uuid);
-                if ($this->object == 'target') {
-                    $result[$uuid] = $this->effect_enemy($me, $target);
-                }
-                if ($this->object == 'partner') { 
-                    $result[$uuid] = $this->effect_friend($me, $target);
+                if ($target->party_id) {
+                    if ($this->object == 'target') {
+                        $result[$uuid] = $this->effect_enemy($me, $target);
+                    }
+                    if ($this->object == 'partner') { 
+                        $result[$uuid] = $this->effect_friend($me, $target);
+                    }
+                    $message = $me->name.'對'.$target->name.'施展技能'.$this->name;
+                    if ($result[$uuid] == MISS) {
+                        broadcast(new GamePartyChannel($me->party_id, $message.'失敗！'));
+                    } else {
+                        broadcast(new GamePartyChannel($me->party_id, $message.'成功！'));
+                    }
+                    if ($me->party_id != $target->party_id) {
+                        if ($result[$uuid] == MISS) {
+                            broadcast(new GamePartyChannel($target->party_id, $message.'失敗！'));
+                        } else {
+                            broadcast(new GamePartyChannel($target->party_id, $message.'成功！'));
+                        }
+                    }
                 }
             } else {
-                if ($this->object == 'self') { 
-                    $result[$self] = $this->effect_friend($me);
+                $result[$self] = $this->effect_friend($me);
+                $message = $me->name.'對自己施展技能'.$this->name;
+                if ($result[$self] == MISS) {
+                    broadcast(new GamePartyChannel($me->party_id, $message.'失敗！'));
+                } else {
+                    broadcast(new GamePartyChannel($me->party_id, $message.'成功！'));
                 }
             }    
         }

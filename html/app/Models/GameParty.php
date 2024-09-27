@@ -110,6 +110,21 @@ class GameParty extends Model
         return $this->belongsToMany('App\Models\GameFurniture', 'game_parties_furnitures', 'party_id', 'furniture_id');
     }
 
+    //移除據點
+    public function remove_foundation()
+    {
+        $old = $this->foundation;
+        if ($old) {
+            $this->effect_hp -= $old->hp;
+            $this->effect_mp -= $old->mp;
+            $this->effect_ap -= $old->ap;
+            $this->effect_dp -= $old->dp;
+            $this->effect_sp -= $old->sp;
+        }
+        $this->base_id = null;
+        $this->save();
+    }
+
     //變更據點
     public function change_foundation($id)
     {
@@ -129,6 +144,7 @@ class GameParty extends Model
             $this->effect_dp += $new->dp;
             $this->effect_sp += $new->sp;
         }
+        $this->base_id = $id;
         $this->save();
     }
 
@@ -138,6 +154,7 @@ class GameParty extends Model
         $furniture = $this->furnitures->firstWhere('id', $id); 
         if ($furniture) return ALREADY_EXISTS;
         if ($this->treasury < $furniture->gp) return NOT_ENOUGH_GP;
+        if ($this->furnitures->count() > 4) return FUNDATION_FULLED;
         DB::table('game_parties_furnitures')->insert([
             'party_id' => $this->id,
             'furniture_id' => $furniture->id,
@@ -152,11 +169,12 @@ class GameParty extends Model
     }
 
     //移除指定的家具
-    public function remove_furniture($id)
+    public function sell_furniture($id)
     {
         $furniture = $this->furnitures->firstWhere('id', $id); 
         if ($furniture) {
             DB::table('game_parties_furnitures')->where('party_id', $this->id)->where('furniture_id', $id)->delete();
+            $this->treasury += $furniture->gp;
             $this->effect_hp -= $furniture->hp;
             $this->effect_mp -= $furniture->mp;
             $this->effect_ap -= $furniture->ap;
