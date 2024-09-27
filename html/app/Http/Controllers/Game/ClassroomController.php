@@ -211,17 +211,7 @@ class ClassroomController extends Controller
     {
         $pro = GameClass::find($request->input('class_id'));
         $character = GameCharacter::find($uuid);
-        $character->class_id = $pro->id;
-        if ($character->level == 1) {
-            $character->max_hp = $pro->base_hp;
-            $character->hp = $pro->base_hp;
-            $character->max_mp = $pro->base_mp;
-            $character->mp = $pro->base_mp;
-            $character->ap = $pro->base_ap;
-            $character->dp = $pro->base_dp;
-            $character->sp = $pro->base_sp;    
-        }
-        $character->save();
+        $character->change_class($pro->id);
         return view('game.image_setup', [ 'action' => route('game.image_setup', [ 'uuid' => $character->uuid ]), 'character' => $character ]);
     }
 

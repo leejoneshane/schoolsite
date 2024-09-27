@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\GameSence;
 use App\Models\Classroom;
+use App\Models\GameClass;
 
 class GameCharacter extends Model
 {
@@ -347,6 +348,23 @@ class GameCharacter extends Model
         }
         $this->save();
         $this->levelup();
+    }
+
+    //變更職業
+    public function change_class($id)
+    {
+        $new = GameClass::find($id);
+        if ($level == 1) {
+            $this->max_hp = $new->base_hp;
+            $this->hp = $new->base_hp;
+            $this->max_mp = $new->base_mp;
+            $this->mp = $new->base_mp;
+            $this->ap = $new->base_ap;
+            $this->dp = $new->base_dp;
+            $this->sp = $new->base_sp;    
+        }
+        $this->class_id = $id;
+        $this->save();
     }
 
     //取得此班級組態

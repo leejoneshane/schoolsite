@@ -216,15 +216,7 @@ class GameController extends Controller
         }
         if ($character->class_id != $request->input('profession')) {
             $pro = GameClass::find($request->input('profession'));
-            $character->class_id = $pro->id;
-            if ($character->level == 1) {
-                $character->max_hp = $pro->base_hp;
-                $character->max_mp = $pro->base_mp;
-                $character->ap = $pro->base_ap;
-                $character->dp = $pro->base_dp;
-                $character->sp = $pro->base_sp;    
-            }
-            $character->save();
+            $character->change_class($pro->id);
         }
     }
 

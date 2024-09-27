@@ -32,6 +32,7 @@
                 公會長：{{ $party->leader ? $party->leader->name : '' }}
                 @endif
             </div>
+            @if ($party->configure && $party->configure->change_base)
             <div class="ml-2 text-3xl text-white" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
                 @if ($character->uuid == $party->uuid)
                 <label for="base">變更據點：</label>
@@ -44,6 +45,7 @@
                 </select>
                 @endif
             </div>
+            @endif
         </div>
     </div>
     <div class="w-full h-1/4  bg-white flex flex-row justify-center">
