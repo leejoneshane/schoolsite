@@ -180,6 +180,8 @@
     var items = [];
     window.onload = bag;
 
+    var main = document.getElementsByTagName('main')[0];
+    main.classList.replace('bg-game-map50', 'bg-game-door');
     var $targetEl = document.getElementById('itemsModal');
     const itemsModal = new window.Modal($targetEl);
     $targetEl = document.getElementById('teammateModal');

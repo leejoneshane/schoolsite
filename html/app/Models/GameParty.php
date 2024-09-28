@@ -172,20 +172,20 @@ class GameParty extends Model
     }
 
     //移除指定的家具
-    public function sell_furniture($id)
+    public function sell_furniture($id, $cash)
     {
         if ($this->furnitures) {
             $furniture = $this->furnitures->firstWhere('id', $id); 
             if ($furniture) {
                 DB::table('game_parties_furnitures')->where('party_id', $this->id)->where('furniture_id', $id)->delete();
-                $this->treasury += $furniture->gp;
+                $this->treasury += $cash;
                 $this->effect_hp -= $furniture->hp;
                 $this->effect_mp -= $furniture->mp;
                 $this->effect_ap -= $furniture->ap;
                 $this->effect_dp -= $furniture->dp;
                 $this->effect_sp -= $furniture->sp;
                 $this->save();
-            }    
+            }
         }
     }
 

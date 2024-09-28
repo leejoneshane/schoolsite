@@ -1,4 +1,4 @@
-<main class="w-full h-full min-h-screen pb-32 bg-game-map50 bg-cover bg-center bg-no-repeat">
+<main class="w-full h-full min-h-screen bg-game-map50 bg-contain bg-center bg-no-repeat">
 @yield('content')
 </main>
 <audio id="received" muted autoplay>

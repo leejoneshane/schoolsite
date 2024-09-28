@@ -17,6 +17,7 @@ use App\Models\GameCharacter;
 use App\Models\GameClass;
 use App\Models\GameSkill;
 use App\Models\GameItem;
+use App\Models\GameFurniture;
 use App\Models\GameSetting;
 use App\Models\GameDelay;
 use App\Models\GameLog;
@@ -101,6 +102,15 @@ class PlayerController extends Controller
         return response()->json([ 'items' => $items ]);
     }
 
+    public function get_furnitures(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $char = GameCharacter::find($uuid);
+        $furnitures = $char->party->furnitures;
+        $treasury = $char->party->treasury;
+        return response()->json([ 'furnitures' => $furnitures, 'treasury' => $treasury ]);
+    }
+
     public function party()
     {
         $user = User::find(Auth::user()->id);
@@ -146,13 +156,6 @@ class PlayerController extends Controller
     {
         $party = GameParty::find($request->input('party'));
         $party->change_foundation($request->input('base'));
-        return response()->json([ 'success' => $party ]);
-    }
-
-    public function sell_furniture(Request $request)
-    {
-        $party = GameParty::find($request->input('party'));
-        $party->sell_furniture($request->input('furniture'));
         return response()->json([ 'success' => $party ]);
     }
 
@@ -221,6 +224,33 @@ class PlayerController extends Controller
                 $me->use_skill($item->id, $target->uuid);
             }
         }
+    }
+
+    public function furniture_shop()
+    {
+        $character = GameCharacter::find(Auth::user()->uuid);
+        $furnitures = GameFurniture::all();
+        return view('game.furniture_shop', [ 'character' => $character, 'furnitures' => $furnitures ]);
+    }
+
+    public function buy_furniture(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $char = GameCharacter::find($uuid);
+        $fur_id = $request->input('furniture');
+        $char->party->buy_furniture($fur_id);
+        return response()->json([ 'treasury' => $char->party->treasury ]);
+    }
+
+    public function sell_furniture(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $char = GameCharacter::find($uuid);
+        $fur_id = $request->input('furniture');
+        $cash = $request->input('cash');
+        if (!$cash) $chsh = 0;
+        $char->party->buy_furniture($fur_id, $cash);
+        return response()->json([ 'treasury' => $char->party->treasury ]);
     }
 
 }

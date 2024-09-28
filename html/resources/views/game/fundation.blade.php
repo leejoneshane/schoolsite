@@ -114,7 +114,7 @@
                     @foreach ($party->furnitures as $f)
                     <td class="w-1/5">
                         @if ($character->uuid == $party->uuid)
-                        <button type="button" title="賣出" onclick="furniture('{{ $f->id }}', '{{ $f->name }}');" class="hover:border hover:border-2 hover:border-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                        <button type="button" title="拆除" onclick="furniture('{{ $f->id }}', '{{ $f->name }}');" class="hover:border hover:border-2 hover:border-blue-700 text-white font-bold py-2 px-4 rounded-full">
                             <img src="{{ $f->image_url(); }}" title="{{ $f->name . ' ' . $f->description }}" />
                         </button>
                         @else
@@ -324,7 +324,7 @@
     function furniture(id, caption) {
         data_furniture = id;
         var msg = document.getElementById('message');
-        msg.innerHTML = '您確定要賣出' + caption + '？';
+        msg.innerHTML = '您確定要拆除' + caption + '？';
         confirmModal.show();
     }
 

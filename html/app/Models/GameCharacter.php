@@ -443,6 +443,11 @@ class GameCharacter extends Model
         });
     }
 
+    public function is_leader()
+    {
+        return $this->uuid == $this->party->uuid;
+    }
+
     //角色日常更新
     public function newday()
     {

@@ -24,7 +24,7 @@
         @endteacher
         @student
         <div class="py-2 text-center">
-            <a href="{{ route('game.player') }}"><i class="text-2xl fa-solid fa-person-hiking" title="我的角色"></i></a>
+            <a href="{{ route('game.player') }}"><i class="fa-solid fa-user" title="我的角色"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="{{ route('game.party') }}"><i class="text-2xl fa-solid fa-place-of-worship" title="公會"></i></a>
@@ -41,7 +41,7 @@
         </div>
         @endlocked
         <div class="py-2 text-center">
-            <a href="/game/work_shop"><i class="text-2xl fa-solid fa-couch" title="矮人工坊"></i></a>
+            <a href="{{ route('game.furniture_shop') }}"><i class="text-2xl fa-solid fa-couch" title="矮人工坊"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="/game/item_shop"><i class="text-2xl fa-solid fa-cart-shopping" title="妖精道具屋"></i></a>
