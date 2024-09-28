@@ -185,7 +185,7 @@
             newgoods.classList.add('hidden');
             confirm.classList.add('hidden');
         } else if (old_furnitures.length < 1) {
-            seller.innerHTML = '您的據點空無一物，沒有家具可以販賣？';
+            seller.innerHTML = '您的據點空無一物，沒有家具可以販賣!';
             dialog.classList.add('hidden');
             service.classList.remove('hidden');
             oldgoods.classList.add('hidden');
@@ -202,7 +202,7 @@
 
     function pay() {
         step = 'buy';
-        fur = document.getElementById('newgoods').value;
+        fur = buywhat.value;
         if (furnitures[fur].gp > treasury) {
             seller.innerHTML = '客倌，您的錢不夠喔！您要不要選別的？';
         } else {
@@ -217,7 +217,7 @@
 
     function get() {
         step = 'sell';
-        fur = document.getElementById('oldgoods').value;
+        fur = sellwhat.value;
         cash = Math.floor(0.5 + Math.random() * 0.4) * fur.gp;
         seller.innerHTML = '客倌，這件家具是二手商品，我願意用' + cash +'枚金幣購買，可以嗎？';
         dialog.classList.add('hidden');
