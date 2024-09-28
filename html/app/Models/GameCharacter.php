@@ -531,6 +531,26 @@ class GameCharacter extends Model
         $this->save();
     }
 
+    //賣掉指定的道具
+    public function sell_item($id)
+    {
+        $item = $this->items->firstWhere('id', $id);
+        if (!$item) return NOT_EXISTS;
+        if ($item->pivot->quantity > 1) {
+            DB::table('game_characters_items')
+                ->where('uuid', $this->uuid)
+                ->where('item_id', $item->id)
+                ->decrement('quantity');
+        } else {
+            DB::table('game_characters_items')
+                ->where('uuid', $this->uuid)
+                ->where('item_id', $item->id)
+                ->delete();
+        }
+        $this->gp += $item->gp;
+        $this->save();
+    }
+
     //獲得指定的道具
     public function get_item($id)
     {

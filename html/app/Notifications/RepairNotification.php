@@ -58,7 +58,7 @@ class RepairNotification extends Notification implements ShouldQueue
     {
         $job = RepairJob::find($this->id);
         return [
-            'info' => $job->toJson(),
+            'info' => $job->toJson(JSON_UNESCAPED_UNICODE),
         ];
     }
 }

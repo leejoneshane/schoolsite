@@ -58,7 +58,7 @@ class RepairReplyNotification extends Notification implements ShouldQueue
     {
         $reply = RepairReply::find($this->id);
         return [
-            'info' => $reply->toJson(),
+            'info' => $reply->toJson(JSON_UNESCAPED_UNICODE),
         ];
     }
 }

@@ -58,7 +58,7 @@ class PublicNotification extends Notification implements ShouldQueue
     {
         $public = PublicClass::find($this->id);
         return [
-            'info' => $public->toJson(),
+            'info' => $public->toJson(JSON_UNESCAPED_UNICODE),
         ];
     }
 }

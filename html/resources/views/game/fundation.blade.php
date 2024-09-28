@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="w-full h-screen flex flex-col">
-    <div class="relative w-full h-3/4 truncate flex flex-col">
+    <div class="relative w-full h-2/3 truncate flex flex-col">
         @if ($party->fundation)
         <img src="{{  $party->fundation->url() }}" class="absolute bottom-0 w-full z-0" />
         @endif
@@ -48,9 +48,9 @@
             @endif
         </div>
     </div>
-    <div class="w-full h-1/4  bg-white flex flex-row justify-center">
+    <div class="w-full h-1/3  bg-white flex flex-row justify-center">
         <div class="w-52">
-            <table class="text-left font-normal pb-6">
+            <table class="text-left font-normal">
                 <tr>
                     <td colspan="2" class="bg-gray-500 text-white">影響效果</td>
                 </tr>
@@ -136,8 +136,8 @@
         </div>
         <div class="w-auto">
             <div class="sr-only">金庫</div>
-            <button type="button" title="捐款" onclick="donateModal.show();" class="hover:border hover:border-2 hover:border-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                <div class="w-36 h-36 bg-game-chest bg-contain bg-no-repeat">
+            <button type="button" title="捐款" onclick="donateModal.show();" class="hover:border hover:border-2 hover:border-blue-700 text-white font-bold rounded-full">
+                <div class="relative w-36 h-36 bg-game-chest bg-contain bg-no-repeat">
                     <span class="absolute bottom-0 text-lg text-amber-500 font-bold">{{ $party->treasury }}</span>
                 </div>
             </button>

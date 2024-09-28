@@ -99,7 +99,7 @@ class PlayerController extends Controller
         $uuid = $request->input('uuid');
         $char = GameCharacter::find($uuid);
         $items = $char->items;
-        return response()->json([ 'items' => $items ]);
+        return response()->json([ 'items' => $items, 'money' => $char->gp ]);
     }
 
     public function get_furnitures(Request $request)
@@ -253,4 +253,28 @@ class PlayerController extends Controller
         return response()->json([ 'treasury' => $char->party->treasury ]);
     }
 
+    public function item_shop()
+    {
+        $character = GameCharacter::find(Auth::user()->uuid);
+        $items = GameItem::all();
+        return view('game.item_shop', [ 'character' => $character, 'items' => $items ]);
+    }
+
+    public function buy_item(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $char = GameCharacter::find($uuid);
+        $item_id = $request->input('item');
+        $char->buy_item($item_id);
+        return response()->json([ 'success' => $char->gp ]);
+    }
+
+    public function sell_item(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $char = GameCharacter::find($uuid);
+        $item_id = $request->input('item');
+        $char->sell_item($item_id);
+        return response()->json([ 'treasury' => $char->party->treasury ]);
+    }
 }

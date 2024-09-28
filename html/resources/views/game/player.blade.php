@@ -1,7 +1,7 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="w-full min-h-screen flex flex-row justify-center">
+<div class="w-full h-screen flex flex-row justify-center">
     <div class="w-96 flex flex-col bg-white">
         <table class="text-left font-normal pb-6">
             <tr>

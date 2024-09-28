@@ -3,7 +3,7 @@
 @section('content')
 <div class="relative w-full h-full flex flex-col gap-10 justify-between">
     <div class="w-1/2 h-64 inline-flex flex-wrap gap-4">
-        @foreach ($furnitures as $f)
+        @foreach ($items as $f)
             @if ($f->image_avaliable())
             <div class="relative">
                 <img src="{{ $f->image_url() }}" class="w-24 h-24 z-10" title="{{ $f->name . ' ' . $f->description }}">
@@ -19,7 +19,7 @@
         </div>
         <span class="relative"></span>
         <div class="w-40 h-40">
-            <img src="{{ asset('images/game/dwarf.png') }}" title="矮人店長" class="absolute top-0 w-40 h-40">
+            <img src="{{ asset('images/game/elf.png') }}" title="精靈店長" class="absolute top-0 w-40 h-40">
         </div>
     </div>
     <div class="relative w-full h-40 left-0 inline-flex flex-row justify-start">
@@ -33,10 +33,10 @@
             </div>
             <div id="service" class="hidden ml-12 p-4 text-lg">
                 <button onclick="buy();" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                    購買家具
+                    購買道具
                 </button>
                 <button onclick="sell();" class="ml-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full">
-                    販售家具
+                    販售道具
                 </button>
             </div>
             <div id="newgoods" class="hidden ml-12 p-4 text-lg">
@@ -72,21 +72,19 @@
 </div>
 <script nonce="selfhost">
     var character = '{{ $character->uuid }}';
-    var shop_open = {{ $character->configure && $character->configure->furniture_shop }}; 
-    var is_leader = {{ $character->is_leader() }};
-    var furnitures = [];
-    var cash;
+    var shop_open = {{ $character->configure && $character->configure->item_shop }}; 
+    var items = [];
     var step;
-    var fur;
-    var treasury;
-    @foreach ($furnitures as $f)
-    furnitures[{{ $f->id }}] = {!! $f->toJson(JSON_UNESCAPED_UNICODE); !!}
+    var item;
+    var money;
+    @foreach ($items as $f)
+    items[{{ $f->id }}] = {!! $f->toJson(JSON_UNESCAPED_UNICODE); !!}
     @endforeach
-    var new_furnitures = [];
-    var old_furnitures = [];
+    var new_items = [];
+    var old_items = [];
 
     var main = document.getElementsByTagName('main')[0];
-    main.classList.replace('bg-game-map50', 'bg-game-workshop');
+    main.classList.replace('bg-game-map50', 'bg-game-itemshop');
     const seller = document.getElementById("shop");
     const dialog = document.getElementById("dialog");
     const service = document.getElementById("service");
@@ -113,7 +111,7 @@
             newgoods.classList.add('hidden');
             confirm.classList.add('hidden');
         }
-        window.axios.post('{{ route('game.get_myfurnitures') }}', {
+        window.axios.post('{{ route('game.get_myitems') }}', {
             uuid: character,
         }, {
             headers: {
@@ -121,33 +119,27 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( response => {
-            treasury = response.data.treasury;
-            old_furnitures = [];
-            for (var k in response.data.furnitures) {
-                var f = response.data.furnitures[k];
-                old_furnitures[f.id] = f;
+            money = response.data.money;
+            old_items = [];
+            for (var k in response.data.items) {
+                var f = response.data.items[k];
+                old_items[f.id] = f;
             }
-            sellwhat.innerHTML ='';
-            if (old_furnitures.length > 0) {
-                old_furnitures.forEach( fur => {
+            sellwhat.innerHTML = '';
+            if (old_items.length > 0) {
+                old_items.forEach( item => {
                     var opt = document.createElement('option');
-                    opt.value = fur.id;
-                    opt.innerHTML = fur.name;
+                    opt.value = item.id;
+                    opt.innerHTML = item.name;
                     sellwhat.appendChild(opt);
                 });
             }
-            new_furnitures = [];
-            furnitures.forEach( fur => {
-                if (!(fur.id in old_furnitures)) {
-                    new_furnitures[fur.id] = fur;
-                }
-            });
             buywhat.innerHTML = '';
-            if (new_furnitures.length > 0) {
-                new_furnitures.forEach( fur => {
+            if (items.length > 0) {
+                items.forEach( item => {
                     var opt = document.createElement('option');
-                    opt.value = fur.id;
-                    opt.innerHTML = fur.name;
+                    opt.value = item.id;
+                    opt.innerHTML = item.name;
                     buywhat.appendChild(opt);
                 });
             }
@@ -155,39 +147,16 @@
     }
 
     function buy() {
-        if (!is_leader) {
-            seller.innerHTML = '抱歉，我們只接受公會長訂購商品！';
-            dialog.classList.remove('hidden');
-            service.classList.add('hidden');
-            oldgoods.classList.add('hidden');
-            newgoods.classList.add('hidden');
-            confirm.classList.add('hidden');
-        } else if (old_furnitures.length > 4) {
-            seller.innerHTML = '您的據點空間不足，要不要先賣掉幾件家具？';
-            dialog.classList.add('hidden');
-            service.classList.remove('hidden');
-            oldgoods.classList.add('hidden');
-            newgoods.classList.add('hidden');
-            confirm.classList.add('hidden');
-        } else {
-            dialog.classList.add('hidden');
-            service.classList.add('hidden');
-            oldgoods.classList.add('hidden');
-            newgoods.classList.remove('hidden');
-            confirm.classList.add('hidden');
-        }
+        dialog.classList.add('hidden');
+        service.classList.add('hidden');
+        oldgoods.classList.add('hidden');
+        newgoods.classList.remove('hidden');
+        confirm.classList.add('hidden');
     }
 
     function sell() {
-        if (!is_leader) {
-            seller.innerHTML = '抱歉，我們只接受公會長販售商品！';
-            dialog.classList.remove('hidden');
-            service.classList.add('hidden');
-            oldgoods.classList.add('hidden');
-            newgoods.classList.add('hidden');
-            confirm.classList.add('hidden');
-        } else if (old_furnitures.length < 1) {
-            seller.innerHTML = '您的據點空無一物，沒有家具可以販賣!';
+        if (old_items.length < 1) {
+            seller.innerHTML = '您的背包裡空無一物，沒有道具可以販賣!';
             dialog.classList.add('hidden');
             service.classList.remove('hidden');
             oldgoods.classList.add('hidden');
@@ -204,11 +173,11 @@
 
     function pay() {
         step = 'buy';
-        fur = buywhat.value;
-        if (furnitures[fur].gp > treasury) {
+        item = buywhat.value;
+        if (items[item].gp > money) {
             seller.innerHTML = '客倌，您的錢不夠喔！您要不要選別的？';
         } else {
-            seller.innerHTML = '客倌，這件家具是' + furnitures[fur].description + '需要花你' + furnitures[fur].gp +'枚金幣，您確定要購買嗎？';
+            seller.innerHTML = '客倌，這個道具是' + items[item].description + '需要花你' + items[item].gp +'枚金幣，您確定要購買嗎？';
             dialog.classList.add('hidden');
             service.classList.add('hidden');
             oldgoods.classList.add('hidden');
@@ -219,9 +188,8 @@
 
     function get() {
         step = 'sell';
-        fur = sellwhat.value;
-        cash = Math.floor(0.5 + Math.random() * 0.4) * fur.gp;
-        seller.innerHTML = '客倌，這件家具是二手商品，我願意用' + cash +'枚金幣購買，可以嗎？';
+        item = sellwhat.value;
+        seller.innerHTML = '客倌，這個道具還沒用過，我願意用原價' + items[item].gp +'枚金幣買回，可以嗎？';
         dialog.classList.add('hidden');
         service.classList.add('hidden');
         oldgoods.classList.add('hidden');
@@ -231,9 +199,9 @@
 
     function done() {
         if (step == 'buy') {
-            window.axios.post('{{ route('game.buy_furniture') }}', {
+            window.axios.post('{{ route('game.buy_item') }}', {
                 uuid: character,
-                furniture: fur,
+                item: item,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -241,10 +209,9 @@
                 }
             });
         } else {
-            window.axios.post('{{ route('game.sell_furniture') }}', {
+            window.axios.post('{{ route('game.sell_item') }}', {
                 uuid: character,
-                furniture: fur,
-                cash: cash,
+                item: item,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
