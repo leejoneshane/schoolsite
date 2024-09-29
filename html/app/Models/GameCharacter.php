@@ -354,7 +354,7 @@ class GameCharacter extends Model
     public function change_class($id)
     {
         $new = GameClass::find($id);
-        if ($level == 1) {
+        if ($this->level == 1) {
             $this->max_hp = $new->base_hp;
             $this->hp = $new->base_hp;
             $this->max_mp = $new->base_mp;
