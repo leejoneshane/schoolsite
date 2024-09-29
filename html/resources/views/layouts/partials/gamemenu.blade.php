@@ -31,7 +31,7 @@
         </div>
         @locked
         <div class="py-2 text-center">
-            <a href="/game/arena"><i class="text-2xl fa-brands fa-battle-net" title="競技場"></i></a>
+            <a href="{{ route('game.arena') }}"><i class="text-2xl fa-brands fa-battle-net" title="競技場"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="/game/dungeon"><i class="text-2xl fa-solid fa-dungeon" title="地下城"></i></a>

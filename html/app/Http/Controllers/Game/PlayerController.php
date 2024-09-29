@@ -277,4 +277,10 @@ class PlayerController extends Controller
         $char->sell_item($item_id);
         return response()->json([ 'treasury' => $char->party->treasury ]);
     }
+
+    public function arena()
+    {
+        $character = GameCharacter::find(Auth::user()->uuid);
+        return view('game.arena', [ 'character' => $character ]);
+    }
 }

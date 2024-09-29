@@ -516,6 +516,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::group(['prefix' => 'player', 'middleware' => [ 'student', 'noprofession', 'noimage' ] ], function () {
         Route::get('/', 'App\Http\Controllers\Game\PlayerController@index')->name('game.player');
         Route::get('party', 'App\Http\Controllers\Game\PlayerController@party')->name('game.party');
+        Route::get('arena', 'App\Http\Controllers\Game\PlayerController@arena')->name('game.arena');
         Route::get('shop/furniture', 'App\Http\Controllers\Game\PlayerController@furniture_shop')->name('game.furniture_shop');
         Route::get('shop/item', 'App\Http\Controllers\Game\PlayerController@item_shop')->name('game.item_shop');
         Route::get('online', 'App\Http\Controllers\Game\MessagerController@list')->name('game.online');
