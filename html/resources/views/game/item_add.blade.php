@@ -107,5 +107,6 @@
             </button>
         </div>
     </p>
+    <p class="h-12"></p>
 </form>
 @endsection

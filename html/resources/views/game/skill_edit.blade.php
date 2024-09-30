@@ -99,8 +99,8 @@
             <option value="hatred"{{ $skill->inspire == 'hatred' ? ' selected' :''}}>集中仇恨</option>
             <option value="invincible"{{ $skill->inspire == 'invincible' ? ' selected' :''}}>無敵狀態</option>
             <option value="throw"{{ $skill->inspire == 'throw' ? ' selected' :''}}>投擲道具</option>
-            <option value="weak"{{ $skill->inspire == 'weak' ? ' selected' :''}}>虛弱</option>
-            <option value="paralysis"{{ $skill->inspire == 'paralysis' ? ' selected' :''}}>麻痹</option>
+            <option value="weak"{{ $skill->inspire == 'weak' ? ' selected' :''}}>身體虛弱</option>
+            <option value="paralysis"{{ $skill->inspire == 'paralysis' ? ' selected' :''}}>精神麻痹</option>
             <option value="poisoned"{{ $skill->inspire == 'poisoned' ? ' selected' :''}}>中毒</option>
         </select>
         <br><span class="text-sm font-semibold">在計算增減效益前執行</span>
@@ -179,5 +179,6 @@
             </button>
         </div>
     </p>
+    <p class="h-12"></p>
 </form>
 @endsection

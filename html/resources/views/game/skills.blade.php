@@ -90,6 +90,9 @@
         </td>
     </tr>
     @endforeach
+    <tr class="h-12">
+        <td></td>
+    </tr>
     <form class="hidden" id="remove" action="" method="POST">
         @csrf
     </form>

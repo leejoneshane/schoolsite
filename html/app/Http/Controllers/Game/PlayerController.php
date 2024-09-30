@@ -83,7 +83,7 @@ class PlayerController extends Controller
                 'name' => $stu->realname,
             ]);
         }
-        return view('game.image_setup', [ 'action' => route('game.play_image'), 'character' => $character ]);
+        return view('game.image_setup', [ 'action' => route('game.player_image'), 'character' => $character ]);
     }
 
     function character_image(Request $request)
