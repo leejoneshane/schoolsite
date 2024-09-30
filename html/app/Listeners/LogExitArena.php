@@ -16,7 +16,9 @@ class LogExitArena
     public function handle(ExitArena $event)
     {
         $party = $event->character->party_id;
-        $namespace = 'arena-party-'.$party.':*';
+        $namespace = 'arena-party-'.$party.':'.$event->character->uuid;
+        Redis::del($namespace);
+        $namespace = 'arena-group:'.$event->character->party_id;
         Redis::del($namespace);
     }
 

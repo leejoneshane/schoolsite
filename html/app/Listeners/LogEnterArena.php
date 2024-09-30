@@ -2,9 +2,10 @@
  
 namespace App\Listeners;
 
-use App\Events\EnterArena;
 use Illuminate\Support\Facades\Redis;
-use App\Events\GamePartyChannel;
+use App\Events\EnterArena;
+use App\Events\GroupArena;
+use App\Models\GameParty;
  
 class LogEnterArena
 {
@@ -21,22 +22,17 @@ class LogEnterArena
         $namespace = 'arena-party-'.$party.':'.$uuid;
         $expire = 40 * 60; //40 mintues
         Redis::setex($namespace, $expire, $uuid);
-        $in = $this->already('arena-party-'.$party);
-        $not_in = $event->character->teammate->reject( function ($m) use ($in) {
-            return in_array($m->uuid, $in);
-        });
-        if ($not_in->count() > 0) {
-            broadcast(new GamePartyChannel($event->character->party_id, '請立刻前往競技場集合！'));
-        }
+        $this->check_all($party);
     }
 
-    public function already($namespace)
+    public function check_all($party)
     {
         $prefix = config('database.redis.options.prefix');
         $len = strlen($prefix);
         $uuids = [];
         $allResults = [];
         $cursor = null;
+        $namespace = 'arena-party-'.$party;
         do {
             list($cursor, $keys) = Redis::scan($cursor, ['match' => $prefix.$namespace.':*']);
             if ($keys) {
@@ -48,7 +44,13 @@ class LogEnterArena
             $key = substr($result, $len);
             $uuids[] = Redis::get($key);
         }
-        return $uuids;
+        $party_obj = GameParty::find($party);
+        $not_in = $party_obj->members->reject( function ($m) use ($uuids) {
+            return in_array($m->uuid, $uuids);
+        });
+        if ($not_in->count() == 0) {
+            GroupArena::dispatch($party_obj);
+        }
     }
 
 }

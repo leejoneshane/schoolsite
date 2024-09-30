@@ -85,6 +85,7 @@ class GameCharacter extends Model
         'final_sp',
         'status',
         'status_desc',
+        'url',
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）
@@ -284,6 +285,12 @@ class GameCharacter extends Model
         if ($this->buff == 'paralysis') return '精神麻痹';
         if ($this->buff == 'poisoned') return '中毒';
         return '正常';
+    }
+
+    //提供角色圖片網址
+    public function getUrlAttribute()
+    {
+        return $this->image ? $this->image->url() : null;
     }
 
     //檢查此角色是否可升級，若可以則進行升級

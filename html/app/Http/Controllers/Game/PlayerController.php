@@ -5,6 +5,12 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
+use App\Events\EnterArena;
+use App\Events\ExitArena;
+use App\Events\GameRoomChannel;
+use App\Events\GamePartyChannel;
+use App\Events\GameCharacterChannel;
 use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Student;
@@ -31,6 +37,7 @@ class PlayerController extends Controller
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             $character = GameCharacter::find($user->uuid);
+            ExitArena::dispatch($character);
             if (!$character) {
                 $stu = Student::find(Auth::user()->uuid);
                 GameCharacter::create([
@@ -99,7 +106,7 @@ class PlayerController extends Controller
         $uuid = $request->input('uuid');
         $char = GameCharacter::find($uuid);
         $items = $char->items;
-        return response()->json([ 'items' => $items, 'money' => $char->gp ]);
+        return response()->json([ 'items' => $items, 'money' => $char->gp ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function get_furnitures(Request $request)
@@ -108,13 +115,14 @@ class PlayerController extends Controller
         $char = GameCharacter::find($uuid);
         $furnitures = $char->party->furnitures;
         $treasury = $char->party->treasury;
-        return response()->json([ 'furnitures' => $furnitures, 'treasury' => $treasury ]);
+        return response()->json([ 'furnitures' => $furnitures, 'treasury' => $treasury ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function party()
     {
         $user = User::find(Auth::user()->id);
         $character = GameCharacter::find($user->uuid);
+        ExitArena::dispatch($character);
         $party = $character->party;
         if ($party) {
             if (!($party->uuid)) {
@@ -229,6 +237,7 @@ class PlayerController extends Controller
     public function furniture_shop()
     {
         $character = GameCharacter::find(Auth::user()->uuid);
+        ExitArena::dispatch($character);
         $furnitures = GameFurniture::all();
         return view('game.furniture_shop', [ 'character' => $character, 'furnitures' => $furnitures ]);
     }
@@ -256,6 +265,7 @@ class PlayerController extends Controller
     public function item_shop()
     {
         $character = GameCharacter::find(Auth::user()->uuid);
+        ExitArena::dispatch($character);
         $items = GameItem::all();
         return view('game.item_shop', [ 'character' => $character, 'items' => $items ]);
     }
@@ -281,6 +291,87 @@ class PlayerController extends Controller
     public function arena()
     {
         $character = GameCharacter::find(Auth::user()->uuid);
+        EnterArena::dispatch($character);
         return view('game.arena', [ 'character' => $character ]);
     }
+
+    public function in_arena(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $prefix = config('database.redis.options.prefix');
+        $len = strlen($prefix);
+        $characters = [];
+        $allResults = [];
+        $cursor = null;
+        $character = GameCharacter::find($uuid);
+        $namespace = 'arena-party-'.$character->party_id;
+        do {
+            list($cursor, $keys) = Redis::scan($cursor, ['match' => $prefix.$namespace.':*']);
+            if ($keys) {
+                $allResults = array_merge($allResults, $keys);
+            }
+        } while ($cursor);
+        $allResults = array_unique($allResults);
+        foreach($allResults as $result){
+            $key = substr($result, $len);
+            $characters[] = GameCharacter::find(Redis::get($key));
+        }
+        return response()->json([ 'characters' => $characters])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
+    public function group_arena(Request $request)
+    {
+        $party_id = $request->input('party');
+        $prefix = config('database.redis.options.prefix');
+        $len = strlen($prefix);
+        $parties = [];
+        $allResults = [];
+        $cursor = null;
+        do {
+            list($cursor, $keys) = Redis::scan($cursor, ['match' => $prefix.'arena-group:*']);
+            if ($keys) {
+                $allResults = array_merge($allResults, $keys);
+            }
+        } while ($cursor);
+        $allResults = array_unique($allResults);
+        foreach($allResults as $result){
+            $key = substr($result, $len);
+            if ($key != $party_id) {
+                $parties[] = GameParty::find(Redis::get($key));
+            }
+        }
+        return response()->json([ 'parties' => $parties])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
+    public function come_arena(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $prefix = config('database.redis.options.prefix');
+        $len = strlen($prefix);
+        $uuids = [];
+        $allResults = [];
+        $cursor = null;
+        $character = GameCharacter::find($uuid);
+        $namespace = 'arena-party-'.$character->party_id;
+        do {
+            list($cursor, $keys) = Redis::scan($cursor, ['match' => $prefix.$namespace.':*']);
+            if ($keys) {
+                $allResults = array_merge($allResults, $keys);
+            }
+        } while ($cursor);
+        $allResults = array_unique($allResults);
+        foreach($allResults as $result){
+            $key = substr($result, $len);
+            $uuids[] = Redis::get($key);
+        }
+        $not_in = $character->teammate->reject( function ($m) use ($uuids) {
+            return in_array($m->uuid, $uuids);
+        });
+        if ($not_in->count() > 0) {
+            foreach ($not_in as $m) {
+                broadcast(new GameCharacterChannel($character->name, $m->uuid, '請立刻前往競技場集合！'));
+            }
+        }
+    }
+
 }

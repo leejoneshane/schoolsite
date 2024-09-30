@@ -535,6 +535,9 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
         Route::post('furniture/sell', 'App\Http\Controllers\Game\PlayerController@sell_furniture')->name('game.sell_furniture');
         Route::post('item/buy', 'App\Http\Controllers\Game\PlayerController@buy_item')->name('game.buy_item');
         Route::post('item/sell', 'App\Http\Controllers\Game\PlayerController@sell_item')->name('game.sell_item');
+        Route::post('arena/who', 'App\Http\Controllers\Game\PlayerController@in_arena')->name('game.in_arena');
+        Route::post('arena/parties', 'App\Http\Controllers\Game\PlayerController@group_arena')->name('game.group_arena');
+        Route::post('arena/broadcast', 'App\Http\Controllers\Game\PlayerController@come_arena')->name('game.come_arena');
     });
 });
 

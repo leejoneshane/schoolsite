@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Broadcast;
+use App\Models\Student;
+use App\Models\GameCharacter;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,14 +29,16 @@ Broadcast::channel('private.{id}', function ($user, $id) {
 
 Broadcast::channel('classroom.{id}', function ($user, $id) {
     if ($user->user_type == 'Student') {
-        return (int) $user->profile->class_id === (int) $id;
+        $student = Student::find($user->uuid);
+        return (int) $student->class_id === (int) $id;
     }
     return false;
 });
 
 Broadcast::channel('party.{id}', function ($user, $id) {
     if ($user->user_type == 'Student') {
-        return (int) $user->profile->character->party_id === (int) $id;
+        $character = GameCharacter::find($user->uuid);
+        return (int) $character->party_id === (int) $id;
     }
     return false;
 });

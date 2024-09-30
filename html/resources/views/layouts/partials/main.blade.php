@@ -1,4 +1,4 @@
-<main class="w-full h-full min-h-screen bg-game-map50 bg-contain bg-center bg-no-repeat">
+<main class="w-full h-full min-h-screen bg-game-map50 bg-cover bg-center bg-no-repeat">
 @yield('content')
 </main>
 <audio id="received" muted autoplay>
@@ -35,7 +35,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", function(event) { 
-        window.Echo.channel('classroom.{{ auth()->user()->profile->class_id }}').listen('GameRoomChannel', (e) => {
+        window.Echo.channel('classroom.{{ player()->class_id }}').listen('GameRoomChannel', (e) => {
             let rnd = Math.floor(Math.random() * 100000);
             let popup = document.createElement('div');
             popup.id = 'messager_' + rnd;
@@ -89,7 +89,7 @@
         });
         @endif
 
-        window.Echo.private('character.{{ auth()->user()->id }}').listen('GameCharacterChannel', (e) => {
+        window.Echo.private('character.{{ player()->uuid }}').listen('GameCharacterChannel', (e) => {
             let rnd = Math.floor(Math.random() * 100000);
             let popup = document.createElement('div');
             popup.id = 'messager_' + rnd;
