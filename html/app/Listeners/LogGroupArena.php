@@ -1,10 +1,10 @@
 <?php
- 
+
 namespace App\Listeners;
 
 use App\Events\GroupArena;
 use Illuminate\Support\Facades\Redis;
- 
+
 class LogGroupArena
 {
 
@@ -12,13 +12,14 @@ class LogGroupArena
     {
         //
     }
- 
+
+    //使用 redis set 資料類型
     public function handle(GroupArena $event)
     {
-        $party = $event->party->id;
-        $namespace = 'arena-group:'.$party;
-        $expire = 40 * 60; //40 mintues
-        Redis::setex($namespace, $expire, $party);
+        $party = $event->party;
+        $room = $party->classroom_id;
+        $namespace = 'arena:'.$room.':ready';
+        Redis::sadd($namespace, $party->id);
     }
 
 }

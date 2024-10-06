@@ -17,8 +17,17 @@ class MessagerController extends Controller
     {
         $from = $request->input('from');
         $to = $request->input('to');
-        $message = $request->input('message');
-        broadcast(new GameCharacterChannel($from, $to, $message));
+        if ($request->has('message')) {
+            $message = $request->input('message');
+        } else {
+            $message = '';
+        }
+        if ($request->has('code')) {
+            $code = $request->input('code');
+        } else {
+            $code = null;
+        }
+        broadcast(new GameCharacterChannel($from, $to, $message, $code));
     }
 
     public function party(Request $request)
@@ -33,30 +42,6 @@ class MessagerController extends Controller
         $room_id = $request->input('room');
         $message = $request->input('message');
         broadcast(new GameRoomChannel($room_id, $message));
-    }
-
-    public function list($room_id)
-    {
-        $prefix = config('database.redis.options.prefix');
-        $len = strlen($prefix);
-        $users = [];
-        $allResults = [];
-        $cursor = null;
-        do {
-            list($cursor, $keys) = Redis::scan($cursor, ['match' => $prefix.'online-users:*']);
-            if ($keys) {
-                $allResults = array_merge($allResults, $keys);
-            }
-        } while ($cursor);
-        $allResults = array_unique($allResults);
-        foreach($allResults as $result){
-            $key = substr($result, $len);
-            $user = User::find(Redis::get($key));
-            if ($user->profile->class_id == $room_id) {
-                $users[] = $user->profile;
-            }
-        }
-        return response()->json($users);
     }
 
 }

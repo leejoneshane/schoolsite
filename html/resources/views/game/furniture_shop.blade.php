@@ -239,6 +239,8 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                treasury = response.data.treasury;
             });
         } else {
             window.axios.post('{{ route('game.sell_furniture') }}', {
@@ -250,6 +252,8 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                treasury = response.data.treasury;
             });
         }
         init();

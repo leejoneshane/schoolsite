@@ -1,12 +1,11 @@
 <?php
- 
+
 namespace App\Listeners;
 
 use Illuminate\Support\Facades\Redis;
 use App\Events\EnterArena;
 use App\Events\GroupArena;
-use App\Models\GameParty;
- 
+
 class LogEnterArena
 {
 
@@ -14,42 +13,28 @@ class LogEnterArena
     {
         //
     }
- 
+
+    //使用 redis set 資料類型
     public function handle(EnterArena $event)
     {
-        $uuid = $event->character->uuid;
-        $party = $event->character->party_id;
-        $namespace = 'arena-party-'.$party.':'.$uuid;
-        $expire = 40 * 60; //40 mintues
-        Redis::setex($namespace, $expire, $uuid);
-        $this->check_all($party);
+        $this->party = $event->character->party;
+        $char = $event->character;
+        $uuid = $char->uuid;
+        $party = $char->party_id;
+        $room = $char->party->classroom_id;
+        $namespace = 'arena:'.$room.':party:'.$party;
+        Redis::sadd($namespace, $uuid);
+        $this->check_all($namespace, $char);
     }
 
-    public function check_all($party)
+    public function check_all($namespace, $char)
     {
-        $prefix = config('database.redis.options.prefix');
-        $len = strlen($prefix);
-        $uuids = [];
-        $allResults = [];
-        $cursor = null;
-        $namespace = 'arena-party-'.$party;
-        do {
-            list($cursor, $keys) = Redis::scan($cursor, ['match' => $prefix.$namespace.':*']);
-            if ($keys) {
-                $allResults = array_merge($allResults, $keys);
-            }
-        } while ($cursor);
-        $allResults = array_unique($allResults);
-        foreach($allResults as $result){
-            $key = substr($result, $len);
-            $uuids[] = Redis::get($key);
-        }
-        $party_obj = GameParty::find($party);
-        $not_in = $party_obj->members->reject( function ($m) use ($uuids) {
+        $uuids = Redis::smembers($namespace);
+        $not_in = $char->teammate()->reject( function ($m) use ($uuids) {
             return in_array($m->uuid, $uuids);
         });
         if ($not_in->count() == 0) {
-            GroupArena::dispatch($party_obj);
+            GroupArena::dispatch($this->party);
         }
     }
 

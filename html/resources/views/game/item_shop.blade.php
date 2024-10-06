@@ -207,6 +207,8 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                money = response.data.gp;
             });
         } else {
             window.axios.post('{{ route('game.sell_item') }}', {
@@ -217,6 +219,8 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                money = response.data.gp;
             });
         }
         init();

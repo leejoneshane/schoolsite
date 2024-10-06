@@ -14,7 +14,7 @@ class GamePartyChannel implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public string $party_id;
+    public int $party_id;
     public string $message;
 
     public function __construct($party_id, $message)

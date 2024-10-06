@@ -519,10 +519,10 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
         Route::get('arena', 'App\Http\Controllers\Game\PlayerController@arena')->name('game.arena');
         Route::get('shop/furniture', 'App\Http\Controllers\Game\PlayerController@furniture_shop')->name('game.furniture_shop');
         Route::get('shop/item', 'App\Http\Controllers\Game\PlayerController@item_shop')->name('game.item_shop');
-        Route::get('online', 'App\Http\Controllers\Game\MessagerController@list')->name('game.online');
         Route::post('talkto', 'App\Http\Controllers\Game\MessagerController@personal')->name('game.private');
         Route::post('partytalk', 'App\Http\Controllers\Game\MessagerController@party')->name('game.party_channel');
         Route::post('broadcast', 'App\Http\Controllers\Game\MessagerController@classroom')->name('game.room_channel');
+        Route::post('skills/scan', 'App\Http\Controllers\Game\PlayerController@get_skills')->name('game.get_myskills');
         Route::post('items/scan', 'App\Http\Controllers\Game\PlayerController@get_items')->name('game.get_myitems');
         Route::post('furnitures/scan', 'App\Http\Controllers\Game\PlayerController@get_furnitures')->name('game.get_myfurnitures');
         Route::post('party/name', 'App\Http\Controllers\Game\PlayerController@party_name')->name('game.party_name');
@@ -535,9 +535,11 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
         Route::post('furniture/sell', 'App\Http\Controllers\Game\PlayerController@sell_furniture')->name('game.sell_furniture');
         Route::post('item/buy', 'App\Http\Controllers\Game\PlayerController@buy_item')->name('game.buy_item');
         Route::post('item/sell', 'App\Http\Controllers\Game\PlayerController@sell_item')->name('game.sell_item');
-        Route::post('arena/who', 'App\Http\Controllers\Game\PlayerController@in_arena')->name('game.in_arena');
-        Route::post('arena/parties', 'App\Http\Controllers\Game\PlayerController@group_arena')->name('game.group_arena');
+        Route::post('arena/refresh', 'App\Http\Controllers\Game\PlayerController@refresh_arena')->name('game.refresh_arena');
         Route::post('arena/broadcast', 'App\Http\Controllers\Game\PlayerController@come_arena')->name('game.come_arena');
+        Route::post('arena/battle/ask', 'App\Http\Controllers\Game\PlayerController@invite_battle')->name('game.invite_battle');
+        Route::post('arena/battle/accept', 'App\Http\Controllers\Game\PlayerController@accept_battle')->name('game.accept_battle');
+        Route::post('arena/battle/reject', 'App\Http\Controllers\Game\PlayerController@reject_battle')->name('game.reject_battle');
     });
 });
 

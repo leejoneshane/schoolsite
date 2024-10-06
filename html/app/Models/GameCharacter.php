@@ -426,11 +426,27 @@ class GameCharacter extends Model
             ->withPivot(['quantity']);
     }
 
+    //取得此角色指定對象的所有道具
+    public function items_by_object($object)
+    {
+        return $this->items->filter(function ($item) use ($object) {
+            return $item->object == $object;
+        });
+    }
+
+    //取得此角色可投擲道具
+    public function throw_items()
+    {
+        return $this->items->reject(function ($item) {
+            return $item->passive == 0;
+        });
+    }
+
     //取得此角色可使用道具
     public function useable_items()
     {
         return $this->items->reject(function ($item) {
-            return $item->passive == 0;
+            return $item->passive == 1;
         });
     }
 
@@ -438,6 +454,22 @@ class GameCharacter extends Model
     public function skills()
     {
         return $this->profession->skills->reject(function ($skill) {
+            return $skill->level > $this->level || $skill->cost_mp > $this->mp;
+        });
+    }
+
+    //取得此角色指定對象可使用技能
+    public function skills_by_object($object)
+    {
+        return $this->profession->skills->reject(function ($skill) use ($object) {
+            return $skill->object != $object || $skill->level > $this->level || $skill->cost_mp > $this->mp;
+        });
+    }
+
+    //取得此角色可使用戰鬥技能
+    public function fight_skills()
+    {
+        return $this->profession->fight->reject(function ($skill) {
             return $skill->level > $this->level || $skill->cost_mp > $this->mp;
         });
     }

@@ -945,7 +945,7 @@
             data_type = 'item';
         }
         data_item = item_obj.value;
-        var data_target = items[data_id].object;
+        var data_target = items[data_item].object;
         if (data_target == 'partner' || data_type == 'item_after_skill') {
             var ul = document.getElementById('memberList');
             ul.innerHTML = '';

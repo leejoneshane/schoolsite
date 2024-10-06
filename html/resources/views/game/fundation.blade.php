@@ -138,7 +138,7 @@
             <div class="sr-only">金庫</div>
             <button type="button" title="捐款" onclick="donateModal.show();" class="hover:border hover:border-2 hover:border-blue-700 text-white font-bold rounded-full">
                 <div class="relative w-36 h-36 bg-game-chest bg-contain bg-no-repeat">
-                    <span class="absolute bottom-0 text-lg text-amber-500 font-bold">{{ $party->treasury }}</span>
+                    <span id="treasury" class="absolute bottom-0 text-lg text-amber-500 font-bold">{{ $party->treasury }}</span>
                 </div>
             </button>
         </div>
@@ -235,6 +235,7 @@
     var character = '{{ $character->uuid }}';
     var party = {{ $party->id }};
     var money = {{ $character->gp }};
+    var treasury = {{ $party->treasury }};
     var cash = 0;
     var data_character;
     var data_furniture;
@@ -337,8 +338,11 @@
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
+        }).then( response => {
+            treasury = response.data.treasury;
+            var node = document.getElementById('treasury');
+            node.innerHTML = treasury;
         });
-        window.location.reload();
     }
 
     function donate() {
@@ -357,10 +361,14 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                money = response.data.gp;
+                treasury = response.data.treasury;
+                var node = document.getElementById('treasury');
+                node.innerHTML = treasury;
             });
         }
         donateModal.hide();
-        window.location.reload();
     }
 
     function prepare_item(uuid) {

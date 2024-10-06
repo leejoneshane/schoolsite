@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redis;
 use App\Events\EnterArena;
 use App\Events\ExitArena;
+use App\Events\BattleStart;
+use App\Events\BattleEnd;
 use App\Events\GameRoomChannel;
 use App\Events\GamePartyChannel;
 use App\Events\GameCharacterChannel;
@@ -101,11 +103,39 @@ class PlayerController extends Controller
         return redirect()->route('game.player');
     }
 
+    public function get_skills(Request $request)
+    {
+        $uuid = $request->input('uuid');
+        $kind = $request->input('kind');
+        $char = GameCharacter::find($uuid);
+        if (!$char->class_id) {
+            return response()->json([]);
+        }
+        if ($kind == 'self') {
+            $skills = $char->skills_by_object('self');
+        } elseif ($kind == 'enemy') {
+            $skills = $char->skills_by_object('target')->merge($char->skills_by_object('all'));
+        } else {
+            $skills = $char->skills_by_object('partner')->merge($char->skills_by_object('party'));
+        }
+        return response()->json([ 'skills' => $skills, 'level' => $char->level ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
     public function get_items(Request $request)
     {
         $uuid = $request->input('uuid');
+        $kind = $request->input('kind');
         $char = GameCharacter::find($uuid);
-        $items = $char->items;
+        if (!$char->class_id) {
+            return response()->json([]);
+        }
+        if ($kind == 'self') {
+            $items = $char->items_by_object('self');
+        } elseif ($kind == 'enemy') {
+            $items = $char->items_by_object('target')->merge($char->items_by_object('all'));
+        } else {
+            $items = $char->items_by_object('partner')->merge($char->items_by_object('party'));
+        }
         return response()->json([ 'items' => $items, 'money' => $char->gp ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
@@ -176,7 +206,7 @@ class PlayerController extends Controller
         $banker->save();
         $party->treasury += $cash;
         $party->save();
-        return response()->json([ 'success' => $party ]);
+        return response()->json([ 'gp' => $banker->gp, 'treasury' => $party->treasury ]);
     }
 
     public function given(Request $request)
@@ -257,7 +287,7 @@ class PlayerController extends Controller
         $char = GameCharacter::find($uuid);
         $fur_id = $request->input('furniture');
         $cash = $request->input('cash');
-        if (!$cash) $chsh = 0;
+        if (!$cash) $cash = 0;
         $char->party->buy_furniture($fur_id, $cash);
         return response()->json([ 'treasury' => $char->party->treasury ]);
     }
@@ -276,7 +306,7 @@ class PlayerController extends Controller
         $char = GameCharacter::find($uuid);
         $item_id = $request->input('item');
         $char->buy_item($item_id);
-        return response()->json([ 'success' => $char->gp ]);
+        return response()->json([ 'gp' => $char->gp ]);
     }
 
     public function sell_item(Request $request)
@@ -285,7 +315,7 @@ class PlayerController extends Controller
         $char = GameCharacter::find($uuid);
         $item_id = $request->input('item');
         $char->sell_item($item_id);
-        return response()->json([ 'treasury' => $char->party->treasury ]);
+        return response()->json([ 'gp' => $char->gp ]);
     }
 
     public function arena()
@@ -295,82 +325,94 @@ class PlayerController extends Controller
         return view('game.arena', [ 'character' => $character ]);
     }
 
-    public function in_arena(Request $request)
+    public function refresh_arena(Request $request)
     {
-        $uuid = $request->input('uuid');
-        $prefix = config('database.redis.options.prefix');
-        $len = strlen($prefix);
-        $characters = [];
-        $allResults = [];
-        $cursor = null;
-        $character = GameCharacter::find($uuid);
-        $namespace = 'arena-party-'.$character->party_id;
-        do {
-            list($cursor, $keys) = Redis::scan($cursor, ['match' => $prefix.$namespace.':*']);
-            if ($keys) {
-                $allResults = array_merge($allResults, $keys);
-            }
-        } while ($cursor);
-        $allResults = array_unique($allResults);
-        foreach($allResults as $result){
-            $key = substr($result, $len);
-            $characters[] = GameCharacter::find(Redis::get($key));
+        $character = GameCharacter::find($request->input('uuid'));
+        $party = $character->party;
+        $room = $party->classroom_id;
+        $namespace = 'arena:'.$room.':party:'.$party->id;
+        $uuids = Redis::smembers($namespace);
+        foreach($uuids as $uuid){
+            $characters[] = GameCharacter::find($uuid);
         }
-        return response()->json([ 'characters' => $characters])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
-    }
 
-    public function group_arena(Request $request)
-    {
-        $party_id = $request->input('party');
-        $prefix = config('database.redis.options.prefix');
-        $len = strlen($prefix);
-        $parties = [];
-        $allResults = [];
-        $cursor = null;
-        do {
-            list($cursor, $keys) = Redis::scan($cursor, ['match' => $prefix.'arena-group:*']);
-            if ($keys) {
-                $allResults = array_merge($allResults, $keys);
+        $namespace = 'arena:'.$room.':battle:'.$party->id;
+        if (Redis::exists($namespace)) {
+            $enemy_party = Redis::get($namespace);
+            $enemys = [];
+            $enemy_partyobj = GameParty::find($enemy_party);
+            if ($enemy_partyobj) {
+                $namespace = 'arena:'.$room.':party:'.$enemy_party;
+                $uuids = Redis::smembers($namespace);
+                foreach($uuids as $uuid){
+                    $enemys[] = GameCharacter::find($uuid);
+                }
             }
-        } while ($cursor);
-        $allResults = array_unique($allResults);
-        foreach($allResults as $result){
-            $key = substr($result, $len);
-            if ($key != $party_id) {
-                $parties[] = GameParty::find(Redis::get($key));
+            return response()->json([ 'characters' => $characters, 'enemy' => $enemy_party, 'enemys' => $enemys ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        } else {
+            $namespace = 'arena:'.$room.':ready';
+            $pids = Redis::smembers($namespace);
+            foreach($pids as $pid){
+                $namespace = 'arena:'.$room.':battle:'.$pid;
+                if (!Redis::exists($namespace) && $pid != $party->id) {
+                    $parties[] = GameParty::find($pid);
+                }
             }
+            return response()->json([ 'characters' => $characters, 'parties' => $parties ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         }
-        return response()->json([ 'parties' => $parties])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function come_arena(Request $request)
     {
-        $uuid = $request->input('uuid');
-        $prefix = config('database.redis.options.prefix');
-        $len = strlen($prefix);
-        $uuids = [];
-        $allResults = [];
-        $cursor = null;
-        $character = GameCharacter::find($uuid);
-        $namespace = 'arena-party-'.$character->party_id;
-        do {
-            list($cursor, $keys) = Redis::scan($cursor, ['match' => $prefix.$namespace.':*']);
-            if ($keys) {
-                $allResults = array_merge($allResults, $keys);
-            }
-        } while ($cursor);
-        $allResults = array_unique($allResults);
-        foreach($allResults as $result){
-            $key = substr($result, $len);
-            $uuids[] = Redis::get($key);
-        }
-        $not_in = $character->teammate->reject( function ($m) use ($uuids) {
+        $character = GameCharacter::find($request->input('uuid'));
+        $room = $character->party->classroom_id;
+        $namespace = 'arena:'.$room.':party:'.$character->party_id;
+        $uuids = Redis::smembers($namespace);
+        $not_in = $character->teammate()->reject( function ($m) use ($uuids) {
             return in_array($m->uuid, $uuids);
         });
         if ($not_in->count() > 0) {
             foreach ($not_in as $m) {
-                broadcast(new GameCharacterChannel($character->name, $m->uuid, '請立刻前往競技場集合！'));
+                broadcast(new GameCharacterChannel($character->uuid, $m->uuid, '請立刻前往競技場集合！'));
             }
+        }
+    }
+
+    public function invite_battle(Request $request)
+    {
+        $character = GameCharacter::find($request->input('uuid'));
+        $room = $character->party->classroom_id;
+        $party = GameParty::find($request->input('party'));
+        if ($party) {
+            $namespace = 'arena:'.$room.':battle:'.$party->id;
+            if (!Redis::exists($namespace)) {
+                $leader = $party->leader;
+                broadcast(new GameCharacterChannel($character->uuid, $leader->uuid, null, 'invite'));
+            }    
+        }
+    }
+
+    public function accept_battle(Request $request)
+    {
+        $character = GameCharacter::find($request->input('uuid'));
+        $room = $character->party->classroom_id;
+        $object = GameCharacter::find($request->input('from'));
+        $namespace = 'arena:'.$room.':battle:'.$object->party->id;
+        if (Redis::exists($namespace)) {
+            return response()->json([ 'error' => '對方已經在戰鬥中，對戰邀請已失效！' ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        } else {
+            BattleStart::dispatch($character->party, $object->party);
+            broadcast(new GameCharacterChannel($character->uuid, $object->uuid, null, 'accept_invite'));
+            return response()->json([ 'success' => 'ok' ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    public function reject_battle(Request $request)
+    {
+        $character = GameCharacter::find($request->input('uuid'));
+        $object = GameCharacter::find($request->input('from'));
+        if ($object) {
+            broadcast(new GameCharacterChannel($character->uuid, $object->uuid, null, 'reject_invite'));
         }
     }
 

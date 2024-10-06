@@ -130,7 +130,7 @@ class GameSetting extends Model
                 break;
             }
             $hatred = $protect = false;
-            foreach ($character->teammate as $m) {
+            foreach ($character->teammate() as $m) {
                 if ($character->buff == 'hatred') {
                     $hatred = $character;
                     $character->buff = null;
@@ -171,11 +171,11 @@ class GameSetting extends Model
                 $protect->save();
             } elseif ($target->buff == 'apportion') {
                 $message .= '但是因為同伴分擔傷害，所有隊員受傷：';
-                $count = $target->teammate->count();
+                $count = $target->teammate()->count();
                 if ($hp && $hp > 0) {
                     $damage = intval($hp / $count);
                     $add[] = '生命力'.$damage.'點';
-                    foreach ($target->teammate as $c) {
+                    foreach ($target->teammate() as $c) {
                         $c->hp -= $damage;
                         $c->save();
                     }
@@ -183,10 +183,10 @@ class GameSetting extends Model
                 if ($mp && $mp > 0) {
                     $damage = intval($mp / $count);
                     $add[] = '法力（行動力）'.$damage.'點';
-                    foreach ($target->teammate as $c) {
+                    foreach ($target->teammate() as $c) {
                         $c->mp -= $damage;
                         $c->save();
-                    }    
+                    }
                 }
                 $message .= implode('、', $add).'。';
             } else {

@@ -9,21 +9,28 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Models\User;
+use App\Models\GameCharacter;
+use App\Models\GameParty;
 
 class GameCharacterChannel implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public int $from;
-    public int $to;
+    public GameCharacter $from;
+    public GameCharacter $to;
+    public GameParty $from_party;
+    public GameParty $to_party;
     public string $message;
+    public string $code; //game service code
 
-    public function __construct($from, $to, $message)
+    public function __construct($from, $to, $message =null, $code = null)
     {
-        $this->from = $from;
-        $this->to = $to;
+        $this->from = GameCharacter::find($from);
+        $this->to = GameCharacter::find($to);
+        $this->from_party = $this->from->party;
+        $this->to_party = $this->to->party;
         $this->message = $message;
+        $this->code = $code;
     }
 
     /**
@@ -33,6 +40,6 @@ class GameCharacterChannel implements ShouldBroadcastNow
      */
     public function broadcastOn() : Channel
     {
-        return new PrivateChannel('character.' . $this->to);
+        return new PrivateChannel('character.' . $this->to->uuid);
     }
 }
