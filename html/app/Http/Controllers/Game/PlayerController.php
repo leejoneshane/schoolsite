@@ -36,12 +36,12 @@ class PlayerController extends Controller
 
     public function index(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
-            $character = GameCharacter::find($user->uuid);
+            $character = GameCharacter::find(Auth::user()->uuid);
             ExitArena::dispatch($character);
             if (!$character) {
-                $stu = Student::find(Auth::user()->uuid);
+                $stu = profile();
                 GameCharacter::create([
                     'uuid' => $stu->uuid,
                     'classroom_id' => $stu->class_id,
@@ -60,7 +60,7 @@ class PlayerController extends Controller
     {
         $character = GameCharacter::find(Auth::user()->uuid);
         if (!$character) {
-            $stu = Student::find(Auth::user()->uuid);
+            $stu = profile();
             GameCharacter::create([
                 'uuid' => $stu->uuid,
                 'classroom_id' => $stu->class_id,
@@ -84,7 +84,7 @@ class PlayerController extends Controller
     {
         $character = GameCharacter::find(Auth::user()->uuid);
         if (!$character) {
-            $stu = Student::find(Auth::user()->uuid);
+            $stu = profile();
             GameCharacter::create([
                 'uuid' => $stu->uuid,
                 'classroom_id' => $stu->class_id,
@@ -150,8 +150,7 @@ class PlayerController extends Controller
 
     public function party()
     {
-        $user = User::find(Auth::user()->id);
-        $character = GameCharacter::find($user->uuid);
+        $character = GameCharacter::find(Auth::user()->uuid);
         ExitArena::dispatch($character);
         $party = $character->party;
         if ($party) {
@@ -350,6 +349,7 @@ class PlayerController extends Controller
             }
             return response()->json([ 'characters' => $characters, 'enemy' => $enemy_party, 'enemys' => $enemys ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         } else {
+            $parties = null;
             $namespace = 'arena:'.$room.':ready';
             $pids = Redis::smembers($namespace);
             foreach($pids as $pid){

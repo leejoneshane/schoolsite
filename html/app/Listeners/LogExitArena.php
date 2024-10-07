@@ -23,7 +23,7 @@ class LogExitArena
         $namespace = 'arena:'.$room.':party:'.$party;
         Redis::srem($namespace, $uuid);
         $namespace = 'arena:'.$room.':ready';
-        Redis::srem($namespace, $paty);
+        Redis::srem($namespace, $party);
     }
 
 }

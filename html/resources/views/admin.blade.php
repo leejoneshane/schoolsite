@@ -3,7 +3,7 @@
 @section('content')
 <div class="p-10">
     @if (Auth::check())
-    <div class="text-2xl font-bold leading-normal pb-5">親愛的{{ Auth::user()->profile->realname }}</div>
+    <div class="text-2xl font-bold leading-normal pb-5">親愛的{{ profile()->realname }}</div>
     @else
     <div class="text-2xl font-bold leading-normal pb-5">歡迎光臨</div>
     @endif

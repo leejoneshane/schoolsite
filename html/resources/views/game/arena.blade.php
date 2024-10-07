@@ -6,16 +6,22 @@
         <div class="relative h-full flex flex-row">
             <div id="our_action" class="w-1/3"></div>
             <div id="connect" class="w-1/3 text-center inline-flex flex-col" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
-                <span class="text-xl text-white">等候公會成員集合......</span>
+                <div class="p-2">
+                    <span class="text-xl text-white">等候公會成員集合......</span>
+                    @if ($character->is_leader())
+                    <button onclick="ring_bell();" class="m-2 w-40 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                        發送集合通知
+                    </button>
+                    @endif
+                </div>
                 @if ($character->is_leader())
-                <button onclick="ring_bell();" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                    發送集合通知
-                </button>
-                <select id="parties" class="form-select w-64 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-                </select>
-                <button onclick="invite();" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                    送出對戰邀請
-                </button>
+                <div class="p-2">
+                    <select id="parties" class="w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+                    </select>
+                    <button onclick="invite();" class="w-40 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                        送出對戰邀請
+                    </button>    
+                </div>
                 @endif
             </div>
             <div id="enemy_action" class="w-1/3"></div>
@@ -185,6 +191,32 @@
                 our_side.innerHTML = '';
                 var z = 50;
                 members.forEach( member => {
+                    var div = document.createElement('div');
+                    div.classList.add('m-2','flex', 'flex-col','gap-1');
+                    var myname = document.createElement('div');
+                    myname.classList.add('w-24','h-8','font-extrabold');
+                    myname.innerHTML = member.name;
+                    div.appendChild(myname);
+                    var hp = document.createElement('div');
+                    hp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
+                    var hp_bar = document.createElement('div');
+                    hp_bar.classList.add('h-4','bg-green-600','text-xs','font-medium','text-green-100','text-center','p-0.5','leading-none','rounded-full');
+                    hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
+                    hp_bar.innerHTML = member.hp;
+                    hp.appendChild(hp_bar);
+                    div.appendChild(hp);
+                    var mp = document.createElement('div');
+                    mp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
+                    var mp_bar = document.createElement('div');
+                    mp_bar.classList.add('h-4','bg-blue-600','text-xs','font-medium','text-blue-100','text-center','p-0.5','leading-none','rounded-full');
+                    mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
+                    mp_bar.innerHTML = member.mp;
+                    mp.appendChild(mp_bar);
+                    div.appendChild(mp);
+                    var status = document.createElement('div');
+                    status.classList.add('w-24','h-8');
+                    status.innerHTML = member.status_desc;
+                    div.appendChild(status);
                     var image = document.createElement('img');
                     image.classList.add('absolute', 'bottom-40', 'w-1/6', 'z-' + z);
                     image.setAttribute('title', member.name);
@@ -198,7 +230,8 @@
                     } else {
                         image.setAttribute('onclick', 'action_friend(' + member.uuid + ')');
                     }
-                    our_side.appendChild(image);
+                    div.appendChild(image);
+                    our_side.appendChild(div);
                     z -= 10;
                 });
                 if (enemy_party == '' && members.length == member_count) {
@@ -224,6 +257,32 @@
                         enemy_side.innerHTML = '';
                         var z = 10;
                         enemys.forEach( member => {
+                            var div = document.createElement('div');
+                            div.classList.add('m-2','flex', 'flex-col','gap-1');
+                            var myname = document.createElement('div');
+                            myname.classList.add('w-24','h-8','font-extrabold');
+                            myname.innerHTML = member.name;
+                            div.appendChild(myname);
+                            var hp = document.createElement('div');
+                            hp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
+                            var hp_bar = document.createElement('div');
+                            hp_bar.classList.add('h-4','bg-green-600','text-xs','font-medium','text-green-100','text-center','p-0.5','leading-none','rounded-full');
+                            hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
+                            hp_bar.innerHTML = member.hp;
+                            hp.appendChild(hp_bar);
+                            div.appendChild(hp);
+                            var mp = document.createElement('div');
+                            mp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
+                            var mp_bar = document.createElement('div');
+                            mp_bar.classList.add('h-4','bg-blue-600','text-xs','font-medium','text-blue-100','text-center','p-0.5','leading-none','rounded-full');
+                            mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
+                            mp_bar.innerHTML = member.mp;
+                            mp.appendChild(mp_bar);
+                            div.appendChild(mp);
+                            var status = document.createElement('div');
+                            status.classList.add('w-24','h-8');
+                            status.innerHTML = member.status_desc;
+                            div.appendChild(status);
                             var image = document.createElement('img');
                             image.classList.add('absolute', 'bottom-40', 'w-1/6', 'z-' + z);
                             image.setAttribute('title', member.name);
@@ -233,7 +292,8 @@
                                 image.src = '{{ asset('images/game/blank.png') }}';
                             }
                             image.setAttribute('onclick', 'action_enemy(' + member.uuid + ')');
-                            enemy_side.appendChild(image);
+                            div.appendChild(image);
+                            enemy_side.appendChild(div);
                             z += 10;
                         });
                     }

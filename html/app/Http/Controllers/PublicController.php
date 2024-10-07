@@ -409,8 +409,8 @@ class PublicController extends Controller
             return redirect()->route('home')->with('error', '只有教職員才能刪除公開課資訊！');
         }
         $manager = $user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain');
+        $public = PublicClass::find($id);
         if ($manager || $public->uuid == $user->uuid) {
-            $public = PublicClass::find($id);
             if ($public) {
                 Watchdog::watch($request, '移除公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                 if (!empty($public->eduplan)) {

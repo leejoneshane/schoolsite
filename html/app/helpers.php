@@ -2,6 +2,8 @@
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\GameCharacter;
+use App\Models\Student;
+use App\Models\Teacher;
 use Carbon\Carbon;
 
 const GAME_CHARACTER = 'images/game/characters/'; //遊戲職業圖片路徑
@@ -28,12 +30,12 @@ function locked($room_id = null) {
     if ($room_id) {
         return DB::table('game_sences')
             ->where('classroom_id', $room_id)
-            ->where('uuid', Auth::user()->uuid)
+            ->where('uuid', profile()->uuid)
             ->where('ended_at', '>', Carbon::now())
             ->exists();
     } else {
         return DB::table('game_sences')
-            ->where('classroom_id', Auth::user()->profile->class_id)
+            ->where('classroom_id', profile()->class_id)
             ->where('ended_at', '>', Carbon::now())
             ->exists();
     }
@@ -50,6 +52,17 @@ function player() {
     $uuid = auth()->user()->uuid;
     $character = GameCharacter::find($uuid);
     return $character;
+}
+
+function profile() {
+    $user = auth()->user();
+    $uuid = $user->uuid;
+    if ($user->user_type == 'Student') {
+        $obj = Student::find($uuid);
+    } else {
+        $obj = Teacher::find($uuid);
+    }
+    return $obj;
 }
 
 function section_name($section = null) {

@@ -32,9 +32,11 @@
 @auth
     <span class="inline-block mt-2 lg:mt-0 px-4 lg:px-2 py-1 leading-none text-white text-sm">  
       @student
-      {{ Auth::user()->profile->classname }} 
-      @endstudent  
-      {{ Auth::user()->profile->realname }}
+      {{ profile()->classname }} 
+      @endstudent
+      @auth
+      {{ profile()->realname }}
+      @endauth
     </span>
     <span class="block lg:inline-block mt-2 lg:mt-0 px-4 lg:px-2">
       <i class="fa-solid fa-share-nodes"></i>

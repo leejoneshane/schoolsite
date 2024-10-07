@@ -63,6 +63,7 @@
     </div>
 </div>
 <script nonce="selfhost">
+    var teacher = '{{ Auth::user()->uuid }}';
     var reason1 = '在靜謐山谷中安然度過危機';
     var reason2 = '挑戰靜謐山谷失敗';
     var uuids = [];
@@ -186,7 +187,7 @@
         var gp = elem_gp.value * percent;
         var item = elem_item.value;
         window.axios.post('{{ route('game.positive_act') }}', {
-            uuid: '{{ Auth::user()->uuid }}',
+            uuid: teacher,
             uuids: uuids.toString(),
             reason: reason1,
             xp: xp,
@@ -207,7 +208,7 @@
         var hp = elem_hp.value;
         var mp = elem_mp.value;
         window.axios.post('{{ route('game.negative_act') }}', {
-            uuid: '{{ Auth::user()->uuid }}',
+            uuid: teacher,
             uuids: uuids.toString(),
             reason: reason2,
             hp: hp,

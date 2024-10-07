@@ -4,10 +4,10 @@
         <div class="py-2 text-center">
             <a href="{{ route('game') }}"><i class="text-2xl fa-solid fa-house" title="首頁"></i></a>
         </div>
+        @locked(session('gameclass'))
         <div class="py-2 text-center">
             <a href="{{ session('gameclass') ? route('game.room', [ 'room_id' => session('gameclass') ]) : '#' }}"><i class="text-2xl fa-solid fa-clipboard-user" title="點名表"></i></a>
         </div>
-        @locked(session('gameclass'))
         <div class="py-2 text-center">
             <a href="{{ route('game.pickup', [ 'room_id' => session('gameclass') ]) }}"><i class="text-2xl fa-solid fa-dice-d20" title="抽籤機"></i></a>
         </div>
