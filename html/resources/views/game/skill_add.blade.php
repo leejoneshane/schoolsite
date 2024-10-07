@@ -34,6 +34,7 @@
             <option value="party">全隊</option>
             <option value="target">對手</option>
             <option value="all">所有對手</option>
+            <option value="any">不限對象</option>
         </select>
     </div></p>
     <p><div class="p-3">

@@ -137,10 +137,21 @@ class GameController extends Controller
         if ($user->user_type == 'Student') return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         $teacher = Teacher::find(Auth::user()->uuid);
         $room = Classroom::find($room_id);
+        $stu = $room->students->first();
+        $char = GameCharacter::find($stu->uuid);
+        $upgrade = ($char->classroom_id != $room->id);
         $parties = GameParty::findByClass($room_id);
-        if ($parties->count() < 1) {
+        if ($parties->count() < 1 || $upgrade) {
             $seats = Seats::findByClass($room_id)->first();
             if ($seats) {
+                GameParty::where('classroom_id', $room->id)->delete();
+                foreach ($room->students as $stu) {
+                    $char = GameCharacter::find($stu->uuid);
+                    if ($char) {
+                        $char->party_id = null;
+                        $char->save();
+                    }
+                }
                 $grouped = $seats->students->groupBy(function ($stu) {
                     return $stu->pivot->group_no;
                 });
@@ -151,13 +162,21 @@ class GameController extends Controller
                         'name' => '第'.$gno.'組',
                     ]);
                     foreach ($students as $stu) {
-                        GameCharacter::create([
-                            'uuid' => $stu->uuid,
-                            'classroom_id' => $room_id,
-                            'party_id' => $party->id,
-                            'seat' => $stu->seat,
-                            'name' => $stu->realname,
-                        ]);
+                        $char = GameCharacter::find($stu->uuid);
+                        if ($char) {
+                            $char->classroom_id = $room_id;
+                            $char->party_id = $party->id;
+                            $char->seat = $stu->seat;
+                            $char->save();
+                        } else {
+                            GameCharacter::create([
+                                'uuid' => $stu->uuid,
+                                'classroom_id' => $room_id,
+                                'party_id' => $party->id,
+                                'seat' => $stu->seat,
+                                'name' => $stu->realname,
+                            ]);    
+                        }
                     }
                 }
                 $parties = GameParty::findByClass($room_id);

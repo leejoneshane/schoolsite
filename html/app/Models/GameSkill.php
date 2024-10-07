@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Events\GamePartyChannel;
 use App\Models\GameParty;
 use App\Models\GameCharacter;
 use Carbon\Carbon;
@@ -18,7 +19,7 @@ class GameSkill extends Model
         'description', //技能簡介
         'gif_file',    //特效圖檔
         'passive',     //是否為被動技能(非戰鬥用技能)
-        'object',      //作用對象：self 自己，party 隊伍，partner 指定的我方角色，target 指定的敵方角色，all 敵方隊伍中的所有角色
+        'object',      //作用對象：self 自己，party 隊伍，partner 指定的我方角色，target 指定的敵方角色，all 敵方隊伍中的所有角色，any 不限對象
         'hit_rate',    //命中率，擊中判斷為 命中率＋（自己敏捷力-對方敏捷力）/100
         'cost_mp',     //消耗行動力
         'ap',          //此技能的攻擊百分率，攻擊威力計算為 (ap + 自己攻擊力) - 對方防禦力 = 對方實際受傷點數

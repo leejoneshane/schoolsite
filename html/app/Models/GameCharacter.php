@@ -462,7 +462,7 @@ class GameCharacter extends Model
     public function skills_by_object($object)
     {
         return $this->profession->skills->reject(function ($skill) use ($object) {
-            return $skill->object != $object || $skill->level > $this->level || $skill->cost_mp > $this->mp;
+            return ($skill->object != $object && $skill->object != 'any') || $skill->level > $this->level || $skill->cost_mp > $this->mp;
         });
     }
 

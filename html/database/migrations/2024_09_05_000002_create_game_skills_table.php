@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('gif_file')->nullable();
             $table->boolean('passive')->default(0);
-            $table->enum('object', ['self', 'party', 'partner', 'enemy', 'all']);
+            $table->enum('object', ['self', 'party', 'partner', 'enemy', 'all', 'any']);
             $table->float('hit_rate')->default(1);
             $table->integer('cost_mp')->default(0);
             $table->float('ap')->default(0);

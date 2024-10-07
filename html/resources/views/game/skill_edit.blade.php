@@ -34,6 +34,7 @@
             <option value="party"{{ $skill->object == 'party' ? ' selected' :''}}>全隊</option>
             <option value="target"{{ $skill->object == 'target' ? ' selected' :''}}>對手</option>
             <option value="all"{{ $skill->object == 'all' ? ' selected' :''}}>所有對手</option>
+            <option value="all"{{ $skill->object == 'any' ? ' selected' :''}}>不限對象</option>
         </select>
     </div></p>
     <p><div class="p-3">

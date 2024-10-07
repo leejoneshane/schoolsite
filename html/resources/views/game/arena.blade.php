@@ -3,18 +3,22 @@
 @section('content')
 <div class="w-full h-screen flex flex-col justify-between">
     <div id="message" class="w-full h-1/3 flex-initial">
-        <div id="connect" class="text-center inline-flex flex-col" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
-            <span class="text-xl text-white">等候公會成員集合......</span>
-            @if ($character->is_leader())
-            <button onclick="ring_bell();" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                發送集合通知
-            </button>
-            <select id="parties" class="form-select w-64 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-            </select>
-            <button onclick="invite();" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                送出對戰邀請
-            </button>
-            @endif
+        <div class="relative h-full flex flex-row">
+            <div id="our_action" class="w-1/3"></div>
+            <div id="connect" class="w-1/3 text-center inline-flex flex-col" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
+                <span class="text-xl text-white">等候公會成員集合......</span>
+                @if ($character->is_leader())
+                <button onclick="ring_bell();" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                    發送集合通知
+                </button>
+                <select id="parties" class="form-select w-64 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+                </select>
+                <button onclick="invite();" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                    送出對戰邀請
+                </button>
+                @endif
+            </div>
+            <div id="enemy_action" class="w-1/3"></div>
         </div>
     </div>
     <div class="w-full h-2/3 flex-initial">
@@ -23,7 +27,7 @@
             </div>
             <div class="w-1/3 text-center">
                 <div id="action" class="hidden p-2">
-                    請點選隊友或對手，然後挑選要進行的動作！
+                    在每場戰鬥中，每人只能進行一項動作，請與隊友討論策略。決定好之後，請點選隊友或對手，然後挑選要進行的動作！
                 </div>
             </div>
             <div id="enemy_side" class="w-1/3 inline-flex content-end">
@@ -143,6 +147,7 @@
     var data_type; //skill or item
     var data_skill; //skill id
     var data_item; //item id
+    var done = false;
 
     var main = document.getElementsByTagName('main')[0];
     main.classList.replace('bg-game-map50', 'bg-game-arena');
@@ -182,9 +187,16 @@
                 members.forEach( member => {
                     var image = document.createElement('img');
                     image.classList.add('absolute', 'bottom-40', 'w-1/6', 'z-' + z);
+                    image.setAttribute('title', member.name);
                     if (member.url) {
-                        image.setAttribute('title', member.name);
                         image.src = member.url;
+                    } else {
+                        image.src = '{{ asset('images/game/blank.png') }}';
+                    }
+                    if (member.uuid == character) {
+                        image.setAttribute('onclick', 'action_self()');
+                    } else {
+                        image.setAttribute('onclick', 'action_friend(' + member.uuid + ')');
                     }
                     our_side.appendChild(image);
                     z -= 10;
@@ -214,10 +226,13 @@
                         enemys.forEach( member => {
                             var image = document.createElement('img');
                             image.classList.add('absolute', 'bottom-40', 'w-1/6', 'z-' + z);
+                            image.setAttribute('title', member.name);
                             if (member.url) {
-                                image.setAttribute('title', member.name);
                                 image.src = member.url;
+                            } else {
+                                image.src = '{{ asset('images/game/blank.png') }}';
                             }
+                            image.setAttribute('onclick', 'action_enemy(' + member.uuid + ')');
                             enemy_side.appendChild(image);
                             z += 10;
                         });
@@ -322,6 +337,33 @@
             msg.innerHTML = event.from_party.name + '已經拒絕與貴公會進行對戰練習！';
             warnModal.show();
         }
+    }
+
+    function action_self() {
+        if (done) return;
+        target = character;
+        target_type = 'self';
+        var msg = document.getElementById('action_target');
+        msg.innerHTML = '要對自己施展技能或使用道具？';
+        actionModal.show();
+    }
+
+    function action_friend(uuid) {
+        if (done) return;
+        target = uuid;
+        target_type = 'friend';
+        var msg = document.getElementById('action_target');
+        msg.innerHTML = '要對隊友施展技能或使用道具？';
+        actionModal.show();
+    }
+
+    function action_enemy(uuid) {
+        if (done) return;
+        target = uuid;
+        target_type = 'enemy';
+        var msg = document.getElementById('action_target');
+        msg.innerHTML = '要對敵人施展技能或使用道具？';
+        actionModal.show();
     }
 
     function prepare_skill() {
@@ -485,11 +527,11 @@
             return;
         }
         skillsModal.hide();
+        data_type = '';
         data_skill = skill_obj.value;
         var data_inspire = skills[data_skill].inspire;
         if (data_inspire == 'throw') {
             data_type = 'skill_then_item';
-            targte_type = 'enemy';
             prepare_item();
             return;
         } else {
@@ -503,6 +545,7 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             });
+            done = true;
         }
     }
 
@@ -528,6 +571,7 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             });
+            data_type = '';
         } else {
             window.axios.post('{{ route('game.item_use') }}', {
                 self: character,
@@ -540,6 +584,7 @@
                 }
             });
         }
+        done = true;
     }
 </script>
 @endsection

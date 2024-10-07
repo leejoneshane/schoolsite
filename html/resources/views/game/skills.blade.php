@@ -63,6 +63,8 @@
         <td class="p-2">對手</td>
         @elseif ($sk->object == 'all')
         <td class="p-2">所有對手</td>
+        @elseif ($sk->object == 'any')
+        <td class="p-2">不限對象</td>
         @endif
         <td class="p-2">{{ $sk->hit_rate }}</td>
         <td class="p-2">{{ $sk->cost_mp }}</td>
