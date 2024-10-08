@@ -55,6 +55,9 @@ class EventServiceProvider extends ServiceProvider
         BattleEnd::class => [
             LogBattleEnd::class,
         ],
+        BattleAction::class => [
+            LogBattleAction::class,
+        ],
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],

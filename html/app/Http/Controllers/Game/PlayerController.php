@@ -10,6 +10,7 @@ use App\Events\EnterArena;
 use App\Events\ExitArena;
 use App\Events\BattleStart;
 use App\Events\BattleEnd;
+use App\Events\BattleAction;
 use App\Events\GameRoomChannel;
 use App\Events\GamePartyChannel;
 use App\Events\GameCharacterChannel;
@@ -223,23 +224,37 @@ class PlayerController extends Controller
         $me = GameCharacter::find($request->input('self'));
         $skill = GameSkill::find($request->input('skill'));
         if ($request->has('item')) {
-            $item_id = $request->input('item');
+            $item = GameItem::find($request->input('item'));
         } else {
-            $item_id = null;
+            $item = null;
         }
         if ($skill->object == 'self') {
             $me->use_skill($skill->id);
+            $message = $me->name.'對自己施展'.$skill->name;
         } elseif ($skill->object == 'partner') {
-            $me->use_skill($skill->id, $request->input('target'), null, $item_id);
+            $target = GameCharacter::find($request->input('target'));
+            $me->use_skill($skill->id, $target->uuid, null, $item->id);
+            $message = $me->name.'對'.$target->name.'施展'.$skill->name;
+            if ($item) $message .= $item->name;
         } elseif ($skill->object == 'party') {
-            $me->use_skill($skill->id, null, $me->party_id, $item_id);
+            $me->use_skill($skill->id, null, $me->party_id, $item->id);
+            $message = $me->name.'對全隊施展'.$skill->name;
+            if ($item) $message .= $item->name;
         } else {
             $target = GameCharacter::find($request->input('target'));
             if ($skill->object == 'all') {
-                $me->use_skill($skill->id, null, $target->party_id, $item_id);
+                $me->use_skill($skill->id, null, $target->party_id, $item->id);
+                $message = $me->name.'對所有對手施展'.$skill->name;
+                if ($item) $message .= $item->name;
             } else {
-                $me->use_skill($skill->id, $target->uuid, null, $item_id);
+                $me->use_skill($skill->id, $target->uuid, null, $item->id);
+                $message = $me->name.'對'.$tyarget->name.'施展'.$skill->name;
+                if ($item) $message .= $item->name;
             }
+        }
+        $namespace = 'arena:'.$me->party->classroom_id.':battle:'.$me->party->id;
+        if (Redis::exists($namespace)) {
+            BattleAction::dispatch($me->party, $message);
         }
     }
 
@@ -249,17 +264,27 @@ class PlayerController extends Controller
         $item = GameItem::find($request->input('item'));
         if ($item->object == 'self') {
             $me->use_item($item->id);
+            $message = $me->name.'對自己使用'.$item->name;
         } elseif ($item->object == 'partner') {
-            $me->use_item($item->id, $request->input('target'));
+            $target = GameCharacter::find($request->input('target'));
+            $me->use_item($item->id, $target->uuid);
+            $message = $me->name.'對'.$target->name.'使用'.$item->name;
         } elseif ($item->object == 'party') {
             $me->use_item($item->id, null, $me->party_id);
+            $message = $me->name.'對全隊使用'.$item->name;
         } else {
             $target = GameCharacter::find($request->input('target'));
             if ($item->object == 'all') {
                 $me->use_skill($item->id, null, $target->party_id);
+                $message = $me->name.'對所有對手使用'.$item->name;
             } else {
                 $me->use_skill($item->id, $target->uuid);
+                $message = $me->name.'對'.$target->name.'使用'.$item->name;
             }
+        }
+        $namespace = 'arena:'.$me->party->classroom_id.':battle:'.$me->party->id;
+        if (Redis::exists($namespace)) {
+            BattleAction::dispatch($me->party, $message);
         }
     }
 
@@ -337,17 +362,24 @@ class PlayerController extends Controller
 
         $namespace = 'arena:'.$room.':battle:'.$party->id;
         if (Redis::exists($namespace)) {
-            $enemy_party = Redis::get($namespace);
+            $enemy_id = Redis::get($namespace);
             $enemys = [];
-            $enemy_partyobj = GameParty::find($enemy_party);
-            if ($enemy_partyobj) {
-                $namespace = 'arena:'.$room.':party:'.$enemy_party;
-                $uuids = Redis::smembers($namespace);
-                foreach($uuids as $uuid){
-                    $enemys[] = GameCharacter::find($uuid);
-                }
+            $namespace = 'arena:'.$room.':party:'.$enemy_id;
+            $uuids = Redis::smembers($namespace);
+            foreach($uuids as $uuid){
+                $enemys[] = GameCharacter::find($uuid);
             }
-            return response()->json([ 'characters' => $characters, 'enemy' => $enemy_party, 'enemys' => $enemys ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+            $namespace = 'arena:'.$room.':action:'.$party->id;
+            $our_actions = Redis::smembers($namespace);
+            $we_done = count($our_actions) == $character->members()->count();
+            $namespace = 'arena:'.$room.':action:'.$enemy_id;
+            $enemy_actions = Redis::smembers($namespace);
+            $enemy_party = GameParty::find($enemy_id);
+            $enemy_done = count($enemy_actions) == $enemy_party->members->count();
+            if ($we_done && $enemy_done) {
+                BattleEnd::dispatch($party, $enemy_party);
+            }
+            return response()->json([ 'characters' => $characters, 'enemy' => $enemy_id, 'enemys' => $enemys, 'our_actions' => $our_actions, 'enemy_actions' => $enemy_actions ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         } else {
             $parties = null;
             $namespace = 'arena:'.$room.':ready';

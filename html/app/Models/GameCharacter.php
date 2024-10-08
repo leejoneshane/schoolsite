@@ -166,10 +166,10 @@ class GameCharacter extends Model
                 $i = intval($this->party->effect_ap);
                 $d = $this->party->effect_ap - $i;
                 if ($i != 0) {
-                    $this->ap += $i;
+                    $ap += $i;
                 }
                 if ($d != 0) {
-                    $this->ap += intval($this->ap * $d);
+                    $ap += intval($this->ap * $d);
                 }
             }
         }
@@ -201,10 +201,10 @@ class GameCharacter extends Model
                 $i = intval($this->party->effect_dp);
                 $d = $this->party->effect_dp - $i;
                 if ($i != 0) {
-                    $this->dp += $i;
+                    $dp += $i;
                 }
                 if ($d != 0) {
-                    $this->dp += intval($this->dp * $d);
+                    $dp += intval($this->dp * $d);
                 }
             }
         }
@@ -236,10 +236,10 @@ class GameCharacter extends Model
                 $i = intval($this->party->effect_sp);
                 $d = $this->party->effect_sp - $i;
                 if ($i != 0) {
-                    $this->sp += $i;
+                    $sp += $i;
                 }
                 if ($d != 0) {
-                    $this->sp += intval($this->sp * $d);
+                    $sp += intval($this->sp * $d);
                 }
             }
         }
@@ -438,7 +438,7 @@ class GameCharacter extends Model
     public function throw_items()
     {
         return $this->items->reject(function ($item) {
-            return $item->passive == 0;
+            return $item->passive == 1;
         });
     }
 
@@ -446,7 +446,7 @@ class GameCharacter extends Model
     public function useable_items()
     {
         return $this->items->reject(function ($item) {
-            return $item->passive == 1;
+            return $item->passive == 0;
         });
     }
 
