@@ -30,6 +30,10 @@ class GameAnswer extends Model
         'student_name',
     ];
 
+    //以下屬性需進行資料庫欄位格式轉換
+    protected $casts = [
+        'tested_at' => 'datetime:Y-m-d',
+    ];
     
     //提供此答案卷的答題者姓名
     public function getStudentNameAttribute()

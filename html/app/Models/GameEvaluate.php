@@ -11,8 +11,9 @@ class GameEvaluate extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
-        'title',       //地下城名稱
-        'description', //地下城說明
+        'title',       //評量名稱
+        'subject',     //科目名稱
+        'range',       //評量範圍
         'grade_id',    //適用年級
         'uuid',        //出題者
     ];
