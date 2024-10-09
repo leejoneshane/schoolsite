@@ -91,7 +91,7 @@
         @endif
 
         @if (player())
-        window.Echo.private('character.{{ player()->uuid }}').listen('GameCharacterChannel', (e) => {
+        window.Echo.private('character.{{ player()->student->stdno }}').listen('GameCharacterChannel', (e) => {
             if (e.code == 'invite') {
                 received_invite(e);
                 return;

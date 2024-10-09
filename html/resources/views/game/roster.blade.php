@@ -622,8 +622,11 @@
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
+        }).then( response => {
+            if (response.data.success) {
+                window.location.reload();
+            }
         });
-        window.location.reload();
     }
 
     function negative_act() {
@@ -660,8 +663,11 @@
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
+        }).then( response => {
+            if (response.data.success) {
+                window.location.reload();
+            }
         });
-        window.location.reload();
     }
 
     function negative_delay() {
@@ -699,7 +705,6 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
-        window.location.reload();
     }
 
     function prepare_skill(uuid) {

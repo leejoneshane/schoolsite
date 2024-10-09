@@ -86,6 +86,7 @@ class GameSetting extends Model
             if ($item_id) {
                 $character->get_item($item_id);
             }
+            $character->save();
             GameLog::create([
                 'classroom_id' => session('gameclass'),
                 'uuid' => $teacher,

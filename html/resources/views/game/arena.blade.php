@@ -4,7 +4,9 @@
 <div class="w-full h-screen flex flex-col justify-between">
     <div id="message" class="w-full h-1/3 flex-initial">
         <div class="relative h-full flex flex-row">
-            <div id="our_action" class="w-1/3"></div>
+            <div class="w-1/3">
+                <ul id="our_action"></ul>
+            </div>
             <div id="connect" class="w-1/3 text-center inline-flex flex-col" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
                 <div class="p-2">
                     <span class="text-xl text-white">等候公會成員集合......</span>
@@ -24,7 +26,9 @@
                 </div>
                 @endif
             </div>
-            <div id="enemy_action" class="w-1/3"></div>
+            <div class="w-1/3">
+                <ul id="enemy_action"></ul>
+            </div>
         </div>
     </div>
     <div class="w-full h-2/3 flex-initial">
@@ -169,6 +173,8 @@
     const itemsModal = new window.Modal($targetEl);
     var our_side = document.getElementById('our_side');
     var enemy_side = document.getElementById('enemy_side');
+    var our_action = document.getElementById('our_action');
+    var enemy_action = document.getElementById('enemy_action');
     var party_node = document.getElementById('parties');
     window.onload = refresh;
 //    setInterval(refresh, 3000);
@@ -296,6 +302,24 @@
                             enemy_side.appendChild(div);
                             z += 10;
                         });
+                    }
+                }
+                if (response.data.our_actions) {
+                    for (var k in response.data.our_actions) {
+                        var message = response.data.our_actions[k];
+                        var li = document.createElement('li');
+                        li.classList.add('p-1','leading-relaxed');
+                        li.innerHTML = message;
+                        our_action.appendChild(li);
+                    }
+                }
+                if (response.data.enemy_actions) {
+                    for (var k in response.data.enemy_actions) {
+                        var message = response.data.enemy_actions[k];
+                        var li = document.createElement('li');
+                        li.classList.add('p-1','leading-relaxed');
+                        li.innerHTML = message;
+                        enemy_action.appendChild(li);
                     }
                 }
             } else {

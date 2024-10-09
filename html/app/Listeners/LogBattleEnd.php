@@ -20,9 +20,15 @@ class LogBattleEnd
         $party2 = $event->party2;
         $room = $party1->classroom_id;
         $namespace = 'arena:'.$room.':battle:'.$party1->id;
-        Redis::del($namespace);
+        if (Redis::exists($namespace)) {
+            $val = Redis::get($namespace);
+            if ($val == $party2->id) Redis::del($namespace);
+        }
         $namespace = 'arena:'.$room.':battle:'.$party2->id;
-        Redis::del($namespace);
+        if (Redis::exists($namespace)) {
+            $val = Redis::get($namespace);
+            if ($val == $party1->id) Redis::del($namespace);
+        }
     }
 
 }

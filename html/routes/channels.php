@@ -43,9 +43,10 @@ Broadcast::channel('party.{id}', function ($user, $id) {
     return false;
 });
 
-Broadcast::channel('character.{uuid}', function ($user, $uuid) {
+Broadcast::channel('character.{stdno}', function ($user, $stdno) {
     if ($user->user_type == 'Student') {
-        return (int) $user->uuid === (int) $uuid;
+        $student = Student::find($user->uuid);
+        return (int) $student->stdno === (int) $stdno;
     }
     return false;
 });

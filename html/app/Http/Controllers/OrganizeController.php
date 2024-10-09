@@ -31,23 +31,34 @@ class OrganizeController extends Controller
         $teacher = $user->profile;
         $survey = $teacher->survey($year);
         $seniority = $teacher->seniority();
-        $school_year = $seniority->new_school_year;
-        if ($school_year < 1) $school_year = $seniority->school_year;
-        $score['syear'] = $school_year;
-        $school_month = $seniority->new_school_month;
-        if ($school_month < 1) $school_month = $seniority->school_month;
-        $score['smonth'] = $school_month;
-        $teach_year = $seniority->new_teach_year;
-        if ($teach_year < 1) $teach_year = $seniority->teach_year;
-        $score['tyear'] = $teach_year;
-        $teach_month = $seniority->new_teach_month;
-        if ($teach_month < 1) $teach_month = $seniority->teach_month;
-        $score['tmonth'] = $teach_month;
-        $score['org'] = $seniority->newscore;
-        if ($score['org'] < 1) $score['org'] = $seniority->score;
-        $score['highgrade'] = false;
-        $score['total'] = $score['org'];
-        $score['high'] = $score['org'] + 2.1;
+        if ($seniority) {
+            $school_year = $seniority->new_school_year;
+            if ($school_year < 1) $school_year = $seniority->school_year;
+            $score['syear'] = $school_year;
+            $school_month = $seniority->new_school_month;
+            if ($school_month < 1) $school_month = $seniority->school_month;
+            $score['smonth'] = $school_month;
+            $teach_year = $seniority->new_teach_year;
+            if ($teach_year < 1) $teach_year = $seniority->teach_year;
+            $score['tyear'] = $teach_year;
+            $teach_month = $seniority->new_teach_month;
+            if ($teach_month < 1) $teach_month = $seniority->teach_month;
+            $score['tmonth'] = $teach_month;
+            $score['org'] = $seniority->newscore;
+            if ($score['org'] < 1) $score['org'] = $seniority->score;
+            $score['highgrade'] = false;
+            $score['total'] = $score['org'];
+            $score['high'] = $score['org'] + 2.1;    
+        } else {
+            $score['syear'] = 0;
+            $score['smonth'] = 0;
+            $score['tyear'] = 0;
+            $score['tmonth'] = 0;
+            $score['org'] = 0;
+            $score['highgrade'] = false;
+            $score['total'] = 0;
+            $score['high'] = 0;
+        }
         if (!empty($teacher->tutor_class)) {
             $grade = substr($teacher->tutor_class, 0, 1); 
             if ($grade == '5' || $grade == '6') $score['highgrade'] = true;

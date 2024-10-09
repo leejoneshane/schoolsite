@@ -12,6 +12,7 @@ use App\Events\ExitArena;
 use App\Events\GroupArena;
 use App\Events\BattleStart;
 use App\Events\BattleEnd;
+use App\Events\BattleAction;
 use App\Listeners\LogSuccessfulLogin;
 use App\Listeners\LogSuccessfulLogout;
 use App\Listeners\LogEnterArena;
@@ -19,6 +20,7 @@ use App\Listeners\LogExitArena;
 use App\Listeners\LogGroupArena;
 use App\Listeners\LogBattleStart;
 use App\Listeners\LogBattleEnd;
+use App\Listeners\LogBattleAction;
 use \SocialiteProviders\Google\GoogleExtendSocialite;
 use \SocialiteProviders\Facebook\FacebookExtendSocialite;
 use \SocialiteProviders\Yahoo\YahooExtendSocialite;
@@ -54,6 +56,9 @@ class EventServiceProvider extends ServiceProvider
         ],
         BattleEnd::class => [
             LogBattleEnd::class,
+        ],
+        BattleAction::class => [
+            LogBattleAction::class,
         ],
         Registered::class => [
             SendEmailVerificationNotification::class,
