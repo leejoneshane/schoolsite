@@ -14,6 +14,7 @@ class GameJourney extends Model
     protected $fillable = [
         'evaluate_id', //評量代號
         'answer_id',   //答案卷代號
+        'question_id', //題目編號
         'option_id',   //回答選項
         'is_correct',  //是否正確
     ];
@@ -22,6 +23,7 @@ class GameJourney extends Model
     protected $hidden = [
         'evaluate',
         'answer',
+        'question',
         'option',
     ];
 
@@ -42,7 +44,13 @@ class GameJourney extends Model
         return $this->hasOne('App\Models\GameAnswer', 'id', 'answer_id');
     }
 
-    //取得此歷程紀錄回答選項
+    //取得此歷程紀錄的題目
+    public function question()
+    {
+        return $this->hasOne('App\Models\GameQuestion', 'id', 'question_id');
+    }
+
+    //取得此歷程紀錄答題者回答選項
     public function option()
     {
         return $this->hasOne('App\Models\GameOption', 'id', 'option_id');
