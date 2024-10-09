@@ -438,7 +438,7 @@ class GameCharacter extends Model
     public function throw_items()
     {
         return $this->items->reject(function ($item) {
-            return $item->passive == 0;
+            return $item->passive == 1;
         });
     }
 
@@ -446,7 +446,7 @@ class GameCharacter extends Model
     public function useable_items()
     {
         return $this->items->reject(function ($item) {
-            return $item->passive == 1;
+            return $item->passive == 0;
         });
     }
 
