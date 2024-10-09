@@ -13,6 +13,7 @@ class GameOption extends Model
     protected $fillable = [
         'evaluate_id', //評量代號
         'question_id', //題目代號
+        'sequence',    //選項順序
         'option',      //選項內容
     ];
 

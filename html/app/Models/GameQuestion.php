@@ -12,6 +12,7 @@ class GameQuestion extends Model
     //以下屬性可以批次寫入
     protected $fillable = [
         'evaluate_id', //評量代號
+        'sequence',    //題目順序
         'question',    //題幹
         'answer',      //正確選項代號
         'score',       //配分
