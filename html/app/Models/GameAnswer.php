@@ -34,7 +34,7 @@ class GameAnswer extends Model
     protected $casts = [
         'tested_at' => 'datetime:Y-m-d',
     ];
-    
+
     //提供此答案卷的答題者姓名
     public function getStudentNameAttribute()
     {

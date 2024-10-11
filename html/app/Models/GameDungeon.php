@@ -17,6 +17,7 @@ class GameDungeon extends Model
         'classroom_id', //施測班級
         'evaluate_id',  //評量代號
         'monster_id',   //配置的怪物
+        'times',        //進入次數
         'opened_at',    //開放日期
         'closed_at',    //關閉日期
     ];
