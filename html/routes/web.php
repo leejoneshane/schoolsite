@@ -490,6 +490,20 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('rules/edit/{rule_id}', 'App\Http\Controllers\Game\SettingsController@edit');
     Route::post('rules/edit/{rule_id}', 'App\Http\Controllers\Game\SettingsController@update')->name('game.rule_edit');
     Route::post('rules/remove/{rule_id}', 'App\Http\Controllers\Game\SettingsController@remove')->name('game.rule_remove');
+    Route::get('evaluates', 'App\Http\Controllers\Game\SettingsController@evaluates')->name('game.evaluates');
+    Route::get('evaluate/add', 'App\Http\Controllers\Game\SettingsController@evaluate_add');
+    Route::post('evaluate/add', 'App\Http\Controllers\Game\SettingsController@evaluate_insert')->name('game.evaluate_add');
+    Route::get('evaluate/edit/{evaluate_id}', 'App\Http\Controllers\Game\SettingsController@evaluate_edit');
+    Route::post('evaluate/edit/{evaluate_id}', 'App\Http\Controllers\Game\SettingsController@evaluate_update')->name('game.evaluate_edit');
+    Route::post('evaluate/remove/{evaluate_id}', 'App\Http\Controllers\Game\SettingsController@evaluate_remove')->name('game.evaluate_remove');
+    Route::get('evaluate/manage/{evaluate_id}', 'App\Http\Controllers\Game\SettingsController@evaluate_manage')->name('game.evaluate_manage');
+    Route::post('question/add', 'App\Http\Controllers\Game\SettingsController@question_insert')->name('game.question_add');
+    Route::post('question/edit', 'App\Http\Controllers\Game\SettingsController@question_update')->name('game.question_edit');
+    Route::post('question/remove', 'App\Http\Controllers\Game\SettingsController@question_remove')->name('game.question_remove');
+    Route::post('question/answer', 'App\Http\Controllers\Game\SettingsController@question_answer')->name('game.question_answer');
+    Route::post('option/add', 'App\Http\Controllers\Game\SettingsController@option_insert')->name('game.option_add');
+    Route::post('option/edit', 'App\Http\Controllers\Game\SettingsController@option_update')->name('game.option_edit');
+    Route::post('option/remove', 'App\Http\Controllers\Game\SettingsController@option_remove')->name('game.option_remove');
 
     Route::get('configure', 'App\Http\Controllers\Game\ClassroomController@config');
     Route::post('configure', 'App\Http\Controllers\Game\ClassroomController@save_config')->name('game.classroom_config');
@@ -507,7 +521,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_image')->name('game.image_setup');
     Route::get('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@reset');
     Route::post('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@do_reset')->name('game.reset');
-    
+
     Route::get('profession', 'App\Http\Controllers\Game\PlayerController@character_edit');
     Route::post('profession', 'App\Http\Controllers\Game\PlayerController@character_class')->name('game.player_profession');
     Route::get('image', 'App\Http\Controllers\Game\PlayerController@image_edit');

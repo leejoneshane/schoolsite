@@ -48,7 +48,7 @@
                   <a href="{{ route('game.negative') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">懲罰條款</a>
                 </li>
                 <li>
-                  <a href="/game/teacher/dungeon" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">自主評量</a>
+                  <a href="{{ route('game.evaluates') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">自主評量</a>
                 </li>
                 <li>
                   <a href="/game/teacher/map" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">冒險地圖</a>

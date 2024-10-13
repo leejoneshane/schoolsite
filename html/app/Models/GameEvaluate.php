@@ -22,6 +22,7 @@ class GameEvaluate extends Model
     protected $hidden = [
         'grade',
         'teacher',
+        'questions',
     ];
 
     //以下為透過程式動態產生之屬性
@@ -35,6 +36,12 @@ class GameEvaluate extends Model
         return $this->teacher->realname;
     }
 
+    //篩選指定的出題者的所有試卷
+    public static function findByUuid($uuid)
+    {
+        return GameEvaluate::where('uuid', $uuid)->orderBy('grade_id')->get();
+    }
+
     //取得此評量的出題教師
     public function teacher()
     {
@@ -45,6 +52,18 @@ class GameEvaluate extends Model
     public function grade()
     {
         return $this->hasOne('App\Models\Grade', 'id', 'grade_id');
+    }
+
+    //取得此評量的所有題目，依序排列
+    public function questions()
+    {
+        return $this->hasMany('App\Models\GameQuestion', 'evaluate_id')->orderBy('sequence');
+    }
+
+    //取得此評量的最後題目的編號
+    public function max()
+    {
+        return $this->hasMany('App\Models\GameQuestion', 'evaluate_id')->latest('sequence')->first();
     }
 
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\GameOption;
 
 class GameQuestion extends Model
 {
@@ -21,6 +22,7 @@ class GameQuestion extends Model
     //以下屬性隱藏不顯示（toJson 時忽略）
     protected $hidden = [
         'evaluate',
+        'options',
         'correct',
     ];
 
@@ -28,6 +30,18 @@ class GameQuestion extends Model
     public function evaluate()
     {
         return $this->hasOne('App\Models\GameEvaluate', 'id', 'evaluate_id');
+    }
+
+    //取得此題目所有選項
+    public function options()
+    {
+        return $this->hasMany('App\Models\GameOption', 'question_id')->orderBy('sequence');
+    }
+
+    //取得此題目的最後選項的編號
+    public function max()
+    {
+        return $this->hasMany('App\Models\GameOption', 'question_id')->latest('sequence')->first();
     }
 
     //取得此題目所屬試卷

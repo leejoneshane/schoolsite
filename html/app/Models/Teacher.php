@@ -271,19 +271,25 @@ class Teacher extends Model
     //取得教師的隸屬領域
     public function domains()
     {
-        return $this->belongsToMany('App\Models\Domain', 'belongs', 'uuid', 'domain_id')->wherePivot('year', current_year());
+        $relation = $this->belongsToMany('App\Models\Domain', 'belongs', 'uuid', 'domain_id')->wherePivot('year', current_year());
+        $relation->getQuery()->getQuery()->joins[0]->table = DB::raw('(SELECT DISTINCT domain_id, uuid, year FROM belongs) as belongs');
+        return $relation;
     }
 
     //取得教師的所有配課科目
     public function subjects()
     {
-        return $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id')->wherePivot('year', current_year());
+        $relation = $this->belongsToMany('App\Models\Subject', 'assignment', 'uuid', 'subject_id')->wherePivot('year', current_year());
+        $relation->getQuery()->getQuery()->joins[0]->table = DB::raw('(SELECT DISTINCT subject_id, uuid, year FROM assignment) as assignment');
+        return $relation;
     }
 
     //取得教師的所有任教班級
     public function classrooms()
     {
-        return $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id')->wherePivot('year', current_year());
+        $relation = $this->belongsToMany('App\Models\Classroom', 'assignment', 'uuid', 'class_id')->wherePivot('year', current_year());
+        $relation->getQuery()->getQuery()->joins[0]->table = DB::raw('(SELECT DISTINCT class_id, uuid, year FROM assignment) as assignment');
+        return $relation;
     }
 
     //取得教師的年資積分
