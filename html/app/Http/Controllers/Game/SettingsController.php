@@ -373,6 +373,9 @@ class SettingsController extends Controller
         $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Teacher') {
             $classes = $request->input('classrooms');
+            if (is_string($classes)) {
+                $classes[] = $classes;
+            }
             foreach ($classes as $cls) {
                 $e = GameDungeon::create([
                     'uuid' => $user->uuid,
