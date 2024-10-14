@@ -82,7 +82,7 @@ class ClassroomController extends Controller
         }
     }
 
-    function regroup()
+    public function regroup()
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
@@ -96,7 +96,7 @@ class ClassroomController extends Controller
         }
     }
 
-    function change_group(Request $request)
+    public function change_group(Request $request)
     {
         $character = GameCharacter::find($request->input('uuid'));
         if ($request->input('party') == 0) {
@@ -108,7 +108,7 @@ class ClassroomController extends Controller
         return response()->json(['success' => $character->party_id]);
     }
 
-    function party_add()
+    public function party_add()
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
@@ -122,7 +122,7 @@ class ClassroomController extends Controller
         }
     }
 
-    function party_insert(Request $request)
+    public function party_insert(Request $request)
     {
 
         $party = GameParty::create([
@@ -141,7 +141,7 @@ class ClassroomController extends Controller
         return redirect()->to($request->input('url'));
     }
 
-    function party_edit($party_id)
+    public function party_edit($party_id)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
@@ -154,7 +154,7 @@ class ClassroomController extends Controller
         }
     }
 
-    function party_update(Request $request, $party_id)
+    public function party_update(Request $request, $party_id)
     {
         $party = GameParty::find($party_id);
         $party->group_no = $request->input('group_no');
@@ -169,7 +169,7 @@ class ClassroomController extends Controller
         return redirect()->to($request->input('url'));
     }
 
-    function party_remove(Request $request, $party_id)
+    public function party_remove(Request $request, $party_id)
     {
         $party = GameParty::find($party_id);
         foreach ($party->withAbsent as $char) {
@@ -180,7 +180,7 @@ class ClassroomController extends Controller
         return redirect()->back();
     }
 
-    function characters()
+    public function characters()
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
@@ -194,7 +194,7 @@ class ClassroomController extends Controller
         }
     }
 
-    function character_edit($uuid)
+    public function character_edit($uuid)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
@@ -207,7 +207,7 @@ class ClassroomController extends Controller
         }
     }
 
-    function character_class(Request $request, $uuid)
+    public function character_class(Request $request, $uuid)
     {
         $pro = GameClass::find($request->input('class_id'));
         $character = GameCharacter::find($uuid);
@@ -215,13 +215,13 @@ class ClassroomController extends Controller
         return view('game.image_setup', [ 'action' => route('game.image_setup', [ 'uuid' => $character->uuid ]), 'character' => $character ]);
     }
 
-    function image_edit(Request $request, $uuid)
+    public function image_edit(Request $request, $uuid)
     {
         $character = GameCharacter::find($uuid);
         return view('game.image_setup', [ 'action' => route('game.image_setup', [ 'uuid' => $character->uuid ]), 'character' => $character ]);
     }
 
-    function character_image(Request $request, $uuid)
+    public function character_image(Request $request, $uuid)
     {
         $character = GameCharacter::find($uuid);
         $character->image_id = $request->input('image_id');
@@ -229,13 +229,20 @@ class ClassroomController extends Controller
         return redirect()->route('game.characters');
     }
 
-    function reset()
+    public function dungeons()
+    {
+        $uuid = Auth::user()->uuid;
+        $dungeons = GameDungeon::findByTeacher($uuid);
+        return view('game.dungeons', [ 'dungeons' => $dungeons ]);
+    }
+
+    public function reset()
     {
         $room = Classroom::find(session('gameclass'));
         return view('game.classroom_reset', [ 'room' => $room ]);
     }
 
-    function do_reset(Request $request)
+    public function do_reset(Request $request)
     {
         $room_id = session('gameclass');
         $myclass = Classroom::find($room_id);

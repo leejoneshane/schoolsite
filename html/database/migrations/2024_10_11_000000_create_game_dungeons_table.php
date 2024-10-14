@@ -15,12 +15,13 @@ return new class extends Migration
     {
         Schema::create('game_dungeons', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid');
             $table->string('title');
             $table->string('description')->nullable();
             $table->integer('classroom_id');
             $table->integer('evaluate_id');
             $table->integer('monster_id');
-            $table->integer('times')->default(999);
+            $table->integer('times')->default(0);
             $table->timestamp('opened_at')->useCurrent();
             $table->timestamp('closed_at');
         });

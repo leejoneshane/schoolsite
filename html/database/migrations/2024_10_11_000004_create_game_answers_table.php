@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('game_answers', function (Blueprint $table) {
             $table->id();
             $table->integer('evaluate_id');
-            $table->uuid('uuid');
+            $table->string('classroom_id');
+            $table->integer('seat');
+            $table->string('student');
             $table->integer('score')->default(0);
             $table->timestamp('tested_at')->useCurrent();
         });

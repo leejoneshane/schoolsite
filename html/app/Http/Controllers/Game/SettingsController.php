@@ -10,9 +10,13 @@ use App\Models\Teacher;
 use App\Models\Grade;
 use App\Models\GameSetting;
 use App\Models\GameItem;
+use App\Models\GameMonster;
 use App\Models\GameEvaluate;
+use App\Models\GameDungeon;
 use App\Models\GameQuestion;
 use App\Models\GameOption;
+use App\Models\GameAnswer;
+use App\Models\GameJourney;
 use App\Models\Watchdog;
 
 class SettingsController extends Controller
@@ -182,6 +186,7 @@ class SettingsController extends Controller
                 'subject' => $request->input('subject'),
                 'range' => $request->input('range'),
                 'grade_id' => $request->input('grade'),
+                'share' => $request->input('share') == 'yes',
             ]);
             Watchdog::watch($request, '新增遊戲評量：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('game.evaluates')->with('success', '評量'.$e->title.'新增成功!');
@@ -213,6 +218,7 @@ class SettingsController extends Controller
                 'subject' => $request->input('subject'),
                 'range' => $request->input('range'),
                 'grade_id' => $request->input('grade'),
+                'share' => $request->input('share') == 'yes',
             ]);
             Watchdog::watch($request, '修改遊戲評量：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('game.evaluates')->with('success', '評量已經修改!');
@@ -230,6 +236,9 @@ class SettingsController extends Controller
             $e->delete();
             GameQuestion::where('evaluate_id', $evaluate_id)->delete();
             GameOption::where('evaluate_id', $evaluate_id)->delete();
+            GameDungeon::where('evaluate_id', $evaluate_id)->delete();
+            GameAnswer::where('evaluate_id', $evaluate_id)->delete();
+            GameJourney::where('evaluate_id', $evaluate_id)->delete();
             return redirect()->route('game.evaluates')->with('success', '評量已經刪除!');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
@@ -331,6 +340,110 @@ class SettingsController extends Controller
         Watchdog::watch($request, '刪除評量選項：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $e->delete();
         return response()->json([ 'success' => $request->input('oid') ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
+    public function evaluate_assign($evaluate_id)
+    {
+        $user = User::find(Auth::user()->id);
+        if ($user->user_type == 'Teacher') {
+            $teacher = Teacher::find($user->uuid);
+            $evaluate = GameEvaluate::find($evaluate_id);
+            $dungeons = GameDungeon::findByEvaluate($evaluate_id);
+            return view('game.evaluate_assign', [ 'teacher' => $teacher, 'evaluate' => $evaluate, 'dungeons' => $dungeons ]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function dungeon_add($evaluate_id)
+    {
+        $user = User::find(Auth::user()->id);
+        if ($user->user_type == 'Teacher') {
+            $teacher = Teacher::find($user->uuid);
+            $evaluate = GameEvaluate::find($evaluate_id);
+            $monsters = GameMonster::all();
+            return view('game.dungeon_add', [ 'teacher' => $teacher, 'evaluate' => $evaluate, 'monsters' => $monsters ]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function dungeon_insert(Request $request, $evaluate_id)
+    {
+        $user = User::find(Auth::user()->id);
+        if ($user->user_type == 'Teacher') {
+            $classes = $request->input('classrooms');
+            foreach ($classes as $cls) {
+                $e = GameDungeon::create([
+                    'uuid' => $user->uuid,
+                    'title' => $request->input('title'),
+                    'description' => $request->input('description'),
+                    'classroom_id' => $cls,
+                    'evaluate_id' => $evaluate_id,
+                    'monster_id' => $request->input('monster'),
+                    'times' => $request->input('times'),
+                    'opened_at' => $request->input('open_date'),
+                    'closed_at' => $request->input('close_date'),
+                ]);
+                Watchdog::watch($request, '新增遊戲地下城：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));    
+            }
+            return redirect()->route('game.evaluate_assign', [ 'evaluate_id' => $e->evaluate_id ])->with('success', '地下城'.$e->title.'新增成功!');
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function dungeon_edit($dungeon_id)
+    {
+        $user = User::find(Auth::user()->id);
+        if ($user->user_type == 'Teacher') {
+            $teacher = Teacher::find($user->uuid);
+            $dungeon = GameDungeon::find($dungeon_id);
+            $monsters = GameMonster::all();
+            return view('game.dungeon_edit', [ 'teacher' => $teacher, 'dungeon' => $dungeon, 'monsters' => $monsters ]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function dungeon_update(Request $request, $dungeon_id)
+    {
+        $user = User::find(Auth::user()->id);
+        if ($user->user_type == 'Teacher') {
+            $e = GameDungeon::find($dungeon_id);
+            $e->update([
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+                'monster_id' => $request->input('monster'),
+                'times' => $request->input('times'),
+                'opened_at' => $request->input('open_date'),
+                'closed_at' => $request->input('close_date'),
+            ]);
+            Watchdog::watch($request, '修改遊戲地下城：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            return redirect()->route('game.evaluate_assign', [ 'evaluate_id' => $e->evaluate_id ])->with('success', '地下城已經修改!');
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function dungeon_remove(Request $request, $dungeon_id)
+    {
+        $user = User::find(Auth::user()->id);
+        if ($user->user_type == 'Teacher') {
+            $e = GameDungeon::find($dungeon_id);
+            $evaluate_id = $e->evaluate_id;
+            $classroom_id = $e->classroom_id;
+            Watchdog::watch($request, '刪除遊戲地下城：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            $e->delete();
+            $answers = GameAnswer::findBy($evaluate_id, $classroom_id);
+            foreach ($answers as $a) {
+                $a->journeys()->delete();
+                $a->delete();
+            }
+            return redirect()->route('game.evaluate_assign', [ 'evaluate_id' => $evaluate_id ])->with('success', '地下城已經刪除!');
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
     }
 
 }

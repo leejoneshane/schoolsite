@@ -43,7 +43,7 @@
         </li>
     </ul>
 </div>
-<table class="w-full p-4 bg-white text-left font-normal">
+<table class="w-full p-4 bg-white text-left font-normal mb-32">
 <tbody id="qlist">
 @foreach ($evaluate->questions as $q)
     <tr id="q{{ $q->id }}" class="bg-teal-100 text-black font-semibold text-lg">
@@ -69,7 +69,7 @@
                 @foreach ($q->options as $o)
                 <tr class="odd:bg-white even:bg-gray-100">
                     <td class="p-2">{{ $o->sequence }}</td>
-                    <td id="otion{{ $o->id }}" class="p-2">{{ $o->option }}</td>
+                    <td id="option{{ $o->id }}" class="p-2">{{ $o->option }}</td>
                     <td class="p-2">
                         <input type="radio" name="answer{{ $q->id }}" value="{{ $o->id }}"{{ $q->answer == $o->id ? ' checked' : '' }} onchange="set_answer({{ $q->id }});" class="mx-3" title="設為答案">
                         <button class="mx-3 text-blue-300 hover:text-blue-600" title="編輯" onclick="open_option({{ $q->id }}, {{ $o->id }});">
@@ -217,7 +217,7 @@
                 var btn = document.createElement('button');
                 btn.classList.add('mx-3','text-blue-300','hover:text-blue-600');
                 btn.setAttribute('title', '新增選項');
-                btn.setAttribute('onclick', 'open_option(0);');
+                btn.setAttribute('onclick', 'open_option(' + qid + ',0);');
                 btn.innerHTML = '<i class="fa-regular fa-circle-dot"></i>';
                 td.appendChild(btn);
                 var btn = document.createElement('button');
@@ -287,21 +287,16 @@
     }
 
     function set_answer(qno) {
-        var answer = document.getElementsByName('answer' + qno);
-        for (var i = 0; i < answer.length; i++) {
-            if (answer[i].checked) {
-                window.axios.post('{{ route('game.question_answer') }}', {
-                    qid: qno,
-                    oid: answer[i].value,
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json;charset=utf-8',
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    }
-                });
-                break;
+        var answer = document.querySelector('input[name="answer' + qno + '"]:checked');
+        window.axios.post('{{ route('game.question_answer') }}', {
+            qid: qno,
+            oid: answer.value,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
-        }
+        });
     }
 
     function open_option(qno, ono) {
@@ -368,7 +363,7 @@
                 olist.appendChild(tr);
             });
         } else {
-            window.axios.post('{{ route('game.question_edit') }}', {
+            window.axios.post('{{ route('game.option_edit') }}', {
                 oid: oid,
                 option: option.value,
             }, {

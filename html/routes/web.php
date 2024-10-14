@@ -504,6 +504,12 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('option/add', 'App\Http\Controllers\Game\SettingsController@option_insert')->name('game.option_add');
     Route::post('option/edit', 'App\Http\Controllers\Game\SettingsController@option_update')->name('game.option_edit');
     Route::post('option/remove', 'App\Http\Controllers\Game\SettingsController@option_remove')->name('game.option_remove');
+    Route::get('evaluate/assign/{evaluate_id}', 'App\Http\Controllers\Game\SettingsController@evaluate_assign')->name('game.evaluate_assign');
+    Route::get('dungeon/add/{evaluate_id}', 'App\Http\Controllers\Game\SettingsController@dungeon_add');
+    Route::post('dungeon/add/{evaluate_id}', 'App\Http\Controllers\Game\SettingsController@dungeon_insert')->name('game.dungeon_add');
+    Route::get('dungeon/edit/{dungeon_id}', 'App\Http\Controllers\Game\SettingsController@dungeon_edit');
+    Route::post('dungeon/edit/{dungeon_id}', 'App\Http\Controllers\Game\SettingsController@dungeon_update')->name('game.dungeon_edit');
+    Route::post('dungeon/remove/{dungeon_id}', 'App\Http\Controllers\Game\SettingsController@dungeon_remove')->name('game.dungeon_remove');
 
     Route::get('configure', 'App\Http\Controllers\Game\ClassroomController@config');
     Route::post('configure', 'App\Http\Controllers\Game\ClassroomController@save_config')->name('game.classroom_config');
@@ -519,6 +525,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('classroom/setup/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_class')->name('game.profession_setup');
     Route::get('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@image_edit');
     Route::post('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_image')->name('game.image_setup');
+    Route::get('dungeons', 'App\Http\Controllers\Game\ClassroomController@dungeons')->name('game.dungeons');
     Route::get('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@reset');
     Route::post('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@do_reset')->name('game.reset');
 

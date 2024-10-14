@@ -25,6 +25,7 @@ class GameMonster extends Model
         'temp_effect',   //暫時增益:ap,mp,sp 其中之一
         'effect_value',  //增益值，2 則加 2 點，0.5 則加 50%，-1 為扣 1 點，-0.3 為扣 30%
         'effect_timeout',//增益結束時間，timestamp
+        'style',         //難易度色碼
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）

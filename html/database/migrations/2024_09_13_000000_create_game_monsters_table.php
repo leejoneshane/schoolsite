@@ -29,6 +29,7 @@ return new class extends Migration
             $table->string('temp_effect')->nullable();
             $table->float('effect_value')->default(0);
             $table->timestamp('effect_timeout')->nullable();
+            $table->string('style')->nullable();
             $table->timestamps();
         });
     }

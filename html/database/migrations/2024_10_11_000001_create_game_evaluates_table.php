@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('range');
             $table->integer('grade_id');
             $table->uuid('uuid');
+            $table->boolean('share')->default(0);
             $table->timestamps();
         });
     }

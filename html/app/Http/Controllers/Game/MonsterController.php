@@ -57,6 +57,7 @@ class MonsterController extends Controller
                 'sp' => $request->input('sp'),
                 'xp' => $request->input('xp'),
                 'gp' => $request->input('gp'),
+                'style' => $request->input('style'),
             ]);
             Watchdog::watch($request, '新增遊戲怪物：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('game.monsters')->with('success', '已新增怪物：'.$request->input('name').'！');
@@ -94,6 +95,7 @@ class MonsterController extends Controller
             $pro->sp = $request->input('sp');
             $pro->xp = $request->input('xp');
             $pro->gp = $request->input('gp');
+            $pro->style = $request->input('style');
             $pro->save();
             Watchdog::watch($request, '修改遊戲怪物：' . $pro->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('game.monsters')->with('success', '已修改怪物：'.$request->input('name').'！');

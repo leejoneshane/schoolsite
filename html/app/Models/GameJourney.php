@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\AsCollection;
 
 class GameJourney extends Model
 {
@@ -12,11 +11,11 @@ class GameJourney extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
-        'evaluate_id', //評量代號
-        'answer_id',   //答案卷代號
-        'question_id', //題目編號
-        'option_id',   //回答選項
-        'is_correct',  //是否正確
+        'evaluate_id',  //評量代號
+        'answer_id',    //答案卷代號
+        'question_id',  //題目編號
+        'option_id',    //回答選項
+        'is_correct',   //是否正確
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）

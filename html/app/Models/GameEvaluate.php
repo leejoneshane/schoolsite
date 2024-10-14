@@ -16,6 +16,7 @@ class GameEvaluate extends Model
         'range',       //評量範圍
         'grade_id',    //適用年級
         'uuid',        //出題者
+        'share',       //共享
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）
@@ -30,6 +31,11 @@ class GameEvaluate extends Model
         'teacher_name',
     ];
 
+    //以下屬性需進行資料庫欄位格式轉換
+    protected $casts = [
+        'share' => 'boolean',
+    ];
+
     //提供此評量的出題教師姓名
     public function getTeacherNameAttribute()
     {
@@ -39,7 +45,10 @@ class GameEvaluate extends Model
     //篩選指定的出題者的所有試卷
     public static function findByUuid($uuid)
     {
-        return GameEvaluate::where('uuid', $uuid)->orderBy('grade_id')->get();
+        return GameEvaluate::where('uuid', $uuid)
+            ->orWhere('share', 1)
+            ->orderBy('grade_id')
+            ->get();
     }
 
     //取得此評量的出題教師

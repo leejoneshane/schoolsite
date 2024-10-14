@@ -77,7 +77,7 @@
                   <a href="{{ route('game.characters') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">角色調整</a>
                 </li>
                 <li>
-                  <a href="/game/class/character" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">指派地下城</a>
+                  <a href="{{ route('game.dungeons') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">評量歷程</a>
                 </li>
                 <li>
                   <a href="{{ route('game.reset') }}" class="block px-4 py-2 text-red-500 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-red-900">重新遊戲</a>

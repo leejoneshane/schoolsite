@@ -14,6 +14,9 @@
             試卷名稱
         </th>
         <th scope="col" class="p-2">
+            出題教師
+        </th>
+        <th scope="col" class="p-2">
             科目名稱
         </th>
         <th scope="col" class="p-2">
@@ -29,10 +32,16 @@
     @forelse ($evaluates as $e)
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">{{ $e->title }}</td>
+        <td class="p-2">{{ $e->teacher_name }}</td>
         <td class="p-2">{{ $e->subject }}</td>
         <td class="p-2">{{ $e->range }}</td>
         <td class="p-2">{{ $e->grade->name }}</td>
         <td class="p-2">
+            <a class="py-2 pr-6 text-blue-500 hover:text-blue-600"
+                href="{{ route('game.evaluate_assign', ['evaluate_id' => $e->id]) }}" title="指派地下城">
+                <i class="fa-solid fa-dungeon"></i>
+            </a>
+            @if ($e->uuid == Auth::user()->uuid)
             <a class="py-2 pr-6 text-blue-500 hover:text-blue-600"
                 href="{{ route('game.evaluate_manage', ['evaluate_id' => $e->id]) }}" title="試題管理">
                 <i class="fa-solid fa-table-list"></i>
@@ -49,6 +58,7 @@
             ">
                 <i class="fa-solid fa-trash"></i>
             </button>
+            @endif
         </td>
     </tr>
     @empty
