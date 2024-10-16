@@ -52,6 +52,22 @@
         <br><span class="text-sm font-semibold">在計算增減效益前執行</span>
     </div></p>
     <p><div class="p-3">
+        <label for="inspire" class="text-base">賦予狀態：</label>
+        <select id="inspire" name="inspire" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+            <option value="">無</option>
+            <option value="protect">護衛</option>
+            <option value="apportion">分散傷害</option>
+            <option value="reflex">傷害反射</option>
+            <option value="hatred">集中仇恨</option>
+            <option value="invincible">無敵狀態</option>
+            <option value="throw">投擲道具</option>
+            <option value="weak">身體虛弱</option>
+            <option value="paralysis">精神麻痹</option>
+            <option value="poisoned">中毒</option>
+        </select>
+        <br><span class="text-sm font-semibold">在計算增減效益前執行</span>
+    </div></p>
+    <p><div class="p-3">
         <label for="gp" class="text-base">購買價格：</label>
         <input id="gp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
             type="number" name="gp" min="100" step="1" value="100">
@@ -93,6 +109,13 @@
             <input id="sp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
                 type="number" name="sp" min="-50" max="50" step="0.1" value="0">
             <br><span class="text-sm font-semibold">大於 0 = 重力減輕，小於 0 = 重力加倍，整數為加或扣SP，小數為 SP 的比率</span>
+        </label>
+    </div></p>
+    <p><div class="p-3">
+        <label for="times" class="text-base">持續時間：
+            <input id="times" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="effect_times" min="0" max="480" step="10" value="0">
+            <br><span class="text-sm font-semibold">攻擊力、防禦力、敏捷力變化的持續時間，以分鐘為單位</span>
         </label>
     </div></p>
     <td class="p-3">

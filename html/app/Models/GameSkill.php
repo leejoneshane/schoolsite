@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Events\GamePartyChannel;
+use App\Events\GameCharacterChannel;
 use App\Models\GameParty;
 use App\Models\GameCharacter;
+use App\Models\GameMonsterSpawn;
 use Carbon\Carbon;
 
 class GameSkill extends Model
@@ -33,7 +35,7 @@ class GameSkill extends Model
         'effect_sp',   //對作用對象的敏捷力增減效益
         'effect_times',//技能持續時間，以分鐘為單位
         'status',      //解除目標狀態，DEAD 死亡狀態復活，COMA 昏迷狀態回神
-        'inspire',     //賦予目標狀態，invincible 無敵，reflex 反射傷害，protect 保護，protected 被保護，hatred 仇恨（集中傷害），apportion 分攤傷害，throw 投射道具, weak 虛弱
+        'inspire',     //賦予目標狀態，invincible 無敵，reflex 反射傷害，protect 保護，protected 被保護，hatred 仇恨（集中傷害），apportion 分攤傷害，throw 投射道具, weak 虛弱, paralysis 麻痹, poisoned 中毒
         'earn_xp',     //施展技能後，可獲得經驗值
         'earn_gp',     //施展技能後，可獲得金幣
     ];
@@ -47,6 +49,35 @@ class GameSkill extends Model
     protected $casts = [
         'passive' => 'boolean',
     ];
+
+    //以下為透過程式動態產生之屬性
+    protected $appends = [
+        'status_str',
+        'inspire_str',
+    ];
+
+    //提供此道具解除狀態中文說明
+    public function getStatusStrAttribute()
+    {
+        if ($this->status == 'DEAD') return '死亡';
+        if ($this->status == 'COMA') return '昏迷';
+        return '';
+    }
+
+    //提供此道具賦予狀態中文說明
+    public function getInspireStrAttribute()
+    {
+        if ($this->inspire == 'invincible') return '無敵狀態';
+        if ($this->inspire == 'hatred') return '集中仇恨';
+        if ($this->inspire == 'protect') return '護衛';
+        if ($this->inspire == 'protected') return '被保護';
+        if ($this->inspire == 'reflex') return '傷害反射';
+        if ($this->inspire == 'apportion') return '分散傷害';
+        if ($this->inspire == 'weak') return '身體虛弱';
+        if ($this->inspire == 'paralysis') return '精神麻痹';
+        if ($this->inspire == 'poisoned') return '中毒';
+        return '';
+    }
 
     //取得此技能包含於哪些職業
     public function professions()
@@ -200,6 +231,61 @@ class GameSkill extends Model
         return $result;
     }
 
+    //施展指定的技能，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗
+    public function cast_on_monster($self, $monster_id, $item_id = null)
+    {
+        $result = [];
+        if (length($self) == 36) {
+            $me = GameCharacter::find($self);
+        } else {
+            $me = GameMonsterSpawn::find($self);
+        }
+        if ($this->inspire == "throw") {
+            $item = GameItem::find($item_id);
+            $item->cast_on_monster($self, $monster_id);
+        } else {
+            $target = GameMonsterSpawn::find($monster_id);
+            $this->effect_monster($me, $target);
+        }
+        $me->mp -= $this->cost_mp;
+        if ($this->steal_mp > 0) $me->mp += $this->cost_mp * $this->steal_mp;
+        $me->xp += $this->earn_xp;
+        $me->gp += $this->earn_gp;
+        $me->save();
+        return $result;
+    }
+
+    //施展指定的技能，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗
+    public function monster_cast($spawn_id, $uuid)
+    {
+        $result = [];
+        $me = GameMonsterSpawn::find($spawn_id);
+        if ($this->object == 'target' || $this->object == 'all') {
+            $target = GameCharacter::find($uuid);
+            $result = $this->effect_enemy($me, $target);
+            $message = $me->name.'對'.$target->name.'施展技能'.$this->name;
+            if ($result == MISS) {
+                broadcast(new GameCharacterChannel($target->stdno, $message.'失敗！'));
+            } else {
+                broadcast(new GameCharacterChannel($target->stdno, $message.'成功！'));
+            }
+        } else {
+            $result = $this->effect_monster($me);
+            $message = $me->name.'對自己施展技能'.$this->name;
+            if ($result == MISS) {
+                broadcast(new GameCharacterChannel($target->stdno, $message.'失敗！'));
+            } else {
+                broadcast(new GameCharacterChannel($target->stdno, $message.'成功！'));
+            }
+        }
+        $me->mp -= $this->cost_mp;
+        if ($this->steal_mp > 0) $me->mp += $this->cost_mp * $this->steal_mp;
+        $me->xp += $this->earn_xp;
+        $me->gp += $this->earn_gp;
+        $me->save();
+        return $result;
+    }
+
     public function effect_friend($me, $character = null)
     {
         if (!$character) $character = $me;
@@ -213,6 +299,7 @@ class GameSkill extends Model
                 }
                 if ($this->inspire != 'throw') {
                     $character->buff = $this->inspire;
+                    $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
                 }
             }
             if ($this->effect_hp != 0) {
@@ -295,8 +382,7 @@ class GameSkill extends Model
                                 }
                             }
                         } else {
-                            $character->hp -= $damage;  
-
+                            $character->hp -= $damage;
                         }
                     }
                 }
@@ -369,4 +455,70 @@ class GameSkill extends Model
         }
     }
 
+    //套用技能效果
+    public function effect_monster($me, $monster = null)
+    {
+        if (!$monster) $monster = $me;
+        $hit = $this->hit_rate;
+        $hit += ($me->final_sp - $monster->final_sp) / 100;
+        $rnd = mt_rand()/mt_getrandmax();
+        if ($hit >= 1 || $rnd < $hit) {
+            $damage = 0;
+            if ($this->ap > 0) {
+                if ($monster->buff == 'reflex') {
+                    $damage = ($this->ap + $monster->final_ap) - $me->final_dp;
+                    if ($damage > 0) $me->hp -= $damage;
+                } elseif ($monster->buff == 'invincible') {
+                    $damage = 0;
+                } else {
+                    $damage = ($this->ap + $me->final_ap) - $monster->final_dp;
+                    if ($damage > 0) {
+                        $monster->hp -= $damage;
+                        if ($this->steal_hp > 0) {
+                            $me->hp += $damage * $this->steal_hp;
+                        }
+                    }
+                }
+            }
+            if ($this->effect_hp != 0) {
+                if ($this->effect_hp > 1 || $this->effect_hp < -1) {
+                    $monster->hp += $this->effect_hp;
+                } else {
+                    $monster->hp += intval($monster->max_hp * $this->effect_hp);
+                }
+            }
+            if ($this->effect_ap != 0) {
+                $monster->temp_effect = 'ap';
+                $monster->effect_value = $this->effect_ap;
+                $monster->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            if ($this->effect_dp != 0) {
+                $monster->temp_effect = 'dp';
+                $monster->effect_value = $this->effect_dp;
+                $monster->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            if ($this->effect_sp != 0) {
+                $monster->temp_effect = 'sp';
+                $monster->effect_value = $this->effect_sp;
+                $monster->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            if ($this->steal_gp > 0) {
+                $gold = intval($monster->gp * $this->steal_gp);
+                $monster->gp -= $gold;
+                $me->gp += $gold;
+            }
+            if ($this->inspire) {
+                $monster->buff = $this->inspire;
+                $monster->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            if ($monster->hp < 1) {
+                $me->xp += $monster->xp;
+                $me->gp += $monster->gp;
+            }
+            $monster->save();
+            return $damage;
+        } else {
+            return MISS;
+        }
+    }
 }

@@ -9,6 +9,7 @@ class GameDungeon extends Model
 {
 
     protected $table = 'game_dungeons';
+    public $timestamps = false;
 
     //以下屬性可以批次寫入
     protected $fillable = [
@@ -94,6 +95,12 @@ class GameDungeon extends Model
     public function monster()
     {
         return $this->hasOne('App\Models\GameMonster', 'id', 'monster_id');
+    }
+
+    //取得此地下城的所有答案卷
+    public function answers()
+    {
+        return GameAnswer::findBy($this->evaluate_id, $this->classroom_id);
     }
 
 }

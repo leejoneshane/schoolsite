@@ -38,6 +38,9 @@
             解除狀態
         </th>
         <th scope="col" class="p-2">
+            賦予狀態
+        </th>
+        <th scope="col" class="p-2">
             購買價格
         </th>
         <th scope="col" class="p-2">
@@ -64,7 +67,8 @@
         <td class="p-2">{{ $sk->ap }}</td>
         <td class="p-2">{{ $sk->dp }}</td>
         <td class="p-2">{{ $sk->sp }}</td>
-        <td class="p-2">{{ $sk->status }}</td>
+        <td class="p-2">{{ $sk->status_str }}</td>
+        <td class="p-2">{{ $sk->inspire_str }}</td>
         <td class="p-2">{{ $sk->gp }}</td>
         <td class="p-2">
             <a class="py-2 pr-6 text-blue-500 hover:text-blue-600"

@@ -2,51 +2,40 @@
 
 @section('content')
 <div class="w-full h-screen flex flex-col justify-between">
-    <div id="message" class="w-full h-1/3 flex-initial">
+    <div class="w-full h-screen flex-initial">
         <div class="relative h-full flex flex-row">
-            <div class="w-1/3">
-                <ul id="our_action"></ul>
-            </div>
-            <div id="connect" class="w-1/3 text-center inline-flex flex-col" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
-            @if ($character->configure->arena_open)
-                <div class="p-2">
-                    <span class="text-xl text-white">等候公會成員集合......</span>
-                    @if ($character->is_leader())
-                    <button onclick="ring_bell();" class="m-2 w-40 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                        發送集合通知
-                    </button>
-                    @endif
+            <div id="me" class="w-1/3 inline-flex content-end">
+                <div class="m-2 flex flex-col gap-1">
+                    <div class="w-24 h-8 font-extrabold">{{ $character->name }}</div>
+                    <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
+                        <div id="hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->hp / $character->max_hp * 100) }}%;">{{ $character->hp }}</div>
+                    </div>
+                    <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
+                        <div id="mp" class="h-4 bg-blue-500 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->mp / $character->max_mp * 100) }}%;">{{ $character->mp }}</div>
+                    </div>
+                    <div id="status" class="w-24 h-8">正常</div>
+                    <img title="{{ $character->name }}" src="{{ $character->url ?: '' }}" class="absolute bottom-40 w-1/3 z-50">
                 </div>
-                @if ($character->is_leader())
-                <div class="p-2">
-                    <select id="parties" class="w-40 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-                    </select>
-                    <button onclick="invite();" class="w-40 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                        送出對戰邀請
-                    </button>    
-                </div>
-                @endif
-            @else
-            <div class="p-2">
-                <span class="text-xl text-white">很抱歉，場地清潔中，暫不開放！</span>
-            </div>
-            @endif
-            </div>
-            <div class="w-1/3">
-                <ul id="enemy_action"></ul>
-            </div>
-        </div>
-    </div>
-    <div class="w-full h-2/3 flex-initial">
-        <div class="relative h-full flex flex-row">
-            <div id="our_side" class="w-1/3 inline-flex content-end">
             </div>
             <div class="w-1/3 text-center">
-                <div id="action" class="hidden p-2">
-                    在每場戰鬥中，每人只能進行一項動作，請與隊友討論策略。決定好之後，請點選隊友或對手，然後挑選要進行的動作！
+                <div id="dungeons" class="p-2">
+                    @if ($dungeons->count() > 0)
+                    <button onclick="choice();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        挑選要進入的地下城！
+                    </button>
+                    @else
+                        沒有可以進入的場所！
+                    @endif
                 </div>
             </div>
-            <div id="enemy_side" class="w-1/3 inline-flex content-end">
+            <div id="monster" class="w-1/3 inline-flex content-end">
+                <div class="m-2 flex flex-col gap-1">
+                    <div id="monster_name" class="w-24 h-8 font-extrabold"></div>
+                    <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
+                        <div id="monster_hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($monster->hp / $monster->max_hp * 100) }}%;">{{ $monster->hp }}</div>
+                    </div>
+                    <img id="monster_img" title="{{ $monster->name }}" src="{{ $monster->random_url() ?: '' }}" class="absolute bottom-40 w-1/3 z-50">
+                </div>
             </div>    
         </div>
     </div>
@@ -67,20 +56,31 @@
         </div>
     </div>
 </div>
-<div id="confirmModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+<div id="dungeonModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-teal-300 rounded-lg shadow dark:bg-blue-700">
             <div class="p-4 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-center text-xl font-semibold text-gray-900 dark:text-white">對戰邀請</h3>
+                <h3 class="text-center text-xl font-semibold text-gray-900 dark:text-white">已開放地下城：</h3>
             </div>
-            <div id="message" class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
+            <div class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                <ul>
+                @foreach ($dungeons as $d)
+                <li>
+                    <input type="radio" id="dun{{ $d->id }}" name="dungeon" value="{{ $d->id }}" class="hidden peer" />
+                    <label for="{{ $d->id }}" class="inline-block w-full p-2 {{ $d->monster->style }} bg-white border-2 border-gray-200 cursor-pointer peer-checked:border-blue-600 hover:bg-gray-50">
+                        <span class="inline-block text-normal w-48">{{ $d->name }}</span>
+                        <span class="inline-block text-xs w-80">{{ $d->description }}</span>
+                    </label>
+                </li>
+                @endforeach
+                </ul>
             </div>
             <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <button onclick="agree();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    同意
+                <button onclick="enter();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    進入
                 </button>
-                <button onclick="disgree(); confirmModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                    拒絕
+                <button onclick="exit(); dungeonModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    我再想想！
                 </button>
             </div>
         </div>
@@ -149,286 +149,51 @@
 </div>
 <script nonce="selfhost">
     var character = '{{ $character->uuid }}';
-    var ls_leader = {{ $character->is_leader() }};
-    var enemy_party = '';
-    var invite_from;
-    var member_count = {{ $character->party->members->count() }};
-    var members = [];
-    var parties = [];
-    var enemys = [];
+    var evaluate; //evaluate_id
+    var dungeon; //dungeon_id
+    var monster; //spawn_id
     var skills = [];
     var items =[];
-    var target; // uuid
-    var target_type; //self or enemy or partner
+    var target; // monster_id
+    var target_type; //self or monster
     var data_type; //skill or item
     var data_skill; //skill id
     var data_item; //item id
-    var done = false;
 
     var main = document.getElementsByTagName('main')[0];
-    main.classList.replace('bg-game-map50', 'bg-game-arena');
+    main.classList.replace('bg-game-map50', 'bg-game-dungeon');
     var $targetEl = document.getElementById('warnModal');
     const warnModal = new window.Modal($targetEl);
-    var $targetEl = document.getElementById('confirmModal');
-    const confirmModal = new window.Modal($targetEl);
+    var $targetEl = document.getElementById('dungeonModal');
+    const dungeonModal = new window.Modal($targetEl);
     var $targetEl = document.getElementById('actionModal');
     const actionModal = new window.Modal($targetEl);
     $targetEl = document.getElementById('skillsModal');
     const skillsModal = new window.Modal($targetEl);
     $targetEl = document.getElementById('itemsModal');
     const itemsModal = new window.Modal($targetEl);
-    var our_side = document.getElementById('our_side');
-    var enemy_side = document.getElementById('enemy_side');
-    var our_action = document.getElementById('our_action');
-    var enemy_action = document.getElementById('enemy_action');
-    var party_node = document.getElementById('parties');
     window.onload = refresh;
-@if ($character->configure->arena_open)
-    setInterval(refresh, 3000);
-@endif
+    window.onunload = warn;
+
+    function enter() {
+    }
 
     function refresh() {
-        window.axios.post('{{ route('game.refresh_arena') }}', {
-            uuid: character,
-        }, {
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        }).then( response => {
-            members = [];
-            for (var k in response.data.characters) {
-                var member = response.data.characters[k];
-                members[k] = member;
-            }
-            if (members.length > 0) {
-                our_side.innerHTML = '';
-                var z = 50;
-                members.forEach( member => {
-                    var div = document.createElement('div');
-                    div.classList.add('m-2','flex', 'flex-col','gap-1');
-                    var myname = document.createElement('div');
-                    myname.classList.add('w-24','h-8','font-extrabold');
-                    myname.innerHTML = member.name;
-                    div.appendChild(myname);
-                    var hp = document.createElement('div');
-                    hp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
-                    var hp_bar = document.createElement('div');
-                    hp_bar.classList.add('h-4','bg-green-600','text-xs','font-medium','text-green-100','text-center','p-0.5','leading-none','rounded-full');
-                    hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
-                    hp_bar.innerHTML = member.hp;
-                    hp.appendChild(hp_bar);
-                    div.appendChild(hp);
-                    var mp = document.createElement('div');
-                    mp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
-                    var mp_bar = document.createElement('div');
-                    mp_bar.classList.add('h-4','bg-blue-600','text-xs','font-medium','text-blue-100','text-center','p-0.5','leading-none','rounded-full');
-                    mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
-                    mp_bar.innerHTML = member.mp;
-                    mp.appendChild(mp_bar);
-                    div.appendChild(mp);
-                    var status = document.createElement('div');
-                    status.classList.add('w-24','h-8');
-                    status.innerHTML = member.status_desc;
-                    div.appendChild(status);
-                    var image = document.createElement('img');
-                    image.classList.add('absolute', 'bottom-40', 'w-1/6', 'z-' + z);
-                    image.setAttribute('title', member.name);
-                    if (member.url) {
-                        image.src = member.url;
-                    } else {
-                        image.src = '{{ asset('images/game/blank.png') }}';
-                    }
-                    if (member.uuid == character) {
-                        image.setAttribute('onclick', 'action_self()');
-                    } else {
-                        image.setAttribute('onclick', 'action_friend(' + member.uuid + ')');
-                    }
-                    div.appendChild(image);
-                    our_side.appendChild(div);
-                    z -= 10;
-                });
-                if (enemy_party == '' && members.length == member_count) {
-                    var node = document.getElementById('connect');
-                    node.innerHTML = '組隊完成! 請選擇要對戰的隊伍！';
-                }
-            }
-            if (response.data.enemy) {
-                if (enemy_party == '') {
-                    var node = document.getElementById('connect');
-                    node.innerHTML = '正在與'  + parties[enemy_party].name + '進行對戰！';
-                    var node = document.getElementById('action');
-                    node.classList.remove('hidden');
-                }
-                enemy_party = response.data.enemy;
-                enemys = [];
-                if (response.data.enemys) {
-                    for (var k in response.data.enemys) {
-                        var member = response.data.enemys[k];
-                        enemys[k] = member;
-                    }
-                    if (enemys.length > 0) {
-                        enemy_side.innerHTML = '';
-                        var z = 10;
-                        enemys.forEach( member => {
-                            var div = document.createElement('div');
-                            div.classList.add('m-2','flex', 'flex-col','gap-1');
-                            var myname = document.createElement('div');
-                            myname.classList.add('w-24','h-8','font-extrabold');
-                            myname.innerHTML = member.name;
-                            div.appendChild(myname);
-                            var hp = document.createElement('div');
-                            hp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
-                            var hp_bar = document.createElement('div');
-                            hp_bar.classList.add('h-4','bg-green-600','text-xs','font-medium','text-green-100','text-center','p-0.5','leading-none','rounded-full');
-                            hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
-                            hp_bar.innerHTML = member.hp;
-                            hp.appendChild(hp_bar);
-                            div.appendChild(hp);
-                            var mp = document.createElement('div');
-                            mp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
-                            var mp_bar = document.createElement('div');
-                            mp_bar.classList.add('h-4','bg-blue-600','text-xs','font-medium','text-blue-100','text-center','p-0.5','leading-none','rounded-full');
-                            mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
-                            mp_bar.innerHTML = member.mp;
-                            mp.appendChild(mp_bar);
-                            div.appendChild(mp);
-                            var status = document.createElement('div');
-                            status.classList.add('w-24','h-8');
-                            status.innerHTML = member.status_desc;
-                            div.appendChild(status);
-                            var image = document.createElement('img');
-                            image.classList.add('absolute', 'bottom-40', 'w-1/6', 'z-' + z);
-                            image.setAttribute('title', member.name);
-                            if (member.url) {
-                                image.src = member.url;
-                            } else {
-                                image.src = '{{ asset('images/game/blank.png') }}';
-                            }
-                            image.setAttribute('onclick', 'action_enemy(' + member.uuid + ')');
-                            div.appendChild(image);
-                            enemy_side.appendChild(div);
-                            z += 10;
-                        });
-                    }
-                }
-                if (response.data.our_actions) {
-                    for (var k in response.data.our_actions) {
-                        var message = response.data.our_actions[k];
-                        var li = document.createElement('li');
-                        li.classList.add('p-1','leading-relaxed');
-                        li.innerHTML = message;
-                        our_action.appendChild(li);
-                    }
-                }
-                if (response.data.enemy_actions) {
-                    for (var k in response.data.enemy_actions) {
-                        var message = response.data.enemy_actions[k];
-                        var li = document.createElement('li');
-                        li.classList.add('p-1','leading-relaxed');
-                        li.innerHTML = message;
-                        enemy_action.appendChild(li);
-                    }
-                }
-            } else {
-                parties = [];
-                for (var k in response.data.parties) {
-                    var party = response.data.parties[k];
-                    parties[party.id] = party;
-                }
-                party_node.innerHTML = '';
-                if (parties.length > 0) {
-                    parties.forEach( party => {
-                        var opt = document.createElement('option');
-                        opt.value = party.id;
-                        opt.innerHTML = party.name;
-                        party_node.appendChild(opt);
-                    });
-                }
-            }
-
-        });
-    }
-
-    function ring_bell() {
-        window.axios.post('{{ route('game.come_arena') }}', {
-            uuid: character,
-        }, {
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        });
-        var node = document.getElementById('connect');
-        node.innerHTML = '集合訊息已經發送，繼續等候公會成員集合......';
-    }
-
-    function invite() {
-        var pid = party_node.value;
-        window.axios.post('{{ route('game.invite_battle') }}', {
-            uuid: character,
-            party: pid,
-        }, {
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        });
-    }
-
-    function received_invite(event) {
-        if (enemy_party == '') {
-            invite_from = event.from.uuid;
-            var msg = document.getElementById('message');
-            msg.innerHTML = event.from_party.name + '邀請貴公會進行對戰練習！';
-            confirmModal.show();
-        }
-    }
-
-    function agree() {
-        window.axios.post('{{ route('game.accept_battle') }}', {
-            uuid: character,
-            from: invite_from,
-        }, {
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        }).then( response => {
-            if (response.data.error) {
-                var msg = document.getElementById('info');
-                msg.innerHTML = response.data.error;
-                warnModal.show();
-            }
-        });
-    }
-
-    function dissgree() {
-        window.axios.post('{{ route('game.reject_battle') }}', {
-            uuid: character,
-            from: invite_from,
-        }, {
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        });
-    }
-
-    function accept_invite(event) {
-        if (enemy_party == '') {
-            var msg = document.getElementById('info');
-            msg.innerHTML = event.from_party.name + '已經同意與貴公會進行對戰練習！';
-            warnModal.show();
-        }
-    }
-
-    function reject_invite(event) {
-        if (enemy_party == '') {
-            var msg = document.getElementById('info');
-            msg.innerHTML = event.from_party.name + '已經拒絕與貴公會進行對戰練習！';
-            warnModal.show();
-        }
+            var me = response.data.character;
+            var hp = document.getElementById('hp');
+            hp.style.width = Math.round(me.hp / me.max_hp * 100) + '%';
+            hp.innerHTML = me.hp;
+            var mp = document.getElementById('mp');
+            mp.style.width = Math.round(me.mp / me.max_mp * 100) + '%';
+            mp.innerHTML = me.mp;
+            var status = document.getElementById('status');
+            status.innerHTML = me.status_str;
+            var monster = response.data.monster;
+            var myname = document.getElementById('monster_name');
+            myname.innerHTML = monster.name;
+            hp = document.getElementById('monster_hp');
+            hp.style.width = Math.round(monster.hp / monster.max_hp * 100) + '%';
+            hp.innerHTML = monster.hp;
     }
 
     function action_self() {
@@ -440,16 +205,7 @@
         actionModal.show();
     }
 
-    function action_friend(uuid) {
-        if (done) return;
-        target = uuid;
-        target_type = 'friend';
-        var msg = document.getElementById('action_target');
-        msg.innerHTML = '要對隊友施展技能或使用道具？';
-        actionModal.show();
-    }
-
-    function action_enemy(uuid) {
+    function action_monster(uuid) {
         if (done) return;
         target = uuid;
         target_type = 'enemy';

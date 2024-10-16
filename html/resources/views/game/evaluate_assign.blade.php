@@ -62,7 +62,7 @@
         <td class="p-2">{{ $d->title }}</td>
         <td class="p-2">{{ $d->classroom->name }}</td>
         <td class="p-2">{{ $d->monster->name }}</td>
-        <td class="p-2">{{ $d->times }}</td>
+        <td class="p-2">{{ $d->times == 0 ? '無限制' : $d->times }}</td>
         <td class="p-2">{{ $d->opened_at->format('Y-m-d') }}</td>
         <td class="p-2">{{ $d->closed_at->format('Y-m-d') }}</td>
         <td class="p-2">

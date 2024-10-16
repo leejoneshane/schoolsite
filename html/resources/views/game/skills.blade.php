@@ -41,10 +41,16 @@
             敏捷力效果
         </th>
         <th scope="col" class="p-2">
+            解除狀態
+        </th>
+        <th scope="col" class="p-2">
+            賦予狀態
+        </th>
+        <th scope="col" class="p-2">
             獲得經驗值
         </th>
         <th scope="col" class="p-2">
-            壞得金幣
+            獲得金幣
         </th>
         <th scope="col" class="p-2">
             管理
@@ -74,6 +80,8 @@
         <td class="p-2">{{ $sk->effect_ap }}</td>
         <td class="p-2">{{ $sk->effect_dp }}</td>
         <td class="p-2">{{ $sk->effect_sp }}</td>
+        <td class="p-2">{{ $sk->status_str }}</td>
+        <td class="p-2">{{ $sk->inspire_str }}</td>
         <td class="p-2">{{ $sk->earn_xp }}</td>
         <td class="p-2">{{ $sk->earn_gp }}</td>
         <td class="p-2">

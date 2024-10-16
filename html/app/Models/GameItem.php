@@ -24,7 +24,9 @@ class GameItem extends Model
         'ap',        //對作用對象的攻擊力增減效益
         'dp',        //對作用對象的防禦力增減效益
         'sp',        //對作用對象的敏捷力增減效益
-        'status',    //解除角色狀態
+        'effect_times',//技能持續時間，以分鐘為單位
+        'status',      //解除目標狀態，DEAD 死亡狀態復活，COMA 昏迷狀態回神
+        'inspire',     //賦予目標狀態，invincible 無敵，reflex 反射傷害，protect 保護，protected 被保護，hatred 仇恨（集中傷害），apportion 分攤傷害，throw 投射道具, weak 虛弱, paralysis 麻痹, poisoned 中毒
         'gp',        //此道具的購買價格
     ];
 
@@ -32,6 +34,35 @@ class GameItem extends Model
     protected $casts = [
         'passive' => 'boolean',
     ];
+
+    //以下為透過程式動態產生之屬性
+    protected $appends = [
+        'status_str',
+        'inspire_str',
+    ];
+
+    //提供此道具解除狀態中文說明
+    public function getStatusStrAttribute()
+    {
+        if ($this->status == 'DEAD') return '死亡';
+        if ($this->status == 'COMA') return '昏迷';
+        return '';
+    }
+
+    //提供此道具賦予狀態中文說明
+    public function getInspireStrAttribute()
+    {
+        if ($this->inspire == 'invincible') return '無敵狀態';
+        if ($this->inspire == 'hatred') return '集中仇恨';
+        if ($this->inspire == 'protect') return '護衛';
+        if ($this->inspire == 'protected') return '被保護';
+        if ($this->inspire == 'reflex') return '傷害反射';
+        if ($this->inspire == 'apportion') return '分散傷害';
+        if ($this->inspire == 'weak') return '身體虛弱';
+        if ($this->inspire == 'paralysis') return '精神麻痹';
+        if ($this->inspire == 'poisoned') return '中毒';
+        return '';
+    }
 
     //篩選指定職業的技能，靜態函式
     public static function passive()
@@ -117,6 +148,53 @@ class GameItem extends Model
     }
 
     //套用道具效果
+    public function effect_monster($monster_id)
+    {
+        $monster = GameMonster::find($monster_id);
+        $hit = $this->hit_rate;
+        if ($this->object == 'target' || $this->object == 'all') {
+            $hit -= $monster->final_sp / 100;
+        }
+        $rnd = mt_rand()/mt_getrandmax();
+        if ($hit >= 1 || $rnd < $hit) {
+            if ($this->hp != 0) {
+                if ($this->hp > 1 || $this->hp < -1) {
+                    $monster->hp += $this->hp;
+                } else {
+                    $monster->hp += intval($monster->max_hp * $this->hp);
+                }
+            }
+            if ($this->ap != 0) {
+                $monster->temp_effect = 'ap';
+                $monster->effect_value = $this->ap;
+                $monster->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            if ($this->dp != 0) {
+                $monster->temp_effect = 'dp';
+                $monster->effect_value = $this->dp;
+                $monster->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            if ($this->sp != 0) {
+                $monster->temp_effect = 'sp';
+                $monster->effect_value = $this->sp;
+                $monster->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            if ($this->inspire) {
+                $monster->buff = $this->inspire;
+                $monster->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            if ($monster->hp < 1) {
+                $me->xp += $monster->xp;
+                $me->gp += $monster->gp;
+            }
+            $monster->save();
+            return 0;
+        } else {
+            return MISS;
+        }
+    }
+
+    //套用道具效果
     public function effect($character)
     {
         $hit = $this->hit_rate;
@@ -125,6 +203,11 @@ class GameItem extends Model
         }
         $rnd = mt_rand()/mt_getrandmax();
         if ($hit >= 1 || $rnd < $hit) {
+            if ($character->buff == 'invincible') {
+                $character->buff = null;
+                $character->save();
+                return MISS;
+            }
             if ($this->hp != 0) {
                 if ($character->status == 'DEAD') {
                     if ($this->status == 'DEAD') {
@@ -162,17 +245,21 @@ class GameItem extends Model
             if ($this->ap != 0) {
                 $character->temp_effect = 'ap';
                 $character->effect_value = $this->ap;
-                $character->effect_timeout = Carbon::now()->addMinutes(40);
+                $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
             }
             if ($this->dp != 0) {
                 $character->temp_effect = 'dp';
                 $character->effect_value = $this->dp;
-                $character->effect_timeout = Carbon::now()->addMinutes(40);
+                $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
             }
             if ($this->sp != 0) {
                 $character->temp_effect = 'sp';
                 $character->effect_value = $this->sp;
-                $character->effect_timeout = Carbon::now()->addMinutes(40);
+                $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
+            }
+            if ($this->inspire) {
+                $character->buff = $this->inspire;
+                $character->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
             }
             $character->save();
             return 0;

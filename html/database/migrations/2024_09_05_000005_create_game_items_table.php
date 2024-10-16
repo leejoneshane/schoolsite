@@ -27,6 +27,8 @@ return new class extends Migration
             $table->float('dp')->default(0);
             $table->float('sp')->default(0);
             $table->string('status')->nullable();
+            $table->string('inspire')->nullable();
+            $table->integer('effect_times')->default(40);
             $table->integer('gp')->default(0);
             $table->timestamps();
         });

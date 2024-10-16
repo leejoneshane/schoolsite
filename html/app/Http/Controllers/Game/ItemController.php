@@ -54,7 +54,9 @@ class ItemController extends Controller
                 'ap' => $request->input('ap'),
                 'dp' => $request->input('dp'),
                 'sp' => $request->input('sp'),
+                'effect_times' => $request->input('effect_times'),
                 'status' => $request->input('status'),
+                'inspire' => $request->input('inspire'),
                 'gp' => $request->input('gp'),
             ]);
             if ($request->hasFile('file')) {
@@ -104,7 +106,9 @@ class ItemController extends Controller
             $sk->ap = $request->input('ap');
             $sk->dp = $request->input('dp');
             $sk->sp = $request->input('sp');
+            $sk->effect_times = $request->input('effect_times');
             $sk->status = $request->input('status');
+            $sk->inspire = $request->input('inspire');
             $sk->gp = $request->input('gp');
             if ($request->hasFile('file')) {
                 $image = $request->file('file');

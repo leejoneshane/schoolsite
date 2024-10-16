@@ -30,6 +30,7 @@ use App\Models\GameFurniture;
 use App\Models\GameSetting;
 use App\Models\GameDelay;
 use App\Models\GameLog;
+use App\Models\GameDungeon;
 use App\Models\Watchdog;
 
 class PlayerController extends Controller
@@ -248,7 +249,7 @@ class PlayerController extends Controller
                 if ($item) $message .= $item->name;
             } else {
                 $me->use_skill($skill->id, $target->uuid, null, $item->id);
-                $message = $me->name.'對'.$tyarget->name.'施展'.$skill->name;
+                $message = $me->name.'對'.$target->name.'施展'.$skill->name;
                 if ($item) $message .= $item->name;
             }
         }
@@ -446,6 +447,14 @@ class PlayerController extends Controller
         if ($object) {
             broadcast(new GameCharacterChannel($character->uuid, $object->uuid, null, 'reject_invite'));
         }
+    }
+
+    public function dungeon()
+    {
+        $character = GameCharacter::find(Auth::user()->uuid);
+        ExitArena::dispatch($character);
+        $dungeons = GameDungeon::findByClassroom($character->party->classroom_id);
+        return view('game.dungeon', [ 'character' => $character, 'dungeons' => $dungeons ]);
     }
 
 }

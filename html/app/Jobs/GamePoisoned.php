@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use App\Models\GameCharacter;
+use App\Models\GameMonsterSpawn;
 
 class GameDailyRenew implements ShouldQueue
 {
@@ -35,6 +36,18 @@ class GameDailyRenew implements ShouldQueue
     {
         $characters = GameCharacter::all();
         foreach ($characters as $c) {
+            if ($c->buff == 'poisoned') {
+                if ($c->effect_timeout >= Carbon::now()) {
+                    $c->hp --;
+                } else {
+                    $c->effect_timeout = null;
+                    $c->buff = null;
+                }
+                $c->save();
+            }
+        }
+        $monsters = GameMonsterSpawn::all();
+        foreach ($monsters as $c) {
             if ($c->buff == 'poisoned') {
                 if ($c->effect_timeout >= Carbon::now()) {
                     $c->hp --;

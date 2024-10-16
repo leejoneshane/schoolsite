@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\GameMonster;
 use App\Models\GameImage;
+use App\Models\GameSkill;
 use App\Models\Watchdog;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
@@ -48,9 +49,10 @@ class MonsterController extends Controller
             $m = GameMonster::create([
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
+                'min_level' => $request->input('min_level'),
+                'max_level' => $request->input('max_level'),
                 'hit_rate' => $request->input('hit_rate'),
                 'crit_rate' => $request->input('crit_rate'),
-                'max_hp' => $request->input('hp'),
                 'hp' => $request->input('hp'),
                 'ap' => $request->input('ap'),
                 'dp' => $request->input('dp'),
@@ -84,19 +86,21 @@ class MonsterController extends Controller
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $pro = GameMonster::find($monster_id);
-            $pro->name = $request->input('name');
-            $pro->description = $request->input('description');
-            $pro->hit_rate = $request->input('hit_rate');
-            $pro->crit_rate = $request->input('crit_rate');
-            $pro->max_hp = $request->input('hp');
-            $pro->hp = $request->input('hp');
-            $pro->ap = $request->input('ap');
-            $pro->dp = $request->input('dp');
-            $pro->sp = $request->input('sp');
-            $pro->xp = $request->input('xp');
-            $pro->gp = $request->input('gp');
-            $pro->style = $request->input('style');
-            $pro->save();
+            $pro->update([
+                'name' => $request->input('name'),
+                'description' => $request->input('description'),
+                'min_level' => $request->input('min_level'),
+                'max_level' => $request->input('max_level'),
+                'hit_rate' => $request->input('hit_rate'),
+                'crit_rate' => $request->input('crit_rate'),
+                'hp' => $request->input('hp'),
+                'ap' => $request->input('ap'),
+                'dp' => $request->input('dp'),
+                'sp' => $request->input('sp'),
+                'xp' => $request->input('xp'),
+                'gp' => $request->input('gp'),
+                'style' => $request->input('style'),
+            ]);
             Watchdog::watch($request, '修改遊戲怪物：' . $pro->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('game.monsters')->with('success', '已修改怪物：'.$request->input('name').'！');
         } else {
@@ -232,6 +236,36 @@ class MonsterController extends Controller
         $new->save();
         $pro = $new->owner;
         return redirect()->route('game.monster_faces', [ 'monster_id' => $pro->id ]);
+    }
+
+    public function skills($monster_id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->hasPermission('game.manager');
+        if ($user->is_admin || $manager) {
+            $monsters = GameMonster::all();
+            $pro = GameMonster::find($monster_id);
+            $skills = GameSkill::all();
+            return view('game.monster_skills', [ 'monster' => $pro, 'monsters' => $monsters, 'skills' => $skills ]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function skills_update(Request $request, $monster_id)
+    {
+        DB::table('game_monsters_skills')->where('monster_id', $monster_id)->delete();
+        if (!empty($request->skills)) {
+            foreach ($request->input('skills') as $i => $new) {
+                DB::table('game_monsters_skills')->updateOrInsert([
+                    'monster_id' => $monster_id,
+                    'skill_id' => $new,
+                ],[
+                    'level' => $request->input('level')[$i],
+                ]);
+            }
+        }
+        return redirect()->back()->with('success', '此怪物種族的技能設定已經儲存！');
     }
 
 }

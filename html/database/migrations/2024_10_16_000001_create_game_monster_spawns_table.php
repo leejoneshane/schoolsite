@@ -13,12 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('game_monsters', function (Blueprint $table) {
+        Schema::create('game_monster_spawns', function (Blueprint $table) {
             $table->id();
+            $table->integer('monster_id');
             $table->string('name');
-            $table->string('description');
-            $table->integer('min_level')->default(100);
-            $table->integer('max_level')->default(100);
+            $table->integer('level');
+            $table->string('url');
+            $table->integer('max_hp');
             $table->integer('hp')->default(100);
             $table->float('hit_rate')->default(0);
             $table->float('crit_rate')->default(0);
@@ -27,8 +28,10 @@ return new class extends Migration
             $table->integer('sp')->default(0);
             $table->integer('xp')->default(0);
             $table->integer('gp')->default(0);
-            $table->string('style')->nullable();
-            $table->timestamps();
+            $table->string('temp_effect')->nullable();
+            $table->float('effect_value')->default(0);
+            $table->timestamp('effect_timeout')->nullable();
+            $table->string('buff')->nullable();
         });
     }
 

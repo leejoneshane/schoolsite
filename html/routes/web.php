@@ -481,6 +481,8 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('monsters/destroy', 'App\Http\Controllers\Game\MonsterController@destroy')->name('game.monster_removeimage');
     Route::get('monsters/faces/edit/{monster_id?}', 'App\Http\Controllers\Game\MonsterController@faces')->name('game.monster_faces');
     Route::post('monsters/faces/upload/{image_id}', 'App\Http\Controllers\Game\MonsterController@face_upload')->name('game.monster_faceupload');
+    Route::get('monsters/skills/{monster_id?}', 'App\Http\Controllers\Game\MonsterController@skills');
+    Route::post('monsters/skills/{monster_id?}', 'App\Http\Controllers\Game\MonsterController@skills_update')->name('game.monster_skills');
 
     Route::get('rules/positive', 'App\Http\Controllers\Game\SettingsController@positive')->name('game.positive');
     Route::get('rules/negative', 'App\Http\Controllers\Game\SettingsController@negative')->name('game.negative');

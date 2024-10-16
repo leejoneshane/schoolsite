@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
-    編輯怪物
+    編輯怪物種族
     <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ route('game.monsters') }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
@@ -15,9 +15,19 @@
         <input type="text" id="name" name="name" value="{{ $monster->name }}" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
     </div></p>
     <p><div class="p-3">
-        <label for="description" class="inline">怪物描述：</label>
+        <label for="description" class="inline">怪物種族描述：</label>
         <textarea id="description" class="inline w-128 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             name="description" rows="5" cols="120">{{ $monster->description }}</textarea>
+    </div></p>
+    <p><div class="p-3">
+        <label class="inline">等級範圍：</label>
+        <div class="inline">
+            <input class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="min_level" min="1" max="30" step="1" value="{{ $monster->min_level }}">
+            ～
+            <input class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                type="number" name="max_level" min="1" max="30" step="1" value="{{ $monster->max_level }}">
+        </div>
     </div></p>
     <p><div class="p-3">
         <label class="inline">攻擊能力：</label>
@@ -35,7 +45,7 @@
         <div class="inline">
             <label for="base_hp" class="text-sm">最大健康值：</label>
             <input id="base_hp" class="w-24 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="number" name="hp" min="10" max="500" step="10" value="{{ $monster->max_hp }}">
+                type="number" name="hp" min="10" max="500" step="10" value="{{ $monster->hp }}">
             <label for="base_ap" class="text-sm">攻擊力：</label>
             <input id="base_ap" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
                 type="number" name="ap" min="10" max="50" step="1" value="{{ $monster->ap }}">

@@ -187,7 +187,13 @@ class GameCharacter extends Model
             }
         }
         if ($this->buff == 'weak') {
-            $ap = intval($ap * 0.5);
+            if (Carbon::now() < $this->effect_timeout) {
+                $ap = intval($ap * 0.5);
+            } else {
+                $this->buff = null;
+                $this->effect_timeout = null;
+                $this->save();
+            }
         }
         return $ap;
     }
@@ -222,7 +228,13 @@ class GameCharacter extends Model
             }
         }
         if ($this->buff == 'weak') {
-            $dp = intval($dp * 0.5);
+            if (Carbon::now() < $this->effect_timeout) {
+                $dp = intval($dp * 0.5);
+            } else {
+                $this->buff = null;
+                $this->effect_timeout = null;
+                $this->save();
+            }
         }
         return $dp;
     }
@@ -257,7 +269,13 @@ class GameCharacter extends Model
             }
         }
         if ($this->buff == 'weak') {
-            $sp = intval($sp * 0.5);
+            if (Carbon::now() < $this->effect_timeout) {
+                $sp = intval($sp * 0.5);
+            } else {
+                $this->buff = null;
+                $this->effect_timeout = null;
+                $this->save();
+            }
         }
         return $sp;
     }
@@ -544,9 +562,28 @@ class GameCharacter extends Model
         $skill = GameSkill::find($id);
         $classroom = $this->student->class_id;
         if (!$skill->passive && !GameSence::is_lock($classroom)) return PEACE;
-        if ($this->party_id) {
+        if ($uuid || $this->party_id) {
             $skill->cast($this->uuid, $uuid, $party_id, $item_id);
         }
+    }
+
+    //使用指定的技能在怪物身上
+    public function use_skill_on_monster($id, $monster_id, $item_id = null)
+    {
+        if ($this->status == 'DEAD') return DEAD;
+        if ($this->status == 'COMA') return COMA;
+        if ($this->buff == 'paralysis') {
+            if ($this->effect_timeout >= Carbon::now()) {
+                return COMA;
+            } else {
+                $this->effect_timeout = null;
+                $this->buff = null;
+                $this->save();
+            }
+        }
+        if (!($this->skills()->contains('id', $id))) return NOT_EXISTS;
+        $skill = GameSkill::find($id);
+        $skill->cast_on_monster($this->uuid, $monster_id, $item_id);
     }
 
     //購買指定的道具
@@ -645,7 +682,7 @@ class GameCharacter extends Model
         $item = GameItem::find($id);
         $classroom = $this->student->class_id;
         if (!$item->passive && !GameSence::is_lock($classroom)) return PEACE;
-        if ($this->party_id) {
+        if ($uuid || $this->party_id) {
             $item->cast($this->uuid, $uuid, $party_id);
             DB::table('game_characters_items')
                 ->where('uuid', $this->uuid)
@@ -657,6 +694,33 @@ class GameCharacter extends Model
                 ->where('quantity', '<', 1)
                 ->delete();
         }
+    }
+
+    //使用指定的道具
+    public function use_item_on_monster($id, $monster_id)
+    {
+        if ($this->status == 'DEAD') return DEAD;
+        if ($this->buff == 'paralysis') {
+            if ($this->effect_timeout >= Carbon::now()) {
+                return COMA;
+            } else {
+                $this->effect_timeout = null;
+                $this->buff = null;
+                $this->save();
+            }
+        }
+        if (!($this->items->contains('id', $id))) return NOT_EXISTS;
+        $item = GameItem::find($id);
+        $item->effect_monster($monster_id);
+        DB::table('game_characters_items')
+            ->where('uuid', $this->uuid)
+            ->where('item_id', $item->id)
+            ->decrement('quantity');
+        DB::table('game_characters_items')
+            ->where('uuid', $this->uuid)
+            ->where('item_id', $item->id)
+            ->where('quantity', '<', 1)
+            ->delete();
     }
 
 }
