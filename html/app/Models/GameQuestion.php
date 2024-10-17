@@ -22,7 +22,6 @@ class GameQuestion extends Model
     //以下屬性隱藏不顯示（toJson 時忽略）
     protected $hidden = [
         'evaluate',
-        'options',
         'correct',
     ];
 

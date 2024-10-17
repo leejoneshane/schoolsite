@@ -545,6 +545,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
         Route::get('/', 'App\Http\Controllers\Game\PlayerController@index')->name('game.player');
         Route::get('party', 'App\Http\Controllers\Game\PlayerController@party')->name('game.party');
         Route::get('arena', 'App\Http\Controllers\Game\PlayerController@arena')->name('game.arena');
+        Route::get('dungeon', 'App\Http\Controllers\Game\PlayerController@dungeon')->name('game.dungeon');
         Route::get('shop/furniture', 'App\Http\Controllers\Game\PlayerController@furniture_shop')->name('game.furniture_shop');
         Route::get('shop/item', 'App\Http\Controllers\Game\PlayerController@item_shop')->name('game.item_shop');
         Route::post('talkto', 'App\Http\Controllers\Game\MessagerController@personal')->name('game.private');
@@ -568,6 +569,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
         Route::post('arena/battle/ask', 'App\Http\Controllers\Game\PlayerController@invite_battle')->name('game.invite_battle');
         Route::post('arena/battle/accept', 'App\Http\Controllers\Game\PlayerController@accept_battle')->name('game.accept_battle');
         Route::post('arena/battle/reject', 'App\Http\Controllers\Game\PlayerController@reject_battle')->name('game.reject_battle');
+        Route::post('dungeon/enter', 'App\Http\Controllers\Game\PlayerController@enter_dungeon')->name('game.enter_dungeon');
     });
 });
 

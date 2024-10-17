@@ -17,24 +17,38 @@
                     <img title="{{ $character->name }}" src="{{ $character->url ?: '' }}" class="absolute bottom-40 w-1/3 z-50">
                 </div>
             </div>
-            <div class="w-1/3 text-center">
+            <div class="w-1/3 text-center inline-flex flex-col">
+                <h1 id="caption" class="hidden text-xl" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;"></h1>
+                <div id="help" class="p-2">
+                    <ul class="text-left">
+                        <li>地下城遊戲規則：</li>
+                        <li>1. 先選擇要進入的地下城。</li>
+                        <li>2. 你有 30 秒的時間回答問題，超過時間怪物會採取行動。</li>
+                        <li>3. 回答正確的話，你可以採取行動，錯誤的話，怪物會採取行動。</li>
+                        <li>4. 擊敗怪物可以獲得經驗值或金幣。</li>
+                        <li>5. 角色死亡或通過關卡將自動結束冒險。</li>
+                    </ul>
+                </div>
                 <div id="dungeons" class="p-2">
                     @if ($dungeons->count() > 0)
-                    <button onclick="choice();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    <button onclick="dungeonModal.show();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         挑選要進入的地下城！
                     </button>
                     @else
-                        沒有可以進入的場所！
+                        沒有可以進入的地下城！
                     @endif
                 </div>
+                <div id="fight" class="hidden">
+                    
+                </div>
             </div>
-            <div id="monster" class="w-1/3 inline-flex content-end">
-                <div class="m-2 flex flex-col gap-1">
+            <div class="w-1/3 inline-flex content-end">
+                <div id="monster" class="hidden m-2 flex flex-col gap-1">
                     <div id="monster_name" class="w-24 h-8 font-extrabold"></div>
                     <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
-                        <div id="monster_hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($monster->hp / $monster->max_hp * 100) }}%;">{{ $monster->hp }}</div>
+                        <div id="monster_hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: 100%;"></div>
                     </div>
-                    <img id="monster_img" title="{{ $monster->name }}" src="{{ $monster->random_url() ?: '' }}" class="absolute bottom-40 w-1/3 z-50">
+                    <img id="monster_img" title="" src="" class="absolute bottom-40 w-1/3 z-50">
                 </div>
             </div>    
         </div>
@@ -63,12 +77,12 @@
                 <h3 class="text-center text-xl font-semibold text-gray-900 dark:text-white">已開放地下城：</h3>
             </div>
             <div class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                <ul>
+                <ul class="text-left">
                 @foreach ($dungeons as $d)
                 <li>
-                    <input type="radio" id="dun{{ $d->id }}" name="dungeon" value="{{ $d->id }}" class="hidden peer" />
+                    <input type="radio" name="dungeon" value="{{ $d->id }}" class="hidden peer" />
                     <label for="{{ $d->id }}" class="inline-block w-full p-2 {{ $d->monster->style }} bg-white border-2 border-gray-200 cursor-pointer peer-checked:border-blue-600 hover:bg-gray-50">
-                        <span class="inline-block text-normal w-48">{{ $d->name }}</span>
+                        <span class="inline-block text-normal w-48">{{ $d->title }}</span>
                         <span class="inline-block text-xs w-80">{{ $d->description }}</span>
                     </label>
                 </li>
@@ -79,7 +93,7 @@
                 <button onclick="enter();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     進入
                 </button>
-                <button onclick="exit(); dungeonModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                <button onclick="dungeonModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                     我再想想！
                 </button>
             </div>
@@ -149,16 +163,21 @@
 </div>
 <script nonce="selfhost">
     var character = '{{ $character->uuid }}';
-    var evaluate; //evaluate_id 
-    var dungeon; //dungeon_id
-    var monster; //spawn_id
+    var dungeon; //dungeon object
+    var monster; //spawn object
+    var questions = []; 
+    var options = [];
     var skills = [];
     var items =[];
-    var target; // monster_id
     var target_type; //self or monster
     var data_type; //skill or item
     var data_skill; //skill id
     var data_item; //item id
+    var targetSeconds = 0;
+    var timerId;
+    var startTime;
+    var pauseTime;
+    var remainingTime;
 
     var main = document.getElementsByTagName('main')[0];
     main.classList.replace('bg-game-map50', 'bg-game-dungeon');
@@ -172,10 +191,57 @@
     const skillsModal = new window.Modal($targetEl);
     $targetEl = document.getElementById('itemsModal');
     const itemsModal = new window.Modal($targetEl);
-    window.onload = refresh;
     window.onunload = warn;
 
     function enter() {
+        var node = document.querySelector('input[name="dungeon"]:checked');
+        if (node == null) {
+            var msg = document.getElementById('info');
+            msg.innerHTML = '您尚未選擇地下城！';
+            warnModal.show();
+            return;
+        }
+        var myid = node.value;
+        window.axios.post('{{ route('game.enter_dungeon') }}', {
+            dungeon_id: myid,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then( response => {
+            dungeon = response.data.dungeon;
+            var caption = document.getElementById('caption');
+            caption.innerHTML = dungeon.name;
+            caption.classList.remove('hidden');
+            var node = document.getElementById('fight');
+            node.classList.remove('hidden');
+            node = document.getElementById('dungeons');
+            node.classList.add('hidden');
+            questions = [];
+            for (var k in response.data.questions) {
+                var question = response.data.questions[k];
+                questions[k] = question;
+                options[k] = question.options;
+            }
+            monster = response.data.monster;
+            var myname = document.getElementById('monster_name');
+            myname.innerHTML = monster.name;
+            var hp = document.getElementById('monster_hp');
+            hp.style.width = Math.round(monster.hp / monster.max_hp * 100) + '%';
+            hp.innerHTML = monster.hp;
+            var img = document.getElementById('monster_img');
+            img.setAttribute('title', monster.name);
+            img.setAttribute('src', monster.url);
+            var mon = document.getElementById('monster');
+            mon.classList.remove('hidden');
+
+        });
+        show_question();
+    }
+
+    function show_question() {
+
     }
 
     function refresh() {
@@ -188,7 +254,7 @@
             mp.innerHTML = me.mp;
             var status = document.getElementById('status');
             status.innerHTML = me.status_str;
-            var monster = response.data.monster;
+            monster = response.data.monster;
             var myname = document.getElementById('monster_name');
             myname.innerHTML = monster.name;
             hp = document.getElementById('monster_hp');

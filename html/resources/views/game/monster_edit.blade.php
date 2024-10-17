@@ -9,7 +9,7 @@
 </div>
 <form id="add-class" action="{{ route('game.monster_edit', [ 'monster_id' => $monster->id ]) }}" method="POST">
     @csrf
-    <input type="hidden" id="style" name="style" value="">
+    <input type="hidden" id="style" name="style" value="{{ $monster->style }}">
     <p><div class="p-3">
         <label for="name" class="inline">怪物種族：</label>
         <input type="text" id="name" name="name" value="{{ $monster->name }}" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>

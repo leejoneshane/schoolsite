@@ -74,7 +74,7 @@ class GameMonster extends Model
             'xp' => $this->xp,
             'gp' => $this->gp,
         ]);
-        return $spawn->id;
+        return $spawn;
     }
 
 }

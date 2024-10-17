@@ -459,4 +459,15 @@ class PlayerController extends Controller
         return view('game.dungeon', [ 'character' => $character, 'dungeons' => $dungeons ]);
     }
 
+    public function enter_dungeon(Request $request)
+    {
+        $dungeon = GameDungeon::find($request->input('dungeon_id'));
+        $request->session()->put('dungeon_id', $dungeon->id);
+        $questions = $dungeon->questions;
+        $monster = GameMonster::find($dungeon->monster_id);
+        $spawn = $monster->spawn();
+        $request->session()->put('spawn_id', $spawn->id);
+        return response()->json([ 'dungeon' => $dungeon, 'questions' => $questions, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
 }
