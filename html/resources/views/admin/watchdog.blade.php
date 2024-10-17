@@ -119,15 +119,15 @@
         if (!$user) {
             $role = '尚未登入';
         } elseif ($user->user_type == 'Teacher') {
-            $role = $user->profile->role_name;
+            $role = employee($user->uuid)->role_name;
         } elseif ($user->user_type == 'Student') {
-            $role = $user->profile->classroom->name;
+            $role = employee($user->uuid)->classroom->name;
         } else {
             $role = '本地帳號';
         }
         @endphp
         <td class="p-2">{{ $role }}</td>
-        <td class="p-2">{{ ($user) ? $user->profile->realname : ''}}</td>
+        <td class="p-2">{{ ($user) ? $employee(user->uuid)->realname : ''}}</td>
     </tr>
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td colspan="8" class="border-b">{!! nl2br($log->action) !!}</td>

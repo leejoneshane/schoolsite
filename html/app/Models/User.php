@@ -35,11 +35,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_admin',
     ];
 
-    //以下為透過程式動態產生之屬性
-    protected $appends = [
-        'profile',
-    ];
-
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'is_admin' => 'boolean',
@@ -62,18 +57,6 @@ class User extends Authenticatable implements MustVerifyEmail
     public function permissions()
     {
         return $this->belongsToMany('App\Models\Permissions', 'user_permission', 'uuid', 'perm_id');
-    }
-
-    //提供使用者的真實身份物件，可能為教師物件或學生物件
-    public function getProfileAttribute()
-    {
-        if ($this->user_type == 'Teacher') {
-            return Teacher::find($this->uuid);
-        }
-        if ($this->user_type == 'Student') {
-            return Student::find($this->uuid);
-        }
-        return (object) array('realname' => '管理員');
     }
 
     //授予使用者權限

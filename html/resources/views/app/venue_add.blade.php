@@ -26,7 +26,7 @@
             }
             $display = $t->role_name . $gap . $t->realname;
         @endphp
-        <option value="{{ $t->uuid }}"{{ ($t->uuid == $teacher->uuid) ? ' selected' : '' }}>{{ $display }}</option>
+        <option value="{{ $t->uuid }}"{{ ($t->uuid == employee()->uuid) ? ' selected' : '' }}>{{ $display }}</option>
         @endforeach
         </select>
     </div></p>

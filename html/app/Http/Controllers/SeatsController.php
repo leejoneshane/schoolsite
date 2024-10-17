@@ -26,7 +26,7 @@ class SeatsController extends Controller
 
     public function theme()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type != 'Teacher') {
             return redirect()->route('home')->with('error', '只有教職員才能管理分組座位表！');
         }
@@ -98,7 +98,7 @@ class SeatsController extends Controller
             return redirect()->route('home')->with('error', '只有教職員才能新增分組座位表！');
         }
         $themes = SeatsTheme::all();
-        $classes = $user->profile->classrooms;
+        $classes = employee()->classrooms;
         return view('app.seats_add', ['classes' => $classes, 'themes' => $themes]);
 
     }
@@ -272,19 +272,20 @@ class SeatsController extends Controller
             return redirect()->route('home')->with('error', '這不是您建立的座位表，因此無法變更！');
         }
         $themes = SeatsTheme::all();
-        $classes = $user->profile->classrooms;
+        $classes = employee()->classrooms;
         return view('app.seats_change', ['seats' => $seats, 'classes' => $classes, 'themes' => $themes]);
     }
 
     public function updateChange(Request $request, $id)
     {
+        $user = Auth::user();
         $seats = Seats::find($id);
         $old = $seats->class_id;
         $new = $request->input('classroom');
         $seats->update([
             'class_id' => $new,
             'theme_id' => $request->input('theme'),
-            'uuid' => $request->user()->uuid,
+            'uuid' => $user->uuid,
         ]);
         if ($old != $new) {
             DB::table('seats_students')->where('seats_id', $id)->delete();
@@ -295,7 +296,7 @@ class SeatsController extends Controller
 
     public function remove(Request $request, $id)
     {
-        $user = $request->user();
+        $user = Auth::user();
         $seats = Seats::find($id);
         if ($user->uuid != $seats->uuid) {
             return redirect()->route('home')->with('error', '這不是您建立的座位表，因此無法移除！');

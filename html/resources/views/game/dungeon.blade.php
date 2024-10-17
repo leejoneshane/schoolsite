@@ -149,7 +149,7 @@
 </div>
 <script nonce="selfhost">
     var character = '{{ $character->uuid }}';
-    var evaluate; //evaluate_id
+    var evaluate; //evaluate_id 
     var dungeon; //dungeon_id
     var monster; //spawn_id
     var skills = [];

@@ -48,15 +48,19 @@ function is_lock($room_id) {
         ->exists();
 }
 
-function player() {
-    $uuid = auth()->user()->uuid;
+function player($uuid = null) {
+    if (!$uuid) {
+        $uuid = auth()->user()->uuid;
+    }
     $character = GameCharacter::find($uuid);
     return $character;
 }
 
-function employee() {
+function employee($uuid = null) {
     $user = auth()->user();
-    $uuid = $user->uuid;
+    if (!$uuid) {
+        $uuid = auth()->user()->uuid;
+    }
     if ($user->user_type == 'Student') {
         $obj = Student::find($uuid);
     } else {

@@ -45,7 +45,7 @@ class RepairReplyNotification extends Notification implements ShouldQueue
     {
         $reply = RepairReply::find($this->id);
         return (new MailMessage)->subject('國語實驗國民小學修繕回應通知')
-            ->view('emails.repairreply', ['reporter' => $notifiable->profile, 'reply' => $reply]);
+            ->view('emails.repairreply', ['reporter' => employee($notifiable->uuid), 'reply' => $reply]);
     }
 
     /**

@@ -25,8 +25,8 @@ class PrivateMessage implements ShouldBroadcastNow
     {
         $this->from = $from;
         $this->to = $to;
-        $this->from_user = User::find($from)->profile->realname;
-        $this->to_user = User::find($to)->profile->realname;
+        $this->from_user = employee($from)->realname;
+        $this->to_user = employee($to)->realname;
         $this->message = $message;
     }
 

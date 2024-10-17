@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Venue;
 use App\Models\VenueReserve;
-use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Watchdog;
 use Carbon\Carbon;
@@ -28,7 +27,7 @@ class VenueController extends Controller
 
     public function index()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
@@ -39,14 +38,14 @@ class VenueController extends Controller
 
     public function add()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
         $manager = ($user->is_admin || $user->hasPermission('venue.manager'));
         if ($manager) {
             $teachers = Teacher::admins();
-            return view('app.venue_add', ['teacher' => $user->profile, 'teachers' => $teachers, 'sessions' => self::$sessionMap]);
+            return view('app.venue_add', ['teachers' => $teachers, 'sessions' => self::$sessionMap]);
         } else {
             return redirect()->route('venues')->with('error', '只有管理員才能新增場地或設備！');
         }
@@ -54,7 +53,7 @@ class VenueController extends Controller
 
     public function insert(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
@@ -113,7 +112,7 @@ class VenueController extends Controller
 
     public function edit($id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
@@ -130,7 +129,7 @@ class VenueController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
@@ -201,7 +200,7 @@ class VenueController extends Controller
 
     public function remove(Request $request, $id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
@@ -223,7 +222,7 @@ class VenueController extends Controller
         } else {
             $date = Carbon::createFromFormat('Y-m-d', $date);
         }
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
@@ -235,7 +234,7 @@ class VenueController extends Controller
 
     public function show(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
@@ -251,7 +250,7 @@ class VenueController extends Controller
 
     public function reserveAdd(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
@@ -267,7 +266,7 @@ class VenueController extends Controller
 
     public function reserveInsert(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
@@ -276,7 +275,7 @@ class VenueController extends Controller
         $r = VenueReserve::create([
             'venue_id' => $venue_id,
             'uuid' => $user->uuid,
-            'teacher_name' => $user->profile->realname,
+            'teacher_name' => employee()->realname,
             'reserved_at' => $date,
             'weekday' => $request->input('weekday'),
             'session' => $request->input('session'),
@@ -289,7 +288,7 @@ class VenueController extends Controller
 
     public function reserveEdit(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }
@@ -315,7 +314,7 @@ class VenueController extends Controller
 
     public function reserveUpdate(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能預約場地或設備！');
         }

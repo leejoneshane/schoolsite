@@ -51,9 +51,9 @@ class WatchdogExport implements FromCollection, WithHeadings, WithColumnFormatti
     {
         $user = $row->who;
         if ($user->user_type == 'Teacher') {
-            $role = $user->profile->role_name;
+            $role = employee($user->uuid)->role_name;
         } elseif ($user->user_type == 'Student') {
-            $role = $user->profile->classroom->name;
+            $role = employee($user->uuid)->classroom->name;
         } else {
             $role = '本地帳號';
         }

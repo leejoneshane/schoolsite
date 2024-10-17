@@ -19,7 +19,7 @@ class LunchController extends Controller
 
     public function index(Request $request, $section = null)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
         $sections = LunchSurvey::sections();
         $next = next_section();
@@ -36,7 +36,7 @@ class LunchController extends Controller
         $survey = $surveys = $classes = null;
         $classes = Classroom::all();
         if ($user->user_type == 'Student') {
-            $class_id = $user->profile->class_id;
+            $class_id = employee()->class_id;
             $classroom = Classroom::find($class_id);
             $survey = LunchSurvey::findBy($user->uuid, $section);
         } elseif ($manager) {
@@ -45,7 +45,7 @@ class LunchController extends Controller
             $classroom = Classroom::find($class_id);
             $surveys = LunchSurvey::class_survey($class_id, $section);
         } elseif ($user->user_type == 'Teacher') {
-            $class_id = $user->profile->tutor_class;
+            $class_id = employee()->tutor_class;
             $classroom = Classroom::find($class_id);
             $surveys = LunchSurvey::class_survey($class_id, $section);
         }
@@ -54,7 +54,7 @@ class LunchController extends Controller
 
     public function setting($section)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
         if (!$manager) {
             return redirect()->route('home')->with('error', '只有管理員才能設定午餐調查期程！');
@@ -66,7 +66,7 @@ class LunchController extends Controller
 
     public function save(Request $request, $section)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
         if (!$manager) {
             return redirect()->route('home')->with('error', '只有管理員才能設定午餐調查期程！');
@@ -95,7 +95,7 @@ class LunchController extends Controller
 
     public function survey(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $student = Student::find($user->uuid);
         $survey = LunchSurvey::updateOrCreate([
             'section' => $request->input('section'),
@@ -115,7 +115,7 @@ class LunchController extends Controller
 
     public function downloadAll($section = null)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
         if (!$manager) {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -131,7 +131,7 @@ class LunchController extends Controller
 
     public function download($section, $class_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
         if (!$manager) {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');

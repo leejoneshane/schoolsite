@@ -41,7 +41,7 @@ class IcsEventPolicy
     public function create(User $user)
     {
         if ($user->user_type == 'Teacher') {
-            $role = Role::find($user->profile->role_id);
+            $role = Role::find(employee($user->uuid)->role_id);
             if ( $role->role_no == 'C02' ||
                 $role->role_no == 'C03') {
                 return true;
@@ -55,7 +55,7 @@ class IcsEventPolicy
     {
         if ($user->user_type == 'Teacher') {
             if ($event->uuid == $user->uuid) return true;
-            $role = Role::find($user->profile->role_id);
+            $role = Role::find(employee($user->uuid)->role_id);
             $unit_no = Unit::find($event->unit_id)->unit_no;
             if ($unit_no == substr($role->unit->unit_no, 0, 3) && (
                 $role->role_no == 'C02' ||
@@ -70,7 +70,7 @@ class IcsEventPolicy
     public function delete(User $user, IcsEvent $event)
     {
         if ($user->user_type == 'Teacher') {
-            $role = Role::find($user->profile->role_id);
+            $role = Role::find(employee($user->uuid)->role_id);
             $unit_no = Unit::find($event->unit_id)->unit_no;
             if ($unit_no == substr($role->unit->unit_no, 0, 3) &&
                 $role->role_no == 'C02') {

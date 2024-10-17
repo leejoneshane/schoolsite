@@ -19,7 +19,7 @@ class RepairController extends Controller
 
     public function index()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能登記修繕紀錄！');
         }
@@ -29,7 +29,7 @@ class RepairController extends Controller
 
     public function list($kind = null)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能登記修繕紀錄！');
         }
@@ -96,7 +96,7 @@ class RepairController extends Controller
 
     public function report($kind)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能登記修繕紀錄！');
         }
@@ -106,9 +106,10 @@ class RepairController extends Controller
 
     public function insertJob(Request $request, $kind)
     {
+        $user = Auth::user();
         $job = RepairJob::create([
-            'uuid' => $request->user()->uuid,
-            'reporter_name' => $request->user()->profile->realname,
+            'uuid' => $user->uuid,
+            'reporter_name' => employee()->realname,
             'kind_id' => $kind,
             'place' => $request->input('place'),
             'summary' => $request->input('summary'),
@@ -136,7 +137,7 @@ class RepairController extends Controller
 
     public function reply($job)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能登記修繕紀錄！');
         }
@@ -146,9 +147,10 @@ class RepairController extends Controller
 
     public function insertReply(Request $request, $job)
     {
+        $user = Auth::user();
         $reply = RepairReply::create([
-            'uuid' => $request->user()->uuid,
-            'namager_name' => $request->user()->profile->realname,
+            'uuid' => $user->uuid,
+            'namager_name' => employee()->realname,
             'job_id' => $job,
             'status' => $request->input('status'),
             'comment' => $request->input('comment'),

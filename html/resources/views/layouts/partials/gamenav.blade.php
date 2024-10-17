@@ -18,7 +18,7 @@
           <!-- Dropdown menu -->
           <div id="classes" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-auto dark:bg-gray-700 dark:divide-gray-600">
               <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
-                @foreach (Auth::user()->profile->classrooms as $cls)
+                @foreach (employee()->classrooms as $cls)
                 <li>
                   <a href="{{ route('game.room', [ 'room_id' => $cls->id ]) }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                     {{ $cls->name }}
@@ -141,7 +141,7 @@
           <!-- Dropdown menu -->
           <div id="delays" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-auto dark:bg-gray-700 dark:divide-gray-600">
               <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
-                @forelse (Auth::user()->profile->game_delay as $d)
+                @forelse (employee()->game_delay as $d)
                 <li>
                   <a href="{{ route('game.regress', [ 'delay_id' => $d->id ]) }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                     {{ $d->description }}
@@ -163,7 +163,7 @@
           <!-- Dropdown menu -->
           <div id="logs" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-auto dark:bg-gray-700 dark:divide-gray-600">
               <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
-                @forelse (Auth::user()->profile->game_logs(session('gameclass')) as $l)
+                @forelse (employee()->game_logs(session('gameclass')) as $l)
                 <li>
                     {{ $l->content }}
                 </li>

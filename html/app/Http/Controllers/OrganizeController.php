@@ -28,7 +28,7 @@ class OrganizeController extends Controller
         }
         $current = current_year();
         if (!$year) $year = $current;
-        $teacher = $user->profile;
+        $teacher = employee();
         $survey = $teacher->survey($year);
         $seniority = $teacher->seniority();
         if ($seniority) {
@@ -184,7 +184,7 @@ class OrganizeController extends Controller
 
     public function setting()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('organize.manager');
         if ($user->is_admin || $manager) {
             $seme = current_between_date();
@@ -217,7 +217,7 @@ class OrganizeController extends Controller
 
     public function vacancy()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('organize.manager');
         if ($user->is_admin || $manager) {
             if (OrganizeVacancy::year()->isEmpty()) {
@@ -234,7 +234,7 @@ class OrganizeController extends Controller
 
     public function reset(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('organize.manager');
         if ($user->is_admin || $manager) {
             DB::table('organize_assign')->where('syear', current_year())->delete();
@@ -486,7 +486,7 @@ class OrganizeController extends Controller
 
     public function arrange($search = null)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('organize.manager');
         if ($user->is_admin || $manager) {
             $flow = OrganizeSettings::current();
