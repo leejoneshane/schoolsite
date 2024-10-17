@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
 use App\Models\Classroom;
 use App\Models\Seats;
 use App\Models\GameConfigure;
@@ -21,7 +20,7 @@ class ClassroomController extends Controller
 
     public function config()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $room = Classroom::find(session('gameclass'));
@@ -39,7 +38,7 @@ class ClassroomController extends Controller
 
     public function save_config(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameConfigure::find(session('gameclass'));
@@ -84,7 +83,7 @@ class ClassroomController extends Controller
 
     public function regroup()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $room = Classroom::find(session('gameclass'));
@@ -110,7 +109,7 @@ class ClassroomController extends Controller
 
     public function party_add()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $group_no = GameParty::findByClass(session('gameclass'))->count();
@@ -143,7 +142,7 @@ class ClassroomController extends Controller
 
     public function party_edit($party_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $party = GameParty::find($party_id);
@@ -182,7 +181,7 @@ class ClassroomController extends Controller
 
     public function characters()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $room = Classroom::find(session('gameclass'));
@@ -196,7 +195,7 @@ class ClassroomController extends Controller
 
     public function character_edit($uuid)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $character = GameCharacter::find($uuid);

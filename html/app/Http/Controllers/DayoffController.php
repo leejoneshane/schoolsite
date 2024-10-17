@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Unit;
 use App\Models\Teacher;
 use App\Models\Student;
@@ -22,7 +21,7 @@ class DayoffController extends Controller
 
     public function index()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -35,7 +34,7 @@ class DayoffController extends Controller
 
     public function add()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -47,7 +46,7 @@ class DayoffController extends Controller
 
     public function insert(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -81,7 +80,7 @@ class DayoffController extends Controller
 
     public function edit($id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -94,7 +93,7 @@ class DayoffController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -133,7 +132,7 @@ class DayoffController extends Controller
 
     public function remove(Request $request, $id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -152,7 +151,7 @@ class DayoffController extends Controller
 
     public function list($id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -166,7 +165,7 @@ class DayoffController extends Controller
 
     public function classAdd($id, $class = null)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -186,7 +185,7 @@ class DayoffController extends Controller
 
     public function classInsert(Request $request, $id, $class = null)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -223,7 +222,7 @@ class DayoffController extends Controller
 
     public function fastAdd($id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -236,7 +235,7 @@ class DayoffController extends Controller
 
     public function fastInsert(Request $request, $id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -275,7 +274,7 @@ class DayoffController extends Controller
 
     public function importClub($id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -291,7 +290,7 @@ class DayoffController extends Controller
 
     public function importClubSave(Request $request, $id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -321,7 +320,7 @@ class DayoffController extends Controller
 
     public function importRoster($id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -337,7 +336,7 @@ class DayoffController extends Controller
 
     public function importRosterSave(Request $request, $id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -371,7 +370,7 @@ class DayoffController extends Controller
 
     public function removeStudent(Request $request, $id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -388,7 +387,7 @@ class DayoffController extends Controller
 
     public function removeStudents(Request $request, $id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -403,7 +402,7 @@ class DayoffController extends Controller
 
     public function download($id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -422,7 +421,7 @@ class DayoffController extends Controller
 
     public function print($id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         $clubm = $user->hasPermission('dayoff.club');
         if ($user->is_admin || $manager || $clubm) {
@@ -440,7 +439,7 @@ class DayoffController extends Controller
     }
 
     public function perm() {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         if ($user->is_admin || $manager) {
             $perm = Permission::findByName('dayoff.club');
@@ -458,7 +457,7 @@ class DayoffController extends Controller
     }
 
     public function updatePerm(Request $request) {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         if ($user->is_admin || $manager) {
             $users = $request->input('teachers');

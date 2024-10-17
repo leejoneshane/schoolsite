@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
 use App\Models\GameSkill;
 use App\Models\Watchdog;
 use Intervention\Image\ImageManager;
@@ -18,7 +17,7 @@ class SkillController extends Controller
 
     public function index()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $skills = GameSkill::all()->sortBy('object');
@@ -30,7 +29,7 @@ class SkillController extends Controller
 
     public function add()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             return view('game.skill_add');
@@ -41,7 +40,7 @@ class SkillController extends Controller
 
     public function insert(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameSkill::create([
@@ -87,7 +86,7 @@ class SkillController extends Controller
 
     public function edit($skill_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $skill = GameSkill::find($skill_id);
@@ -99,7 +98,7 @@ class SkillController extends Controller
 
     public function update(Request $request, $skill_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameSkill::find($skill_id);
@@ -149,7 +148,7 @@ class SkillController extends Controller
 
     public function remove(Request $request, $skill_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameSkill::find($skill_id);

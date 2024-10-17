@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use App\Models\User;
 use App\Models\GameFurniture;
 use App\Models\Watchdog;
 use Intervention\Image\ImageManager;
@@ -17,7 +16,7 @@ class FurnitureController extends Controller
 
     public function index()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $furnitures = GameFurniture::all()->sortBy('gp');
@@ -29,7 +28,7 @@ class FurnitureController extends Controller
 
     public function add()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             return view('game.furniture_add');
@@ -40,7 +39,7 @@ class FurnitureController extends Controller
 
     public function insert(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameFurniture::create([
@@ -74,7 +73,7 @@ class FurnitureController extends Controller
 
     public function edit($base_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $furniture = GameFurniture::find($base_id);
@@ -86,7 +85,7 @@ class FurnitureController extends Controller
 
     public function update(Request $request, $furniture_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameFurniture::find($furniture_id);
@@ -124,7 +123,7 @@ class FurnitureController extends Controller
 
     public function remove(Request $request, $furniture_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameFurniture::find($furniture_id);

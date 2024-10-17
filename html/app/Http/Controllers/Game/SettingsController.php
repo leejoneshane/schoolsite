@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Grade;
 use App\Models\GameSetting;
@@ -24,7 +23,7 @@ class SettingsController extends Controller
 
     public function positive()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $rules = GameSetting::positive($user->uuid);
             return view('game.positive', ['rules' => $rules]);
@@ -35,7 +34,7 @@ class SettingsController extends Controller
 
     public function negative()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $rules = GameSetting::negative($user->uuid);
             return view('game.negative', ['rules' => $rules]);
@@ -46,7 +45,7 @@ class SettingsController extends Controller
 
     public function positive_add()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $items = GameItem::all();
             return view('game.positive_add', [ 'items' => $items]);
@@ -57,7 +56,7 @@ class SettingsController extends Controller
 
     public function negative_add()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             return view('game.negative_add');
         } else {
@@ -67,7 +66,7 @@ class SettingsController extends Controller
 
     public function insert(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             if ($request->input('type') == 'positive') {
                 $sk = GameSetting::create([
@@ -101,7 +100,7 @@ class SettingsController extends Controller
 
     public function edit($rule_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $rule = GameSetting::find($rule_id);
             if ($rule->type == 'positive') {
@@ -117,7 +116,7 @@ class SettingsController extends Controller
 
     public function update(Request $request, $rule_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $sk = GameSetting::find($rule_id);
             $sk->uuid = $user->uuid;
@@ -141,7 +140,7 @@ class SettingsController extends Controller
 
     public function remove(Request $request, $rule_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $sk = GameSetting::find($rule_id);
             $description = $sk->description;
@@ -155,7 +154,7 @@ class SettingsController extends Controller
 
     public function evaluates()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $evaluates = GameEvaluate::findByUuid($user->uuid);
             return view('game.evaluates', [ 'evaluates' => $evaluates ]);
@@ -166,7 +165,7 @@ class SettingsController extends Controller
 
     public function evaluate_add()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $teacher = Teacher::find($user->uuid);
             $grades = Grade::all();
@@ -178,7 +177,7 @@ class SettingsController extends Controller
 
     public function evaluate_insert(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $e = GameEvaluate::create([
                 'uuid' => $user->uuid,
@@ -197,7 +196,7 @@ class SettingsController extends Controller
 
     public function evaluate_edit($evaluate_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $teacher = Teacher::find($user->uuid);
             $grades = Grade::all();
@@ -210,7 +209,7 @@ class SettingsController extends Controller
 
     public function evaluate_update(Request $request, $evaluate_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $e = GameEvaluate::find($evaluate_id);
             $e->update([
@@ -229,7 +228,7 @@ class SettingsController extends Controller
 
     public function evaluate_remove(Request $request, $evaluate_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $e = GameEvaluate::find($evaluate_id);
             Watchdog::watch($request, '刪除遊戲評量：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -247,7 +246,7 @@ class SettingsController extends Controller
 
     public function evaluate_manage($evaluate_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $evaluate = GameEvaluate::find($evaluate_id);
             return view('game.evaluate_manage', [ 'evaluate' => $evaluate ]);
@@ -344,7 +343,7 @@ class SettingsController extends Controller
 
     public function evaluate_assign($evaluate_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $teacher = Teacher::find($user->uuid);
             $evaluate = GameEvaluate::find($evaluate_id);
@@ -357,7 +356,7 @@ class SettingsController extends Controller
 
     public function dungeon_add($evaluate_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $teacher = Teacher::find($user->uuid);
             $evaluate = GameEvaluate::find($evaluate_id);
@@ -370,7 +369,7 @@ class SettingsController extends Controller
 
     public function dungeon_insert(Request $request, $evaluate_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             if (is_string($request->input('classrooms'))) {
                 $classes[] = $request->input('classrooms');
@@ -399,7 +398,7 @@ class SettingsController extends Controller
 
     public function dungeon_edit($dungeon_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $teacher = Teacher::find($user->uuid);
             $dungeon = GameDungeon::find($dungeon_id);
@@ -412,7 +411,7 @@ class SettingsController extends Controller
 
     public function dungeon_update(Request $request, $dungeon_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $e = GameDungeon::find($dungeon_id);
             $e->update([
@@ -432,7 +431,7 @@ class SettingsController extends Controller
 
     public function dungeon_remove(Request $request, $dungeon_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $e = GameDungeon::find($dungeon_id);
             $evaluate_id = $e->evaluate_id;

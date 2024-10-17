@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use App\Models\User;
 use App\Models\GameBase;
 use App\Models\GameParty;
 use App\Models\Watchdog;
@@ -18,7 +17,7 @@ class BaseController extends Controller
 
     public function index()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $bases = GameBase::all();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
@@ -30,7 +29,7 @@ class BaseController extends Controller
 
     public function add()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             return view('game.base_add');
@@ -41,7 +40,7 @@ class BaseController extends Controller
 
     public function insert(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameBase::create([
@@ -73,7 +72,7 @@ class BaseController extends Controller
     public function edit($base_id)
     {
         $base = GameBase::find($base_id);
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             return view('game.base_edit', [ 'base' => $base ]);
@@ -85,7 +84,7 @@ class BaseController extends Controller
     public function update(Request $request, $base_id)
     {
         $sk = GameBase::find($base_id);
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk->name = $request->input('name');
@@ -112,7 +111,7 @@ class BaseController extends Controller
     public function remove(Request $request, $base_id)
     {
         $sk = GameBase::find($base_id);
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             GameParty::where('base_id', $sk->id)->update([

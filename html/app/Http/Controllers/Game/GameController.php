@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Classroom;
@@ -28,9 +27,9 @@ class GameController extends Controller
     {
         $request->session()->forget('gameclass');
         $request->session()->forget('viewclass');
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Teacher') {
-            $teacher = Teacher::find($user->uuid);
+            $teacher = employee();
             $classes = $teacher->classrooms;
             foreach ($classes as $cls) {
                 if (GameSence::is_lock($cls->id)) {
@@ -101,7 +100,7 @@ class GameController extends Controller
     public function lock(Request $request)
     {
         $room_id = $request->input('room_id');
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') return response()->json(['error' => '您沒有權限使用此功能！'], 403);
         $uuid = $user->uuid;
         if ($request->input('lockdown') == 'yes') {
@@ -133,9 +132,9 @@ class GameController extends Controller
             $request->session()->forget('gameclass');
             $request->session()->put('viewclass', $room_id);
         }
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
-        $teacher = Teacher::find(Auth::user()->uuid);
+        $teacher = employee();
         $room = Classroom::find($room_id);
         $stu = $room->students->first();
         $char = GameCharacter::find($stu->uuid);
@@ -211,7 +210,7 @@ class GameController extends Controller
     public function absent(Request $request)
     {
         $uuid = $request->input('uuid');
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') return response()->json(['error' => '您沒有權限使用此功能！'], 403);
         $char = GameCharacter::find($uuid);
         if ($request->input('absent') == 'yes') {

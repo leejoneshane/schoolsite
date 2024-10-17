@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Grade;
@@ -21,7 +20,7 @@ class RosterController extends Controller
 
     public function list($section = null)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('roster.manager');
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能填報學生名單！');
@@ -39,7 +38,7 @@ class RosterController extends Controller
 
     public function add()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('roster.manager');
         if (!($user->is_admin || $manager)) {
             return redirect()->route('home')->with('error', '只有管理員才能新增學生表單！');
@@ -68,7 +67,7 @@ class RosterController extends Controller
 
     public function edit($id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('roster.manager');
         if (!($user->is_admin || $manager)) {
             return redirect()->route('home')->with('error', '只有管理員才能修改學生表單！');
@@ -120,7 +119,7 @@ class RosterController extends Controller
     public function summary($id, $section = null)
     {
         if (!$section) $section = current_section();
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能填報學生名單！');
         }
@@ -141,7 +140,7 @@ class RosterController extends Controller
 
     public function enroll($id, $class = null)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能填報學生名單！');
         }
@@ -206,7 +205,7 @@ class RosterController extends Controller
     public function show(Request $request, $id, $section, $class = null)
     {
         $referer = $request->headers->get('referer');
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能填報學生名單！');
         }
@@ -231,7 +230,7 @@ class RosterController extends Controller
 
     public function download($id, $section)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能填報學生名單！');
         }

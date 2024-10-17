@@ -7,14 +7,15 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
-use App\Models\GameMonster;
+use App\Models\User;
+use App\Models\GameClass;
 use App\Models\GameImage;
 use App\Models\GameSkill;
 use App\Models\Watchdog;
 use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver;
 
-class MonsterController extends Controller
+class MapController extends Controller
 {
 
     public function index()
@@ -22,8 +23,8 @@ class MonsterController extends Controller
         $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $monsters = GameMonster::all();
-            return view('game.monsters', ['monsters' => $monsters]);
+            $professions = GameClass::all();
+            return view('game.classes', ['classes' => $professions]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -34,7 +35,7 @@ class MonsterController extends Controller
         $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            return view('game.monster_add');
+            return view('game.class_add');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -45,99 +46,98 @@ class MonsterController extends Controller
         $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $m = GameMonster::create([
+            $pro = GameClass::create([
                 'name' => $request->input('name'),
                 'description' => $request->input('description'),
-                'min_level' => $request->input('min_level'),
-                'max_level' => $request->input('max_level'),
-                'crit_rate' => $request->input('crit_rate'),
-                'hp' => $request->input('hp'),
-                'ap' => $request->input('ap'),
-                'dp' => $request->input('dp'),
-                'sp' => $request->input('sp'),
-                'xp' => $request->input('xp'),
-                'gp' => $request->input('gp'),
-                'style' => $request->input('style'),
+                'hp_lvlup' => $request->input('hp_lvlup'),
+                'mp_lvlup' => $request->input('mp_lvlup'),
+                'ap_lvlup' => $request->input('ap_lvlup'),
+                'dp_lvlup' => $request->input('dp_lvlup'),
+                'sp_lvlup' => $request->input('sp_lvlup'),
+                'base_hp' => $request->input('base_hp'),
+                'base_mp' => $request->input('base_mp'),
+                'base_ap' => $request->input('base_ap'),
+                'base_dp' => $request->input('base_dp'),
+                'base_sp' => $request->input('base_sp'),
             ]);
-            Watchdog::watch($request, '新增遊戲怪物：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('game.monsters')->with('success', '已新增怪物：'.$request->input('name').'！');
+            Watchdog::watch($request, '新增遊戲職業：' . $pro->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            return redirect()->route('game.classes')->with('success', '已新增職業：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function edit($monster_id)
+    public function edit($class_id)
     {
         $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $pro = GameMonster::find($monster_id);
-            return view('game.monster_edit', [ 'monster' => $pro ]);
+            $pro = GameClass::find($class_id);
+            return view('game.class_edit', [ 'pro' => $pro ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function update(Request $request, $monster_id)
+    public function update(Request $request, $class_id)
     {
         $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $pro = GameMonster::find($monster_id);
-            $pro->update([
-                'name' => $request->input('name'),
-                'description' => $request->input('description'),
-                'min_level' => $request->input('min_level'),
-                'max_level' => $request->input('max_level'),
-                'crit_rate' => $request->input('crit_rate'),
-                'hp' => $request->input('hp'),
-                'ap' => $request->input('ap'),
-                'dp' => $request->input('dp'),
-                'sp' => $request->input('sp'),
-                'xp' => $request->input('xp'),
-                'gp' => $request->input('gp'),
-                'style' => $request->input('style'),
-            ]);
-            Watchdog::watch($request, '修改遊戲怪物：' . $pro->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('game.monsters')->with('success', '已修改怪物：'.$request->input('name').'！');
+            $pro = GameClass::find($class_id);
+            $pro->name = $request->input('name');
+            $pro->description = $request->input('description');
+            $pro->hp_lvlup = $request->input('hp_lvlup');
+            $pro->mp_lvlup = $request->input('mp_lvlup');
+            $pro->ap_lvlup = $request->input('ap_lvlup');
+            $pro->dp_lvlup = $request->input('dp_lvlup');
+            $pro->sp_lvlup = $request->input('sp_lvlup');
+            $pro->base_hp = $request->input('base_hp');
+            $pro->base_mp = $request->input('base_mp');
+            $pro->base_ap = $request->input('base_ap');
+            $pro->base_dp = $request->input('base_dp');
+            $pro->base_sp = $request->input('base_sp');
+            $pro->save();
+            Watchdog::watch($request, '修改遊戲職業：' . $pro->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            return redirect()->route('game.classes')->with('success', '已修改職業：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function remove(Request $request, $monster_id)
+    public function remove(Request $request, $class_id)
     {
         $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $pro = GameMonster::find($monster_id);
-            Watchdog::watch($request, '刪除遊戲怪物：' . $pro->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            $pro = GameClass::find($class_id);
+            Watchdog::watch($request, '刪除遊戲職業：' . $pro->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             foreach ($pro->images as $image) {
                 $image->delete();
             }
             $name = $pro->name;
             $pro->delete();
-            DB::table('game_monsters_images')->where('monster_id', $monster_id)->delete();
-            return redirect()->route('game.monsters')->with('success', '已刪除怪物：'.$name.'！');
+            DB::table('game_classes_images')->where('class_id', $class_id)->delete();
+            return redirect()->route('game.classes')->with('success', '已刪除職業：'.$name.'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function gallery($monster_id)
+    public function gallery($class_id)
     {
         $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $monsters = GameMonster::all();
-            $pro = GameMonster::find($monster_id);
-            return view('game.monster_images', [ 'monster' => $pro, 'monsters' => $monsters ]);
+            $classes = GameClass::all();
+            $pro = GameClass::find($class_id);
+            return view('game.class_images', [ 'pro' => $pro, 'classes' => $classes ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function store(Request $request, $monster_id)
+    public function store(Request $request, $class_id)
     {
         request()->validate([
             'file' => 'mimes:png,gif|required|max:50000'
@@ -145,8 +145,8 @@ class MonsterController extends Controller
         if ($request->hasFile('file')) {
             $image = $request->file('file');
             $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path(GAME_MONSTER), $fileName);
-            $path = public_path(GAME_MONSTER.$fileName);
+            $image->move(public_path(GAME_CHARACTER), $fileName);
+            $path = public_path(GAME_CHARACTER.$fileName);
             $manager = new ImageManager(new Driver());
             $file = $manager->read($path);
             if ($file->width() > 900) {
@@ -154,29 +154,29 @@ class MonsterController extends Controller
                 $file->toPng()->save($path);
             }
             GameImage::create([ 
-                'owner_id' => $monster_id,
-                'owner_type' => 'App\\Models\\GameMonster',
-                'picture' => GAME_MONSTER.$fileName,
+                'owner_id' => $class_id,
+                'owner_type' => 'App\\Models\\GameClass',
+                'picture' => GAME_CHARACTER.$fileName,
             ]);
             return response()->json(['success' => $fileName]);
         }
     }
 
-    public function scan($monster_id)
+    public function scan($class_id)
     {
         $tableImages = [];
-        $images = GameImage::forMonster($monster_id);
+        $images = GameImage::forClass($class_id);
         foreach ($images as $image) {
             $tableImages[] = basename($image->picture);
         }
         $data = [];
-        $files = scandir(public_path(GAME_MONSTER));
+        $files = scandir(public_path(GAME_CHARACTER));
         foreach ($files as $file) {
             if ($file !='.' && $file !='..' && in_array($file, $tableImages)) {
                 $obj['name'] = $file;
-                $file_path = public_path(GAME_MONSTER.$file);
+                $file_path = public_path(GAME_CHARACTER.$file);
                 $obj['size'] = filesize($file_path);
-                $obj['path'] = asset(GAME_MONSTER.$file);
+                $obj['path'] = asset(GAME_CHARACTER.$file);
                 $data[] = $obj;
             }
         }
@@ -186,26 +186,27 @@ class MonsterController extends Controller
     public function destroy(Request $request)
     {
         $filename = $request->get('filename');
-        $object = GameImage::where('file_name', $filename)->first();
-        DB::table('game_monsters_images')->where('image_id', $object->id)->delete();
-        $path = public_path($object->picture);
-        if (file_exists($path)) unlink($path);
-        if ($object->thumbnail) {
-            $path2 = public_path($object->thumbnail);
-            if (file_exists($path2)) unlink($path2);
+        $object = GameImage::where('picture', 'like', '%'.$filename)->first();
+        if ($object) {
+            $path = public_path($object->picture);
+            if (file_exists($path)) unlink($path);
+            if ($object->thumbnail) {
+                $path2 = public_path($object->thumbnail);
+                if (file_exists($path2)) unlink($path2);
+            }
+            $object->delete();    
         }
-        $object->delete();
         return response()->json(['success' => $filename]);
     }
 
-    public function faces($monster_id)
+    public function faces($class_id)
     {
         $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $monsters = GameMonster::all();
-            $pro = GameMonster::find($monster_id);
-            return view('game.monster_faces', [ 'monster' => $pro, 'monsters' => $monsters ]);
+            $classes = GameClass::all();
+            $pro = GameClass::find($class_id);
+            return view('game.class_faces', [ 'pro' => $pro, 'classes' => $classes ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -213,56 +214,61 @@ class MonsterController extends Controller
 
     public function face_upload(Request $request, $image_id)
     {
+        request()->validate([
+            'face' => 'mimes:png|required|max:15000'
+        ]);
         $image = $request->file('face');
         $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
-        $image->move(public_path(GAME_MONSTER), $fileName);
-        $path = public_path(GAME_MONSTER.$fileName);
+        $image->move(public_path(GAME_CHARACTER), $fileName);
+        $path = public_path(GAME_CHARACTER.$fileName);
         $manager = new ImageManager(new Driver());
         $file = $manager->read($path);
         if ($file->width() > 200) {
             $file->resize(200, 200);
             $file->toPng()->save($path);
         }
-        $file->toPng()->save($path);
         $new = GameImage::find($image_id);
         if ($new->thumbnail) {
             $path2 = public_path($new->thumbnail);
             if (file_exists($path2)) unlink($path2);
         }
-        $new->thumbnail = GAME_MONSTER.$fileName;
+        $new->thumbnail = GAME_CHARACTER.$fileName;
         $new->save();
         $pro = $new->owner;
-        return redirect()->route('game.monster_faces', [ 'monster_id' => $pro->id ]);
+        return redirect()->route('game.class_faces', [ 'class_id' => $pro->id ]);
     }
 
-    public function skills($monster_id)
+    public function skills($class_id)
     {
         $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $monsters = GameMonster::all();
-            $pro = GameMonster::find($monster_id);
+            $classes = GameClass::all();
+            $pro = GameClass::find($class_id);
+            $exclude = $pro->skills->map(function ($sk) {
+                return $sk->id;
+            })->toArray();
             $skills = GameSkill::all();
-            return view('game.monster_skills', [ 'monster' => $pro, 'monsters' => $monsters, 'skills' => $skills ]);
+            return view('game.class_skills', [ 'pro' => $pro, 'classes' => $classes, 'skills' => $skills ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function skills_update(Request $request, $monster_id)
+    public function skills_update(Request $request, $class_id)
     {
-        DB::table('game_monsters_skills')->where('monster_id', $monster_id)->delete();
+        DB::table('game_classes_skills')->where('class_id', $class_id)->delete();
         if (!empty($request->skills)) {
             foreach ($request->input('skills') as $i => $new) {
-                DB::table('game_monsters_skills')->updateOrInsert([
-                    'monster_id' => $monster_id,
+                DB::table('game_classes_skills')->updateOrInsert([
+                    'class_id' => $class_id,
                     'skill_id' => $new,
                 ],[
                     'level' => $request->input('level')[$i],
                 ]);
             }
         }
-        return redirect()->back()->with('success', '此怪物種族的技能設定已經儲存！');
+        return redirect()->back()->with('success', '此職業的技能設定已經儲存！');
     }
 
 }

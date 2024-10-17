@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
-use App\Models\User;
 use App\Models\GameItem;
 use App\Models\Watchdog;
 use Intervention\Image\ImageManager;
@@ -17,7 +16,7 @@ class ItemController extends Controller
 
     public function index()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $items = GameItem::all();
@@ -29,7 +28,7 @@ class ItemController extends Controller
 
     public function add()
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             return view('game.item_add');
@@ -40,7 +39,7 @@ class ItemController extends Controller
 
     public function insert(Request $request)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameItem::create([
@@ -80,7 +79,7 @@ class ItemController extends Controller
 
     public function edit($item_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $item = GameItem::find($item_id);
@@ -92,7 +91,7 @@ class ItemController extends Controller
 
     public function update(Request $request, $item_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameItem::find($item_id);
@@ -136,7 +135,7 @@ class ItemController extends Controller
 
     public function remove(Request $request, $item_id)
     {
-        $user = User::find(Auth::user()->id);
+        $user = Auth::user();
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameItem::find($item_id);
