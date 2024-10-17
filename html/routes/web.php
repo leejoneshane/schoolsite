@@ -410,6 +410,7 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
 
 // 遊戲平台
 Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
+    //教師遊戲介面
     Route::get('/', 'App\Http\Controllers\Game\GameController@index')->name('game');
     Route::post('lock', 'App\Http\Controllers\Game\GameController@lock')->name('game.lock');
     Route::get('health', 'App\Http\Controllers\Game\GameController@health')->name('game.health');
@@ -430,7 +431,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('pickup/{room_id}', 'App\Http\Controllers\Game\GameController@random_pickup')->name('game.pickup');
     Route::get('timer/{room_id}', 'App\Http\Controllers\Game\GameController@timer')->name('game.timer');
     Route::get('silence/{room_id}', 'App\Http\Controllers\Game\GameController@silence')->name('game.silence');
-
+    //系統管理介面
     Route::get('classes', 'App\Http\Controllers\Game\ClassController@index')->name('game.classes');
     Route::get('classes/add', 'App\Http\Controllers\Game\ClassController@add');
     Route::post('classes/add', 'App\Http\Controllers\Game\ClassController@insert')->name('game.class_add');
@@ -483,7 +484,11 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('monsters/faces/upload/{image_id}', 'App\Http\Controllers\Game\MonsterController@face_upload')->name('game.monster_faceupload');
     Route::get('monsters/skills/{monster_id?}', 'App\Http\Controllers\Game\MonsterController@skills');
     Route::post('monsters/skills/{monster_id?}', 'App\Http\Controllers\Game\MonsterController@skills_update')->name('game.monster_skills');
-
+    Route::get('maps', 'App\Http\Controllers\Game\MapController@gallery')->name('game.maps');
+    Route::get('maps/scan', 'App\Http\Controllers\Game\MapController@scan')->name('game.map_scanimages');
+    Route::post('maps/upload', 'App\Http\Controllers\Game\MapController@store')->name('game.map_upload');
+    Route::post('maps/destroy', 'App\Http\Controllers\Game\MapController@destroy')->name('game.map_removeimage');
+    //教師管理介面
     Route::get('rules/positive', 'App\Http\Controllers\Game\SettingsController@positive')->name('game.positive');
     Route::get('rules/negative', 'App\Http\Controllers\Game\SettingsController@negative')->name('game.negative');
     Route::get('rules/positive/add', 'App\Http\Controllers\Game\SettingsController@positive_add')->name('game.positive_add');
@@ -512,7 +517,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('dungeon/edit/{dungeon_id}', 'App\Http\Controllers\Game\SettingsController@dungeon_edit');
     Route::post('dungeon/edit/{dungeon_id}', 'App\Http\Controllers\Game\SettingsController@dungeon_update')->name('game.dungeon_edit');
     Route::post('dungeon/remove/{dungeon_id}', 'App\Http\Controllers\Game\SettingsController@dungeon_remove')->name('game.dungeon_remove');
-
+    //班級管理介面
     Route::get('configure', 'App\Http\Controllers\Game\ClassroomController@config');
     Route::post('configure', 'App\Http\Controllers\Game\ClassroomController@save_config')->name('game.classroom_config');
     Route::get('groups', 'App\Http\Controllers\Game\ClassroomController@regroup')->name('game.regroup');
@@ -530,12 +535,12 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('dungeons', 'App\Http\Controllers\Game\ClassroomController@dungeons')->name('game.dungeons');
     Route::get('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@reset');
     Route::post('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@do_reset')->name('game.reset');
-
+    //學生初始設定
     Route::get('profession', 'App\Http\Controllers\Game\PlayerController@character_edit');
     Route::post('profession', 'App\Http\Controllers\Game\PlayerController@character_class')->name('game.player_profession');
     Route::get('image', 'App\Http\Controllers\Game\PlayerController@image_edit');
     Route::post('image', 'App\Http\Controllers\Game\PlayerController@character_image')->name('game.player_image');
-
+    //學生遊戲介面
     Route::group(['prefix' => 'player', 'middleware' => [ 'student', 'noprofession', 'noimage' ] ], function () {
         Route::get('/', 'App\Http\Controllers\Game\PlayerController@index')->name('game.player');
         Route::get('party', 'App\Http\Controllers\Game\PlayerController@party')->name('game.party');
