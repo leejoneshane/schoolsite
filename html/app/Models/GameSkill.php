@@ -234,8 +234,8 @@ class GameSkill extends Model
     //施展指定的技能，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗
     public function cast_on_monster($self, $monster_id, $item_id = null)
     {
-        $result = [];
-        if (length($self) == 36) {
+        $result = 0;
+        if (strlen($self) == 36) {
             $me = GameCharacter::find($self);
         } else {
             $me = GameMonsterSpawn::find($self);
@@ -245,44 +245,48 @@ class GameSkill extends Model
             $item->cast_on_monster($self, $monster_id);
         } else {
             $target = GameMonsterSpawn::find($monster_id);
-            $this->effect_monster($me, $target);
+            $result = $this->effect_monster($me, $target);
+            if ($me instanceof GameCharacter) {
+                $message = $me->name.'對'.$target->name.'施展技能'.$this->name;
+                if ($result == MISS) {
+                    broadcast(new GameCharacterChannel($me->stdno, $message.'未命中！'));    
+                } else {
+                    broadcast(new GameCharacterChannel($me->stdno, $message.'！'));
+                }
+            }
         }
-        $me->mp -= $this->cost_mp;
-        if ($this->steal_mp > 0) $me->mp += $this->cost_mp * $this->steal_mp;
-        $me->xp += $this->earn_xp;
-        $me->gp += $this->earn_gp;
-        $me->save();
+        if ($me instanceof GameCharacter) {
+            $me->mp -= $this->cost_mp;
+            if ($this->steal_mp > 0) $me->mp += $this->cost_mp * $this->steal_mp;
+            $me->xp += $this->earn_xp;
+            $me->gp += $this->earn_gp;
+            $me->save();
+        }
         return $result;
     }
 
     //施展指定的技能，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗
-    public function monster_cast($spawn_id, $uuid)
+    public function monster_cast($spawn_id, $uuid, $critical = false)
     {
-        $result = [];
         $me = GameMonsterSpawn::find($spawn_id);
+        $target = GameCharacter::find($uuid);
         if ($this->object == 'target' || $this->object == 'all') {
-            $target = GameCharacter::find($uuid);
-            $result = $this->effect_enemy($me, $target);
+            $result = $this->effect_enemy($me, $target, $critical);
             $message = $me->name.'對'.$target->name.'施展技能'.$this->name;
             if ($result == MISS) {
-                broadcast(new GameCharacterChannel($target->stdno, $message.'失敗！'));
+                broadcast(new GameCharacterChannel($target->stdno, $message.'未命中！'));
             } else {
-                broadcast(new GameCharacterChannel($target->stdno, $message.'成功！'));
+                broadcast(new GameCharacterChannel($target->stdno, $message.'！'));
             }
         } else {
             $result = $this->effect_monster($me);
             $message = $me->name.'對自己施展技能'.$this->name;
             if ($result == MISS) {
-                broadcast(new GameCharacterChannel($target->stdno, $message.'失敗！'));
+                broadcast(new GameCharacterChannel($target->stdno, $message.'未命中！'));
             } else {
-                broadcast(new GameCharacterChannel($target->stdno, $message.'成功！'));
+                broadcast(new GameCharacterChannel($target->stdno, $message.'！'));
             }
         }
-        $me->mp -= $this->cost_mp;
-        if ($this->steal_mp > 0) $me->mp += $this->cost_mp * $this->steal_mp;
-        $me->xp += $this->earn_xp;
-        $me->gp += $this->earn_gp;
-        $me->save();
         return $result;
     }
 
@@ -359,7 +363,7 @@ class GameSkill extends Model
     }
 
     //套用技能效果
-    public function effect_enemy($me, $character)
+    public function effect_enemy($me, $character, $critical = false)
     {
         $hit = $this->hit_rate;
         $hit += ($me->final_sp - $character->final_sp) / 100;
@@ -372,6 +376,7 @@ class GameSkill extends Model
                     if ($damage > 0) $me->hp -= $damage;
                 } else {
                     $damage = $this->ap * 2 + ($me->final_ap - $character->final_dp);
+                    if ($critical) $damage *= 2;
                     if ($damage > 0) {
                         if ($character->buff == 'apportion') {
                             $count = $character->members->count();

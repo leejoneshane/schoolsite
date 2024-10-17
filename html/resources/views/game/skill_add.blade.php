@@ -40,7 +40,7 @@
     <p><div class="p-3">
         <label for="hit" class="text-base">命中率：</label>
         <input id="hit" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-            type="number" name="hit_rate" min="0.1" max="1" step="0.1" value="1">
+            type="number" name="hit_rate" min="0.1" max="2" step="0.1" value="1">
         <br><span class="text-sm font-semibold">命中判定 = 命中率 +（自己敏捷點數 - 對方敏捷點數）/100</span>
     </div></p>
     <p><div class="p-3">

@@ -19,7 +19,6 @@ class GameMonsterSpawn extends Model
         'url',         //圖片網址
         'max_hp',      //最大健康值
         'hp',          //目前健康值
-        'hit_rate',    //攻擊命中率
         'crit_rate',   //爆擊率，爆擊時攻擊力為基本攻擊力的 2 倍
         'ap',          //基本攻擊力
         'dp',          //基本防禦力
@@ -159,40 +158,14 @@ class GameMonsterSpawn extends Model
 
     public function attack($uuid)
     {
-        $character = GameCharacter::find($uuid);
-        $damage = 0;
+        $critical = false;
         $hit = $this->crit_rate;
         $rnd = mt_rand()/mt_getrandmax();
         if ($hit >= 1 || $rnd < $hit) {
-            $skill = $this->skills->random();
-            return $skill->monster_cast($this->id, $uuid);
-        } else {
-            $hit = $this->hit_rate;
-            $hit += ($this->final_sp - $character->final_sp) / 100;
-            $rnd = mt_rand()/mt_getrandmax();
-            $message = $me->name.'對'.$character->name.'進行一般攻擊';
-            if ($hit >= 1 || $rnd < $hit) {
-                $damage = $this->final_ap * 2 - $character->final_dp;
-                if ($character->buff == 'reflex') {
-                    if ($damage > 0 && $this->hp > 0) {
-                        $this->hp -= $damage;
-                        $this->save();
-                        broadcast(new GameCharacterChannel($character->stdno, $message.'，但是傷害被反射回自己！'));    
-                    }
-                } elseif ($character->buff != 'invincible') {
-                    if ($damage > 0 && $character->hp > 0) {
-                        $character->hp -= $damage;
-                        $character->save();
-                        broadcast(new GameCharacterChannel($character->stdno, $message.'，但是沒有受傷！'));
-                    }
-                } else {
-                    broadcast(new GameCharacterChannel($character->stdno, $message.'成功！'));
-                }                
-            } else {
-                broadcast(new GameCharacterChannel($character->stdno, $message.'失敗！'));
-                return MISS;
-            }
+            $critical = true;
         }
+        $skill = $this->skills->random();
+        return $skill->monster_cast($this->id, $uuid, $critical);
     }
 
 }

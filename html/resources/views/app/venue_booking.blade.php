@@ -20,7 +20,7 @@
         <label class="inline">借用須知：{{ $venue->description }}</label>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">預約者：{{ profile()->realname }}</label>
+        <label class="inline">預約者：{{ employee()->realname }}</label>
     </div></p>
     <p><div class="p-3">
         <label class="inline">預約日期：{{ $date }}</label>

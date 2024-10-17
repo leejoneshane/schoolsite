@@ -84,7 +84,7 @@
 <form id="add-reply" action="{{ route('repair.reply', ['job' => $job->id]) }}" method="POST">
     @csrf
     <p class="p-3">
-        <label class="inline">管理者：{{ profile()->realname }}</label>
+        <label class="inline">管理者：{{ employee()->realname }}</label>
     </p>
     <p class="p-3">
         <label for="status" class="inline">修繕進度：</label>

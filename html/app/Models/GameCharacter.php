@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\GameSence;
 use App\Models\Classroom;
 use App\Models\GameClass;
+use App\Events\GameCharacterChannel;
 
 class GameCharacter extends Model
 {
@@ -80,6 +81,7 @@ class GameCharacter extends Model
 
     //以下為透過程式動態產生之屬性
     protected $appends = [
+        'stdno',
         'final_ap',
         'final_dp',
         'final_sp',
@@ -155,6 +157,12 @@ class GameCharacter extends Model
     {
         $room = Classroom::find($classroom);
         return GameCharacter::whereIn('uuid', $room->uuids())->whereNull('party_id')->get();
+    }
+
+    //提供學生名牌號碼（班級座號）
+    public function getStdnoAttribute()
+    {
+        return $this->classroom_id . (($this->seat < 10) ? '0'.$this->seat : $this->seat);
     }
 
     //提供 AP 計算結果
@@ -551,6 +559,7 @@ class GameCharacter extends Model
         if ($this->status == 'COMA') return COMA;
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
+                broadcast(new GameCharacterChannel($this->stdno, '因為陷入麻痺狀態，無法施展技能！'));
                 return COMA;
             } else {
                 $this->effect_timeout = null;
@@ -573,6 +582,7 @@ class GameCharacter extends Model
         if ($this->status == 'DEAD') return DEAD;
         if ($this->status == 'COMA') return COMA;
         if ($this->buff == 'paralysis') {
+            broadcast(new GameCharacterChannel($this->stdno, '因為陷入麻痺狀態，無法使用道具！'));
             if ($this->effect_timeout >= Carbon::now()) {
                 return COMA;
             } else {
@@ -671,6 +681,7 @@ class GameCharacter extends Model
         if ($this->status == 'DEAD') return DEAD;
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
+                broadcast(new GameCharacterChannel($this->stdno, '因為陷入麻痺狀態，無法使用道具！'));
                 return COMA;
             } else {
                 $this->effect_timeout = null;

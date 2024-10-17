@@ -17,9 +17,6 @@
             等級範圍
         </th>
         <th scope="col" class="p-2">
-            攻擊命中率
-        </th>
-        <th scope="col" class="p-2">
             爆擊命中率
         </th>
         <th scope="col" class="p-2">
@@ -48,7 +45,6 @@
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td class="p-2">{{ $m->name }}</td>
         <td class="p-2">{{ $m->min_level }}～{{ $m->max_level }}</td>
-        <td class="p-2">{{ $m->hit_rate }}</td>
         <td class="p-2">{{ $m->crit_rate }}</td>
         <td class="p-2">{{ $m->hp }}</td>
         <td class="p-2">{{ $m->ap }}</td>

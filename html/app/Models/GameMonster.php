@@ -17,7 +17,6 @@ class GameMonster extends Model
         'min_level',   //怪物起始等級
         'max_level',   //怪物最高等級
         'hp',          //最大健康值
-        'hit_rate',    //攻擊命中率
         'crit_rate',   //爆擊率，爆擊時攻擊力為基本攻擊力的 2 倍
         'ap',          //基本攻擊力
         'dp',          //基本防禦力
@@ -68,7 +67,6 @@ class GameMonster extends Model
             'url' => $url,
             'max_hp' => $max_hp,
             'hp' => $max_hp,
-            'hit_rate' => $this->hit_rate,
             'crit_rate' => $this->crit_rate,
             'ap' => $ap,
             'dp' => $dp,

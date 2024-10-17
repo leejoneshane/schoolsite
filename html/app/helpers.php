@@ -30,12 +30,12 @@ function locked($room_id = null) {
     if ($room_id) {
         return DB::table('game_sences')
             ->where('classroom_id', $room_id)
-            ->where('uuid', profile()->uuid)
+            ->where('uuid', employee()->uuid)
             ->where('ended_at', '>', Carbon::now())
             ->exists();
     } else {
         return DB::table('game_sences')
-            ->where('classroom_id', profile()->class_id)
+            ->where('classroom_id', employee()->class_id)
             ->where('ended_at', '>', Carbon::now())
             ->exists();
     }
@@ -54,7 +54,7 @@ function player() {
     return $character;
 }
 
-function profile() {
+function employee() {
     $user = auth()->user();
     $uuid = $user->uuid;
     if ($user->user_type == 'Student') {

@@ -32,10 +32,10 @@
 @auth
     <span class="inline-block mt-2 lg:mt-0 px-4 lg:px-2 py-1 leading-none text-white text-sm">  
       @student
-      {{ profile()->classname }} 
+      {{ employee()->classname }} 
       @endstudent
       @auth
-      {{ profile()->realname }}
+      {{ employee()->realname }}
       @endauth
     </span>
     <span class="block lg:inline-block mt-2 lg:mt-0 px-4 lg:px-2">

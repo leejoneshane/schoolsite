@@ -19,9 +19,11 @@
     </select>
 </h1>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
-    <p>
-        請先到<a href="{{ route('game.skills') }}">技能頁面</a>新增技能，然後再將技能分配給怪物。
-    </p>
+    <ul>
+        <li>1. 請先到<a href="{{ route('game.skills') }}">技能頁面</a>新增技能，然後再將技能分配給怪物。</li>
+        <li>2. 請創建怪物專用技能，怪物技能對象只區分自己和對手。</li>
+        <li>3. 若安排角色技能給怪物使用，技能對象為隊友、全隊，視為對自己，技能對象為所有對手，則視為對手。</li>
+    </ul>
 </div>
 <form id="edit-teacher" action="{{ route('game.monster_skills', ['monster_id' => $monster->id]) }}" method="POST">
     @csrf

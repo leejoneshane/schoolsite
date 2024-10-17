@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('url');
             $table->integer('max_hp');
             $table->integer('hp')->default(100);
-            $table->float('hit_rate')->default(0);
             $table->float('crit_rate')->default(0);
             $table->integer('ap')->default(0);
             $table->integer('dp')->default(0);
@@ -42,6 +41,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('game_monsters');
+        Schema::dropIfExists('game_monster_spawns');
     }
 };

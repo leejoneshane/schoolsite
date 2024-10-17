@@ -4,7 +4,7 @@
 <div class="p-10">
     @if (Auth::check())
     <div class="text-2xl font-bold leading-normal pb-5">
-        親愛的{{ profile()->realname }}
+        親愛的{{ employee()->realname }}
     </div>
     @else
     <div class="text-2xl font-bold leading-normal pb-5">歡迎光臨</div>

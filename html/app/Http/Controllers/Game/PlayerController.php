@@ -40,10 +40,10 @@ class PlayerController extends Controller
     {
         $user = Auth::user();
         if ($user->user_type == 'Student') {
-            $character = GameCharacter::find(Auth::user()->uuid);
+            $stu = Student::find($user->uuid);
+            $character = GameCharacter::find($user->uuid);
             ExitArena::dispatch($character);
             if (!$character) {
-                $stu = profile();
                 GameCharacter::create([
                     'uuid' => $stu->uuid,
                     'classroom_id' => $stu->class_id,
@@ -51,7 +51,7 @@ class PlayerController extends Controller
                     'name' => $stu->realname,
                 ]);
             }    
-            $skills = GameSkill::forClass($character->class_id);
+            $skills = GameSkill::forClass($stu->class_id);
             return view('game.player', [ 'character' => $character, 'skills' => $skills, ]);
         } else {
             return redirect()->route('game');
@@ -60,9 +60,10 @@ class PlayerController extends Controller
 
     function character_edit()
     {
-        $character = GameCharacter::find(Auth::user()->uuid);
+        $user = Auth::user();
+        $stu = Student::find($user->uuid);
+        $character = GameCharacter::find($user->uuid);
         if (!$character) {
-            $stu = profile();
             GameCharacter::create([
                 'uuid' => $stu->uuid,
                 'classroom_id' => $stu->class_id,
@@ -84,9 +85,10 @@ class PlayerController extends Controller
 
     function image_edit(Request $request)
     {
-        $character = GameCharacter::find(Auth::user()->uuid);
+        $user = Auth::user();
+        $stu = Student::find($user->uuid);
+        $character = GameCharacter::find($user->uuid);
         if (!$character) {
-            $stu = profile();
             GameCharacter::create([
                 'uuid' => $stu->uuid,
                 'classroom_id' => $stu->class_id,

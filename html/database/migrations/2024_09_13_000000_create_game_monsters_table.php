@@ -20,7 +20,6 @@ return new class extends Migration
             $table->integer('min_level')->default(100);
             $table->integer('max_level')->default(100);
             $table->integer('hp')->default(100);
-            $table->float('hit_rate')->default(0);
             $table->float('crit_rate')->default(0);
             $table->integer('ap')->default(0);
             $table->integer('dp')->default(0);

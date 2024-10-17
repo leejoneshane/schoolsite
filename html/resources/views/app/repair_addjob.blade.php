@@ -15,7 +15,7 @@
 <form id="add-job" action="{{ route('repair.report', ['kind' => $kind->id]) }}" method="POST">
     @csrf
     <p class="p-3">
-        <label class="inline">報修者：{{ profile()->realname }}</label>
+        <label class="inline">報修者：{{ employee()->realname }}</label>
     </p>
     <p class="p-3">
         <label for="place" class="inline">維修地點：</label>

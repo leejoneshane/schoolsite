@@ -30,15 +30,9 @@
         </div>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">攻擊能力：</label>
-        <div class="inline">
-            <label for="hit" class="text-sm">一般攻擊命中率：</label>
-            <input id="hit" class="w-32 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="number" name="hit_rate" min="0.1" max="1" step="0.1" value="{{ $monster->hit_rate }}">
-            <label for="crit" class="text-sm">爆擊命中率：</label>
-            <input id="crit" class="w-32 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                type="number" name="crit_rate" min="0.1" max="1" step="0.1" value="{{ $monster->crit_rate }}">
-        </div>
+        <label for="crit" class="text-sm">爆擊命中率：</label>
+        <input id="crit" class="w-32 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+            type="number" name="crit_rate" min="0.1" max="1" step="0.1" value="{{ $monster->crit_rate }}">
     </div></p>
     <p><div class="p-3">
         <label class="inline">基礎能力：</label>
