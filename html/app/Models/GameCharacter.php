@@ -310,6 +310,7 @@ class GameCharacter extends Model
         if ($this->buff == 'weak') return '身體虛弱';
         if ($this->buff == 'paralysis') return '精神麻痹';
         if ($this->buff == 'poisoned') return '中毒';
+        if ($this->buff == 'escape') return '逃跑';
         return '正常';
     }
 
@@ -488,7 +489,11 @@ class GameCharacter extends Model
     public function skills_by_object($object)
     {
         return $this->profession->skills->reject(function ($skill) use ($object) {
-            return ($skill->object != $object && $skill->object != 'any') || $skill->level > $this->level || $skill->cost_mp > $this->mp;
+            if ($skill->level > $this->level) return true;
+            if ($skill->cost_mp > $this->mp) return true;
+            if ($skill->object == 'any') return false;
+            if ($skill->object != $object) return true;
+            return false;
         });
     }
 

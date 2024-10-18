@@ -423,6 +423,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('character/skill/cast', 'App\Http\Controllers\Game\GameController@skill_cast')->name('game.skill_cast');
     Route::post('character/item/use', 'App\Http\Controllers\Game\GameController@item_use')->name('game.item_use');
     Route::post('absent', 'App\Http\Controllers\Game\GameController@absent')->name('game.absent');
+    Route::post('absent/auto', 'App\Http\Controllers\Game\GameController@auto_absent')->name('game.auto_absent');
     Route::post('positive/act', 'App\Http\Controllers\Game\GameController@positive_act')->name('game.positive_act');
     Route::post('negative/act', 'App\Http\Controllers\Game\GameController@negative_act')->name('game.negative_act');
     Route::post('negative/delay', 'App\Http\Controllers\Game\GameController@negative_delay')->name('game.negative_delay');
@@ -570,6 +571,9 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
         Route::post('arena/battle/accept', 'App\Http\Controllers\Game\PlayerController@accept_battle')->name('game.accept_battle');
         Route::post('arena/battle/reject', 'App\Http\Controllers\Game\PlayerController@reject_battle')->name('game.reject_battle');
         Route::post('dungeon/enter', 'App\Http\Controllers\Game\PlayerController@enter_dungeon')->name('game.enter_dungeon');
+        Route::post('dungeon/exit', 'App\Http\Controllers\Game\PlayerController@exit_dungeon')->name('game.exit_dungeon');
+        Route::post('monster/respawn', 'App\Http\Controllers\Game\PlayerController@monster_respawn')->name('game.monster_respawn');
+        Route::post('monster/attack', 'App\Http\Controllers\Game\PlayerController@monster_attack')->name('game.monster_attack');
     });
 });
 

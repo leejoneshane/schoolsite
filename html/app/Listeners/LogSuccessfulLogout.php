@@ -19,6 +19,10 @@ class LogSuccessfulLogout
             $id = $event->user->id;
             $namespace = 'online-users:'.$id;
             Redis::del($namespace);
+        } else {
+            $uuid = $event->user->uuid;
+            $namespace = 'online-character:'.$uuid;
+            Redis::del($namespace);
         }
     }
 }

@@ -34,12 +34,12 @@
             <a href="{{ route('game.arena') }}"><i class="text-2xl fa-brands fa-battle-net" title="競技場"></i></a>
         </div>
         <div class="py-2 text-center">
-            <a href="/game/dungeon"><i class="text-2xl fa-solid fa-dungeon" title="地下城"></i></a>
-        </div>
-        <div class="py-2 text-center">
             <a href="/game/travel"><i class="text-2xl fa-solid fa-map-location-dot" title="冒險地圖"></i></a>
         </div>
         @endlocked
+        <div class="py-2 text-center">
+            <a href="{{ route('game.dungeon') }}"><i class="text-2xl fa-solid fa-dungeon" title="地下城"></i></a>
+        </div>
         <div class="py-2 text-center">
             <a href="{{ route('game.furniture_shop') }}"><i class="text-2xl fa-solid fa-couch" title="矮人工坊"></i></a>
         </div>

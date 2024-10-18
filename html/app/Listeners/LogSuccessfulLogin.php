@@ -20,6 +20,11 @@ class LogSuccessfulLogin
             $namespace = 'online-users:'.$id;
             $expire = config('session.lifetime') * 60;
             Redis::setex($namespace, $expire, $id);
+        } else {
+            $uuid = $event->user->uuid;
+            $namespace = 'online-character:'.$uuid;
+            $expire = 40 * 60;
+            Redis::setex($namespace, $expire, $uuid);
         }
     }
 }

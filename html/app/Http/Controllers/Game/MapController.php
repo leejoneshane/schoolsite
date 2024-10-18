@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use App\Models\GameMap;
 use App\Models\Watchdog;
 use Intervention\Image\ImageManager;
@@ -22,7 +23,7 @@ class MapController extends Controller
 
     public function gallery()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $maps = GameMap::all();
@@ -48,7 +49,7 @@ class MapController extends Controller
                 $file->scale(width: 2048);
                 $file->toPng()->save($path);
             }
-            GameImage::create([ 
+            GameMap::create([ 
                 'map' => GAME_MAP.$fileName,
             ]);
             return response()->json(['success' => $fileName]);

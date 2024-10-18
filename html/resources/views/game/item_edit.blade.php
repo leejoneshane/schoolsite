@@ -64,6 +64,7 @@
             <option value="weak"{{ $item->inspire == 'weak' ? ' selected' :''}}>身體虛弱</option>
             <option value="paralysis"{{ $item->inspire == 'paralysis' ? ' selected' :''}}>精神麻痹</option>
             <option value="poisoned"{{ $item->inspire == 'poisoned' ? ' selected' :''}}>中毒</option>
+            <option value="escape"{{ $item->inspire == 'escape' ? ' selected' :''}}>脫逃</option>
         </select>
         <br><span class="text-sm font-semibold">在計算增減效益前執行</span>
     </div></p>

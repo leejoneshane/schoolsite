@@ -27,6 +27,9 @@ use App\Models\GameClass;
 use App\Models\GameSkill;
 use App\Models\GameItem;
 use App\Models\GameFurniture;
+use App\Models\GameEvaluate;
+use App\Models\GameMonster;
+use App\Models\GameMonsterSpawn;
 use App\Models\GameSetting;
 use App\Models\GameDelay;
 use App\Models\GameLog;
@@ -115,12 +118,16 @@ class PlayerController extends Controller
         if (!$char->class_id) {
             return response()->json([]);
         }
-        if ($kind == 'self') {
+        if (!$kind) {
+            $skills = $char->skills;
+        } elseif ($kind == 'self') {
             $skills = $char->skills_by_object('self');
         } elseif ($kind == 'enemy') {
             $skills = $char->skills_by_object('target')->merge($char->skills_by_object('all'));
-        } else {
+        } elseif ($kind == 'friend') {
             $skills = $char->skills_by_object('partner')->merge($char->skills_by_object('party'));
+        } elseif ($kind == 'monster') {
+            $skills = $char->skills_by_object('self')->merge($char->skills_by_object('target'))->merge($char->skills_by_object('all'));
         }
         return response()->json([ 'skills' => $skills, 'level' => $char->level ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
@@ -133,11 +140,13 @@ class PlayerController extends Controller
         if (!$char->class_id) {
             return response()->json([]);
         }
-        if ($kind == 'self') {
+        if (!$kind) {
+            $items = $char->items;
+        } elseif ($kind == 'self') {
             $items = $char->items_by_object('self');
         } elseif ($kind == 'enemy') {
             $items = $char->items_by_object('target')->merge($char->items_by_object('all'));
-        } else {
+        } elseif ($kind == 'friend') {
             $items = $char->items_by_object('partner')->merge($char->items_by_object('party'));
         }
         return response()->json([ 'items' => $items, 'money' => $char->gp ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
@@ -461,13 +470,35 @@ class PlayerController extends Controller
 
     public function enter_dungeon(Request $request)
     {
+        $user = Auth::user();
         $dungeon = GameDungeon::find($request->input('dungeon_id'));
-        $request->session()->put('dungeon_id', $dungeon->id);
-        $questions = $dungeon->questions;
+        $questions = $dungeon->evaluate->random();
         $monster = GameMonster::find($dungeon->monster_id);
-        $spawn = $monster->spawn();
-        $request->session()->put('spawn_id', $spawn->id);
+        $spawn = $monster->spawn($user->uuid);
         return response()->json([ 'dungeon' => $dungeon, 'questions' => $questions, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
+    public function exit_dungeon()
+    {
+        $user = Auth::user();
+        GameMonsterSpawn::where('uuid', $user->uuid)->delete();
+        return response()->json([ 'success' => 'ok' ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
+    public function monster_respawn(Request $request)
+    {
+        $user = Auth::user();
+        $monster = GameMonster::find($request->input('monster_id'));
+        $spawn = $monster->spawn($user->uuid);
+        return response()->json([ 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
+    public function monster_attack(Request $request)
+    {
+        $spawn = GameMonsterSpawn::find($request->input('spawn_id'));
+        $character = GameCharacter::find($spawn->uuid);
+        $response = $spawn->attack();
+        return response()->json([ 'skill' => $response['skill'], 'result' => $response['result'], 'character' => $character, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
 }

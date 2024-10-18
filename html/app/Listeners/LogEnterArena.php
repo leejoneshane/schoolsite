@@ -21,10 +21,12 @@ class LogEnterArena
         $char = $event->character;
         $uuid = $char->uuid;
         $pid = $char->party_id;
-        $room = $char->party->classroom_id;
-        $namespace = 'arena:'.$room.':party:'.$pid;
-        Redis::sadd($namespace, $uuid);
-        $this->check_all($namespace, $char, $party);
+        if ($pid) {
+            $room = $char->party->classroom_id;
+            $namespace = 'arena:'.$room.':party:'.$pid;
+            Redis::sadd($namespace, $uuid);
+            $this->check_all($namespace, $char, $party);    
+        }
     }
 
     public function check_all($namespace, $char, $party)

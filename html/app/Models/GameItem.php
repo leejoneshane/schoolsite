@@ -61,6 +61,7 @@ class GameItem extends Model
         if ($this->inspire == 'weak') return '身體虛弱';
         if ($this->inspire == 'paralysis') return '精神麻痹';
         if ($this->inspire == 'poisoned') return '中毒';
+        if ($this->inspire == 'escape') return '逃跑';
         return '';
     }
 

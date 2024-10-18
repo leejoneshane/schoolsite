@@ -13,6 +13,7 @@ class GameMonsterSpawn extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
+        'uuid',        //戰鬥對象
         'monster_id',  //怪物種類
         'name',        //怪物名稱
         'level',       //怪物等級
@@ -36,6 +37,7 @@ class GameMonsterSpawn extends Model
         'final_ap',
         'final_dp',
         'final_sp',
+        'status',
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）
@@ -142,6 +144,23 @@ class GameMonsterSpawn extends Model
         return $sp;
     }
 
+    //提供怪物狀態
+    public function getStatusAttribute()
+    {
+        if ($this->hp < 1) return '死亡';
+        if ($this->buff == 'invincible') return '無敵狀態';
+        if ($this->buff == 'hatred') return '集中仇恨';
+        if ($this->buff == 'protect') return '護衛';
+        if ($this->buff == 'protected') return '被保護';
+        if ($this->buff == 'reflex') return '傷害反射';
+        if ($this->buff == 'apportion') return '分散傷害';
+        if ($this->buff == 'weak') return '身體虛弱';
+        if ($this->buff == 'paralysis') return '精神麻痹';
+        if ($this->buff == 'poisoned') return '中毒';
+        if ($this->buff == 'escape') return '逃跑';
+        return '正常';
+    }
+
     //取得此怪物的種族
     public function monster()
     {
@@ -156,7 +175,7 @@ class GameMonsterSpawn extends Model
         });
     }
 
-    public function attack($uuid)
+    public function attack()
     {
         $critical = false;
         $hit = $this->crit_rate;
@@ -164,8 +183,9 @@ class GameMonsterSpawn extends Model
         if ($hit >= 1 || $rnd < $hit) {
             $critical = true;
         }
-        $skill = $this->skills->random();
-        return $skill->monster_cast($this->id, $uuid, $critical);
+        $skill = $this->skills()->random();
+        $result = $skill->monster_cast($this->id, $this->uuid, $critical);
+        return [ 'skill' => $skill, 'result' => $result ];
     }
 
 }

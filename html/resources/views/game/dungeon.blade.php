@@ -6,21 +6,21 @@
         <div class="relative h-full flex flex-row">
             <div id="me" class="w-1/3 inline-flex content-end">
                 <div class="m-2 flex flex-col gap-1">
-                    <div class="w-24 h-8 font-extrabold">{{ $character->name }}</div>
+                    <div class="w-24 h-8 text-white text-xl font-extrabold" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">{{ $character->name }}</div>
                     <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
                         <div id="hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->hp / $character->max_hp * 100) }}%;">{{ $character->hp }}</div>
                     </div>
                     <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
                         <div id="mp" class="h-4 bg-blue-500 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->mp / $character->max_mp * 100) }}%;">{{ $character->mp }}</div>
                     </div>
-                    <div id="status" class="w-24 h-8">正常</div>
+                    <div id="status" class="w-24 h-8 text-white" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">正常</div>
                     <img title="{{ $character->name }}" src="{{ $character->url ?: '' }}" class="absolute bottom-40 w-1/3 z-50">
                 </div>
             </div>
             <div class="w-1/3 text-center inline-flex flex-col">
-                <h1 id="caption" class="hidden text-xl" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;"></h1>
+                <h1 id="caption" class="hidden text-white text-3xl" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;"></h1>
                 <div id="help" class="p-2">
-                    <ul class="text-left">
+                    <ul class="text-left text-white" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
                         <li>地下城遊戲規則：</li>
                         <li>1. 先選擇要進入的地下城。</li>
                         <li>2. 你有 30 秒的時間回答問題，超過時間怪物會採取行動。</li>
@@ -38,16 +38,21 @@
                         沒有可以進入的地下城！
                     @endif
                 </div>
-                <div id="fight" class="hidden">
-                    
+                <div id="continue" class="hidden p-2">
+                    <button onclick="show_question();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        繼續前進！
+                    </button>
+                </div>
+                <div id="fight" class="hidden p-2 text-left bg-white bg-opacity-50">                 
                 </div>
             </div>
             <div class="w-1/3 inline-flex content-end">
                 <div id="monster" class="hidden m-2 flex flex-col gap-1">
-                    <div id="monster_name" class="w-24 h-8 font-extrabold"></div>
+                    <div id="monster_name" class="w-24 h-8 text-white text-xl font-extrabold" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;"></div>
                     <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
                         <div id="monster_hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: 100%;"></div>
                     </div>
+                    <div id="monster_status" class="w-24 h-8 text-white" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;"></div>
                     <img id="monster_img" title="" src="" class="absolute bottom-40 w-1/3 z-50">
                 </div>
             </div>    
@@ -80,8 +85,8 @@
                 <ul class="text-left">
                 @foreach ($dungeons as $d)
                 <li>
-                    <input type="radio" name="dungeon" value="{{ $d->id }}" class="hidden peer" />
-                    <label for="{{ $d->id }}" class="inline-block w-full p-2 {{ $d->monster->style }} bg-white border-2 border-gray-200 cursor-pointer peer-checked:border-blue-600 hover:bg-gray-50">
+                    <input id="dungeon{{ $d->id }}" type="radio" name="dungeon" value="{{ $d->id }}" class="hidden peer" />
+                    <label for="dungeon{{ $d->id }}" class="inline-block w-full p-2 {{ $d->monster->style }} bg-white border-2 border-gray-200 cursor-pointer peer-checked:border-blue-600 hover:bg-gray-50">
                         <span class="inline-block text-normal w-48">{{ $d->title }}</span>
                         <span class="inline-block text-xs w-80">{{ $d->description }}</span>
                     </label>
@@ -96,6 +101,23 @@
                 <button onclick="dungeonModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                     我再想想！
                 </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="questionModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+    <div class="relative w-auto h-full max-w-2xl md:h-auto">
+        <div class="relative bg-teal-300 rounded-lg shadow dark:bg-blue-700">
+            <div class="p-4 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-center text-xl font-semibold text-gray-900 dark:text-white">請回答以下問題：</h3>
+            </div>
+            <div class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                <label id="question" class="text-xl"></label>
+                <ul id="options" class="text-lg">
+                </ul>
+            </div>
+            <div class="p-4 border-b rounded-t dark:border-gray-600">
+                <h3 id="seconds" class="text-center text-5xl font-semibold text-red-500"></h3>
             </div>
         </div>
     </div>
@@ -162,11 +184,13 @@
     </div>
 </div>
 <script nonce="selfhost">
-    var character = '{{ $character->uuid }}';
+    var character = {!! $character->toJson(JSON_UNESCAPED_UNICODE) !!};
     var dungeon; //dungeon object
     var monster; //spawn object
-    var questions = []; 
+    var no = 0; //question index
+    var questions = [];
     var options = [];
+    var answer;
     var skills = [];
     var items =[];
     var target_type; //self or monster
@@ -176,7 +200,6 @@
     var targetSeconds = 0;
     var timerId;
     var startTime;
-    var pauseTime;
     var remainingTime;
 
     var main = document.getElementsByTagName('main')[0];
@@ -185,13 +208,28 @@
     const warnModal = new window.Modal($targetEl);
     var $targetEl = document.getElementById('dungeonModal');
     const dungeonModal = new window.Modal($targetEl);
+    var $targetEl = document.getElementById('questionModal');
+    const questionModal = new window.Modal($targetEl);
     var $targetEl = document.getElementById('actionModal');
     const actionModal = new window.Modal($targetEl);
     $targetEl = document.getElementById('skillsModal');
     const skillsModal = new window.Modal($targetEl);
     $targetEl = document.getElementById('itemsModal');
     const itemsModal = new window.Modal($targetEl);
-    window.onunload = warn;
+    var tictok = document.getElementById('seconds');
+    window.onbeforeunload = exit;
+    
+    function exit(event) {
+        fetch('{{ route('game.exit_dungeon') }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then( response => {
+            return response.data.success;
+        });
+    }
 
     function enter() {
         var node = document.querySelector('input[name="dungeon"]:checked');
@@ -212,17 +250,18 @@
         }).then( response => {
             dungeon = response.data.dungeon;
             var caption = document.getElementById('caption');
-            caption.innerHTML = dungeon.name;
+            caption.innerHTML = dungeon.title;
             caption.classList.remove('hidden');
             var node = document.getElementById('fight');
             node.classList.remove('hidden');
             node = document.getElementById('dungeons');
             node.classList.add('hidden');
             questions = [];
+            no = 0;
             for (var k in response.data.questions) {
                 var question = response.data.questions[k];
                 questions[k] = question;
-                options[k] = question.options;
+                options[k] = question.selection;
             }
             monster = response.data.monster;
             var myname = document.getElementById('monster_name');
@@ -233,50 +272,174 @@
             var img = document.getElementById('monster_img');
             img.setAttribute('title', monster.name);
             img.setAttribute('src', monster.url);
+            var status = document.getElementById('monster_status');
+            status.innerHTML = monster.status;
             var mon = document.getElementById('monster');
             mon.classList.remove('hidden');
-
+            var fight = document.getElementById('continue');
+            fight.classList.remove('hidden');
+            var fight = document.getElementById('fight');
+            fight.classList.remove('hidden');
+            var div = document.createElement('div');
+            div.classList.add('w-full','text-xs');
+            div.innerHTML = monster.name + '前來挑戰你！';
+            fight.appendChild(div);
+            show_question();
         });
-        show_question();
+        dungeonModal.hide();
     }
 
     function show_question() {
-
+        answer = questions[no].answer;
+        var node = document.getElementById('question');
+        node.innerHTML = questions[no].question;
+        var nodes = document.getElementById('options');
+        nodes.innerHTML = '';
+        for (var k in questions[no].selection) {
+            var li = document.createElement('li');
+            var box = document.createElement('button');
+            box.setAttribute('id', 'option' + questions[no].selection[k].id);
+            box.setAttribute('type', 'button');
+            box.setAttribute('value', questions[no].selection[k].id);
+            box.setAttribute('onclick', "check(this); questionModal.hide();");
+            box.classList.add('w-full','p-2','border-2','border-gray-200','bg-white','hover:bg-blue-100');
+            box.innerHTML = questions[no].selection[k].option;
+            li.appendChild(box);
+            nodes.appendChild(li);
+        }
+        no++;
+        questionModal.show();
+        start();
     }
 
-    function refresh() {
-            var me = response.data.character;
+    function start() {
+        targetSeconds = 30;
+        startTime = new Date().getTime();
+        update(targetSeconds);
+        timerId = setInterval(timer, 1000);
+    }
+
+    function stop() {
+        clearInterval(timerId);
+    }
+
+    function timer() {
+        var currentTime = new Date().getTime();
+        var diffSec = Math.round((currentTime - startTime) / 1000);
+        remainingTime = targetSeconds - diffSec;
+        update(remainingTime);
+        if (remainingTime <= 0) {
+            clearInterval(timerId);
+            update(0);
+            questionModal.hide();
+            monster_attack();
+        }
+    }
+
+    function update (seconds) {
+        tictok.innerHTML = seconds;
+    }
+
+    function syncDelay(milliseconds) {
+        var start = new Date().getTime();
+        var end = 0;
+        while ((end - start) < milliseconds) {
+            end = new Date().getTime();
+        }
+    }
+
+    function check(node) {
+        stop();
+        if (answer == node.value) {
+            action();
+        } else {
+            monster_attack();
+        }
+    }
+
+    function monster_attack() {
+        window.axios.post('{{ route('game.monster_attack') }}', {
+            spawn_id: monster.id,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then( response => {
+            var mskill = response.data.skill;
+            var fight = document.getElementById('fight');
+            var div = document.createElement('div');
+            div.classList.add('w-full','text-xs');
+            if (response.data.result == 5) {
+                div.innerHTML = monster.name + '對你施展' + mskill.name + '，未命中!';
+            } else {
+                div.innerHTML = monster.name + '對你施展' + mskill.name + '!';
+            }
+            fight.appendChild(div);
+            character = response.data.character;
             var hp = document.getElementById('hp');
-            hp.style.width = Math.round(me.hp / me.max_hp * 100) + '%';
-            hp.innerHTML = me.hp;
+            hp.style.width = Math.round(character.hp / character.max_hp * 100) + '%';
+            hp.innerHTML = character.hp;
             var mp = document.getElementById('mp');
-            mp.style.width = Math.round(me.mp / me.max_mp * 100) + '%';
-            mp.innerHTML = me.mp;
+            mp.style.width = Math.round(character.mp / character.max_mp * 100) + '%';
+            mp.innerHTML = character.mp;
             var status = document.getElementById('status');
-            status.innerHTML = me.status_str;
+            status.innerHTML = character.status_desc;
             monster = response.data.monster;
             var myname = document.getElementById('monster_name');
             myname.innerHTML = monster.name;
             hp = document.getElementById('monster_hp');
             hp.style.width = Math.round(monster.hp / monster.max_hp * 100) + '%';
             hp.innerHTML = monster.hp;
+            if (monster.buff == 'escape') {
+                div = document.createElement('div');
+                div.classList.add('w-full','text-xs');
+                div.innerHTML = monster.name + '已經逃跑離開戰鬥現場！';
+                fight.appendChild(div);
+                monster_respawn();
+            } else if (monster.hp < 1) {
+                monster_respawn();
+            }
+        });
     }
 
-    function action_self() {
-        if (done) return;
+    function monster_respawn() {
+        window.axios.post('{{ route('game.monster_respawn') }}', {
+            monster_id: monster.monster_id,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then( response => {
+            monster = response.data.monster;
+            var myname = document.getElementById('monster_name');
+            myname.innerHTML = monster.name;
+            var hp = document.getElementById('monster_hp');
+            hp.style.width = Math.round(monster.hp / monster.max_hp * 100) + '%';
+            hp.innerHTML = monster.hp;
+            var img = document.getElementById('monster_img');
+            img.setAttribute('title', monster.name);
+            img.setAttribute('src', monster.url);
+            var status = document.getElementById('monster_status');
+            status.innerHTML = monster.status;
+            var mon = document.getElementById('monster');
+            mon.classList.remove('hidden');
+            var fight = document.getElementById('fight');
+            fight.classList.remove('hidden');
+            var div = document.createElement('div');
+            div.classList.add('w-full','text-xs');
+            div.innerHTML = monster.name + '前來挑戰你！';
+            fight.appendChild(div);
+            show_question();
+        });
+    }
+
+    function action() {
         target = character;
         target_type = 'self';
         var msg = document.getElementById('action_target');
-        msg.innerHTML = '要對自己施展技能或使用道具？';
-        actionModal.show();
-    }
-
-    function action_monster(uuid) {
-        if (done) return;
-        target = uuid;
-        target_type = 'enemy';
-        var msg = document.getElementById('action_target');
-        msg.innerHTML = '要對敵人施展技能或使用道具？';
+        msg.innerHTML = '要施展技能或使用道具？';
         actionModal.show();
     }
 
@@ -284,8 +447,8 @@
         var ul = document.getElementById('skillList');
         ul.innerHTML = '';
         window.axios.post('{{ route('game.get_myskills') }}', {
-            uuid: character,
-            kind: target_type,
+            uuid: character.uuid,
+            kind: 'monster',
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
@@ -354,7 +517,7 @@
         var ul = document.getElementById('itemList');
         ul.innerHTML = '';
         window.axios.post('{{ route('game.get_myitems') }}', {
-            uuid: character,
+            uuid: character.uuid,
             kind: target_type,
         }, {
             headers: {
@@ -446,11 +609,12 @@
         var data_inspire = skills[data_skill].inspire;
         if (data_inspire == 'throw') {
             data_type = 'skill_then_item';
+            target_type = 'enemy';
             prepare_item();
             return;
         } else {
             window.axios.post('{{ route('game.skill_cast') }}', {
-                self: character,
+                self: character.uuid,
                 target: target,
                 skill: data_skill,
             }, {
@@ -459,7 +623,6 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             });
-            done = true;
         }
     }
 
@@ -475,7 +638,7 @@
         data_item = item_obj.value;
         if (data_type == 'skill_then_item') {
             window.axios.post('{{ route('game.skill_cast') }}', {
-                self: character,
+                self: character.uuid,
                 target: target,
                 skill: data_skill,
                 item: data_item,
@@ -498,7 +661,6 @@
                 }
             });
         }
-        done = true;
     }
 </script>
 @endsection

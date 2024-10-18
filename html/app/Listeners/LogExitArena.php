@@ -19,11 +19,13 @@ class LogExitArena
         $char = $event->character;
         $uuid = $char->uuid;
         $party = $char->party_id;
-        $room = $char->party->classroom_id;
-        $namespace = 'arena:'.$room.':party:'.$party;
-        Redis::srem($namespace, $uuid);
-        $namespace = 'arena:'.$room.':ready';
-        Redis::srem($namespace, $party);
+        if ($party) {
+            $room = $char->party->classroom_id;
+            $namespace = 'arena:'.$room.':party:'.$party;
+            Redis::srem($namespace, $uuid);
+            $namespace = 'arena:'.$room.':ready';
+            Redis::srem($namespace, $party);    
+        }
     }
 
 }

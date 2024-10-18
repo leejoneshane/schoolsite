@@ -51,16 +51,18 @@ class GameMonster extends Model
     }
 
     //隨機選取怪物圖片網址
-    public function spawn()
+    public function spawn($uuid)
     {
         $rnd = mt_rand()/mt_getrandmax();
-        $level = $this->min_level + $rnd * ($this->max_level - $this->min_level);
-        $max_hp = $this->hp + $this->hp * $rnd / 2;
-        $ap = $this->ap + $this->ap * $rnd / 2;
-        $dp = $this->dp + $this->dp * $rnd / 2;
-        $sp = $this->sp + $this->sp * $rnd / 2;
+        $level = intval($this->min_level + $rnd * ($this->max_level - $this->min_level));
+        $max_hp = intval($this->hp + $this->hp * $rnd / 2);
+        $ap = intval($this->ap + $this->ap * $rnd / 2);
+        $dp = intval($this->dp + $this->dp * $rnd / 2);
+        $sp = intval($this->sp + $this->sp * $rnd / 2);
         $url = $this->random_url();
+        GameMonsterSpawn::where('uuid', $uuid)->delete();
         $spawn = GameMonsterSpawn::create([
+            'uuid' => $uuid,
             'monster_id' => $this->id,
             'name' => 'L' . $level . ' ' . $this->name,
             'level' => $level,

@@ -23,6 +23,7 @@ class GameQuestion extends Model
     protected $hidden = [
         'evaluate',
         'correct',
+        'options',
     ];
 
     //取得此題目所屬試卷
@@ -53,6 +54,12 @@ class GameQuestion extends Model
     public function is_correct($option_id)
     {
         return $this->answer == $option_id;
+    }
+
+    //隨機出題
+    public function random()
+    {
+        return $this->options->shuffle();
     }
 
 }

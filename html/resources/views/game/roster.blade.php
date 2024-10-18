@@ -13,7 +13,12 @@
     </p>
     <input type="checkbox" id="all" onchange="select_all();" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:bg-white disabled:border-gray-100">
     @endlocked
-    <div class="inline text-3xl">{{ $room->name }}</div>
+    <div class="inline text-3xl">
+        {{ $room->name }}
+    </div>
+    <button class="inline bg-teal-200 hover:bg-teal-500 text-normal font-bold py-2 px-4 rounded-full" onclick="auto_absent('{{ $room->id }}');">
+        自動點名
+    </button>
 </div></p>
 @foreach ($parties as $p)
 <p><div class="pb-3">
@@ -460,6 +465,26 @@
     const teamModal = new window.Modal($targetEl);
     $targetEl = document.getElementById('editModal');
     const editModal = new window.Modal($targetEl);
+
+    function auto_absent(cls) {
+        window.axios.post('{{ route('game.auto_absent') }}', {
+            room_id: cls,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then( (response) => {
+            var uuids = response.data.present;
+            for (var k in uuids) {
+                document.getElementById('absent' + uuids[k]).checked = false;
+            }
+            var uuids = response.data.absent;
+            for (var k in uuids) {
+                document.getElementById('absent' + uuids[k]).checked = true;
+            }
+        });
+    }
 
     function absent(uuid) {
         var node = document.getElementById(uuid);

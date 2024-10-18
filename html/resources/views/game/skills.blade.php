@@ -20,31 +20,34 @@
             命中率
         </th>
         <th scope="col" class="p-2">
-            消耗行動力
+            消耗MP
         </th>
         <th scope="col" class="p-2">
-            攻擊力
+            AP
         </th>
         <th scope="col" class="p-2">
-            健康值效果
+            HP效果
         </th>
         <th scope="col" class="p-2">
-            行動力效果
+            MP效果
         </th>
         <th scope="col" class="p-2">
-            攻擊力效果
+            AP效果
         </th>
         <th scope="col" class="p-2">
-            防禦力效果
+            DP效果
         </th>
         <th scope="col" class="p-2">
-            敏捷力效果
+            SP效果
         </th>
         <th scope="col" class="p-2">
             解除狀態
         </th>
         <th scope="col" class="p-2">
             賦予狀態
+        </th>
+        <th scope="col" class="p-2">
+            持續時間
         </th>
         <th scope="col" class="p-2">
             獲得經驗值
@@ -82,6 +85,7 @@
         <td class="p-2">{{ $sk->effect_sp }}</td>
         <td class="p-2">{{ $sk->status_str }}</td>
         <td class="p-2">{{ $sk->inspire_str }}</td>
+        <td class="p-2">{{ $sk->effect_times }}</td>
         <td class="p-2">{{ $sk->earn_xp }}</td>
         <td class="p-2">{{ $sk->earn_gp }}</td>
         <td class="p-2">

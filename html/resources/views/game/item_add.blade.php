@@ -64,6 +64,7 @@
             <option value="weak">身體虛弱</option>
             <option value="paralysis">精神麻痹</option>
             <option value="poisoned">中毒</option>
+            <option value="escape">脫逃</option>
         </select>
         <br><span class="text-sm font-semibold">在計算增減效益前執行</span>
     </div></p>

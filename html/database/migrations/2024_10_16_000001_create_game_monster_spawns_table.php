@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('game_monster_spawns', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid');
             $table->integer('monster_id');
             $table->string('name');
             $table->integer('level');

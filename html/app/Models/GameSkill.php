@@ -76,6 +76,7 @@ class GameSkill extends Model
         if ($this->inspire == 'weak') return '身體虛弱';
         if ($this->inspire == 'paralysis') return '精神麻痹';
         if ($this->inspire == 'poisoned') return '中毒';
+        if ($this->inspire == 'escape') return '逃跑';
         return '';
     }
 
@@ -148,27 +149,45 @@ class GameSkill extends Model
                     foreach ($party->members as $m) {
                         $targets[] = $m;
                         if ($m->buff == 'hatred') {
-                            $hatred = $m;
-                            $m->buff = null;
-                            $m->save();
+                            if ($m->effect_timeout >= Carbon::now()) {
+                                $hatred = $m;
+                            }else {
+                                $m->buff = null;
+                                $m->effect_timeout = null;
+                                $m->save();
+                            }
                             break;
                         }
                         if ($m->buff == 'protect') {
-                            $protect = $m;
-                            $m->buff = null;
-                            $m->save();
+                            if ($m->effect_timeout >= Carbon::now()) {
+                                $protect = $m;
+                            }else {
+                                $m->buff = null;
+                                $m->effect_timeout = null;
+                                $m->save();
+                            }
                         }
                     }
                     if ($hatred) $targets = [ $hatred ];
                     foreach ($targets as $t) {
                         if ($t->buff == 'invincible') {
-                            $t->buff = null;
-                            $t->save();
-                            $result[$t->uuid] = MISS;
+                            if ($m->effect_timeout >= Carbon::now()) {
+                                $result[$t->uuid] = MISS;
+                            }else {
+                                $result[$t->uuid] = $this->effect_enemy($me, $t);
+                                $m->buff = null;
+                                $m->effect_timeout = null;
+                                $m->save();
+                            }
                         } elseif ($t->buff == 'protected') {
-                            $t->buff = null;
-                            $t->save();
-                            $result[$t->uuid] = $this->effect_enemy($me, $protect);
+                            if ($m->effect_timeout >= Carbon::now()) {
+                                $result[$protect->uuid] = $this->effect_enemy($me, $protect);
+                            }else {
+                                $result[$t->uuid] = $this->effect_enemy($me, $t);
+                                $m->buff = null;
+                                $m->effect_timeout = null;
+                                $m->save();
+                            }
                         } else {
                             $result[$t->uuid] = $this->effect_enemy($me, $t);
                         }
@@ -194,7 +213,49 @@ class GameSkill extends Model
                 $target = GameCharacter::find($uuid);
                 if ($target->party_id) {
                     if ($this->object == 'target') {
-                        $result[$uuid] = $this->effect_enemy($me, $target);
+                        foreach ($target->party->members as $m) {
+                            if ($m->buff == 'hatred') {
+                                if ($m->effect_timeout >= Carbon::now()) {
+                                    $hatred = $m;
+                                }else {
+                                    $m->buff = null;
+                                    $m->effect_timeout = null;
+                                    $m->save();
+                                }
+                                break;
+                            }
+                            if ($m->buff == 'protect') {
+                                if ($m->effect_timeout >= Carbon::now()) {
+                                    $protect = $m;
+                                }else {
+                                    $m->buff = null;
+                                    $m->effect_timeout = null;
+                                    $m->save();
+                                }
+                            }
+                        }
+                        if ($hatred) $target = $hatred;
+                        if ($target->buff == 'invincible') {
+                            if ($target->effect_timeout >= Carbon::now()) {
+                                $result[$uuid] = MISS;
+                            }else {
+                                $result[$uuid] = $this->effect_enemy($me, $target);
+                                $target->buff = null;
+                                $target->effect_timeout = null;
+                                $target->save();
+                            }
+                        } elseif ($target->buff == 'protected') {
+                            if ($target->effect_timeout >= Carbon::now()) {
+                                $result[$protect->uuid] = $this->effect_enemy($me, $protect);
+                            }else {
+                                $result[$uuid] = $this->effect_enemy($me, $target);
+                                $target->buff = null;
+                                $target->effect_timeout = null;
+                                $target->save();
+                            }
+                        } else {
+                            $result[$uuid] = $this->effect_enemy($me, $target);
+                        }
                     }
                     if ($this->object == 'partner') { 
                         $result[$uuid] = $this->effect_friend($me, $target);
@@ -272,20 +333,8 @@ class GameSkill extends Model
         $target = GameCharacter::find($uuid);
         if ($this->object == 'target' || $this->object == 'all') {
             $result = $this->effect_enemy($me, $target, $critical);
-            $message = $me->name.'對'.$target->name.'施展技能'.$this->name;
-            if ($result == MISS) {
-                broadcast(new GameCharacterChannel($target->stdno, $message.'未命中！'));
-            } else {
-                broadcast(new GameCharacterChannel($target->stdno, $message.'！'));
-            }
         } else {
             $result = $this->effect_monster($me);
-            $message = $me->name.'對自己施展技能'.$this->name;
-            if ($result == MISS) {
-                broadcast(new GameCharacterChannel($target->stdno, $message.'未命中！'));
-            } else {
-                broadcast(new GameCharacterChannel($target->stdno, $message.'！'));
-            }
         }
         return $result;
     }

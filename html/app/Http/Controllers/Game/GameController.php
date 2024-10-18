@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Game;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redis;
 use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Classroom;
@@ -138,7 +139,7 @@ class GameController extends Controller
         $room = Classroom::find($room_id);
         $stu = $room->students->first();
         $char = GameCharacter::find($stu->uuid);
-        $upgrade = ($char->classroom_id != $room->id);
+        if ($char) $upgrade = ($char->classroom_id != $room->id);
         $parties = GameParty::findByClass($room_id);
         if ($parties->count() < 1 || $upgrade) {
             $seats = Seats::findByClass($room_id)->first();
@@ -221,6 +222,23 @@ class GameController extends Controller
             $char->save();
         }
         return response()->json(['success' => $char->absent]);
+    }
+
+    public function auto_absent(Request $request)
+    {
+        $classroom = Classroom::find($request->input('room_id'));
+        $user = Auth::user();
+        if ($user->user_type == 'Student') return response()->json(['error' => '您沒有權限使用此功能！'], 403);
+        $present = $absent = [];
+        $namespace = 'online-character:';
+        foreach ($classroom->uuids() as $uuid) {
+            if (Redis::get($namespace.$uuid)) {
+                $present[] = $uuid;
+            } else {
+                $absent[] = $uuid;
+            }
+        }
+        return response()->json(['present' => $present, 'absent' => $absent]);
     }
 
     public function fast_update(Request $request)

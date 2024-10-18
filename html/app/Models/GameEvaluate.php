@@ -75,4 +75,14 @@ class GameEvaluate extends Model
         return $this->hasMany('App\Models\GameQuestion', 'evaluate_id')->latest('sequence')->first();
     }
 
+    //隨機出題
+    public function random()
+    {
+        $questions = $this->questions->shuffle();
+        foreach ($questions as $q) {
+            $q->selection = $q->random();
+        }
+        return $questions;
+    }
+
 }
