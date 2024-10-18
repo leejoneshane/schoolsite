@@ -119,15 +119,21 @@ class PlayerController extends Controller
             return response()->json([]);
         }
         if (!$kind) {
-            $skills = $char->skills;
+            $skills = $char->skills();
         } elseif ($kind == 'self') {
             $skills = $char->skills_by_object('self');
         } elseif ($kind == 'enemy') {
-            $skills = $char->skills_by_object('target')->merge($char->skills_by_object('all'));
+            $skills = $char->skills()->filter(function ($sk) {
+                return $sk->object == 'target' || $sk->object == 'all';
+            });
         } elseif ($kind == 'friend') {
-            $skills = $char->skills_by_object('partner')->merge($char->skills_by_object('party'));
+            $skills = $char->skills()->filter(function ($sk) {
+                return $sk->object == 'partner' || $sk->object == 'party';
+            });
         } elseif ($kind == 'monster') {
-            $skills = $char->skills_by_object('self')->merge($char->skills_by_object('target'))->merge($char->skills_by_object('all'));
+            $skills = $char->skills()->reject(function ($sk) {
+                return $sk->object == 'partner' || $sk->object == 'party';
+            });
         }
         return response()->json([ 'skills' => $skills, 'level' => $char->level ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
@@ -145,9 +151,13 @@ class PlayerController extends Controller
         } elseif ($kind == 'self') {
             $items = $char->items_by_object('self');
         } elseif ($kind == 'enemy') {
-            $items = $char->items_by_object('target')->merge($char->items_by_object('all'));
+            $items = $char->items->filter( function ($item) {
+                return $item->object == 'target' || $item->object == 'all';
+            });
         } elseif ($kind == 'friend') {
-            $items = $char->items_by_object('partner')->merge($char->items_by_object('party'));
+            $items = $char->items->filter( function ($item) {
+                return $item->object == 'partner' || $item->object == 'party';
+            });
         }
         return response()->json([ 'items' => $items, 'money' => $char->gp ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
@@ -245,21 +255,37 @@ class PlayerController extends Controller
             $message = $me->name.'對自己施展'.$skill->name;
         } elseif ($skill->object == 'partner') {
             $target = GameCharacter::find($request->input('target'));
-            $me->use_skill($skill->id, $target->uuid, null, $item->id);
+            if ($item) {
+                $me->use_skill($skill->id, $target->uuid, null, $item->id);
+            } else {
+                $me->use_skill($skill->id, $target->uuid);
+            }
             $message = $me->name.'對'.$target->name.'施展'.$skill->name;
             if ($item) $message .= $item->name;
         } elseif ($skill->object == 'party') {
-            $me->use_skill($skill->id, null, $me->party_id, $item->id);
+            if ($item) {
+                $me->use_skill($skill->id, null, $me->party_id, $item->id);
+            } else {
+                $me->use_skill($skill->id, null, $me->party_id);
+            }
             $message = $me->name.'對全隊施展'.$skill->name;
             if ($item) $message .= $item->name;
         } else {
             $target = GameCharacter::find($request->input('target'));
             if ($skill->object == 'all') {
-                $me->use_skill($skill->id, null, $target->party_id, $item->id);
+                if ($item) {
+                    $me->use_skill($skill->id, null, $target->party_id, $item->id);
+                } else {
+                    $me->use_skill($skill->id, null, $target->party_id);
+                }
                 $message = $me->name.'對所有對手施展'.$skill->name;
                 if ($item) $message .= $item->name;
             } else {
-                $me->use_skill($skill->id, $target->uuid, null, $item->id);
+                if ($item) {
+                    $me->use_skill($skill->id, $target->uuid, null, $item->id);
+                } else {
+                    $me->use_skill($skill->id, $target->uuid);
+                }
                 $message = $me->name.'對'.$target->name.'施展'.$skill->name;
                 if ($item) $message .= $item->name;
             }
@@ -498,7 +524,50 @@ class PlayerController extends Controller
         $spawn = GameMonsterSpawn::find($request->input('spawn_id'));
         $character = GameCharacter::find($spawn->uuid);
         $response = $spawn->attack();
+        $spawn->refresh();
+        $character->refresh();
         return response()->json([ 'skill' => $response['skill'], 'result' => $response['result'], 'character' => $character, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
+    public function skill_monster(Request $request)
+    {
+        $me = GameCharacter::find($request->input('self'));
+        $skill = GameSkill::find($request->input('skill'));
+        if ($request->has('item')) {
+            $item = GameItem::find($request->input('item'));
+        } else {
+            $item = null;
+        }
+        if ($skill->object == 'self') {
+            $result = $me->use_skill($skill->id);
+        } else {
+            if ($item) {
+                $result = $me->use_skill_on_monster($skill->id, $request->input('target'), $item->id);
+            } else {
+                $result = $me->use_skill_on_monster($skill->id, $request->input('target'));
+            }
+        }
+        $me->refresh();
+        $spawn = GameMonsterSpawn::find($request->input('target'));
+        if ($item) {
+            return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => $result, 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        } else {
+            return response()->json([ 'skill' => $skill, 'result' => $result, 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        }
+    }
+
+    public function item_monster(Request $request)
+    {
+        $me = GameCharacter::find($request->input('self'));
+        $item = GameItem::find($request->input('item'));
+        if ($item->object == 'self') {
+            $result = $me->use_item($item->id);
+        } else {
+            $result = $me->use_item_on_monster($item->id, $request->input('target'));
+        }
+        $me->refresh();
+        $spawn = GameCharacter::find($request->input('target'));
+        return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
 }

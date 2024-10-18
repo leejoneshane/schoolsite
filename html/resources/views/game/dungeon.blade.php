@@ -130,7 +130,7 @@
             </div>
             <div id="action_target" class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
             </div>
-            <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+            <div class="w-full inline-flex justify-center gap-4 p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                 <button onclick="prepare_skill(); actionModal.hide();" type="button" class="bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full">
                     技能
                 </button>
@@ -151,14 +151,6 @@
                 <ul id="skillList" >
                 </ul>
             </div>
-            <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <button onclick="skill_cast();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    立即行動
-                </button>
-                <button onclick="skillsModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                    取消
-                </button>
-            </div>
         </div>
     </div>
 </div>
@@ -171,14 +163,6 @@
             <div class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 <ul id="itemList" >
                 </ul>
-            </div>
-            <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <button onclick="item_use();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                    立即使用
-                </button>
-                <button onclick="itemsModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
-                    取消
-                </button>
             </div>
         </div>
     </div>
@@ -391,6 +375,8 @@
             hp = document.getElementById('monster_hp');
             hp.style.width = Math.round(monster.hp / monster.max_hp * 100) + '%';
             hp.innerHTML = monster.hp;
+            var status = document.getElementById('monster_status');
+            status.innerHTML = monster.status;
             if (monster.buff == 'escape') {
                 div = document.createElement('div');
                 div.classList.add('w-full','text-xs');
@@ -431,7 +417,6 @@
             div.classList.add('w-full','text-xs');
             div.innerHTML = monster.name + '前來挑戰你！';
             fight.appendChild(div);
-            show_question();
         });
     }
 
@@ -463,39 +448,37 @@
             if (skills.length > 0) {
                 skills.forEach( skill => {
                     var li = document.createElement('li');
-                    var radio = document.createElement('input');
-                    radio.id = 'skill' + skill.id;
-                    radio.value = skill.id;
-                    radio.setAttribute('type', 'radio');
-                    radio.setAttribute('name', 'skill');
-                    radio.classList.add('hidden','peer');
-                    li.appendChild(radio);
+                    var box = document.createElement('button');
+                    box.setAttribute('id', 'skill' + skill.id);
+                    box.setAttribute('type', 'button');
+                    box.setAttribute('value', skill.id);
+                    box.setAttribute('onclick', "skill_cast(" + skill.id + "); skillsModal.hide();");
+                    box.classList.add('w-full');
                     var label = document.createElement('label');
-                    label.setAttribute('for', 'skill' + skill.id);
-                    label.classList.add('inline-block','w-full','p-2','text-gray-500','bg-white','rounded-lg','border-2','border-gray-200','cursor-pointer','peer-checked:border-blue-600','hover:text-teal-600','peer-checked:text-blue-600','hover:bg-teal-50');
+                    label.classList.add('inline-block','w-full','p-2','text-gray-500','bg-white','rounded-lg','border-2','border-gray-200','hover:text-teal-600','hover:bg-teal-50');
                     var name = document.createElement('div');
                     name.classList.add('inline-block','w-auto','text-base');
                     name.innerHTML = skill.name;
                     label.appendChild(name);
                     var cost = document.createElement('div');
-                    cost.classList.add('inline-block','w-16','text-base');
+                    cost.classList.add('inline-block','w-16','text-base','text-center');
                     cost.innerHTML = '-' + skill.cost_mp + 'MP';
                     label.appendChild(cost);
                     if (skill.ap > 0) {
                         var ap = document.createElement('div');
-                        ap.classList.add('inline-block','w-16','text-base');
+                        ap.classList.add('inline-block','w-16','text-base','text-center');
                         ap.innerHTML = skill.ap + 'AP';
                         label.appendChild(ap);
                     }
                     if (skill.xp > 0) {
                         var xp = document.createElement('div');
-                        xp.classList.add('inline-block','w-16','text-base');
+                        xp.classList.add('inline-block','w-16','text-base','text-center');
                         xp.innerHTML = skill.xp + 'XP';
                         label.appendChild(xp);
                     }
                     if (skill.gp > 0) {
                         var gp = document.createElement('div');
-                        gp.classList.add('inline-block','w-16','text-base');
+                        gp.classList.add('inline-block','w-16','text-base','text-center');
                         gp.innerHTML = skill.gp + 'GP';
                         label.appendChild(gp);
                     }
@@ -503,7 +486,8 @@
                     help.classList.add('inline-block','w-96','text-sm');
                     help.innerHTML = skill.description;
                     label.appendChild(help);
-                    li.appendChild(label);
+                    box.appendChild(label);
+                    li.appendChild(box);
                     ul.appendChild(li);
                 });
             } else {
@@ -533,51 +517,49 @@
             if (items.length > 0) {
                 items.forEach( item => {
                     var li = document.createElement('li');
-                    var radio = document.createElement('input');
-                    radio.id = 'bag' + item.id;
-                    radio.value = item.id;
-                    radio.setAttribute('type', 'radio');
-                    radio.setAttribute('name', 'item');
-                    radio.classList.add('hidden','peer');
-                    li.appendChild(radio);
+                    var box = document.createElement('button');
+                    box.setAttribute('id', 'skill' + item.id);
+                    box.setAttribute('type', 'button');
+                    box.setAttribute('value', item.id);
+                    box.setAttribute('onclick', "item_use(" + item.id + "); itemsModal.hide();");
+                    box.classList.add('w-full');
                     var label = document.createElement('label');
-                    label.setAttribute('for', 'bag' + item.id);
-                    label.classList.add('inline-block','w-full','p-2','text-gray-500','bg-white','rounded-lg','border-2','border-gray-200','cursor-pointer','peer-checked:border-blue-600','hover:text-teal-600','peer-checked:text-blue-600','hover:bg-teal-50');
+                    label.classList.add('inline-block','w-full','p-2','text-gray-500','bg-white','rounded-lg','border-2','border-gray-200','hover:text-teal-600','hover:bg-teal-50');
                     var name = document.createElement('div');
                     name.classList.add('inline-block','w-auto','text-base');
                     name.innerHTML = item.name;
                     label.appendChild(name);
                     var quantity = document.createElement('div');
-                    quantity.classList.add('inline-block','w-16','text-base','pl-4');
+                    quantity.classList.add('inline-block','w-16','text-base','text-center');
                     quantity.innerHTML = item.pivot.quantity + '個';
                     label.appendChild(quantity);
                     if (item.hp > 0) {
                         var hp = document.createElement('div');
-                        hp.classList.add('inline-block','w-16','text-base','pl-4');
+                        hp.classList.add('inline-block','w-16','text-base','text-center');
                         hp.innerHTML = item.hp + 'HP';
                         label.appendChild(hp);
                     }
                     if (item.mp > 0) {
                         var mp = document.createElement('div');
-                        mp.classList.add('inline-block','w-16','text-base','pl-4');
+                        mp.classList.add('inline-block','w-16','text-base','text-center');
                         mp.innerHTML = item.mp + 'MP';
                         label.appendChild(mp);
                     }
                     if (item.ap > 0) {
                         var ap = document.createElement('div');
-                        ap.classList.add('inline-block','w-16','text-base','pl-4');
+                        ap.classList.add('inline-block','w-16','text-base','text-center');
                         ap.innerHTML = item.ap + 'AP';
                         label.appendChild(ap);
                     }
                     if (item.dp > 0) {
                         var dp = document.createElement('div');
-                        dp.classList.add('inline-block','w-16','text-base','pl-4');
+                        dp.classList.add('inline-block','w-16','text-base','text-center');
                         dp.innerHTML = item.dp + 'DP';
                         label.appendChild(dp);
                     }
                     if (item.sp > 0) {
                         var sp = document.createElement('div');
-                        sp.classList.add('inline-block','w-16','text-base','pl-4');
+                        sp.classList.add('inline-block','w-16','text-base','text-center');
                         sp.innerHTML = item.sp + 'SP';
                         label.appendChild(sp);
                     }
@@ -585,7 +567,8 @@
                     help.classList.add('inline-block','w-full','text-sm');
                     help.innerHTML = item.description;
                     label.appendChild(help);
-                    li.appendChild(label);
+                    box.appendChild(label);
+                    li.appendChild(box);
                     ul.appendChild(li);
                 });
             } else {
@@ -595,17 +578,9 @@
         });
     }
 
-    function skill_cast() {
-        var skill_obj = document.querySelector('input[name="skill"]:checked');
-        if (skill_obj == null) {
-            var msg = document.getElementById('info');
-            msg.innerHTML = '您尚未選擇技能！';
-            warnModal.show();
-            return;
-        }
-        skillsModal.hide();
+    function skill_cast(id) {
         data_type = '';
-        data_skill = skill_obj.value;
+        data_skill = id;
         var data_inspire = skills[data_skill].inspire;
         if (data_inspire == 'throw') {
             data_type = 'skill_then_item';
@@ -613,14 +588,56 @@
             prepare_item();
             return;
         } else {
-            window.axios.post('{{ route('game.skill_cast') }}', {
+            window.axios.post('{{ route('game.skill_monster') }}', {
                 self: character.uuid,
-                target: target,
+                target: monster.id,
                 skill: data_skill,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            }).then( response => {
+                var mskill = response.data.skill;
+                var fight = document.getElementById('fight');
+                var div = document.createElement('div');
+                div.classList.add('w-full','text-xs');
+                if (response.data.result == 5) {
+                    div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '，未命中!';
+                } else {
+                    div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '!';
+                }
+                fight.appendChild(div);
+                character = response.data.character;
+                var hp = document.getElementById('hp');
+                hp.style.width = Math.round(character.hp / character.max_hp * 100) + '%';
+                hp.innerHTML = character.hp;
+                var mp = document.getElementById('mp');
+                mp.style.width = Math.round(character.mp / character.max_mp * 100) + '%';
+                mp.innerHTML = character.mp;
+                var status = document.getElementById('status');
+                status.innerHTML = character.status_desc;
+                monster = response.data.monster;
+                var myname = document.getElementById('monster_name');
+                myname.innerHTML = monster.name;
+                hp = document.getElementById('monster_hp');
+                hp.style.width = Math.round(monster.hp / monster.max_hp * 100) + '%';
+                hp.innerHTML = monster.hp;
+                var status = document.getElementById('monster_status');
+                status.innerHTML = monster.status;
+                if (monster.hp < 1) {
+                    div = document.createElement('div');
+                    div.classList.add('w-full','text-xs');
+                    var msg = monster.name + '已經被你打敗，獲得';
+                    if (monster.xp > 0) {
+                        msg += '經驗值' + monster.xp;
+                    }
+                    if (monster.gp > 0) {
+                        msg += ' 金幣' + monster.gp;
+                    }
+                    div.innerHTML =  msg;
+                    fight.appendChild(div);
+                    monster_respawn();
                 }
             });
         }
@@ -637,9 +654,9 @@
         itemsModal.hide();
         data_item = item_obj.value;
         if (data_type == 'skill_then_item') {
-            window.axios.post('{{ route('game.skill_cast') }}', {
+            window.axios.post('{{ route('game.skill_monster') }}', {
                 self: character.uuid,
-                target: target,
+                target: monster.id,
                 skill: data_skill,
                 item: data_item,
             }, {
@@ -647,17 +664,112 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                var mskill = response.data.skill;
+                if (response.data.item) {
+                    var mitem = response.data.item;
+                }
+                var fight = document.getElementById('fight');
+                var div = document.createElement('div');
+                div.classList.add('w-full','text-xs');
+                if (response.data.result == 5) {
+                    if (mitem != undefined) {
+                        div.innerHTML = '你對' + monster.name + '投射道具' + mitem.name + '，未命中!';
+                    } else {
+                        div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '，未命中!';
+                    }
+                } else {
+                    if (mitem != undefined) {
+                        div.innerHTML = '你對' + monster.name + '投射道具' + mitem.name + '!';
+                    } else {
+                        div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '!';
+                    }
+                }
+                fight.appendChild(div);
+                character = response.data.character;
+                var hp = document.getElementById('hp');
+                hp.style.width = Math.round(character.hp / character.max_hp * 100) + '%';
+                hp.innerHTML = character.hp;
+                var mp = document.getElementById('mp');
+                mp.style.width = Math.round(character.mp / character.max_mp * 100) + '%';
+                mp.innerHTML = character.mp;
+                var status = document.getElementById('status');
+                status.innerHTML = character.status_desc;
+                monster = response.data.monster;
+                var myname = document.getElementById('monster_name');
+                myname.innerHTML = monster.name;
+                hp = document.getElementById('monster_hp');
+                hp.style.width = Math.round(monster.hp / monster.max_hp * 100) + '%';
+                hp.innerHTML = monster.hp;
+                var status = document.getElementById('monster_status');
+                status.innerHTML = monster.status;
+                if (monster.hp < 1) {
+                    div = document.createElement('div');
+                    div.classList.add('w-full','text-xs');
+                    var msg = monster.name + '已經被你打敗，獲得';
+                    if (monster.xp > 0) {
+                        msg += '經驗值' + monster.xp;
+                    }
+                    if (monster.gp > 0) {
+                        msg += ' 金幣' + monster.gp;
+                    }
+                    div.innerHTML =  msg;
+                    fight.appendChild(div);
+                    monster_respawn();
+                }
             });
             data_type = '';
         } else {
-            window.axios.post('{{ route('game.item_use') }}', {
-                self: character,
-                target: target,
+            window.axios.post('{{ route('game.item_monster') }}', {
+                self: character.uuid,
+                target: monster.id,
                 item: data_item,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            }).then( response => {
+                var mitem = response.data.item;
+                var fight = document.getElementById('fight');
+                var div = document.createElement('div');
+                div.classList.add('w-full','text-xs');
+                if (response.data.result == 5) {
+                    div.innerHTML = '你使用道具' + mitem.name + '，未命中!';
+                } else {
+                    div.innerHTML = '你使用道具' + mitem.name + '!';
+                }
+                fight.appendChild(div);
+                character = response.data.character;
+                var hp = document.getElementById('hp');
+                hp.style.width = Math.round(character.hp / character.max_hp * 100) + '%';
+                hp.innerHTML = character.hp;
+                var mp = document.getElementById('mp');
+                mp.style.width = Math.round(character.mp / character.max_mp * 100) + '%';
+                mp.innerHTML = character.mp;
+                var status = document.getElementById('status');
+                status.innerHTML = character.status_desc;
+                monster = response.data.monster;
+                var myname = document.getElementById('monster_name');
+                myname.innerHTML = monster.name;
+                hp = document.getElementById('monster_hp');
+                hp.style.width = Math.round(monster.hp / monster.max_hp * 100) + '%';
+                hp.innerHTML = monster.hp;
+                var status = document.getElementById('monster_status');
+                status.innerHTML = monster.status;
+                if (monster.hp < 1) {
+                    div = document.createElement('div');
+                    div.classList.add('w-full','text-xs');
+                    var msg = monster.name + '已經被你打敗，獲得';
+                    if (monster.xp > 0) {
+                        msg += '經驗值' + monster.xp;
+                    }
+                    if (monster.gp > 0) {
+                        msg += ' 金幣' + monster.gp;
+                    }
+                    div.innerHTML =  msg;
+                    fight.appendChild(div);
+                    monster_respawn();
                 }
             });
         }

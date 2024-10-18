@@ -69,8 +69,8 @@ class GameMonsterSpawn extends Model
                     $ap += intval($this->ap * $this->effect_value);
                 }
             } else {
-                $this->tmp_effect = null;
-                $this->effect_value = null;
+                $this->temp_effect = null;
+                $this->effect_value = 0;
                 $this->effect_timeout = null;
             }
         }
@@ -98,8 +98,8 @@ class GameMonsterSpawn extends Model
                     $dp += intval($this->dp * $this->effect_value);
                 }
             } else {
-                $this->tmp_effect = null;
-                $this->effect_value = null;
+                $this->temp_effect = null;
+                $this->effect_value = 0;
                 $this->effect_timeout = null;
             }
         }
@@ -127,8 +127,8 @@ class GameMonsterSpawn extends Model
                     $sp += intval($this->sp * $this->effect_value);
                 }
             } else {
-                $this->tmp_effect = null;
-                $this->effect_value = null;
+                $this->temp_effect = null;
+                $this->effect_value = 0;
                 $this->effect_timeout = null;
             }
         }
@@ -171,7 +171,7 @@ class GameMonsterSpawn extends Model
     public function skills()
     {
         return $this->monster->skills->reject(function ($skill) {
-            return $skill->level > $this->level;
+            return $skill->pivot->level > $this->level;
         });
     }
 

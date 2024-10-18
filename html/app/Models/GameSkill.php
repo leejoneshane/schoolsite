@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Events\GamePartyChannel;
-use App\Events\GameCharacterChannel;
 use App\Models\GameParty;
 use App\Models\GameCharacter;
 use App\Models\GameMonsterSpawn;
@@ -307,14 +306,6 @@ class GameSkill extends Model
         } else {
             $target = GameMonsterSpawn::find($monster_id);
             $result = $this->effect_monster($me, $target);
-            if ($me instanceof GameCharacter) {
-                $message = $me->name.'對'.$target->name.'施展技能'.$this->name;
-                if ($result == MISS) {
-                    broadcast(new GameCharacterChannel($me->stdno, $message.'未命中！'));    
-                } else {
-                    broadcast(new GameCharacterChannel($me->stdno, $message.'！'));
-                }
-            }
         }
         if ($me instanceof GameCharacter) {
             $me->mp -= $this->cost_mp;

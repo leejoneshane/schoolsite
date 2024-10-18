@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use App\Models\GameSence;
 use App\Models\Classroom;
 use App\Models\GameClass;
-use App\Events\GameCharacterChannel;
 
 class GameCharacter extends Model
 {
@@ -189,8 +188,8 @@ class GameCharacter extends Model
                     $ap += intval($this->ap * $this->effect_value);
                 }
             } else {
-                $this->tmp_effect = null;
-                $this->effect_value = null;
+                $this->temp_effect = null;
+                $this->effect_value = 0;
                 $this->effect_timeout = null;
             }
         }
@@ -230,8 +229,8 @@ class GameCharacter extends Model
                     $dp += intval($this->dp * $this->effect_value);
                 }
             } else {
-                $this->tmp_effect = null;
-                $this->effect_value = null;
+                $this->temp_effect = null;
+                $this->effect_value = 0;
                 $this->effect_timeout = null;
             }
         }
@@ -271,8 +270,8 @@ class GameCharacter extends Model
                     $sp += intval($this->sp * $this->effect_value);
                 }
             } else {
-                $this->tmp_effect = null;
-                $this->effect_value = null;
+                $this->temp_effect = null;
+                $this->effect_value = 0;
                 $this->effect_timeout = null;
             }
         }
@@ -481,7 +480,7 @@ class GameCharacter extends Model
     public function skills()
     {
         return $this->profession->skills->reject(function ($skill) {
-            return $skill->level > $this->level || $skill->cost_mp > $this->mp;
+            return $skill->pivot->level > $this->level || $skill->cost_mp > $this->mp;
         });
     }
 
@@ -489,7 +488,7 @@ class GameCharacter extends Model
     public function skills_by_object($object)
     {
         return $this->profession->skills->reject(function ($skill) use ($object) {
-            if ($skill->level > $this->level) return true;
+            if ($skill->pivot->level > $this->level) return true;
             if ($skill->cost_mp > $this->mp) return true;
             if ($skill->object == 'any') return false;
             if ($skill->object != $object) return true;
@@ -501,7 +500,7 @@ class GameCharacter extends Model
     public function fight_skills()
     {
         return $this->profession->fight->reject(function ($skill) {
-            return $skill->level > $this->level || $skill->cost_mp > $this->mp;
+            return $skill->pivot->level > $this->level || $skill->cost_mp > $this->mp;
         });
     }
 
@@ -509,7 +508,7 @@ class GameCharacter extends Model
     public function passive_skills()
     {
         return $this->profession->passive->reject(function ($skill) {
-            return $skill->level > $this->level || $skill->cost_mp > $this->mp;
+            return $skill->pivot->level > $this->level || $skill->cost_mp > $this->mp;
         });
     }
 
@@ -564,7 +563,6 @@ class GameCharacter extends Model
         if ($this->status == 'COMA') return COMA;
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
-                broadcast(new GameCharacterChannel($this->stdno, '因為陷入麻痺狀態，無法施展技能！'));
                 return COMA;
             } else {
                 $this->effect_timeout = null;
@@ -587,7 +585,6 @@ class GameCharacter extends Model
         if ($this->status == 'DEAD') return DEAD;
         if ($this->status == 'COMA') return COMA;
         if ($this->buff == 'paralysis') {
-            broadcast(new GameCharacterChannel($this->stdno, '因為陷入麻痺狀態，無法使用道具！'));
             if ($this->effect_timeout >= Carbon::now()) {
                 return COMA;
             } else {
@@ -686,7 +683,6 @@ class GameCharacter extends Model
         if ($this->status == 'DEAD') return DEAD;
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
-                broadcast(new GameCharacterChannel($this->stdno, '因為陷入麻痺狀態，無法使用道具！'));
                 return COMA;
             } else {
                 $this->effect_timeout = null;

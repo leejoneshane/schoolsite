@@ -23,7 +23,7 @@
                     </select>
                     <button onclick="invite();" class="w-40 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full">
                         送出對戰邀請
-                    </button>    
+                    </button>
                 </div>
                 @endif
             @else
@@ -75,7 +75,7 @@
             </div>
             <div id="message" class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
             </div>
-            <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+            <div class="w-full inline-flex justify-center gap-4 p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                 <button onclick="agree();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     同意
                 </button>
@@ -94,7 +94,7 @@
             </div>
             <div id="action_target" class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
             </div>
-            <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+            <div class="w-full inline-flex justify-center gap-4 p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                 <button onclick="prepare_skill(); actionModal.hide();" type="button" class="bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full">
                     技能
                 </button>
@@ -115,7 +115,7 @@
                 <ul id="skillList" >
                 </ul>
             </div>
-            <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+            <div class="w-full inline-flex justify-center gap-4 p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                 <button onclick="skill_cast();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     立即行動
                 </button>
@@ -136,7 +136,7 @@
                 <ul id="itemList" >
                 </ul>
             </div>
-            <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+            <div class="w-full inline-flex justify-center gap-4 p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
                 <button onclick="item_use();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     立即使用
                 </button>
@@ -493,24 +493,24 @@
                     name.innerHTML = skill.name;
                     label.appendChild(name);
                     var cost = document.createElement('div');
-                    cost.classList.add('inline-block','w-16','text-base');
+                    cost.classList.add('inline-block','w-16','text-base','text-center');
                     cost.innerHTML = '-' + skill.cost_mp + 'MP';
                     label.appendChild(cost);
                     if (skill.ap > 0) {
                         var ap = document.createElement('div');
-                        ap.classList.add('inline-block','w-16','text-base');
+                        ap.classList.add('inline-block','w-16','text-base','text-center');
                         ap.innerHTML = skill.ap + 'AP';
                         label.appendChild(ap);
                     }
                     if (skill.xp > 0) {
                         var xp = document.createElement('div');
-                        xp.classList.add('inline-block','w-16','text-base');
+                        xp.classList.add('inline-block','w-16','text-base','text-center');
                         xp.innerHTML = skill.xp + 'XP';
                         label.appendChild(xp);
                     }
                     if (skill.gp > 0) {
                         var gp = document.createElement('div');
-                        gp.classList.add('inline-block','w-16','text-base');
+                        gp.classList.add('inline-block','w-16','text-base','text-center');
                         gp.innerHTML = skill.gp + 'GP';
                         label.appendChild(gp);
                     }
@@ -563,36 +563,36 @@
                     name.innerHTML = item.name;
                     label.appendChild(name);
                     var quantity = document.createElement('div');
-                    quantity.classList.add('inline-block','w-16','text-base','pl-4');
+                    quantity.classList.add('inline-block','w-16','text-base','text-center');
                     quantity.innerHTML = item.pivot.quantity + '個';
                     label.appendChild(quantity);
                     if (item.hp > 0) {
                         var hp = document.createElement('div');
-                        hp.classList.add('inline-block','w-16','text-base','pl-4');
+                        hp.classList.add('inline-block','w-16','text-base','text-center');
                         hp.innerHTML = item.hp + 'HP';
                         label.appendChild(hp);
                     }
                     if (item.mp > 0) {
                         var mp = document.createElement('div');
-                        mp.classList.add('inline-block','w-16','text-base','pl-4');
+                        mp.classList.add('inline-block','w-16','text-base','text-center');
                         mp.innerHTML = item.mp + 'MP';
                         label.appendChild(mp);
                     }
                     if (item.ap > 0) {
                         var ap = document.createElement('div');
-                        ap.classList.add('inline-block','w-16','text-base','pl-4');
+                        ap.classList.add('inline-block','w-16','text-base','text-center');
                         ap.innerHTML = item.ap + 'AP';
                         label.appendChild(ap);
                     }
                     if (item.dp > 0) {
                         var dp = document.createElement('div');
-                        dp.classList.add('inline-block','w-16','text-base','pl-4');
+                        dp.classList.add('inline-block','w-16','text-base','text-center');
                         dp.innerHTML = item.dp + 'DP';
                         label.appendChild(dp);
                     }
                     if (item.sp > 0) {
                         var sp = document.createElement('div');
-                        sp.classList.add('inline-block','w-16','text-base','pl-4');
+                        sp.classList.add('inline-block','w-16','text-base','text-center');
                         sp.innerHTML = item.sp + 'SP';
                         label.appendChild(sp);
                     }

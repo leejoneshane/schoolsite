@@ -574,6 +574,8 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
         Route::post('dungeon/exit', 'App\Http\Controllers\Game\PlayerController@exit_dungeon')->name('game.exit_dungeon');
         Route::post('monster/respawn', 'App\Http\Controllers\Game\PlayerController@monster_respawn')->name('game.monster_respawn');
         Route::post('monster/attack', 'App\Http\Controllers\Game\PlayerController@monster_attack')->name('game.monster_attack');
+        Route::post('monster/skill', 'App\Http\Controllers\Game\PlayerController@skill_monster')->name('game.skill_monster');
+        Route::post('monster/item', 'App\Http\Controllers\Game\PlayerController@item_monster')->name('game.item_monster');
     });
 });
 
