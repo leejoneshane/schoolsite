@@ -49,11 +49,9 @@ class GameMonsterSpawn extends Model
     //更新角色時，自動刪除
     protected static function booted()
     {
-        static::updated(function($item)
-        {
-            if ($item->hp == 0) {
-                $item->delete();
-            }
+        self::updating(function ($item) {
+            if ($item->hp < 1) $item->hp = 0;
+            if ($item->hp > $item->max_hp) $item->hp = $item->max_hp;
         });
     }
 
