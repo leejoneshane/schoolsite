@@ -15,6 +15,8 @@ return new class extends Migration
     {
         Schema::create('game_answers', function (Blueprint $table) {
             $table->id();
+            $table->uuid('uuid');
+            $table->integer('dungeon_id');
             $table->integer('evaluate_id');
             $table->string('classroom_id');
             $table->integer('seat');

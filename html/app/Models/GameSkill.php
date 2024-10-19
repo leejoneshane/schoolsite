@@ -171,7 +171,7 @@ class GameSkill extends Model
                     foreach ($targets as $t) {
                         if ($t->buff == 'invincible') {
                             if ($m->effect_timeout >= Carbon::now()) {
-                                $result[$t->uuid] = MISS;
+                                $result[$t->uuid] = 'miss';
                             }else {
                                 $result[$t->uuid] = $this->effect_enemy($me, $t);
                                 $m->buff = null;
@@ -190,7 +190,7 @@ class GameSkill extends Model
                         } else {
                             $result[$t->uuid] = $this->effect_enemy($me, $t);
                         }
-                        if ($result[$t->uuid] == MISS) {
+                        if ($result[$t->uuid] == 'miss') {
                             broadcast(new GamePartyChannel($me->party_id, $t->name.'未命中！'));
                             broadcast(new GamePartyChannel($party_id, $t->name.'未命中！'));
                         } else {
@@ -201,7 +201,7 @@ class GameSkill extends Model
                 } elseif ($this->object == 'party') {
                     foreach ($party->members as $m) {
                         $result[$m->uuid] = $this->effect_friend($me, $m);
-                        if ($result[$m->uuid] == MISS) {
+                        if ($result[$m->uuid] == 'miss') {
                             broadcast(new GamePartyChannel($me->party_id, $m->name.'未命中！'));
                         } else {
                             broadcast(new GamePartyChannel($me->party_id, $m->name.'命中！'));
@@ -236,7 +236,7 @@ class GameSkill extends Model
                         if ($hatred) $target = $hatred;
                         if ($target->buff == 'invincible') {
                             if ($target->effect_timeout >= Carbon::now()) {
-                                $result[$uuid] = MISS;
+                                $result[$uuid] = 'miss';
                             }else {
                                 $result[$uuid] = $this->effect_enemy($me, $target);
                                 $target->buff = null;
@@ -260,13 +260,13 @@ class GameSkill extends Model
                         $result[$uuid] = $this->effect_friend($me, $target);
                     }
                     $message = $me->name.'對'.$target->name.'施展技能'.$this->name;
-                    if ($result[$uuid] == MISS) {
+                    if ($result[$uuid] == 'miss') {
                         broadcast(new GamePartyChannel($me->party_id, $message.'失敗！'));
                     } else {
                         broadcast(new GamePartyChannel($me->party_id, $message.'成功！'));
                     }
                     if ($me->party_id != $target->party_id) {
-                        if ($result[$uuid] == MISS) {
+                        if ($result[$uuid] == 'miss') {
                             broadcast(new GamePartyChannel($target->party_id, $message.'失敗！'));
                         } else {
                             broadcast(new GamePartyChannel($target->party_id, $message.'成功！'));
@@ -276,7 +276,7 @@ class GameSkill extends Model
             } else {
                 $result[$self] = $this->effect_friend($me);
                 $message = $me->name.'對自己施展技能'.$this->name;
-                if ($result[$self] == MISS) {
+                if ($result[$self] == 'miss') {
                     broadcast(new GamePartyChannel($me->party_id, $message.'失敗！'));
                 } else {
                     broadcast(new GamePartyChannel($me->party_id, $message.'成功！'));
@@ -398,7 +398,7 @@ class GameSkill extends Model
             $character->save();
             return 0;
         } else {
-            return MISS;
+            return 'miss';
         }
     }
 
@@ -496,7 +496,7 @@ class GameSkill extends Model
             $character->save();
             return $damage;
         } else {
-            return MISS;
+            return 'miss';
         }
     }
 
@@ -563,7 +563,7 @@ class GameSkill extends Model
             $monster->save();
             return $damage;
         } else {
-            return MISS;
+            return 'miss';
         }
     }
 }

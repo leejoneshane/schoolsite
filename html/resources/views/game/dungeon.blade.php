@@ -6,7 +6,7 @@
         <div class="relative h-full flex flex-row">
             <div id="me" class="w-1/3 inline-flex content-end">
                 <div class="m-2 flex flex-col gap-1">
-                    <div class="w-24 h-8 text-white text-xl font-extrabold" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">{{ $character->name }}</div>
+                    <div class="w-24 h-8 text-white text-xl font-extrabold" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">L{{ $character->level }} {{ $character->name }}</div>
                     <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
                         <div id="hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->hp / $character->max_hp * 100) }}%;">{{ $character->hp }}</div>
                     </div>
@@ -30,13 +30,9 @@
                     </ul>
                 </div>
                 <div id="dungeons" class="p-2">
-                    @if ($dungeons->count() > 0)
-                    <button onclick="dungeonModal.show();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    <button onclick="get_dungeons();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         挑選要進入的地下城！
                     </button>
-                    @else
-                        沒有可以進入的地下城！
-                    @endif
                 </div>
                 <div id="continue" class="hidden p-2">
                     <button onclick="show_question();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -82,16 +78,7 @@
                 <h3 class="text-center text-xl font-semibold text-gray-900 dark:text-white">已開放地下城：</h3>
             </div>
             <div class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                <ul class="text-left">
-                @foreach ($dungeons as $d)
-                <li>
-                    <input id="dungeon{{ $d->id }}" type="radio" name="dungeon" value="{{ $d->id }}" class="hidden peer" />
-                    <label for="dungeon{{ $d->id }}" class="inline-block w-full p-2 {{ $d->monster->style }} bg-white border-2 border-gray-200 cursor-pointer peer-checked:border-blue-600 hover:bg-gray-50">
-                        <span class="inline-block text-normal w-48">{{ $d->title }}</span>
-                        <span class="inline-block text-xs w-80">{{ $d->description }}</span>
-                    </label>
-                </li>
-                @endforeach
+                <ul id="dungeon_list" class="text-left">
                 </ul>
             </div>
             <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
@@ -170,11 +157,13 @@
 <script nonce="selfhost">
     var character = {!! $character->toJson(JSON_UNESCAPED_UNICODE) !!};
     var dungeon; //dungeon object
+    var answer; //answer object
     var monster; //spawn object
+    var question_id;
+    var correct; //question correct answer id
     var no = 0; //question index
     var questions = [];
     var options = [];
-    var answer;
     var skills = [];
     var items =[];
     var target_type; //self or monster
@@ -202,7 +191,57 @@
     const itemsModal = new window.Modal($targetEl);
     var tictok = document.getElementById('seconds');
     window.onbeforeunload = exit;
-    
+
+    function get_dungeons() {
+        window.axios.post('{{ route('game.get_dungeons') }}', {
+            uuid: character.uuid,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then( response => {
+            var node = document.getElementById('dungeon_list');
+            for (var k in response.data.dungeons) {
+                var dun = response.data.dungeons[k];
+                var li = document.createElement('li');
+                var radio = document.createElement('input');
+                radio.setAttribute('type', 'radio');
+                radio.setAttribute('id', 'dungeon' + dun.id);
+                radio.setAttribute('name', 'dungeon');
+                radio.setAttribute('value', dun.id);
+                radio.classList.add('hidden','peer');
+                li.appendChild(radio);
+                var label = document.createElement('label');
+                label.setAttribute('for', 'dungeon' + dun.id);
+                label.classList.add('inline-block','w-full','p-2',dun.style,'bg-white','border-2','border-gray-200','cursor-pointer','peer-checked:border-blue-600','hover:bg-blue-100');
+                var txt = document.createElement('span');
+                txt.classList.add('inline-block','w-32','font-bold');
+                txt.innerHTML = dun.title;
+                label.appendChild(txt);
+                txt = document.createElement('span');
+                txt.classList.add('inline-block','w-24');
+                txt.innerHTML = '推薦' + dun.level;
+                label.appendChild(txt);
+                txt = document.createElement('span');
+                txt.classList.add('inline-block','w-32');
+                if (dun.times == 0) {
+                    txt.innerHTML = '不限次數';
+                } else {
+                    txt.innerHTML = '入場限制' + dun.times + '次';
+                }
+                label.appendChild(txt);
+                txt = document.createElement('span');
+                txt.classList.add('inline-block','w-full','text-xs');
+                txt.innerHTML = dun.description;
+                label.appendChild(txt);
+                li.appendChild(label);
+                node.appendChild(li);
+            }
+            dungeonModal.show();
+        });
+    }
+
     function exit(event) {
         fetch('{{ route('game.exit_dungeon') }}', {
             method: 'POST',
@@ -240,6 +279,7 @@
             node.classList.remove('hidden');
             node = document.getElementById('dungeons');
             node.classList.add('hidden');
+            answer = response.data.answer;
             questions = [];
             no = 0;
             for (var k in response.data.questions) {
@@ -274,7 +314,21 @@
     }
 
     function show_question() {
-        answer = questions[no].answer;
+        if (no >= questions.length) {
+            var div = document.createElement('div');
+            div.classList.add('w-full','text-xs');
+            div.innerHTML = '你已經完成' + dungeon.title + '的探險！';
+            fight.appendChild(div);
+            var mon = document.getElementById('monster');
+            mon.classList.add('hidden');
+            var fight = document.getElementById('continue');
+            fight.classList.add('hidden');
+            var fight = document.getElementById('dungeons');
+            fight.classList.remove('hidden');
+            return;
+        }
+        question_id = questions[no].id;
+        correct = questions[no].answer;
         var node = document.getElementById('question');
         node.innerHTML = questions[no].question;
         var nodes = document.getElementById('options');
@@ -334,7 +388,18 @@
 
     function check(node) {
         stop();
-        if (answer == node.value) {
+        window.axios.post('{{ route('game.journey') }}', {
+            dungeon: dungeon.id,
+            answer: answer.id,
+            question: question_id,
+            option: node.value,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        });
+        if (correct == node.value) {
             action();
         } else {
             monster_attack();
@@ -354,10 +419,11 @@
             var fight = document.getElementById('fight');
             var div = document.createElement('div');
             div.classList.add('w-full','text-xs');
-            if (response.data.result == 5) {
+            var result = response.data.result; 
+            if (result == 5) {
                 div.innerHTML = monster.name + '對你施展' + mskill.name + '，未命中!';
             } else {
-                div.innerHTML = monster.name + '對你施展' + mskill.name + '!';
+                div.innerHTML = monster.name + '對你施展' + mskill.name + '，造成傷害' + result + '點!';
             }
             fight.appendChild(div);
             character = response.data.character;
@@ -369,22 +435,35 @@
             mp.innerHTML = character.mp;
             var status = document.getElementById('status');
             status.innerHTML = character.status_desc;
-            monster = response.data.monster;
-            var myname = document.getElementById('monster_name');
-            myname.innerHTML = monster.name;
-            hp = document.getElementById('monster_hp');
-            hp.style.width = Math.round(monster.hp / monster.max_hp * 100) + '%';
-            hp.innerHTML = monster.hp;
-            var status = document.getElementById('monster_status');
-            status.innerHTML = monster.status;
-            if (monster.buff == 'escape') {
-                div = document.createElement('div');
+            if (character.hp < 1 || character.mp < 1) {
+                var div = document.createElement('div');
                 div.classList.add('w-full','text-xs');
-                div.innerHTML = monster.name + '已經逃跑離開戰鬥現場！';
+                div.innerHTML = '你筋疲力盡地使用傳送裝置逃離' + dungeon.title + '的探險！';
                 fight.appendChild(div);
-                monster_respawn();
-            } else if (monster.hp < 1) {
-                monster_respawn();
+                var mon = document.getElementById('monster');
+                mon.classList.add('hidden');
+                var fight = document.getElementById('continue');
+                fight.classList.add('hidden');
+                var fight = document.getElementById('dungeons');
+                fight.classList.remove('hidden');
+            } else {
+                monster = response.data.monster;
+                var myname = document.getElementById('monster_name');
+                myname.innerHTML = monster.name;
+                hp = document.getElementById('monster_hp');
+                hp.style.width = Math.round(monster.hp / monster.max_hp * 100) + '%';
+                hp.innerHTML = monster.hp;
+                var status = document.getElementById('monster_status');
+                status.innerHTML = monster.status;
+                if (monster.buff == 'escape') {
+                    div = document.createElement('div');
+                    div.classList.add('w-full','text-xs');
+                    div.innerHTML = monster.name + '已經逃跑離開戰鬥現場！';
+                    fight.appendChild(div);
+                    monster_respawn();
+                } else if (monster.hp < 1) {
+                    monster_respawn();
+                }
             }
         });
     }
@@ -602,10 +681,11 @@
                 var fight = document.getElementById('fight');
                 var div = document.createElement('div');
                 div.classList.add('w-full','text-xs');
-                if (response.data.result == 5) {
+                var result = response.data.result; 
+                if (result == 'miss') {
                     div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '，未命中!';
                 } else {
-                    div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '!';
+                    div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '，造成傷害' + result + '點!';
                 }
                 fight.appendChild(div);
                 character = response.data.character;
@@ -672,7 +752,8 @@
                 var fight = document.getElementById('fight');
                 var div = document.createElement('div');
                 div.classList.add('w-full','text-xs');
-                if (response.data.result == 5) {
+                var result = response.data.result;
+                if (result == 'miss') {
                     if (mitem != undefined) {
                         div.innerHTML = '你對' + monster.name + '投射道具' + mitem.name + '，未命中!';
                     } else {
@@ -680,9 +761,9 @@
                     }
                 } else {
                     if (mitem != undefined) {
-                        div.innerHTML = '你對' + monster.name + '投射道具' + mitem.name + '!';
+                        div.innerHTML = '你對' + monster.name + '投射道具' + mitem.name + '造成傷害' + result + '點!';
                     } else {
-                        div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '!';
+                        div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '造成傷害' + result + '點!';
                     }
                 }
                 fight.appendChild(div);
@@ -734,7 +815,7 @@
                 var fight = document.getElementById('fight');
                 var div = document.createElement('div');
                 div.classList.add('w-full','text-xs');
-                if (response.data.result == 5) {
+                if (response.data.result == 'miss') {
                     div.innerHTML = '你使用道具' + mitem.name + '，未命中!';
                 } else {
                     div.innerHTML = '你使用道具' + mitem.name + '!';

@@ -8,6 +8,8 @@ use Carbon\Carbon;
 use App\Models\GameSence;
 use App\Models\Classroom;
 use App\Models\GameClass;
+use App\Models\GameDungeon;
+use App\Models\GameAnswer;
 
 class GameCharacter extends Model
 {
@@ -512,9 +514,30 @@ class GameCharacter extends Model
         });
     }
 
+    //檢查此角色是否為公會長
     public function is_leader()
     {
         return $this->uuid == $this->party->uuid;
+    }
+
+    //計算此角色進入指定地下城的次數
+    public function dungeon_times($dungeon_id)
+    {
+        return GameAnswer::findByUuid($dungeon_id, $this->uuid)->count();
+    }
+
+    //取得此角色可進入的地下城
+    public function dungeons()
+    {
+        $dungeons = GameDungeon::findByClassroom($this->classroom_id);
+        $dungeons->reject(function ($dun) {
+            if ($dun->opened_at > Carbon::today() || $dun->closed_at < Carbon::today()) return true;
+            if ($dun->times == 0) return false;
+            $times = $this->dungeon_times($dun->id);
+            if ($dun->times <= $times) return true;
+            return false;
+        });
+        return $dungeons;
     }
 
     //角色日常更新
@@ -559,43 +582,45 @@ class GameCharacter extends Model
     //使用指定的技能
     public function use_skill($id, $uuid = null, $party_id = null, $item_id = null)
     {
-        if ($this->status == 'DEAD') return DEAD;
-        if ($this->status == 'COMA') return COMA;
+        if ($this->status == 'DEAD') return 'dead';
+        if ($this->status == 'COMA') return 'coma';
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
-                return COMA;
+                return 'coma';
             } else {
                 $this->effect_timeout = null;
                 $this->buff = null;
                 $this->save();
             }
         }
-        if (!($this->skills()->contains('id', $id))) return NOT_EXISTS;
+        if (!($this->skills()->contains('id', $id))) return 'not_exists';
         $skill = GameSkill::find($id);
         $classroom = $this->student->class_id;
-        if (!$skill->passive && !GameSence::is_lock($classroom)) return PEACE;
+        if (!$skill->passive && !GameSence::is_lock($classroom)) return 'peace';
         if ($uuid || $this->party_id) {
-            $skill->cast($this->uuid, $uuid, $party_id, $item_id);
+            $result = $skill->cast($this->uuid, $uuid, $party_id, $item_id);
+            return $result;
         }
     }
 
     //使用指定的技能在怪物身上
     public function use_skill_on_monster($id, $monster_id, $item_id = null)
     {
-        if ($this->status == 'DEAD') return DEAD;
-        if ($this->status == 'COMA') return COMA;
+        if ($this->status == 'DEAD') return 'dead';
+        if ($this->status == 'COMA') return 'coma';
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
-                return COMA;
+                return 'coma';
             } else {
                 $this->effect_timeout = null;
                 $this->buff = null;
                 $this->save();
             }
         }
-        if (!($this->skills()->contains('id', $id))) return NOT_EXISTS;
+        if (!($this->skills()->contains('id', $id))) return 'not_exists';
         $skill = GameSkill::find($id);
-        $skill->cast_on_monster($this->uuid, $monster_id, $item_id);
+        $result = $skill->cast_on_monster($this->uuid, $monster_id, $item_id);
+        return $result;
     }
 
     //購買指定的道具
@@ -680,22 +705,22 @@ class GameCharacter extends Model
     //使用指定的道具
     public function use_item($id, $uuid = null, $party_id = null)
     {
-        if ($this->status == 'DEAD') return DEAD;
+        if ($this->status == 'DEAD') return 'dead';
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
-                return COMA;
+                return 'coma';
             } else {
                 $this->effect_timeout = null;
                 $this->buff = null;
                 $this->save();
             }
         }
-        if (!($this->items->contains('id', $id))) return NOT_EXISTS;
+        if (!($this->items->contains('id', $id))) return 'not_exists';
         $item = GameItem::find($id);
         $classroom = $this->student->class_id;
-        if (!$item->passive && !GameSence::is_lock($classroom)) return PEACE;
+        if (!$item->passive && !GameSence::is_lock($classroom)) return 'peace';
         if ($uuid || $this->party_id) {
-            $item->cast($this->uuid, $uuid, $party_id);
+            $result = $item->cast($this->uuid, $uuid, $party_id);
             DB::table('game_characters_items')
                 ->where('uuid', $this->uuid)
                 ->where('item_id', $item->id)
@@ -705,25 +730,26 @@ class GameCharacter extends Model
                 ->where('item_id', $item->id)
                 ->where('quantity', '<', 1)
                 ->delete();
+            return $result;
         }
     }
 
     //使用指定的道具
     public function use_item_on_monster($id, $monster_id)
     {
-        if ($this->status == 'DEAD') return DEAD;
+        if ($this->status == 'DEAD') return 'dead';
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
-                return COMA;
+                return 'coma';
             } else {
                 $this->effect_timeout = null;
                 $this->buff = null;
                 $this->save();
             }
         }
-        if (!($this->items->contains('id', $id))) return NOT_EXISTS;
+        if (!($this->items->contains('id', $id))) return 'not_exists';
         $item = GameItem::find($id);
-        $item->effect_monster($monster_id);
+        $result = $item->effect_monster($monster_id);
         DB::table('game_characters_items')
             ->where('uuid', $this->uuid)
             ->where('item_id', $item->id)
@@ -733,6 +759,7 @@ class GameCharacter extends Model
             ->where('item_id', $item->id)
             ->where('quantity', '<', 1)
             ->delete();
+        return $result;
     }
 
 }

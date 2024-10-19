@@ -104,7 +104,7 @@ class GameItem extends Model
             }
             foreach ($party->members as $m) {
                 $result[$m->uuid] = $this->effect($m);
-                if ($result[$m->uuid] == MISS) {
+                if ($result[$m->uuid] == 'miss') {
                     broadcast(new GamePartyChannel($self->party_id, $m->name.'未命中！'));
                     if ($self->party_id != $party_id) {
                         broadcast(new GamePartyChannel($party_id, $m->name.'未命中！'));
@@ -121,7 +121,7 @@ class GameItem extends Model
             if ($character->party_id) {
                 $result[$uuid] = $this->effect($character);
                 $message = $self->name.'對'.$character->name.'使用道具'.$this->name;
-                if ($result[$uuid] == MISS) {
+                if ($result[$uuid] == 'miss') {
                     broadcast(new GamePartyChannel($self->party_id, $message.'失敗！'));
                 } else {
                     broadcast(new GamePartyChannel($self->party_id, $message.'成功！'));
@@ -138,7 +138,7 @@ class GameItem extends Model
             $result[$owner] = $this->effect($self);
             $message = $self->name.'對自己使用道具'.$this->name;
             if ($self->party_id) {
-                if ($result[$owner] == MISS) {
+                if ($result[$owner] == 'miss') {
                     broadcast(new GamePartyChannel($self->party_id, $message.'失敗！'));
                 } else {
                     broadcast(new GamePartyChannel($self->party_id, $message.'成功！'));
@@ -191,7 +191,7 @@ class GameItem extends Model
             $monster->save();
             return 0;
         } else {
-            return MISS;
+            return 'miss';
         }
     }
 
@@ -265,7 +265,7 @@ class GameItem extends Model
             $character->save();
             return 0;
         } else {
-            return MISS;
+            return 'miss';
         }
     }
 

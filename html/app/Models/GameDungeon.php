@@ -34,7 +34,9 @@ class GameDungeon extends Model
 
     //以下為透過程式動態產生之屬性
     protected $appends = [
+        'level',
         'is_open',
+        'style',
     ];
 
     //以下屬性需進行資料庫欄位格式轉換
@@ -43,10 +45,22 @@ class GameDungeon extends Model
         'closed_at' => 'datetime:Y-m-d',
     ];
 
+    //提供推薦等級
+    public function getLevelAttribute()
+    {
+        return 'L'.$this->monster->max_level;
+    }
+
     //提供開放狀態
     public function getIsOpenAttribute()
     {
         return Carbon::now() >= $this->opened_at && Carbon::now() < $this->closed_at;
+    }
+
+    //提供文字樣式
+    public function getStyleAttribute()
+    {
+        return $this->monster->style;
     }
 
     //篩選指定教師指派的所有地下城

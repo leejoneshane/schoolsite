@@ -35,6 +35,7 @@ use App\Models\GameDelay;
 use App\Models\GameLog;
 use App\Models\GameDungeon;
 use App\Models\Watchdog;
+use Carbon\Carbon;
 
 class PlayerController extends Controller
 {
@@ -490,18 +491,35 @@ class PlayerController extends Controller
     {
         $character = GameCharacter::find(Auth::user()->uuid);
         ExitArena::dispatch($character);
-        $dungeons = GameDungeon::findByClassroom($character->party->classroom_id);
-        return view('game.dungeon', [ 'character' => $character, 'dungeons' => $dungeons ]);
+        return view('game.dungeon', [ 'character' => $character ]);
+    }
+
+    public function get_dungeons()
+    {
+        $character = GameCharacter::find(Auth::user()->uuid);
+        $dungeons = $character->dungeons();
+        return response()->json([ 'dungeons' => $dungeons ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function enter_dungeon(Request $request)
     {
         $user = Auth::user();
+        $character = GameCharacter::find($user->uuid);
         $dungeon = GameDungeon::find($request->input('dungeon_id'));
         $questions = $dungeon->evaluate->random();
         $monster = GameMonster::find($dungeon->monster_id);
         $spawn = $monster->spawn($user->uuid);
-        return response()->json([ 'dungeon' => $dungeon, 'questions' => $questions, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        $answer = GameAnswer::create([
+            'uuid' => $user->uuid,
+            'dungeon_id' => $dungeon->id,
+            'evaluate_id' => $dungeon->evaluate_id,
+            'classroom_id' => $dungeon->classroom_id,
+            'seat' => $character->seat,
+            'student' => $character->name,
+            'score' => 0,
+            'tested_at' => Carbon::now(),
+        ]);
+        return response()->json([ 'dungeon' => $dungeon, 'answer' => $answer, 'questions' => $questions, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function exit_dungeon()
@@ -568,6 +586,25 @@ class PlayerController extends Controller
         $me->refresh();
         $spawn = GameCharacter::find($request->input('target'));
         return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
+    public function journey(Request $request) {
+        $dungeon = GameDungeon::find($request->input('dungeon'));
+        $answer = GameAnswer::find($request->input('answer'));
+        $question = GameQuestion::find($request->input('question'));
+        $option = GameQuestion::find($request->input('option'));
+        $correct = ($question->answer == $option->id);
+        GameJourney::create([
+            'evaluate_id' => $dungeon->evaluate_id,
+            'answer_id' => $answer->id,
+            'question_id' => $question->id,
+            'option_id' => $option->id,
+            'is_correct' => $correct,
+        ]);
+        if ($correct) {
+            $answer->score += $question->score;
+            $answer->save();
+        }
     }
 
 }
