@@ -30,7 +30,7 @@
                     </ul>
                 </div>
                 <div id="dungeons" class="p-2">
-                    <button onclick="get_dungeons();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                    <button id="enter" onclick="get_dungeons();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"{{ ($character->hp < 1 || $character->mp < 1) ? ' disabled' : '' }}>
                         挑選要進入的地下城！
                     </button>
                 </div>
@@ -219,11 +219,11 @@
                 txt.classList.add('inline-block','w-32','font-bold');
                 txt.innerHTML = dun.title;
                 label.appendChild(txt);
-                txt = document.createElement('span');
+                var txt = document.createElement('span');
                 txt.classList.add('inline-block','w-24');
                 txt.innerHTML = '推薦' + dun.level;
                 label.appendChild(txt);
-                txt = document.createElement('span');
+                var txt = document.createElement('span');
                 txt.classList.add('inline-block','w-32');
                 if (dun.times == 0) {
                     txt.innerHTML = '不限次數';
@@ -231,7 +231,7 @@
                     txt.innerHTML = '入場限制' + dun.times + '次';
                 }
                 label.appendChild(txt);
-                txt = document.createElement('span');
+                var txt = document.createElement('span');
                 txt.classList.add('inline-block','w-full','text-xs');
                 txt.innerHTML = dun.description;
                 label.appendChild(txt);
@@ -442,10 +442,12 @@
                 fight.appendChild(div);
                 var mon = document.getElementById('monster');
                 mon.classList.add('hidden');
-                var fight = document.getElementById('continue');
-                fight.classList.add('hidden');
-                var fight = document.getElementById('dungeons');
-                fight.classList.remove('hidden');
+                var node = document.getElementById('continue');
+                node.classList.add('hidden');
+                var node = document.getElementById('dungeons');
+                node.classList.remove('hidden');
+                var btn = document.getElementById('enter');
+                btn.disabled = true;
             } else {
                 monster = response.data.monster;
                 var myname = document.getElementById('monster_name');
