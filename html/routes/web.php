@@ -534,6 +534,9 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@image_edit');
     Route::post('classroom/setup/image/{uuid}', 'App\Http\Controllers\Game\ClassroomController@character_image')->name('game.image_setup');
     Route::get('dungeons', 'App\Http\Controllers\Game\ClassroomController@dungeons')->name('game.dungeons');
+    Route::get('dungeons/answers/{dungeon_id}', 'App\Http\Controllers\Game\ClassroomController@answers')->name('game.answers');
+    Route::post('dungeons/answers/remove/{answer_id}', 'App\Http\Controllers\Game\ClassroomController@answer_remove')->name('game.answer_remove');
+    Route::get('dungeons/answers/journeys/{answer_id}', 'App\Http\Controllers\Game\ClassroomController@journeys')->name('game.journeys');
     Route::get('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@reset');
     Route::post('classroom/reset', 'App\Http\Controllers\Game\ClassroomController@do_reset')->name('game.reset');
     //學生初始設定

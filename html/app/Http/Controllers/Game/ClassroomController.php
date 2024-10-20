@@ -8,11 +8,15 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\Classroom;
 use App\Models\Seats;
+use App\Models\User;
 use App\Models\GameConfigure;
 use App\Models\GameParty;
 use App\Models\GameCharacter;
 use App\Models\GameClass;
 use App\Models\GameBase;
+use App\Models\GameDungeon;
+use App\Models\GameAnswer;
+use App\Models\GameJourney;
 use App\Models\Watchdog;
 
 class ClassroomController extends Controller
@@ -20,7 +24,7 @@ class ClassroomController extends Controller
 
     public function config()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $room = Classroom::find(session('gameclass'));
@@ -38,7 +42,7 @@ class ClassroomController extends Controller
 
     public function save_config(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameConfigure::find(session('gameclass'));
@@ -83,7 +87,7 @@ class ClassroomController extends Controller
 
     public function regroup()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $room = Classroom::find(session('gameclass'));
@@ -109,7 +113,7 @@ class ClassroomController extends Controller
 
     public function party_add()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $group_no = GameParty::findByClass(session('gameclass'))->count();
@@ -142,7 +146,7 @@ class ClassroomController extends Controller
 
     public function party_edit($party_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $party = GameParty::find($party_id);
@@ -181,7 +185,7 @@ class ClassroomController extends Controller
 
     public function characters()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $room = Classroom::find(session('gameclass'));
@@ -195,7 +199,7 @@ class ClassroomController extends Controller
 
     public function character_edit($uuid)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $character = GameCharacter::find($uuid);
@@ -230,9 +234,30 @@ class ClassroomController extends Controller
 
     public function dungeons()
     {
-        $uuid = Auth::user()->uuid;
-        $dungeons = GameDungeon::findByTeacher($uuid);
+        $dungeons = GameDungeon::findByClassroom(session('gameclass'));
         return view('game.dungeons', [ 'dungeons' => $dungeons ]);
+    }
+
+    public function answers($dungeon_id)
+    {
+        $answers = GameAnswer::findByDungeon($dungeon_id);
+        return view('game.answers', [ 'answers' => $answers ]);
+    }
+
+    public function answer_remove($answer_id)
+    {
+        $answer = GameAnswer::find($answer_id);
+        $dungeon_id = $answer->dungeon_id;
+        $answer->delete();
+        GameJourney::where('answer_id', $answer_id)->delete();
+        return redirect()->route('game.answers', [ 'dungeon_id' => $dungeon_id ])->with([ 'success' => '答案卷已經刪除！' ]);
+    }
+
+    public function journeys($answer_id)
+    {
+        $answer = GameAnswer::find($answer_id);
+        $journeys = GameJourney::findByAnswer($answer_id);
+        return view('game.journeys', [ 'answer' => $answer, 'journeys' => $journeys ]);
     }
 
     public function reset()

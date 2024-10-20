@@ -28,11 +28,12 @@ use App\Models\GameSkill;
 use App\Models\GameItem;
 use App\Models\GameFurniture;
 use App\Models\GameEvaluate;
+use App\Models\GameQuestion;
+use App\Models\GameOption;
+use App\Models\GameAnswer;
+use App\Models\GameJourney;
 use App\Models\GameMonster;
 use App\Models\GameMonsterSpawn;
-use App\Models\GameSetting;
-use App\Models\GameDelay;
-use App\Models\GameLog;
 use App\Models\GameDungeon;
 use App\Models\Watchdog;
 use Carbon\Carbon;
@@ -592,7 +593,7 @@ class PlayerController extends Controller
         $dungeon = GameDungeon::find($request->input('dungeon'));
         $answer = GameAnswer::find($request->input('answer'));
         $question = GameQuestion::find($request->input('question'));
-        $option = GameQuestion::find($request->input('option'));
+        $option = GameOption::find($request->input('option'));
         $correct = ($question->answer == $option->id);
         GameJourney::create([
             'evaluate_id' => $dungeon->evaluate_id,

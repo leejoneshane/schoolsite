@@ -31,6 +31,14 @@ class GameJourney extends Model
         'is_correct' => 'boolean',
     ];
 
+    //篩選指定答案卷的所有歷程紀錄
+    public static function findByAnswer($answer_id)
+    {
+        return GameJourney::where('answer_id', $answer_id)
+            ->orderBy('created_at')
+            ->get();
+    }
+
     //取得此歷程紀錄所屬試卷
     public function evaluate()
     {

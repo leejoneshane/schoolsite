@@ -339,7 +339,7 @@
             box.setAttribute('id', 'option' + questions[no].selection[k].id);
             box.setAttribute('type', 'button');
             box.setAttribute('value', questions[no].selection[k].id);
-            box.setAttribute('onclick', "check(this); questionModal.hide();");
+            box.setAttribute('onclick', "check('" + questions[no].selection[k].id + "'); questionModal.hide();");
             box.classList.add('w-full','p-2','border-2','border-gray-200','bg-white','hover:bg-blue-100');
             box.innerHTML = questions[no].selection[k].option;
             li.appendChild(box);
@@ -386,20 +386,20 @@
         }
     }
 
-    function check(node) {
+    function check(option_id) {
         stop();
         window.axios.post('{{ route('game.journey') }}', {
             dungeon: dungeon.id,
             answer: answer.id,
             question: question_id,
-            option: node.value,
+            option: option_id,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
-        if (correct == node.value) {
+        if (correct == option_id) {
             action();
         } else {
             monster_attack();

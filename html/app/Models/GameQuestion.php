@@ -47,7 +47,7 @@ class GameQuestion extends Model
     //取得此題目所屬試卷
     public function correct()
     {
-        return GameOption::find($this->answer);
+        return $this->hasOne('App\Models\GameOption', 'id', 'answer');
     }
 
     //檢查指定選項是否為正確答案

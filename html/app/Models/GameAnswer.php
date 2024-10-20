@@ -9,6 +9,7 @@ class GameAnswer extends Model
 {
 
     protected $table = 'game_answers';
+    public $timestamps = false;
 
     //以下屬性可以批次寫入
     protected $fillable = [
@@ -34,11 +35,10 @@ class GameAnswer extends Model
         'tested_at' => 'datetime:Y-m-d',
     ];
 
-    //篩選指定評量指定班級的所有答案卷
-    public static function findBy($evaluate_id, $classroom_id)
+    //篩選指定地下城的所有答案卷
+    public static function findByDungeon($dungeon_id)
     {
-        return GameAnswer::where('evaluate_id', $evaluate_id)
-            ->where('classroom_id', $classroom_id)
+        return GameAnswer::where('dungeon_id', $dungeon_id)
             ->orderBy('seat')
             ->get();
     }
