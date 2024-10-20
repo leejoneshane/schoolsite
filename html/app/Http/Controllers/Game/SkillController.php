@@ -7,17 +7,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use App\Models\GameSkill;
 use App\Models\Watchdog;
-use Intervention\Image\ImageManager;
-use Intervention\Image\Drivers\Gd\Driver;
 
 class SkillController extends Controller
 {
 
     public function index()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $skills = GameSkill::all()->sortBy('object');
@@ -29,7 +28,7 @@ class SkillController extends Controller
 
     public function add()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             return view('game.skill_add');
@@ -40,7 +39,7 @@ class SkillController extends Controller
 
     public function insert(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameSkill::create([
@@ -69,11 +68,6 @@ class SkillController extends Controller
                 $image = $request->file('file');
                 $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path(GAME_SKILL), $fileName);
-                $path = public_path(GAME_SKILL.$fileName);
-                $manager = new ImageManager(new Driver());
-                $file = $manager->read($path);
-                $file->scale(width: 300);
-                $file->toGif()->save($path);
                 $sk->gif_file = $fileName;
                 $sk->save();
             }
@@ -86,7 +80,7 @@ class SkillController extends Controller
 
     public function edit($skill_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $skill = GameSkill::find($skill_id);
@@ -98,7 +92,7 @@ class SkillController extends Controller
 
     public function update(Request $request, $skill_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameSkill::find($skill_id);
@@ -126,13 +120,6 @@ class SkillController extends Controller
                 $image = $request->file('file');
                 $fileName = Str::ulid()->toBase32() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path(GAME_SKILL), $fileName);
-                $path = public_path(GAME_SKILL.$fileName);
-                $manager = new ImageManager(new Driver());
-                $file = $manager->read($path);
-                if ($file->width() > 300) {
-                    $file->scale(width: 300);
-                    $file->toPng()->save($path);    
-                }
                 if ($sk->image_avaliable()) {
                     unlink($sk->image_path());
                 }
@@ -148,7 +135,7 @@ class SkillController extends Controller
 
     public function remove(Request $request, $skill_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $sk = GameSkill::find($skill_id);
