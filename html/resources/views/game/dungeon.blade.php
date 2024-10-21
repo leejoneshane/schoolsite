@@ -202,6 +202,7 @@
             }
         }).then( response => {
             var node = document.getElementById('dungeon_list');
+            node.innerHTML = '';
             for (var k in response.data.dungeons) {
                 var dun = response.data.dungeons[k];
                 var li = document.createElement('li');
