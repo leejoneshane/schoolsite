@@ -55,9 +55,8 @@ class PlayerController extends Controller
                     'seat' => $stu->seat,
                     'name' => $stu->realname,
                 ]);
-            }    
-            $skills = GameSkill::forClass($stu->class_id);
-            return view('game.player', [ 'character' => $character, 'skills' => $skills, ]);
+            }
+            return view('game.player', [ 'character' => $character ]);
         } else {
             return redirect()->route('game');
         }
@@ -253,22 +252,22 @@ class PlayerController extends Controller
             $item = null;
         }
         if ($skill->object == 'self') {
-            $me->use_skill($skill->id);
+            $result = $me->use_skill($skill->id);
             $message = $me->name.'對自己施展'.$skill->name;
         } elseif ($skill->object == 'partner') {
             $target = GameCharacter::find($request->input('target'));
             if ($item) {
-                $me->use_skill($skill->id, $target->uuid, null, $item->id);
+                $result = $me->use_skill($skill->id, $target->uuid, null, $item->id);
             } else {
-                $me->use_skill($skill->id, $target->uuid);
+                $result = $me->use_skill($skill->id, $target->uuid);
             }
             $message = $me->name.'對'.$target->name.'施展'.$skill->name;
             if ($item) $message .= $item->name;
         } elseif ($skill->object == 'party') {
             if ($item) {
-                $me->use_skill($skill->id, null, $me->party_id, $item->id);
+                $result = $me->use_skill($skill->id, null, $me->party_id, $item->id);
             } else {
-                $me->use_skill($skill->id, null, $me->party_id);
+                $result = $me->use_skill($skill->id, null, $me->party_id);
             }
             $message = $me->name.'對全隊施展'.$skill->name;
             if ($item) $message .= $item->name;
@@ -276,25 +275,29 @@ class PlayerController extends Controller
             $target = GameCharacter::find($request->input('target'));
             if ($skill->object == 'all') {
                 if ($item) {
-                    $me->use_skill($skill->id, null, $target->party_id, $item->id);
+                    $result = $me->use_skill($skill->id, null, $target->party_id, $item->id);
                 } else {
-                    $me->use_skill($skill->id, null, $target->party_id);
+                    $result = $me->use_skill($skill->id, null, $target->party_id);
                 }
                 $message = $me->name.'對所有對手施展'.$skill->name;
                 if ($item) $message .= $item->name;
             } else {
                 if ($item) {
-                    $me->use_skill($skill->id, $target->uuid, null, $item->id);
+                    $result = $me->use_skill($skill->id, $target->uuid, null, $item->id);
                 } else {
-                    $me->use_skill($skill->id, $target->uuid);
+                    $result = $me->use_skill($skill->id, $target->uuid);
                 }
                 $message = $me->name.'對'.$target->name.'施展'.$skill->name;
                 if ($item) $message .= $item->name;
             }
         }
+        $me->refresh();
         $namespace = 'arena:'.$me->party->classroom_id.':battle:'.$me->party->id;
         if (Redis::exists($namespace)) {
             BattleAction::dispatch($me->party, $message);
+        } else {
+            broadcast(new GameCharacterChannel($me->uuid, $me->uuid, $message));
+            return response()->json([ 'skill' => $skill, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);    
         }
     }
 
@@ -303,28 +306,32 @@ class PlayerController extends Controller
         $me = GameCharacter::find($request->input('self'));
         $item = GameItem::find($request->input('item'));
         if ($item->object == 'self') {
-            $me->use_item($item->id);
+            $result = $me->use_item($item->id);
             $message = $me->name.'對自己使用'.$item->name;
         } elseif ($item->object == 'partner') {
             $target = GameCharacter::find($request->input('target'));
-            $me->use_item($item->id, $target->uuid);
+            $result = $me->use_item($item->id, $target->uuid);
             $message = $me->name.'對'.$target->name.'使用'.$item->name;
         } elseif ($item->object == 'party') {
-            $me->use_item($item->id, null, $me->party_id);
+            $result = $me->use_item($item->id, null, $me->party_id);
             $message = $me->name.'對全隊使用'.$item->name;
         } else {
             $target = GameCharacter::find($request->input('target'));
             if ($item->object == 'all') {
-                $me->use_skill($item->id, null, $target->party_id);
+                $result = $me->use_skill($item->id, null, $target->party_id);
                 $message = $me->name.'對所有對手使用'.$item->name;
             } else {
-                $me->use_skill($item->id, $target->uuid);
+                $result = $me->use_skill($item->id, $target->uuid);
                 $message = $me->name.'對'.$target->name.'使用'.$item->name;
             }
         }
+        $me->refresh();
         $namespace = 'arena:'.$me->party->classroom_id.':battle:'.$me->party->id;
         if (Redis::exists($namespace)) {
             BattleAction::dispatch($me->party, $message);
+        } else {
+            broadcast(new GameCharacterChannel($me->uuid, $me->uuid, $message));
+            return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);    
         }
     }
 

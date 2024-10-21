@@ -1,4 +1,4 @@
-<nav class="relative z-[90] bg-teal-500 border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+<nav class="relative z-40 bg-teal-500 border-gray-200 dark:bg-gray-900 dark:border-gray-700">
   <div class="w-full flex justify-between mx-0 px-4 py-2.5">
     <button data-collapse-toggle="navbar-dropdown" type="button" class="inline-flex items-center p-2 ms-3 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-dropdown" aria-expanded="false">
       <span class="sr-only">下拉選單</span>

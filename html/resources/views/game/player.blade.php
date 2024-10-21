@@ -18,7 +18,7 @@
                 <td>{{ $character->profession->name }}</td>
             </tr>
             <tr>
-                <td class="w-16">等級</td><td>{{ $character->level }}</td>
+                <td class="w-16">等級</td><td id="level">{{ $character->level }}</td>
             </tr>
             <tr>
                 <td class="w-16">HP</td>
@@ -32,27 +32,27 @@
                 <td class="w-16">MP</td>
                 <td>
                     <div class="w-full h-4 bg-gray-200 rounded-full dark:bg-gray-700 text-right leading-none text-xs font-medium">
-                        <div id="hp" class="h-4 bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->mp / $character->max_mp * 100) }}%">{{ $character->mp }}</div>
+                        <div id="mp" class="h-4 bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->mp / $character->max_mp * 100) }}%">{{ $character->mp }}</div>
                     </div>
                 </td>
             </tr>
             <tr>
-                <td class="w-16">AP</td><td><span class="text-red-500">{{ $character->final_ap }}</span>[<span class="text-blue-500">{{ $character->ap }}</span>]</td>
+                <td class="w-16">AP</td><td><span id="final_ap" class="text-red-500">{{ $character->final_ap }}</span>[<span id="ap" class="text-blue-500">{{ $character->ap }}</span>]</td>
             </tr>
             <tr>
-                <td class="w-16">DP</td><td><span class="text-red-500">{{ $character->final_dp }}</span>[<span class="text-blue-500">{{ $character->dp }}</span>]</td>
+                <td class="w-16">DP</td><td><span id="final_dp" class="text-red-500">{{ $character->final_dp }}</span>[<span id="dp" class="text-blue-500">{{ $character->dp }}</span>]</td>
             </tr>
             <tr>
-                <td class="w-16">SP</td><td><span class="text-red-500">{{ $character->final_sp }}</span>[<span class="text-blue-500">{{ $character->sp }}</span>]</td>
+                <td class="w-16">SP</td><td><span id="final_sp" class="text-red-500">{{ $character->final_sp }}</span>[<span id="sp" class="text-blue-500">{{ $character->sp }}</span>]</td>
             </tr>
             <tr>
-                <td class="w-16">狀態</td><td><span class="text-blue-500">{{ $character->status_desc }}</span></td>
+                <td class="w-16">狀態</td><td><span id="status" class="text-blue-500">{{ $character->status_desc }}</span></td>
             </tr>
             <tr>
-                <td class="w-16">XP</td><td><span class="text-lime-500">{{ $character->xp }}</span></td>
+                <td class="w-16">XP</td><td><span id="xp" class="text-lime-500">{{ $character->xp }}</span></td>
             </tr>
             <tr>
-                <td class="w-16">GP</td><td><span class="text-lime-500">{{ $character->gp }}</span></td>
+                <td class="w-16">GP</td><td><span id="gp" class="text-lime-500">{{ $character->gp }}</span></td>
             </tr>
         </table>
         <table class="w-full">
@@ -169,12 +169,12 @@
     </div>
 </div>
 <script nonce="selfhost">
-    var character = '{{ $character->uuid }}';
+    var character = {!! $character->toJson(JSON_UNESCAPED_UNICODE) !!};
     var data_type;
     var data_skill;
     var data_item;
     var skills = [];
-    @foreach ($skills as $skill)
+    @foreach ($character->passive_skills() as $skill)
     skills[{{ $skill->id }}] = {!! $skill->toJson(JSON_UNESCAPED_UNICODE) !!};
     @endforeach
     var items = [];
@@ -193,7 +193,7 @@
             node.innerHTML = '';
         }
         window.axios.post('{{ route('game.get_myitems') }}', {
-            uuid: character,
+            uuid: character.uuid,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
@@ -211,6 +211,7 @@
                     var btn = document.createElement('button');
                     btn.setAttribute('type', 'button');
                     btn.classList.add('relative','inline-flex','items-center','p-3','text-sm','font-medium','text-center','text-white','rounded-lg','hover:bg-blue-800','focus:ring-4','focus:outline-none','focus:ring-blue-300',);
+                    btn.setAttribute('onclick', 'item_use(' + item.id + ')');
                     var image = document.createElement('img');
                     image.src = '{{ asset(GAME_ITEM) }}/' + item.image_file;
                     image.setAttribute('title', item.name);
@@ -250,9 +251,9 @@
         if (data_target == 'partner') {
             teamModal.show();
         } else {
-            window.axios.post('{{ route('game.skill_cast') }}', {
-                self: character,
-                target: character,
+            window.axios.post('{{ route('game.myskill_cast') }}', {
+                self: character.uuid,
+                target: character.uuid,
                 skill: data_skill,
             }, {
                 headers: {
@@ -271,7 +272,7 @@
             data_type = 'item_after_skill';
         }
         window.axios.post('{{ route('game.get_items') }}', {
-            uuid: character,
+            uuid: character.uuid,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
@@ -301,36 +302,36 @@
                     name.innerHTML = item.name;
                     label.appendChild(name);
                     var quantity = document.createElement('div');
-                    quantity.classList.add('inline-block','w-16','text-base','pl-4');
+                    quantity.classList.add('inline-block','w-16','text-base','text-center');
                     quantity.innerHTML = item.pivot.quantity + '個';
                     label.appendChild(quantity);
                     if (item.hp > 0) {
                         var hp = document.createElement('div');
-                        hp.classList.add('inline-block','w-16','text-base','pl-4');
+                        hp.classList.add('inline-block','w-16','text-base','text-center');
                         hp.innerHTML = item.hp + 'HP';
                         label.appendChild(hp);
                     }
                     if (item.mp > 0) {
                         var mp = document.createElement('div');
-                        mp.classList.add('inline-block','w-16','text-base','pl-4');
+                        mp.classList.add('inline-block','w-16','text-base','text-center');
                         mp.innerHTML = item.mp + 'MP';
                         label.appendChild(mp);
                     }
                     if (item.ap > 0) {
                         var ap = document.createElement('div');
-                        ap.classList.add('inline-block','w-16','text-base','pl-4');
+                        ap.classList.add('inline-block','w-16','text-base','text-center');
                         ap.innerHTML = item.ap + 'AP';
                         label.appendChild(ap);
                     }
                     if (item.dp > 0) {
                         var dp = document.createElement('div');
-                        dp.classList.add('inline-block','w-16','text-base','pl-4');
+                        dp.classList.add('inline-block','w-16','text-base','text-center');
                         dp.innerHTML = item.dp + 'DP';
                         label.appendChild(dp);
                     }
                     if (item.sp > 0) {
                         var sp = document.createElement('div');
-                        sp.classList.add('inline-block','w-16','text-base','pl-4');
+                        sp.classList.add('inline-block','w-16','text-base','text-center');
                         sp.innerHTML = item.sp + 'SP';
                         label.appendChild(sp);
                     }
@@ -363,21 +364,47 @@
 
     function item_use(id) {
         data_item = id;
-        var data_target = skills[id].object;
+        var data_target = items[id].object;
         if (data_target == 'partner') {
             teamModal.show();
         } else {
-            window.axios.post('{{ route('game.item_use') }}', {
-                self: character,
-                target: character,
+            window.axios.post('{{ route('game.myitem_use') }}', {
+                self: character.uuid,
+                target: character.uuid,
                 item: data_item,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                character = response.data.character;
+                var node = document.getElementById('level');
+                node.innerHTML = character.level;
+                var hp = document.getElementById('hp');
+                hp.style.width = Math.round(character.hp / character.max_hp * 100) + '%';
+                hp.innerHTML = character.hp;
+                var mp = document.getElementById('mp');
+                mp.style.width = Math.round(character.mp / character.max_mp * 100) + '%';
+                mp.innerHTML = character.mp;
+                var ap = document.getElementById('final_ap');
+                ap.innerHTML = character.final_ap;
+                var ap = document.getElementById('ap');
+                ap.innerHTML = character.ap;
+                var dp = document.getElementById('final_dp');
+                dp.innerHTML = character.final_dp;
+                var dp = document.getElementById('dp');
+                dp.innerHTML = character.dp;
+                var sp = document.getElementById('final_sp');
+                sp.innerHTML = character.final_sp;
+                var sp = document.getElementById('sp');
+                sp.innerHTML = character.sp;
+                var xp = document.getElementById('xp');
+                xp.innerHTML = character.xp;
+                var gp = document.getElementById('gp');
+                gp.innerHTML = character.gp;
+                bag();
             });
-            window.location.reload();
         }
     }
 
@@ -391,8 +418,8 @@
                 return;
             }
             teamModal.hide();
-            window.axios.post('{{ route('game.skill_cast') }}', {
-                self: character,
+            window.axios.post('{{ route('game.myskill_cast') }}', {
+                self: character.uuid,
                 target: obj.value,
                 skill: data_skill,
             }, {
@@ -400,8 +427,33 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                character = response.data.character;
+                var node = document.getElementById('level');
+                node.innerHTML = character.level;
+                var hp = document.getElementById('hp');
+                hp.style.width = Math.round(character.hp / character.max_hp * 100) + '%';
+                hp.innerHTML = character.hp;
+                var mp = document.getElementById('mp');
+                mp.style.width = Math.round(character.mp / character.max_mp * 100) + '%';
+                mp.innerHTML = character.mp;
+                var ap = document.getElementById('final_ap');
+                ap.innerHTML = character.final_ap;
+                var ap = document.getElementById('ap');
+                ap.innerHTML = character.ap;
+                var dp = document.getElementById('final_dp');
+                dp.innerHTML = character.final_dp;
+                var dp = document.getElementById('dp');
+                dp.innerHTML = character.dp;
+                var sp = document.getElementById('final_sp');
+                sp.innerHTML = character.final_sp;
+                var sp = document.getElementById('sp');
+                sp.innerHTML = character.sp;
+                var xp = document.getElementById('xp');
+                xp.innerHTML = character.xp;
+                var gp = document.getElementById('gp');
+                gp.innerHTML = character.gp;
             });
-            window.location.reload();
         }
         if (data_type == 'item_after_skill') {
             var obj = document.querySelector('input[name="teammate"]:checked');
@@ -412,8 +464,8 @@
                 return;
             }
             teamModal.hide();
-            window.axios.post('{{ route('game.skill_cast') }}', {
-                self: character,
+            window.axios.post('{{ route('game.myskill_cast') }}', {
+                self: character.uuid,
                 target: obj.value,
                 skill: data_skill,
                 item: data_item,
@@ -422,8 +474,33 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                character = response.data.character;
+                var node = document.getElementById('level');
+                node.innerHTML = character.level;
+                var hp = document.getElementById('hp');
+                hp.style.width = Math.round(character.hp / character.max_hp * 100) + '%';
+                hp.innerHTML = character.hp;
+                var mp = document.getElementById('mp');
+                mp.style.width = Math.round(character.mp / character.max_mp * 100) + '%';
+                mp.innerHTML = character.mp;
+                var ap = document.getElementById('final_ap');
+                ap.innerHTML = character.final_ap;
+                var ap = document.getElementById('ap');
+                ap.innerHTML = character.ap;
+                var dp = document.getElementById('final_dp');
+                dp.innerHTML = character.final_dp;
+                var dp = document.getElementById('dp');
+                dp.innerHTML = character.dp;
+                var sp = document.getElementById('final_sp');
+                sp.innerHTML = character.final_sp;
+                var sp = document.getElementById('sp');
+                sp.innerHTML = character.sp;
+                var xp = document.getElementById('xp');
+                xp.innerHTML = character.xp;
+                var gp = document.getElementById('gp');
+                gp.innerHTML = character.gp;
             });
-            window.location.reload();
         }
         if (data_type == 'item') {
             var obj = document.querySelector('input[name="teammate"]:checked');
@@ -434,8 +511,8 @@
                 return;
             }
             teamModal.hide();
-            window.axios.post('{{ route('game.item_use') }}', {
-                self: character,
+            window.axios.post('{{ route('game.myitem_use') }}', {
+                self: character.uuid,
                 target: obj.value,
                 item: data_item,
             }, {
@@ -443,8 +520,33 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                character = response.data.character;
+                var node = document.getElementById('level');
+                node.innerHTML = character.level;
+                var hp = document.getElementById('hp');
+                hp.style.width = Math.round(character.hp / character.max_hp * 100) + '%';
+                hp.innerHTML = character.hp;
+                var mp = document.getElementById('mp');
+                mp.style.width = Math.round(character.mp / character.max_mp * 100) + '%';
+                mp.innerHTML = character.mp;
+                var ap = document.getElementById('final_ap');
+                ap.innerHTML = character.final_ap;
+                var ap = document.getElementById('ap');
+                ap.innerHTML = character.ap;
+                var dp = document.getElementById('final_dp');
+                dp.innerHTML = character.final_dp;
+                var dp = document.getElementById('dp');
+                dp.innerHTML = character.dp;
+                var sp = document.getElementById('final_sp');
+                sp.innerHTML = character.final_sp;
+                var sp = document.getElementById('sp');
+                sp.innerHTML = character.sp;
+                var xp = document.getElementById('xp');
+                xp.innerHTML = character.xp;
+                var gp = document.getElementById('gp');
+                gp.innerHTML = character.gp;
             });
-            window.location.reload();
         }
     }
 

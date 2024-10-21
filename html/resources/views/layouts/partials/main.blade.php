@@ -1,5 +1,6 @@
 <main class="w-full h-full min-h-screen bg-game-map50 bg-cover bg-center bg-no-repeat">
-    <div class="m-5 relative bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+    @teacher
+    <div class="m-5 relative dark:bg-gray-700 text-black dark:text-gray-200">
         <div>
             @if (isset($error) || session()->has('error'))
             <div class="py-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
@@ -19,6 +20,10 @@
         </div>
         @yield('content')
     </div>
+    @endteacher
+    @student
+    @yield('content')
+    @endstudent
 </main>
 <audio id="received" muted autoplay>
     <source src="{{ asset('sound/notify.mp3') }}" type="audio/mpeg">
@@ -31,7 +36,7 @@
         <div class="flex gap-2">
             <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-7 w-7 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#template" aria-label="Close">
                 <i class="fa-solid fa-xmark"></i>
-            </button>    
+            </button>
         </div>
     </div>
 </div>
@@ -110,7 +115,7 @@
         @endif
 
         @if (player())
-        window.Echo.private('character.{{ player()->student->stdno }}').listen('GameCharacterChannel', (e) => {
+        window.Echo.private('character.{{ player()->stdno }}').listen('GameCharacterChannel', (e) => {
             if (e.code == 'invite') {
                 received_invite(e);
                 return;

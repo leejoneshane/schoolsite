@@ -557,6 +557,8 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
         Route::post('broadcast', 'App\Http\Controllers\Game\MessagerController@classroom')->name('game.room_channel');
         Route::post('skills/scan', 'App\Http\Controllers\Game\PlayerController@get_skills')->name('game.get_myskills');
         Route::post('items/scan', 'App\Http\Controllers\Game\PlayerController@get_items')->name('game.get_myitems');
+        Route::post('skill/cast', 'App\Http\Controllers\Game\PlayerController@skill_cast')->name('game.myskill_cast');
+        Route::post('item/use', 'App\Http\Controllers\Game\PlayerController@item_use')->name('game.myitem_use');
         Route::post('furnitures/scan', 'App\Http\Controllers\Game\PlayerController@get_furnitures')->name('game.get_myfurnitures');
         Route::post('party/name', 'App\Http\Controllers\Game\PlayerController@party_name')->name('game.party_name');
         Route::post('party/desc', 'App\Http\Controllers\Game\PlayerController@party_desc')->name('game.party_desc');

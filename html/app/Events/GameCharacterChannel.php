@@ -23,7 +23,7 @@ class GameCharacterChannel implements ShouldBroadcastNow
     public string $message;
     public string $code; //game service code
 
-    public function __construct($from, $to, $message =null, $code = null)
+    public function __construct($from, $to, $message =null, $code = '')
     {
         $this->from = GameCharacter::find($from);
         $this->to = GameCharacter::find($to);
