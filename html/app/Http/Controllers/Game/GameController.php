@@ -257,6 +257,8 @@ class GameController extends Controller
             $pro = GameClass::find($request->input('profession'));
             $character->change_class($pro->id);
         }
+        $characters = GameCharacter::findByClass(session('gameclass'));
+        return response()->json([ 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function get_skills(Request $request)
@@ -408,6 +410,8 @@ class GameController extends Controller
             $item_id = null;
         }
         GameSetting::positive_act($teacher, $characters, $rule_id, $reason, $xp, $gp, $item_id);
+        $characters = GameCharacter::findByClass(session('gameclass'));
+        return response()->json([ 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function negative_act(Request $request)
@@ -435,6 +439,8 @@ class GameController extends Controller
             $mp = null;
         }
         GameSetting::negative_act($teacher, $characters, $rule_id, $reason, $hp, $mp);
+        $characters = GameCharacter::findByClass(session('gameclass'));
+        return response()->json([ 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function negative_delay(Request $request)
@@ -457,8 +463,8 @@ class GameController extends Controller
                 'uuid' => $teacher,
                 'characters' => $characters,
                 'reason' => $request->input('reason'),
-                'hp' => $request->input('hp'),
-                'mp' => $request->input('mp'),
+                'hp' => $request->input('hp') ?: 0,
+                'mp' => $request->input('mp') ?: 0,
             ]);
         }
     }
@@ -468,7 +474,7 @@ class GameController extends Controller
         GameSetting::negative_act($delay->uuid, $delay->characters, $delay->rule, $delay->reason, $delay->hp, $delay->mp);
         $delay->act = true;
         $delay->save();
-        return redirect()->back();
+        return redirect()->route('game.room', [ 'room_id' => session('gameclass') ]);
     }
 
     public function pickup($room_id)

@@ -11,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 use App\Models\GameCharacter;
 use App\Models\GameMonsterSpawn;
 
-class GameDailyRenew implements ShouldQueue
+class GamePoisoned implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 

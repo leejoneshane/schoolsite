@@ -97,7 +97,7 @@
                 @endlocked
             </td>
             <td class="p-2">{{ ($s->profession) ? $s->profession->name : '無'}}</td>
-            <td class="p-2">{{ $s->level }}</td>
+            <td id="level{{ $s->seat }}" class="p-2">{{ $s->level }}</td>
             @locked($room->id)
             <td class="p-2">
                 <button class="bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_skill('{{ $s->uuid }}')">
@@ -110,13 +110,13 @@
                 </button>
             </td>
             @endlocked
-            <td class="p-2">{{ $s->hp }}/{{ $s->max_hp }}</td>
-            <td class="p-2">{{ $s->mp }}/{{ $s->max_mp }}</td>
-            <td class="p-2">{{ $s->final_ap }}</td>
-            <td class="p-2">{{ $s->final_dp }}</td>
-            <td class="p-2">{{ $s->final_sp }}</td>
-            <td class="p-2">{{ $s->xp }}</td>
-            <td class="p-2">{{ $s->gp }}</td>
+            <td id="hp{{ $s->seat }}" class="p-2">{{ $s->hp }}/{{ $s->max_hp }}</td>
+            <td id="mp{{ $s->seat }}" class="p-2">{{ $s->mp }}/{{ $s->max_mp }}</td>
+            <td id="ap{{ $s->seat }}" class="p-2">{{ $s->final_ap }}[{{ $s->ap }}]</td>
+            <td id="dp{{ $s->seat }}" class="p-2">{{ $s->final_dp }}[{{ $s->dp }}]</td>
+            <td id="sp{{ $s->seat }}" class="p-2">{{ $s->final_sp }}[{{ $s->sp }}]</td>
+            <td id="xp{{ $s->seat }}" class="p-2">{{ $s->xp }}</td>
+            <td id="gp{{ $s->seat }}" class="p-2">{{ $s->gp }}</td>
             <td class="p-2">
                 @locked($room->id)
                 <button class="bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_character('{{ $s->uuid }}')">
@@ -173,6 +173,18 @@
             MP
         </th>
         <th scope="col" class="p-2">
+            AP
+        </th>
+        <th scope="col" class="p-2">
+            DP
+        </th>
+        <th scope="col" class="p-2">
+            SP
+        </th>
+        <th scope="col" class="p-2">
+            XP
+        </th>
+        <th scope="col" class="p-2">
             GP
         </th>
         <th scope="col" class="p-2">
@@ -194,8 +206,7 @@
             @endlocked
         </td>
         <td class="p-2">{{ ($s->profession) ? $s->profession->name : '無'}}</td>
-        <td class="p-2">{{ $s->xp }}</td>
-        <td class="p-2">{{ $s->level }}</td>
+        <td id="level{{ $s->seat }}" class="p-2">{{ $s->level }}</td>
         @locked($room->id)
         <td class="p-2">
             <button class="ml-6 bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_skill('{{ $s->uuid }}');">
@@ -208,9 +219,13 @@
             </button>
         </td>
         @endlocked
-        <td class="p-2">{{ $s->hp }}/{{ $s->max_hp }}</td>
-        <td class="p-2">{{ $s->mp }}/{{ $s->max_mp }}</td>
-        <td class="p-2">{{ $s->gp }}</td>
+        <td id="hp{{ $s->seat }}" class="p-2">{{ $s->hp }}/{{ $s->max_hp }}</td>
+        <td id="mp{{ $s->seat }}" class="p-2">{{ $s->mp }}/{{ $s->max_mp }}</td>
+        <td id="ap{{ $s->seat }}" class="p-2">{{ $s->final_ap }}[{{ $s->ap }}]</td>
+        <td id="dp{{ $s->seat }}" class="p-2">{{ $s->final_dp }}[{{ $s->dp }}]</td>
+        <td id="sp{{ $s->seat }}" class="p-2">{{ $s->final_sp }}[{{ $s->sp }}]</td>
+        <td id="xp{{ $s->seat }}" class="p-2">{{ $s->xp }}</td>
+        <td id="gp{{ $s->seat }}" class="p-2">{{ $s->gp }}</td>
         <td class="p-2">
             @locked($room->id)
             <button class="ml-6 bg-teal-500 hover:bg-teal-700 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_character('{{ $s->uuid }}')">
@@ -435,12 +450,14 @@
     </div>
 </div>
 <script nonce="selfhost">
+    var characters = [];
     var character;
     var data_type;
     var data_skill;
     var data_item;
     var skills = [];
     var items = [];
+    var members = [];
     var uuids = [];
     var positive = [];
     @foreach ($positive_rules as $rule)
@@ -648,9 +665,27 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( response => {
-            if (response.data.success) {
-                window.location.reload();
-            }
+            for (var k in response.data.characters) {
+                characters[response.data.characters[k].seat] = response.data.characters[k];
+            };
+            characters.forEach(char => {
+                var lvl = document.getElementById('level' + char.seat);
+                lvl.innerHTML = char.level;
+                var hp = document.getElementById('hp' + char.seat);
+                hp.innerHTML = char.hp + '/' + char.max_hp;
+                var mp = document.getElementById('mp' + char.seat);
+                mp.innerHTML = char.mp + '/' + char.max_mp;
+                var ap = document.getElementById('ap' + char.seat);
+                ap.innerHTML = char.final_ap + '[' + char.ap + ']';
+                var dp = document.getElementById('dp' + char.seat);
+                dp.innerHTML = char.final_dp + '[' + char.dp + ']';
+                var sp = document.getElementById('sp' + char.seat);
+                sp.innerHTML = char.final_sp + '[' + char.sp + ']';
+                var xp = document.getElementById('xp' + char.seat);
+                xp.innerHTML = char.xp;
+                var gp = document.getElementById('gp' + char.seat);
+                gp.innerHTML = char.gp;
+            });
         });
     }
 
@@ -689,9 +724,27 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( response => {
-            if (response.data.success) {
-                window.location.reload();
-            }
+            for (var k in response.data.characters) {
+                characters[response.data.characters[k].seat] = response.data.characters[k];
+            };
+            characters.forEach(char => {
+                var lvl = document.getElementById('level' + char.seat);
+                lvl.innerHTML = char.level;
+                var hp = document.getElementById('hp' + char.seat);
+                hp.innerHTML = char.hp + '/' + char.max_hp;
+                var mp = document.getElementById('mp' + char.seat);
+                mp.innerHTML = char.mp + '/' + char.max_mp;
+                var ap = document.getElementById('ap' + char.seat);
+                ap.innerHTML = char.final_ap + '[' + char.ap + ']';
+                var dp = document.getElementById('dp' + char.seat);
+                dp.innerHTML = char.final_dp + '[' + char.dp + ']';
+                var sp = document.getElementById('sp' + char.seat);
+                sp.innerHTML = char.final_sp + '[' + char.sp + ']';
+                var xp = document.getElementById('xp' + char.seat);
+                xp.innerHTML = char.xp;
+                var gp = document.getElementById('gp' + char.seat);
+                gp.innerHTML = char.gp;
+            });
         });
     }
 
@@ -767,24 +820,24 @@
                     name.innerHTML = skill.name;
                     label.appendChild(name);
                     var cost = document.createElement('div');
-                    cost.classList.add('inline-block','w-16','text-base');
+                    cost.classList.add('inline-block','w-16','text-base','text-center');
                     cost.innerHTML = '-' + skill.cost_mp + 'MP';
                     label.appendChild(cost);
                     if (skill.ap > 0) {
                         var ap = document.createElement('div');
-                        ap.classList.add('inline-block','w-16','text-base');
+                        ap.classList.add('inline-block','w-16','text-base','text-center');
                         ap.innerHTML = skill.ap + 'AP';
                         label.appendChild(ap);
                     }
                     if (skill.xp > 0) {
                         var xp = document.createElement('div');
-                        xp.classList.add('inline-block','w-16','text-base');
+                        xp.classList.add('inline-block','w-16','text-base','text-center');
                         xp.innerHTML = skill.xp + 'XP';
                         label.appendChild(xp);
                     }
                     if (skill.gp > 0) {
                         var gp = document.createElement('div');
-                        gp.classList.add('inline-block','w-16','text-base');
+                        gp.classList.add('inline-block','w-16','text-base','text-center');
                         gp.innerHTML = skill.gp + 'GP';
                         label.appendChild(gp);
                     }
@@ -837,36 +890,36 @@
                     name.innerHTML = item.name;
                     label.appendChild(name);
                     var quantity = document.createElement('div');
-                    quantity.classList.add('inline-block','w-16','text-base','pl-4');
+                    quantity.classList.add('inline-block','w-16','text-base','text-center');
                     quantity.innerHTML = item.pivot.quantity + '個';
                     label.appendChild(quantity);
                     if (item.hp > 0) {
                         var hp = document.createElement('div');
-                        hp.classList.add('inline-block','w-16','text-base','pl-4');
+                        hp.classList.add('inline-block','w-16','text-base','text-center');
                         hp.innerHTML = item.hp + 'HP';
                         label.appendChild(hp);
                     }
                     if (item.mp > 0) {
                         var mp = document.createElement('div');
-                        mp.classList.add('inline-block','w-16','text-base','pl-4');
+                        mp.classList.add('inline-block','w-16','text-base','text-center');
                         mp.innerHTML = item.mp + 'MP';
                         label.appendChild(mp);
                     }
                     if (item.ap > 0) {
                         var ap = document.createElement('div');
-                        ap.classList.add('inline-block','w-16','text-base','pl-4');
+                        ap.classList.add('inline-block','w-16','text-base','text-center');
                         ap.innerHTML = item.ap + 'AP';
                         label.appendChild(ap);
                     }
                     if (item.dp > 0) {
                         var dp = document.createElement('div');
-                        dp.classList.add('inline-block','w-16','text-base','pl-4');
+                        dp.classList.add('inline-block','w-16','text-base','text-center');
                         dp.innerHTML = item.dp + 'DP';
                         label.appendChild(dp);
                     }
                     if (item.sp > 0) {
                         var sp = document.createElement('div');
-                        sp.classList.add('inline-block','w-16','text-base','pl-4');
+                        sp.classList.add('inline-block','w-16','text-base','text-center');
                         sp.innerHTML = item.sp + 'SP';
                         label.appendChild(sp);
                     }
@@ -913,13 +966,13 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             }).then( response => {
-                uuids = [];
+                members = [];
                 for (var k in response.data.teammate) {
                     var mate = response.data.teammate[k];
-                    uuids.push(mate.uuid);
+                    members[k] = mate;
                 }
-                if (uuids.length > 0) {
-                    uuids.forEach( partner => {
+                if (members.length > 0) {
+                    members.forEach( partner => {
                         var li = document.createElement('li');
                         var radio = document.createElement('input');
                         radio.id = 'team' + partner.uuid;
@@ -955,8 +1008,29 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                for (var k in response.data.characters) {
+                    characters[response.data.characters[k].seat] = response.data.characters[k];
+                };
+                characters.forEach(char => {
+                    var lvl = document.getElementById('level' + char.seat);
+                    lvl.innerHTML = char.level;
+                    var hp = document.getElementById('hp' + char.seat);
+                    hp.innerHTML = char.hp + '/' + char.max_hp;
+                    var mp = document.getElementById('mp' + char.seat);
+                    mp.innerHTML = char.mp + '/' + char.max_mp;
+                    var ap = document.getElementById('ap' + char.seat);
+                    ap.innerHTML = char.final_ap + '[' + char.ap + ']';
+                    var dp = document.getElementById('dp' + char.seat);
+                    dp.innerHTML = char.final_dp + '[' + char.dp + ']';
+                    var sp = document.getElementById('sp' + char.seat);
+                    sp.innerHTML = char.final_sp + '[' + char.sp + ']';
+                    var xp = document.getElementById('xp' + char.seat);
+                    xp.innerHTML = char.xp;
+                    var gp = document.getElementById('gp' + char.seat);
+                    gp.innerHTML = char.gp;
+                });
             });
-            window.location.reload();
         }
     }
 
@@ -987,13 +1061,13 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             }).then( response => {
-                uuids = [];
+                members = [];
                 for (var k in response.data.teammate) {
                     var mate = response.data.teammate[k];
-                    uuids.push(mate.uuid);
+                    members[k] = mate;
                 }
-                if (uuids.length > 0) {
-                    uuids.forEach( partner => {
+                if (members.length > 0) {
+                    members.forEach( partner => {
                         var li = document.createElement('li');
                         var radio = document.createElement('input');
                         radio.id = 'team' + partner.uuid;
@@ -1029,8 +1103,29 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                for (var k in response.data.characters) {
+                    characters[response.data.characters[k].seat] = response.data.characters[k];
+                };
+                characters.forEach(char => {
+                    var lvl = document.getElementById('level' + char.seat);
+                    lvl.innerHTML = char.level;
+                    var hp = document.getElementById('hp' + char.seat);
+                    hp.innerHTML = char.hp + '/' + char.max_hp;
+                    var mp = document.getElementById('mp' + char.seat);
+                    mp.innerHTML = char.mp + '/' + char.max_mp;
+                    var ap = document.getElementById('ap' + char.seat);
+                    ap.innerHTML = char.final_ap + '[' + char.ap + ']';
+                    var dp = document.getElementById('dp' + char.seat);
+                    dp.innerHTML = char.final_dp + '[' + char.dp + ']';
+                    var sp = document.getElementById('sp' + char.seat);
+                    sp.innerHTML = char.final_sp + '[' + char.sp + ']';
+                    var xp = document.getElementById('xp' + char.seat);
+                    xp.innerHTML = char.xp;
+                    var gp = document.getElementById('gp' + char.seat);
+                    gp.innerHTML = char.gp;
+                });
             });
-            window.location.reload();
         }
     }
 
@@ -1043,7 +1138,7 @@
                 warnModal.show();
                 return;
             }
-            teammateModal.hide();
+            teamModal.hide();
             window.axios.post('{{ route('game.skill_cast') }}', {
                 self: character,
                 target: obj.value,
@@ -1053,8 +1148,29 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                for (var k in response.data.characters) {
+                    characters[response.data.characters[k].seat] = response.data.characters[k];
+                };
+                characters.forEach(char => {
+                    var lvl = document.getElementById('level' + char.seat);
+                    lvl.innerHTML = char.level;
+                    var hp = document.getElementById('hp' + char.seat);
+                    hp.innerHTML = char.hp + '/' + char.max_hp;
+                    var mp = document.getElementById('mp' + char.seat);
+                    mp.innerHTML = char.mp + '/' + char.max_mp;
+                    var ap = document.getElementById('ap' + char.seat);
+                    ap.innerHTML = char.final_ap + '[' + char.ap + ']';
+                    var dp = document.getElementById('dp' + char.seat);
+                    dp.innerHTML = char.final_dp + '[' + char.dp + ']';
+                    var sp = document.getElementById('sp' + char.seat);
+                    sp.innerHTML = char.final_sp + '[' + char.sp + ']';
+                    var xp = document.getElementById('xp' + char.seat);
+                    xp.innerHTML = char.xp;
+                    var gp = document.getElementById('gp' + char.seat);
+                    gp.innerHTML = char.gp;
+                });
             });
-            window.location.reload();
         }
         if (data_type == 'item_after_skill') {
             var obj = document.querySelector('input[name="teammate"]:checked');
@@ -1064,7 +1180,7 @@
                 warnModal.show();
                 return;
             }
-            teammateModal.hide();
+            teamModal.hide();
             window.axios.post('{{ route('game.skill_cast') }}', {
                 self: character,
                 target: obj.value,
@@ -1075,8 +1191,29 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                for (var k in response.data.characters) {
+                    characters[response.data.characters[k].seat] = response.data.characters[k];
+                };
+                characters.forEach(char => {
+                    var lvl = document.getElementById('level' + char.seat);
+                    lvl.innerHTML = char.level;
+                    var hp = document.getElementById('hp' + char.seat);
+                    hp.innerHTML = char.hp + '/' + char.max_hp;
+                    var mp = document.getElementById('mp' + char.seat);
+                    mp.innerHTML = char.mp + '/' + char.max_mp;
+                    var ap = document.getElementById('ap' + char.seat);
+                    ap.innerHTML = char.final_ap + '[' + char.ap + ']';
+                    var dp = document.getElementById('dp' + char.seat);
+                    dp.innerHTML = char.final_dp + '[' + char.dp + ']';
+                    var sp = document.getElementById('sp' + char.seat);
+                    sp.innerHTML = char.final_sp + '[' + char.sp + ']';
+                    var xp = document.getElementById('xp' + char.seat);
+                    xp.innerHTML = char.xp;
+                    var gp = document.getElementById('gp' + char.seat);
+                    gp.innerHTML = char.gp;
+                });
             });
-            window.location.reload();
         }
         if (data_type == 'item') {
             var obj = document.querySelector('input[name="teammate"]:checked');
@@ -1086,7 +1223,7 @@
                 warnModal.show();
                 return;
             }
-            teammateModal.hide();
+            teamModal.hide();
             window.axios.post('{{ route('game.item_use') }}', {
                 self: character,
                 target: obj.value,
@@ -1096,8 +1233,29 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                for (var k in response.data.characters) {
+                    characters[response.data.characters[k].seat] = response.data.characters[k];
+                };
+                characters.forEach(char => {
+                    var lvl = document.getElementById('level' + char.seat);
+                    lvl.innerHTML = char.level;
+                    var hp = document.getElementById('hp' + char.seat);
+                    hp.innerHTML = char.hp + '/' + char.max_hp;
+                    var mp = document.getElementById('mp' + char.seat);
+                    mp.innerHTML = char.mp + '/' + char.max_mp;
+                    var ap = document.getElementById('ap' + char.seat);
+                    ap.innerHTML = char.final_ap + '[' + char.ap + ']';
+                    var dp = document.getElementById('dp' + char.seat);
+                    dp.innerHTML = char.final_dp + '[' + char.dp + ']';
+                    var sp = document.getElementById('sp' + char.seat);
+                    sp.innerHTML = char.final_sp + '[' + char.sp + ']';
+                    var xp = document.getElementById('xp' + char.seat);
+                    xp.innerHTML = char.xp;
+                    var gp = document.getElementById('gp' + char.seat);
+                    gp.innerHTML = char.gp;
+                });
             });
-            window.location.reload();
         }
     }
 
@@ -1153,8 +1311,29 @@
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
+        }).then( response => {
+            for (var k in response.data.characters) {
+                characters[response.data.characters[k].seat] = response.data.characters[k];
+            };
+            characters.forEach(char => {
+                var lvl = document.getElementById('level' + char.seat);
+                lvl.innerHTML = char.level;
+                var hp = document.getElementById('hp' + char.seat);
+                hp.innerHTML = char.hp + '/' + char.max_hp;
+                var mp = document.getElementById('mp' + char.seat);
+                mp.innerHTML = char.mp + '/' + char.max_mp;
+                var ap = document.getElementById('ap' + char.seat);
+                ap.innerHTML = char.final_ap + '[' + char.ap + ']';
+                var dp = document.getElementById('dp' + char.seat);
+                dp.innerHTML = char.final_dp + '[' + char.dp + ']';
+                var sp = document.getElementById('sp' + char.seat);
+                sp.innerHTML = char.final_sp + '[' + char.sp + ']';
+                var xp = document.getElementById('xp' + char.seat);
+                xp.innerHTML = char.xp;
+                var gp = document.getElementById('gp' + char.seat);
+                gp.innerHTML = char.gp;
+            });
         });
-        window.location.reload();
     }
 </script>
 @endsection

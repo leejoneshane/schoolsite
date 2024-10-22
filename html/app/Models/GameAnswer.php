@@ -35,6 +35,17 @@ class GameAnswer extends Model
         'tested_at' => 'datetime:Y-m-d',
     ];
 
+    //自動移除所有歷程
+    protected static function booted()
+    {
+        self::deleting(function($item)
+        {
+            foreach ($item->journeys as $j) {
+                $j->delete();
+            }
+        });
+    }
+
     //篩選指定地下城的所有答案卷
     public static function findByDungeon($dungeon_id)
     {

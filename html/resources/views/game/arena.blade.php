@@ -8,7 +8,7 @@
                 <ul id="our_action"></ul>
             </div>
             <div id="connect" class="w-1/3 text-center inline-flex flex-col" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
-            @if ($character->configure->arena_open)
+            @if ($character->configure && $character->configure->arena_open)
                 <div class="p-2">
                     <span class="text-xl text-white">等候公會成員集合......</span>
                     @if ($character->is_leader())
@@ -183,7 +183,7 @@
     var enemy_action = document.getElementById('enemy_action');
     var party_node = document.getElementById('parties');
     window.onload = refresh;
-@if ($character->configure->arena_open)
+@if ($character->configure && $character->configure->arena_open)
     setInterval(refresh, 3000);
 @endif
 

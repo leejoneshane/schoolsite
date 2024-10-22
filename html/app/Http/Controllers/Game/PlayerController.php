@@ -257,13 +257,15 @@ class PlayerController extends Controller
             $message = $me->name.'對自己施展'.$skill->name;
         } elseif ($skill->object == 'partner') {
             $target = GameCharacter::find($request->input('target'));
-            if ($item) {
-                $result = $me->use_skill($skill->id, $target->uuid, null, $item->id);
-            } else {
-                $result = $me->use_skill($skill->id, $target->uuid);
+            if ($target) {
+                if ($item) {
+                    $result = $me->use_skill($skill->id, $target->uuid, null, $item->id);
+                } else {
+                    $result = $me->use_skill($skill->id, $target->uuid);
+                }
+                $message = $me->name.'對'.$target->name.'施展'.$skill->name;
+                if ($item) $message .= $item->name;    
             }
-            $message = $me->name.'對'.$target->name.'施展'.$skill->name;
-            if ($item) $message .= $item->name;
         } elseif ($skill->object == 'party') {
             if ($item) {
                 $result = $me->use_skill($skill->id, null, $me->party_id, $item->id);
@@ -274,22 +276,24 @@ class PlayerController extends Controller
             if ($item) $message .= $item->name;
         } else {
             $target = GameCharacter::find($request->input('target'));
-            if ($skill->object == 'all') {
-                if ($item) {
-                    $result = $me->use_skill($skill->id, null, $target->party_id, $item->id);
+            if ($target) {
+                if ($skill->object == 'all') {
+                    if ($item) {
+                        $result = $me->use_skill($skill->id, null, $target->party_id, $item->id);
+                    } else {
+                        $result = $me->use_skill($skill->id, null, $target->party_id);
+                    }
+                    $message = $me->name.'對所有對手施展'.$skill->name;
+                    if ($item) $message .= $item->name;
                 } else {
-                    $result = $me->use_skill($skill->id, null, $target->party_id);
-                }
-                $message = $me->name.'對所有對手施展'.$skill->name;
-                if ($item) $message .= $item->name;
-            } else {
-                if ($item) {
-                    $result = $me->use_skill($skill->id, $target->uuid, null, $item->id);
-                } else {
-                    $result = $me->use_skill($skill->id, $target->uuid);
-                }
-                $message = $me->name.'對'.$target->name.'施展'.$skill->name;
-                if ($item) $message .= $item->name;
+                    if ($item) {
+                        $result = $me->use_skill($skill->id, $target->uuid, null, $item->id);
+                    } else {
+                        $result = $me->use_skill($skill->id, $target->uuid);
+                    }
+                    $message = $me->name.'對'.$target->name.'施展'.$skill->name;
+                    if ($item) $message .= $item->name;
+                }    
             }
         }
         $me->refresh();
@@ -518,6 +522,7 @@ class PlayerController extends Controller
         $questions = $dungeon->evaluate->random();
         $monster = GameMonster::find($dungeon->monster_id);
         $spawn = $monster->spawn($user->uuid);
+        GameAnswer::where('uuid', $user->uuid)->where('score', 0)->delete();
         $answer = GameAnswer::create([
             'uuid' => $user->uuid,
             'dungeon_id' => $dungeon->id,
