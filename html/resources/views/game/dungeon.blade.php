@@ -421,10 +421,14 @@
             var div = document.createElement('div');
             div.classList.add('w-full','text-xs');
             var result = response.data.result; 
-            if (result == 5) {
+            if (result == 'miss') {
                 div.innerHTML = monster.name + '對你施展' + mskill.name + '，未命中!';
             } else {
-                div.innerHTML = monster.name + '對你施展' + mskill.name + '，造成傷害' + result + '點!';
+                if (mskill.ap == 0) {
+                    div.innerHTML = monster.name + '對你施展' + mskill.name + '!';
+                } else {
+                    div.innerHTML = monster.name + '對你施展' + mskill.name + '，造成傷害' + result + '點!';
+                }
             }
             fight.appendChild(div);
             character = response.data.character;
@@ -688,7 +692,11 @@
                 if (result == 'miss') {
                     div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '，未命中!';
                 } else {
-                    div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '，造成傷害' + result + '點!';
+                    if (mskill.ap == 0) {
+                        div.innerHTML = monster.name + '對你施展' + mskill.name + '!';
+                    } else {
+                        div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '，造成傷害' + result + '點!';
+                    }
                 }
                 fight.appendChild(div);
                 character = response.data.character;
@@ -763,10 +771,18 @@
                         div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '，未命中!';
                     }
                 } else {
-                    if (mitem != undefined) {
-                        div.innerHTML = '你對' + monster.name + '投射道具' + mitem.name + '造成傷害' + result + '點!';
+                    if (mskill.ap == 0) {
+                        if (mitem != undefined) {
+                            div.innerHTML = '你對' + monster.name + '投射道具' + mitem.name + '!';
+                        } else {
+                            div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '!';
+                        }
                     } else {
-                        div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '造成傷害' + result + '點!';
+                        if (mitem != undefined) {
+                            div.innerHTML = '你對' + monster.name + '投射道具' + mitem.name + '，造成傷害' + result + '點!';
+                        } else {
+                            div.innerHTML = '你對' + monster.name + '施展' + mskill.name + '，造成傷害' + result + '點!';
+                        }
                     }
                 }
                 fight.appendChild(div);

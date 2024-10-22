@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Events\GamePartyChannel;
 use App\Models\GameParty;
 use App\Models\GameCharacter;
 use App\Models\GameMonsterSpawn;
@@ -138,11 +137,6 @@ class GameSkill extends Model
         } else {
             if ($party_id) {
                 $party = GameParty::find($party_id);
-                $message = $me->name.'對'.$party->name.'施展技能'.$this->name;
-                broadcast(new GamePartyChannel($me->party_id, $message.'！'));
-                if ($me->party_id != $party_id) {
-                    broadcast(new GamePartyChannel($party_id, $message.'！'));
-                }
                 if ($this->object == 'all') {
                     $targets = null;
                     foreach ($party->members as $m) {
@@ -171,41 +165,29 @@ class GameSkill extends Model
                     foreach ($targets as $t) {
                         if ($t->buff == 'invincible') {
                             if ($m->effect_timeout >= Carbon::now()) {
-                                $result[$t->uuid] = 'miss';
+                                $result[$t->seat] = 'miss';
                             }else {
-                                $result[$t->uuid] = $this->effect_enemy($me, $t);
+                                $result[$t->seat] = $this->effect_enemy($me, $t);
                                 $m->buff = null;
                                 $m->effect_timeout = null;
                                 $m->save();
                             }
                         } elseif ($t->buff == 'protected') {
                             if ($m->effect_timeout >= Carbon::now()) {
-                                $result[$protect->uuid] = $this->effect_enemy($me, $protect);
+                                $result[$protect->seat] = $this->effect_enemy($me, $protect);
                             }else {
-                                $result[$t->uuid] = $this->effect_enemy($me, $t);
+                                $result[$t->seat] = $this->effect_enemy($me, $t);
                                 $m->buff = null;
                                 $m->effect_timeout = null;
                                 $m->save();
                             }
                         } else {
-                            $result[$t->uuid] = $this->effect_enemy($me, $t);
-                        }
-                        if ($result[$t->uuid] == 'miss') {
-                            broadcast(new GamePartyChannel($me->party_id, $t->name.'未命中！'));
-                            broadcast(new GamePartyChannel($party_id, $t->name.'未命中！'));
-                        } else {
-                            broadcast(new GamePartyChannel($me->party_id, $t->name.'命中！'));
-                            broadcast(new GamePartyChannel($party_id, $t->name.'命中！'));
+                            $result[$t->seat] = $this->effect_enemy($me, $t);
                         }
                     }
                 } elseif ($this->object == 'party') {
                     foreach ($party->members as $m) {
-                        $result[$m->uuid] = $this->effect_friend($me, $m);
-                        if ($result[$m->uuid] == 'miss') {
-                            broadcast(new GamePartyChannel($me->party_id, $m->name.'未命中！'));
-                        } else {
-                            broadcast(new GamePartyChannel($me->party_id, $m->name.'命中！'));
-                        }
+                        $result[$m->seat] = $this->effect_friend($me, $m);
                     }
                 }
             } elseif ($uuid) {
@@ -236,51 +218,32 @@ class GameSkill extends Model
                         if ($hatred) $target = $hatred;
                         if ($target->buff == 'invincible') {
                             if ($target->effect_timeout >= Carbon::now()) {
-                                $result[$uuid] = 'miss';
+                                $result[$target->seat] = 'miss';
                             }else {
-                                $result[$uuid] = $this->effect_enemy($me, $target);
+                                $result[$target->seat] = $this->effect_enemy($me, $target);
                                 $target->buff = null;
                                 $target->effect_timeout = null;
                                 $target->save();
                             }
                         } elseif ($target->buff == 'protected') {
                             if ($target->effect_timeout >= Carbon::now()) {
-                                $result[$protect->uuid] = $this->effect_enemy($me, $protect);
+                                $result[$protect->seat] = $this->effect_enemy($me, $protect);
                             }else {
-                                $result[$uuid] = $this->effect_enemy($me, $target);
+                                $result[$target->seat] = $this->effect_enemy($me, $target);
                                 $target->buff = null;
                                 $target->effect_timeout = null;
                                 $target->save();
                             }
                         } else {
-                            $result[$uuid] = $this->effect_enemy($me, $target);
+                            $result[$target->seat] = $this->effect_enemy($me, $target);
                         }
                     }
                     if ($this->object == 'partner') { 
-                        $result[$uuid] = $this->effect_friend($me, $target);
-                    }
-                    $message = $me->name.'對'.$target->name.'施展技能'.$this->name;
-                    if ($result[$uuid] == 'miss') {
-                        broadcast(new GamePartyChannel($me->party_id, $message.'失敗！'));
-                    } else {
-                        broadcast(new GamePartyChannel($me->party_id, $message.'成功！'));
-                    }
-                    if ($me->party_id != $target->party_id) {
-                        if ($result[$uuid] == 'miss') {
-                            broadcast(new GamePartyChannel($target->party_id, $message.'失敗！'));
-                        } else {
-                            broadcast(new GamePartyChannel($target->party_id, $message.'成功！'));
-                        }
+                        $result[$target->seat] = $this->effect_friend($me, $target);
                     }
                 }
             } else {
-                $result[$self] = $this->effect_friend($me);
-                $message = $me->name.'對自己施展技能'.$this->name;
-                if ($result[$self] == 'miss') {
-                    broadcast(new GamePartyChannel($me->party_id, $message.'失敗！'));
-                } else {
-                    broadcast(new GamePartyChannel($me->party_id, $message.'成功！'));
-                }
+                $result[$me->seat] = $this->effect_friend($me);
             }    
         }
         $me->mp -= $this->cost_mp;
@@ -503,10 +466,15 @@ class GameSkill extends Model
     //套用技能效果
     public function effect_monster($me, $monster = null)
     {
-        if (!$monster) $monster = $me;
-        $hit = $this->hit_rate;
-        $hit += ($me->final_sp - $monster->final_sp) / 100;
-        $rnd = mt_rand()/mt_getrandmax();
+        if (!$monster) {
+            $monster = $me;
+            $hit = 1;
+            $rnd = 0;
+        } else {
+            $hit = $this->hit_rate;
+            $hit += ($me->final_sp - $monster->final_sp) / 100;
+            $rnd = mt_rand()/mt_getrandmax();    
+        }
         if ($hit >= 1 || $rnd < $hit) {
             $damage = 0;
             if ($this->ap > 0) {
@@ -556,9 +524,10 @@ class GameSkill extends Model
                 $monster->buff = $this->inspire;
                 $monster->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
             }
-            if ($monster->hp < 1) {
+            if (($me instanceof GameCharacter) && $monster->hp < 1) {
                 $me->xp += $monster->xp;
                 $me->gp += $monster->gp;
+                $me->save();
             }
             $monster->save();
             return $damage;

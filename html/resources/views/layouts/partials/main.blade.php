@@ -116,18 +116,6 @@
 
         @if (player())
         window.Echo.private('character.{{ player()->stdno }}').listen('GameCharacterChannel', (e) => {
-            if (e.code == 'invite') {
-                received_invite(e);
-                return;
-            }
-            if (e.code == 'accept_invite') {
-                accept_invite(e);
-                return;
-            }
-            if (e.code == 'reject_invite') {
-                reject_invite(e);
-                return;
-            }
             let rnd = Math.floor(Math.random() * 100000);
             let popup = document.createElement('div');
             popup.id = 'messager_' + rnd;
@@ -143,11 +131,6 @@
             popup.appendChild(info);
             let btns = document.createElement('div');
             btns.classList.add('flex', 'gap-2');
-            let reply = document.createElement('button');
-            reply.classList.add('ml-auto', '-mx-1.5', '-my-1.5', 'bg-white', 'text-gray-400', 'hover:text-gray-900', 'rounded-lg', 'focus:ring-2', 'focus:ring-gray-300', 'p-1.5', 'hover:bg-gray-100', 'inline-flex', 'h-7', 'w-7', 'dark:text-gray-500', 'dark:hover:text-white', 'dark:bg-gray-800', 'dark:hover:bg-gray-700');
-            reply.setAttribute("onclick","reply('" + e.from.uuid + "');");
-            reply.innerHTML = '<i class="fa-solid fa-reply"></i>';
-            btns.appendChild(reply);
             let btn = document.createElement('button');
             btn.classList.add('ml-auto', '-mx-1.5', '-my-1.5', 'bg-white', 'text-gray-400', 'hover:text-gray-900', 'rounded-lg', 'focus:ring-2', 'focus:ring-gray-300', 'p-1.5', 'hover:bg-gray-100', 'inline-flex', 'h-7', 'w-7', 'dark:text-gray-500', 'dark:hover:text-white', 'dark:bg-gray-800', 'dark:hover:bg-gray-700');
             btn.setAttribute('data-dismiss-target', '#messager_' + rnd);
@@ -159,6 +142,21 @@
             parent.appendChild(popup);
             document.getElementById('received').play();
             new window.Dismiss(popup, { triggerEl: btn });
+        });
+
+        window.Echo.private('dialog.{{ player()->stdno }}').listen('GameDialogChannel', (e) => {
+            if (e.code == 'invite') {
+                received_invite(e);
+                return;
+            }
+            if (e.code == 'accept_invite') {
+                accept_invite(e);
+                return;
+            }
+            if (e.code == 'reject_invite') {
+                reject_invite(e);
+                return;
+            }
         });
         @endif
     });

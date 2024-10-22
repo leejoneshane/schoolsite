@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Events\GamePartyChannel;
 use Carbon\Carbon;
 
 class GameItem extends Model
@@ -91,59 +90,22 @@ class GameItem extends Model
         return $this->image_file && file_exists($this->image_path());
     }
 
-    //使用指定的道具，指定對象為 Array|String ，傳回結果陣列，0 => 成功，5 => 失敗
+    //使用指定的道具，傳回結果陣列，0 => 成功，5 => 失敗
     public function cast($owner, $uuid = null, $party_id = null)
     {
         $self = GameCharacter::find($owner);
         if ($party_id) {
             $party = GameParty::find($party_id);
-            $message = $self->name.'對'.$party->name.'使用道具'.$this->name;
-            broadcast(new GamePartyChannel($self->party_id, $message.'！'));
-            if ($self->party_id != $party_id) {
-                broadcast(new GamePartyChannel($party_id, $message.'！'));
-            }
             foreach ($party->members as $m) {
-                $result[$m->uuid] = $this->effect($m);
-                if ($result[$m->uuid] == 'miss') {
-                    broadcast(new GamePartyChannel($self->party_id, $m->name.'未命中！'));
-                    if ($self->party_id != $party_id) {
-                        broadcast(new GamePartyChannel($party_id, $m->name.'未命中！'));
-                    }
-                } else {
-                    broadcast(new GamePartyChannel($self->party_id, $m->name.'命中！'));
-                    if ($self->party_id != $party_id) {
-                        broadcast(new GamePartyChannel($party_id, $m->name.'命中！'));
-                    }
-                }
+                $result[$m->seat] = $this->effect($m);
             }
         } elseif ($uuid) {
             $character = GameCharacter::find($uuid);
             if ($character->party_id) {
-                $result[$uuid] = $this->effect($character);
-                $message = $self->name.'對'.$character->name.'使用道具'.$this->name;
-                if ($result[$uuid] == 'miss') {
-                    broadcast(new GamePartyChannel($self->party_id, $message.'失敗！'));
-                } else {
-                    broadcast(new GamePartyChannel($self->party_id, $message.'成功！'));
-                }
-                if ($self->party_id != $character->party_id) {
-                    if ($result[$uuid] == MISS) {
-                        broadcast(new GamePartyChannel($character->party_id, $message.'失敗！'));
-                    } else {
-                        broadcast(new GamePartyChannel($character->party_id, $message.'成功！'));
-                    }
-                }
+                $result[$character->seat] = $this->effect($character);
             }
         } else {
-            $result[$owner] = $this->effect($self);
-            $message = $self->name.'對自己使用道具'.$this->name;
-            if ($self->party_id) {
-                if ($result[$owner] == 'miss') {
-                    broadcast(new GamePartyChannel($self->party_id, $message.'失敗！'));
-                } else {
-                    broadcast(new GamePartyChannel($self->party_id, $message.'成功！'));
-                }
-            }
+            $result[$self->seat] = $this->effect($self);
         }
         return $result;
     }
@@ -185,8 +147,9 @@ class GameItem extends Model
                 $monster->effect_timeout = Carbon::now()->addMinutes($this->effect_times);
             }
             if ($monster->hp < 1) {
-                $me->xp += $monster->xp;
-                $me->gp += $monster->gp;
+                $monster->character->xp += $monster->xp;
+                $monster->character->gp += $monster->gp;
+                $monster->character->save();
             }
             $monster->save();
             return 0;

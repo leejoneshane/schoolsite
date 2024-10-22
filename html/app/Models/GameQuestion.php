@@ -26,6 +26,17 @@ class GameQuestion extends Model
         'options',
     ];
 
+    //自動移除所有選項
+    protected static function booted()
+    {
+        self::deleting(function($item)
+        {
+            foreach ($item->options as $o) {
+                $o->delete();
+            }
+        });
+    }
+
     //取得此題目所屬試卷
     public function evaluate()
     {

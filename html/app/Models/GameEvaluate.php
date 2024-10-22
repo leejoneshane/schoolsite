@@ -36,6 +36,17 @@ class GameEvaluate extends Model
         'share' => 'boolean',
     ];
 
+    //自動移除所有題目
+    protected static function booted()
+    {
+        self::deleting(function($item)
+        {
+            foreach ($item->questions as $q) {
+                $q->delete();
+            }
+        });
+    }
+
     //提供此評量的出題教師姓名
     public function getTeacherNameAttribute()
     {

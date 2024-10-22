@@ -50,3 +50,11 @@ Broadcast::channel('character.{stdno}', function ($user, $stdno) {
     }
     return false;
 });
+
+Broadcast::channel('dialog.{stdno}', function ($user, $stdno) {
+    if ($user->user_type == 'Student') {
+        $student = Student::find($user->uuid);
+        return (int) $student->stdno === (int) $stdno;
+    }
+    return false;
+});

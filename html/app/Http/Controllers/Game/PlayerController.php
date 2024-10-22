@@ -14,6 +14,7 @@ use App\Events\BattleAction;
 use App\Events\GameRoomChannel;
 use App\Events\GamePartyChannel;
 use App\Events\GameCharacterChannel;
+use App\Events\GameDialogChannel;
 use App\Models\User;
 use App\Models\Teacher;
 use App\Models\Student;
@@ -296,9 +297,9 @@ class PlayerController extends Controller
         if (Redis::exists($namespace)) {
             BattleAction::dispatch($me->party, $message);
         } else {
-            broadcast(new GameCharacterChannel($me->uuid, $me->uuid, $message));
-            return response()->json([ 'skill' => $skill, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);    
+            broadcast(new GameCharacterChannel($me->stdno, $message));
         }
+        return response()->json([ 'skill' => $skill, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function item_use(Request $request)
@@ -330,9 +331,9 @@ class PlayerController extends Controller
         if (Redis::exists($namespace)) {
             BattleAction::dispatch($me->party, $message);
         } else {
-            broadcast(new GameCharacterChannel($me->uuid, $me->uuid, $message));
-            return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);    
+            broadcast(new GameCharacterChannel($me->stdno, $message));
         }
+        return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function furniture_shop()
@@ -452,7 +453,7 @@ class PlayerController extends Controller
         });
         if ($not_in->count() > 0) {
             foreach ($not_in as $m) {
-                broadcast(new GameCharacterChannel($character->uuid, $m->uuid, '請立刻前往競技場集合！'));
+                broadcast(new GameCharacterChannel($character->stdno, '請立刻前往競技場集合！'));
             }
         }
     }
@@ -466,7 +467,7 @@ class PlayerController extends Controller
             $namespace = 'arena:'.$room.':battle:'.$party->id;
             if (!Redis::exists($namespace)) {
                 $leader = $party->leader;
-                broadcast(new GameCharacterChannel($character->uuid, $leader->uuid, null, 'invite'));
+                broadcast(new GameDialogChannel($character->uuid, $leader->uuid, 'invite'));
             }    
         }
     }
@@ -481,7 +482,7 @@ class PlayerController extends Controller
             return response()->json([ 'error' => '對方已經在戰鬥中，對戰邀請已失效！' ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         } else {
             BattleStart::dispatch($character->party, $object->party);
-            broadcast(new GameCharacterChannel($character->uuid, $object->uuid, null, 'accept_invite'));
+            broadcast(new GameDialogChannel($character->uuid, $object->uuid, 'accept_invite'));
             return response()->json([ 'success' => 'ok' ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         }
     }
@@ -491,7 +492,7 @@ class PlayerController extends Controller
         $character = GameCharacter::find($request->input('uuid'));
         $object = GameCharacter::find($request->input('from'));
         if ($object) {
-            broadcast(new GameCharacterChannel($character->uuid, $object->uuid, null, 'reject_invite'));
+            broadcast(new GameDialogChannel($character->uuid, $object->uuid, 'reject_invite'));
         }
     }
 

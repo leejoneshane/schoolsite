@@ -233,8 +233,6 @@ class SettingsController extends Controller
             $e = GameEvaluate::find($evaluate_id);
             Watchdog::watch($request, '刪除遊戲評量：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $e->delete();
-            GameQuestion::where('evaluate_id', $evaluate_id)->delete();
-            GameOption::where('evaluate_id', $evaluate_id)->delete();
             GameDungeon::where('evaluate_id', $evaluate_id)->delete();
             GameAnswer::where('evaluate_id', $evaluate_id)->delete();
             GameJourney::where('evaluate_id', $evaluate_id)->delete();

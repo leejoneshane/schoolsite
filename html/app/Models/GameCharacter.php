@@ -595,8 +595,6 @@ class GameCharacter extends Model
         }
         if (!($this->skills()->contains('id', $id))) return 'not_exists';
         $skill = GameSkill::find($id);
-        $classroom = $this->student->class_id;
-        if (!$skill->passive && !GameSence::is_lock($classroom)) return 'peace';
         if ($uuid || $this->party_id) {
             $result = $skill->cast($this->uuid, $uuid, $party_id, $item_id);
             return $result;
@@ -717,8 +715,6 @@ class GameCharacter extends Model
         }
         if (!($this->items->contains('id', $id))) return 'not_exists';
         $item = GameItem::find($id);
-        $classroom = $this->student->class_id;
-        if (!$item->passive && !GameSence::is_lock($classroom)) return 'peace';
         if ($uuid || $this->party_id) {
             $result = $item->cast($this->uuid, $uuid, $party_id);
             DB::table('game_characters_items')

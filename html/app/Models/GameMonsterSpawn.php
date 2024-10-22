@@ -160,6 +160,12 @@ class GameMonsterSpawn extends Model
     }
 
     //取得此怪物的種族
+    public function character()
+    {
+        return $this->hasOne('App\Models\GameCharacter', 'uuid', 'uuid');
+    }
+
+    //取得此怪物的種族
     public function monster()
     {
         return $this->hasOne('App\Models\GameMonster', 'id', 'monster_id');
