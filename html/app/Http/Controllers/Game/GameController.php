@@ -285,7 +285,7 @@ class GameController extends Controller
     {
         $uuid = $request->input('uuid');
         $char = GameCharacter::find($uuid);
-        return response()->json([ 'teammate' => $char->teammate() ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return response()->json([ 'teammate' => $char->members() ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function get_character(Request $request)

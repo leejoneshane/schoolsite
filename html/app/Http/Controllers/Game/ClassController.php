@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use App\Models\GameClass;
 use App\Models\GameImage;
 use App\Models\GameSkill;
@@ -19,7 +20,7 @@ class ClassController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $professions = GameClass::all();
@@ -31,7 +32,7 @@ class ClassController extends Controller
 
     public function add()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             return view('game.class_add');
@@ -42,7 +43,7 @@ class ClassController extends Controller
 
     public function insert(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $pro = GameClass::create([
@@ -68,7 +69,7 @@ class ClassController extends Controller
 
     public function edit($class_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $pro = GameClass::find($class_id);
@@ -80,7 +81,7 @@ class ClassController extends Controller
 
     public function update(Request $request, $class_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $pro = GameClass::find($class_id);
@@ -106,7 +107,7 @@ class ClassController extends Controller
 
     public function remove(Request $request, $class_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $pro = GameClass::find($class_id);
@@ -125,7 +126,7 @@ class ClassController extends Controller
 
     public function gallery($class_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $classes = GameClass::all();
@@ -186,21 +187,13 @@ class ClassController extends Controller
     {
         $filename = $request->get('filename');
         $object = GameImage::where('picture', 'like', '%'.$filename)->first();
-        if ($object) {
-            $path = public_path($object->picture);
-            if (file_exists($path)) unlink($path);
-            if ($object->thumbnail) {
-                $path2 = public_path($object->thumbnail);
-                if (file_exists($path2)) unlink($path2);
-            }
-            $object->delete();    
-        }
+        if ($object) $object->delete();    
         return response()->json(['success' => $filename]);
     }
 
     public function faces($class_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $classes = GameClass::all();
@@ -239,7 +232,7 @@ class ClassController extends Controller
 
     public function skills($class_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $classes = GameClass::all();

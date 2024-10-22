@@ -98,6 +98,7 @@ class GameCharacter extends Model
         'profession',
         'party',
         'teammate',
+        'members',
         'items',
         'image',
     ];
@@ -396,7 +397,7 @@ class GameCharacter extends Model
             $this->mp = $new->base_mp;
             $this->ap = $new->base_ap;
             $this->dp = $new->base_dp;
-            $this->sp = $new->base_sp;    
+            $this->sp = $new->base_sp;
         }
         $this->class_id = $id;
         $this->save();
@@ -458,7 +459,11 @@ class GameCharacter extends Model
     public function items_by_object($object)
     {
         return $this->items->filter(function ($item) use ($object) {
-            return $item->object == $object;
+            if ($object == 'self') {
+                return $item->object == 'self' || $item->object == 'partner';
+            } else {
+                return $item->object == $object;
+            }
         });
     }
 
@@ -493,7 +498,11 @@ class GameCharacter extends Model
             if ($skill->pivot->level > $this->level) return true;
             if ($skill->cost_mp > $this->mp) return true;
             if ($skill->object == 'any') return false;
-            if ($skill->object != $object) return true;
+            if ($object == 'self') {
+                if ($skill->object == 'self' || $skill->object == 'partner') return false;
+            } else {
+                if ($skill->object != $object) return true;
+            }
             return false;
         });
     }
@@ -517,7 +526,10 @@ class GameCharacter extends Model
     //檢查此角色是否為公會長
     public function is_leader()
     {
-        return $this->uuid == $this->party->uuid;
+        if ($this->party) {
+            return $this->uuid == $this->party->uuid;
+        }
+        return false;
     }
 
     //計算此角色進入指定地下城的次數

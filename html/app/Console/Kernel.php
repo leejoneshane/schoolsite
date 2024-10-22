@@ -6,6 +6,7 @@ use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use App\Jobs\SendNewsLetters;
 use App\Jobs\GameDailyRenew;
+use App\Jobs\GamePoisoned;
 
 class Kernel extends ConsoleKernel
 {
