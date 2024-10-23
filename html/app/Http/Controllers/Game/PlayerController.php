@@ -274,36 +274,81 @@ class PlayerController extends Controller
             }
             $message = $me->name.'對全隊施展'.$skill->name;
             if ($item) $message .= $item->name;
+        }
+        $me->refresh();
+        if ($message) broadcast(new GameCharacterChannel($me->stdno, $message));
+        return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
+    public function arena_skill(Request $request)
+    {
+        $me = GameCharacter::find($request->input('self'));
+        $skill = GameSkill::find($request->input('skill'));
+        if ($request->has('item')) {
+            $item = GameItem::find($request->input('item'));
+        } else {
+            $item = null;
+        }
+        if ($skill->object == 'self') {
+            $me->use_skill($skill->id);
+            $message = $me->name.'對自己施展'.$skill->name;
+        } elseif ($skill->object == 'partner') {
+            $target = GameCharacter::find($request->input('target'));
+            if ($target) {
+                if ($item) {
+                    $me->use_skill($skill->id, $target->uuid, null, $item->id);
+                } else {
+                    $me->use_skill($skill->id, $target->uuid);
+                }
+                $message = $me->name.'對'.$target->name.'施展'.$skill->name;
+                if ($item) $message .= $item->name;    
+            }
+        } elseif ($skill->object == 'party') {
+            if ($item) {
+                $me->use_skill($skill->id, null, $me->party_id, $item->id);
+            } else {
+                $me->use_skill($skill->id, null, $me->party_id);
+            }
+            $message = $me->name.'對全隊施展'.$skill->name;
+            if ($item) $message .= $item->name;
         } else {
             $target = GameCharacter::find($request->input('target'));
             if ($target) {
                 if ($skill->object == 'all') {
                     if ($item) {
-                        $result = $me->use_skill($skill->id, null, $target->party_id, $item->id);
+                        $me->use_skill($skill->id, null, $target->party_id, $item->id);
                     } else {
-                        $result = $me->use_skill($skill->id, null, $target->party_id);
+                        $me->use_skill($skill->id, null, $target->party_id);
                     }
                     $message = $me->name.'對所有對手施展'.$skill->name;
                     if ($item) $message .= $item->name;
                 } else {
                     if ($item) {
-                        $result = $me->use_skill($skill->id, $target->uuid, null, $item->id);
+                        $me->use_skill($skill->id, $target->uuid, null, $item->id);
                     } else {
-                        $result = $me->use_skill($skill->id, $target->uuid);
+                        $me->use_skill($skill->id, $target->uuid);
                     }
                     $message = $me->name.'對'.$target->name.'施展'.$skill->name;
                     if ($item) $message .= $item->name;
-                }    
+                }
             }
         }
-        $me->refresh();
+        $characters = $me->members();
+        foreach ($characters as $char) {
+            $char->refresh();
+        }
         $namespace = 'arena:'.$me->party->classroom_id.':battle:'.$me->party->id;
         if (Redis::exists($namespace)) {
+            $enemy = Redis::get($namespace);
             BattleAction::dispatch($me->party, $message);
+            $enemys = GameParty::find($enemy)->members;
+            foreach ($enemys as $char) {
+                $char->refresh();
+            }
+            return response()->json([ 'characters' => $characters, 'enemys' => $enemys ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         } else {
-            broadcast(new GameCharacterChannel($me->stdno, $message));
+            return response()->json([ 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         }
-        return response()->json([ 'skill' => $skill, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function item_use(Request $request)
@@ -331,13 +376,50 @@ class PlayerController extends Controller
             }
         }
         $me->refresh();
+        if ($message) broadcast(new GameCharacterChannel($me->stdno, $message));
+        return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
+    public function arena_item(Request $request)
+    {
+        $me = GameCharacter::find($request->input('self'));
+        $item = GameItem::find($request->input('item'));
+        if ($item->object == 'self') {
+            $me->use_item($item->id);
+            $message = $me->name.'對自己使用'.$item->name;
+        } elseif ($item->object == 'partner') {
+            $target = GameCharacter::find($request->input('target'));
+            $me->use_item($item->id, $target->uuid);
+            $message = $me->name.'對'.$target->name.'使用'.$item->name;
+        } elseif ($item->object == 'party') {
+            $me->use_item($item->id, null, $me->party_id);
+            $message = $me->name.'對全隊使用'.$item->name;
+        } else {
+            $target = GameCharacter::find($request->input('target'));
+            if ($item->object == 'all') {
+                $me->use_skill($item->id, null, $target->party_id);
+                $message = $me->name.'對所有對手使用'.$item->name;
+            } else {
+                $me->use_skill($item->id, $target->uuid);
+                $message = $me->name.'對'.$target->name.'使用'.$item->name;
+            }
+        }
+        $characters = $me->members();
+        foreach ($characters as $char) {
+            $char->refresh();
+        }
         $namespace = 'arena:'.$me->party->classroom_id.':battle:'.$me->party->id;
         if (Redis::exists($namespace)) {
+            $enemy = Redis::get($namespace);
             BattleAction::dispatch($me->party, $message);
+            $enemys = GameParty::find($enemy)->members;
+            foreach ($enemys as $char) {
+                $char->refresh();
+            }
+            return response()->json([ 'characters' => $characters, 'enemys' => $enemys ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         } else {
-            broadcast(new GameCharacterChannel($me->stdno, $message));
+            return response()->json([ 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         }
-        return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function furniture_shop()

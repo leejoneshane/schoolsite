@@ -209,11 +209,12 @@
                     div.classList.add('m-2','flex', 'flex-col','gap-1');
                     var myname = document.createElement('div');
                     myname.classList.add('w-24','h-8','font-extrabold');
-                    myname.innerHTML = member.name;
+                    myname.innerHTML = 'L' + member.level + ' ' + member.name;
                     div.appendChild(myname);
                     var hp = document.createElement('div');
                     hp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
                     var hp_bar = document.createElement('div');
+                    hp_bar.setAttribute('id', 'hp_' + member.seat);
                     hp_bar.classList.add('h-4','bg-green-600','text-xs','font-medium','text-green-100','text-center','p-0.5','leading-none','rounded-full');
                     hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
                     hp_bar.innerHTML = member.hp;
@@ -222,12 +223,14 @@
                     var mp = document.createElement('div');
                     mp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
                     var mp_bar = document.createElement('div');
+                    mp_bar.setAttribute('id', 'mp_' + member.seat);
                     mp_bar.classList.add('h-4','bg-blue-600','text-xs','font-medium','text-blue-100','text-center','p-0.5','leading-none','rounded-full');
                     mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
                     mp_bar.innerHTML = member.mp;
                     mp.appendChild(mp_bar);
                     div.appendChild(mp);
                     var status = document.createElement('div');
+                    status.setAttribute('id', 'status_' + member.seat);
                     status.classList.add('w-24','h-8');
                     status.innerHTML = member.status_desc;
                     div.appendChild(status);
@@ -275,11 +278,12 @@
                             div.classList.add('m-2','flex', 'flex-col','gap-1');
                             var myname = document.createElement('div');
                             myname.classList.add('w-24','h-8','font-extrabold');
-                            myname.innerHTML = member.name;
+                            myname.innerHTML = 'L' + member.level + ' ' + member.name;
                             div.appendChild(myname);
                             var hp = document.createElement('div');
                             hp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
                             var hp_bar = document.createElement('div');
+                            hp_bar.setAttribute('id', 'hp_' + member.seat);
                             hp_bar.classList.add('h-4','bg-green-600','text-xs','font-medium','text-green-100','text-center','p-0.5','leading-none','rounded-full');
                             hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
                             hp_bar.innerHTML = member.hp;
@@ -288,12 +292,14 @@
                             var mp = document.createElement('div');
                             mp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
                             var mp_bar = document.createElement('div');
+                            mp_bar.setAttribute('id', 'mp_' + member.seat);
                             mp_bar.classList.add('h-4','bg-blue-600','text-xs','font-medium','text-blue-100','text-center','p-0.5','leading-none','rounded-full');
                             mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
                             mp_bar.innerHTML = member.mp;
                             mp.appendChild(mp_bar);
                             div.appendChild(mp);
                             var status = document.createElement('div');
+                            status.setAttribute('id', 'status_' + member.seat);
                             status.classList.add('w-24','h-8');
                             status.innerHTML = member.status_desc;
                             div.appendChild(status);
@@ -627,7 +633,7 @@
             prepare_item();
             return;
         } else {
-            window.axios.post('{{ route('game.skill_cast') }}', {
+            window.axios.post('{{ route('game.arena_skill') }}', {
                 self: character,
                 target: target,
                 skill: data_skill,
@@ -636,8 +642,43 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                members = [];
+                for (var k in response.data.characters) {
+                    var member = response.data.characters[k];
+                    members[k] = member;
+                }
+                if (members.length > 0) {
+                    members.forEach( member => {
+                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
+                        hp_bar.innerHTML = member.hp;
+                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
+                        mp_bar.innerHTML = member.mp;
+                        var status = document.getElementById('status_' + member.seat);
+                        status.innerHTML = member.status_desc;
+                    });
+                }
+                enemys = [];
+                for (var k in response.data.enemys) {
+                    var member = response.data.enemys[k];
+                    enemys[k] = member;
+                }
+                if (enemys.length > 0) {
+                    enemys.forEach( member => {
+                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
+                        hp_bar.innerHTML = member.hp;
+                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
+                        mp_bar.innerHTML = member.mp;
+                        var status = document.getElementById('status_' + member.seat);
+                        status.innerHTML = member.status_desc;
+                    });
+                }
+                done = true;
             });
-            done = true;
         }
     }
 
@@ -652,7 +693,7 @@
         itemsModal.hide();
         data_item = item_obj.value;
         if (data_type == 'skill_then_item') {
-            window.axios.post('{{ route('game.skill_cast') }}', {
+            window.axios.post('{{ route('game.arena_skill') }}', {
                 self: character,
                 target: target,
                 skill: data_skill,
@@ -662,10 +703,46 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                members = [];
+                for (var k in response.data.characters) {
+                    var member = response.data.characters[k];
+                    members[k] = member;
+                }
+                if (members.length > 0) {
+                    members.forEach( member => {
+                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
+                        hp_bar.innerHTML = member.hp;
+                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
+                        mp_bar.innerHTML = member.mp;
+                        var status = document.getElementById('status_' + member.seat);
+                        status.innerHTML = member.status_desc;
+                    });
+                }
+                enemys = [];
+                for (var k in response.data.enemys) {
+                    var member = response.data.enemys[k];
+                    enemys[k] = member;
+                }
+                if (enemys.length > 0) {
+                    enemys.forEach( member => {
+                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
+                        hp_bar.innerHTML = member.hp;
+                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
+                        mp_bar.innerHTML = member.mp;
+                        var status = document.getElementById('status_' + member.seat);
+                        status.innerHTML = member.status_desc;
+                    });
+                }
+                done = true;
             });
             data_type = '';
         } else {
-            window.axios.post('{{ route('game.item_use') }}', {
+            window.axios.post('{{ route('game.arena_item') }}', {
                 self: character,
                 target: target,
                 item: data_item,
@@ -674,9 +751,44 @@
                     'Content-Type': 'application/json;charset=utf-8',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
+            }).then( response => {
+                members = [];
+                for (var k in response.data.characters) {
+                    var member = response.data.characters[k];
+                    members[k] = member;
+                }
+                if (members.length > 0) {
+                    members.forEach( member => {
+                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
+                        hp_bar.innerHTML = member.hp;
+                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
+                        mp_bar.innerHTML = member.mp;
+                        var status = document.getElementById('status_' + member.seat);
+                        status.innerHTML = member.status_desc;
+                    });
+                }
+                enemys = [];
+                for (var k in response.data.enemys) {
+                    var member = response.data.enemys[k];
+                    enemys[k] = member;
+                }
+                if (enemys.length > 0) {
+                    enemys.forEach( member => {
+                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
+                        hp_bar.innerHTML = member.hp;
+                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
+                        mp_bar.innerHTML = member.mp;
+                        var status = document.getElementById('status_' + member.seat);
+                        status.innerHTML = member.status_desc;
+                    });
+                }
+                done = true;
             });
         }
-        done = true;
     }
 </script>
 @endsection

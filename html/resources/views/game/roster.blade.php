@@ -266,9 +266,9 @@
                     <input type="radio" id="{{ $r->id }}" name="positive" value="{{ $r->id }}" class="hidden peer" />
                     <label for="{{ $r->id }}" class="inline-block w-full p-2 text-gray-500 bg-white rounded-lg border-2 border-gray-200 cursor-pointer dark:hover:text-teal-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-teal-600 dark:peer-checked:text-blue-300 peer-checked:text-blue-600 hover:bg-teal-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-teal-700">
                         <span class="inline-block w-96">{{ $r->description }}</span>
-                        XP:<input type="number" id="xp{{ $r->id }}" name="xp" value="{{ $r->effect_xp }}" class="inline w-8 border-0 border-b p-0"> 
-                        GP:<input type="number" id="gp{{ $r->id }}" name="gp" value="{{ $r->effect_gp }}" class="inline w-8 border-0 border-b p-0"> 
-                        <select id="item{{ $r->id }}" name="item" class="ms-1 inline w-12 border-0 border-b p-0">
+                        XP:<input type="number" id="pxp{{ $r->id }}" name="xp" value="{{ $r->effect_xp }}" class="inline w-8 border-0 border-b p-0"> 
+                        GP:<input type="number" id="pgp{{ $r->id }}" name="gp" value="{{ $r->effect_gp }}" class="inline w-8 border-0 border-b p-0"> 
+                        <select id="pitem{{ $r->id }}" name="item" class="ms-1 inline w-12 border-0 border-b p-0">
                         <option value=""></option>
                         @foreach ($items as $i)
                         <option value="{{ $i->id }}"{{ $i->id == $r->effect_item ? ' selected' : '' }}>{{ $i->name }}</option>
@@ -281,9 +281,9 @@
                     <input type="radio" id="p0" name="positive" value="0" class="hidden peer" />
                     <label for="p0" class="inline-block w-full  p-2 text-gray-500 bg-white rounded-lg border-2 border-gray-200 cursor-pointer dark:hover:text-teal-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-teal-600 dark:peer-checked:text-blue-300 peer-checked:text-blue-600 hover:bg-teal-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-teal-700">
                         <input type="text" id="p_reason" name="reason" class="inline w-96 border-0 border-b p-0" placeholder="請輸入臨時獎勵條款...">
-                        XP:<input type="number" id="xp" name="xp" class="inline w-8 border-0 border-b p-0"> 
-                        GP:<input type="number" id="gp" name="gp" class="inline w-8 border-0 border-b p-0"> 
-                        <select name="item" id="item" class="ms-1 inline w-12 border-0 border-b p-0">
+                        XP:<input type="number" id="pxp" name="xp" class="inline w-8 border-0 border-b p-0"> 
+                        GP:<input type="number" id="pgp" name="gp" class="inline w-8 border-0 border-b p-0"> 
+                        <select name="item" id="pitem" class="ms-1 inline w-12 border-0 border-b p-0">
                         <option value=""></option>
                         @foreach ($items as $i)
                         <option value="{{ $i->id }}">{{ $i->name }}</option>
@@ -317,8 +317,8 @@
                     <input type="radio" id="{{ $r->id }}" name="negative" value="{{ $r->id }}" class="hidden peer" />
                     <label for="{{ $r->id }}" class="inline-block w-full p-2 text-gray-500 bg-white border-2 border-gray-200 cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <span class="inline-block w-[28rem]">{{ $r->description }}</span>
-                        HP:<input type="number" id="hp{{ $r->id }}" name="hp" value="{{ $r->effect_hp }}" class="inline w-8 border-0 border-b p-0"> 
-                        MP:<input type="number" id="mp{{ $r->id }}" name="mp" value="{{ $r->effect_mp }}" class="inline w-8 border-0 border-b p-0"> 
+                        HP:<input type="number" id="nhp{{ $r->id }}" name="hp" value="{{ $r->effect_hp }}" class="inline w-8 border-0 border-b p-0"> 
+                        MP:<input type="number" id="nmp{{ $r->id }}" name="mp" value="{{ $r->effect_mp }}" class="inline w-8 border-0 border-b p-0"> 
                     </label>
                     </li>
                     @endforeach
@@ -326,8 +326,8 @@
                     <input type="radio" id="n0" name="negative" value="0" class="hidden peer" />
                     <label for="n0" class="inline-block w-full w-full p-2 text-gray-500 bg-white border-2 border-gray-200 cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <input type="text" id="n_reason" name="reason" class="inline w-[28rem] border-0 border-b p-0" placeholder="請輸入臨時懲罰條款...">
-                        HP:<input type="number" id="hp" name="hp" class="inline w-8 border-0 border-b p-0">
-                        MP:<input type="number" id="mp" name="mp" class="inline w-8 border-0 border-b p-0">
+                        HP:<input type="number" id="nhp" name="hp" class="inline w-8 border-0 border-b p-0">
+                        MP:<input type="number" id="nmp" name="mp" class="inline w-8 border-0 border-b p-0">
                     </label>
                     </li>
                 </ul>
@@ -461,11 +461,11 @@
     var uuids = [];
     var positive = [];
     @foreach ($positive_rules as $rule)
-    positive[{{ $rule->id }}] = { 'xp':'{{ $rule->effect_xp }}', 'gp':'{{ $rule->effect_gp }}', 'item':'{{ $rule->effect_item }}'  };
+    positive[{{ $rule->id }}] = {!! $rule->toJson(JSON_UNESCAPED_UNICODE) !!};
     @endforeach
     var negative = [];
     @foreach ($negative_rules as $rule)
-    negative[{{ $rule->id }}] = { 'hp':'{{ $rule->effect_hp }}', 'mp':'{{ $rule->effect_mp }}'  };
+    negative[{{ $rule->id }}] = {!! $rule->toJson(JSON_UNESCAPED_UNICODE) !!};
     @endforeach
 
     var $targetEl = document.getElementById('warnModal');
@@ -605,26 +605,26 @@
         var nodes = document.querySelectorAll('input[name="positive"]');
         nodes.forEach( (node) => {
             if (node.id != 'p0') {
-                document.getElementById('xp' + node.id).value = positive[node.id].xp;
-                document.getElementById('gp' + node.id).value = positive[node.id].gp;
-                document.getElementById('item' + node.id).value = positive[node.id].item;
+                document.getElementById('pxp' + node.id).value = positive[node.id].effect_xp;
+                document.getElementById('pgp' + node.id).value = positive[node.id].effect_gp;
+                document.getElementById('pitem' + node.id).value = positive[node.id].effect_item;
             }
         });
         document.getElementById('p_reason').value = '';
-        document.getElementById('xp').value = '';
-        document.getElementById('gp').value = '';
-        document.getElementById('item').value = '';
+        document.getElementById('pxp').value = '';
+        document.getElementById('pgp').value = '';
+        document.getElementById('pitem').value = '';
 
         var nodes = document.querySelectorAll('input[name="negative"]');
         nodes.forEach( (node) => {
             if (node.id != 'n0') {
-                document.getElementById('hp' + node.id).value = negative[node.id].hp;
-                document.getElementById('mp' + node.id).value = negative[node.id].mp;
+                document.getElementById('nhp' + node.id).value = negative[node.id].effect_hp;
+                document.getElementById('nmp' + node.id).value = negative[node.id].effect_mp;
             }
         });
         document.getElementById('n_reason').value = '';
-        document.getElementById('hp').value = '';
-        document.getElementById('mp').value = '';
+        document.getElementById('nhp').value = '';
+        document.getElementById('nmp').value = '';
     }
 
     function positive_act() {
@@ -643,13 +643,13 @@
         var rule_id = rule.value;
         var reason = document.getElementById('p_reason').value;
         if (rule_id == 0) {
-            var xp = document.getElementById('xp').value;
-            var gp = document.getElementById('gp').value;
-            var item = document.getElementById('item').value;
+            var xp = document.getElementById('pxp').value;
+            var gp = document.getElementById('pgp').value;
+            var item = document.getElementById('pitem').value;
         } else {
-            var xp = document.getElementById('xp' + rule_id).value;
-            var gp = document.getElementById('gp' + rule_id).value;
-            var item = document.getElementById('item' + rule_id).value;
+            var xp = document.getElementById('pxp' + rule_id).value;
+            var gp = document.getElementById('pgp' + rule_id).value;
+            var item = document.getElementById('pitem' + rule_id).value;
         }
         restore();
         window.axios.post('{{ route('game.positive_act') }}', {
@@ -705,11 +705,11 @@
         var rule_id = rule.value;
         var reason = document.getElementById('n_reason').value;
         if (rule_id == 0) {
-            var hp = document.getElementById('hp').value;
-            var mp = document.getElementById('mp').value;
+            var hp = document.getElementById('nhp').value;
+            var mp = document.getElementById('nmp').value;
         } else {
-            var hp = document.getElementById('hp' + rule_id).value;
-            var mp = document.getElementById('mp' + rule_id).value;
+            var hp = document.getElementById('nhp' + rule_id).value;
+            var mp = document.getElementById('nmp' + rule_id).value;
         }
         restore();
         window.axios.post('{{ route('game.negative_act') }}', {
@@ -782,6 +782,18 @@
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
+        }).then( response => {
+            var url = response.data.url;
+            var delay = response.data.delay;
+            var delays = document.getElementById('delayUL');
+            var li = document.createElement('li');
+            li.classList.add('border-b');
+            var href = document.createElement('li');
+            href.setAttribute('href', url);
+            href.classList.add('block','px-4','py-2','hover:bg-gray-100','dark:hover:bg-gray-600','dark:hover:text-white');
+            href.innerHTML = delay.description;
+            li.appendChild(href);
+            delays.appendChild(li);
         });
     }
 

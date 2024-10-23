@@ -1,11 +1,11 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="w-full h-screen flex flex-row justify-center">
-    <div class="w-96 flex flex-col bg-white">
-        <table class="text-left font-normal pb-6">
+<div class="w-full h-screen flex flex-row justify-between">
+    <div class="w-48">
+        <table class="w-full bg-white text-left font-normal">
             <tr>
-                <td colspan="2" class="bg-gray-500 text-white">基本資料</td>
+                <td colspan="2" class="bg-gray-500 text-white text-center">基本資料</td>
             </tr>
             <tr>
                 <td colspan="2">{{ $character->seat }} {{ $character->name }}</td>
@@ -55,27 +55,21 @@
                 <td class="w-16">GP</td><td><span id="gp" class="text-lime-500">{{ $character->gp }}</span></td>
             </tr>
         </table>
-        <table class="w-full">
-            <thead>
+    </div>
+    <div class="bg-white bg-opacity-50">
+        <table class="w-72 h-auto">
                 <tr>
-                    <td colspan="5" class="bg-gray-500 text-white">背包</td>
-                </tr>    
-            </thead>
-            <tbody class="bg-game-bag bg-contain bg-no-repeat">
-                <tr>
-                    <td colspan="5" class="h-4"></td>
+                    <td colspan="3" class="bg-gray-500 text-white text-center">背包</td>
                 </tr>
-                @for ($i=0; $i<4; $i++)
-                <tr class="h-20">
-                    <td class="w-10"></td>
-                    @for ($j=1; $j<4; $j++)
-                    <td id="bag{{ $j + $i * 3 }}" class="w-20"></td>
+                @for ($i=0; $i<5; $i++)
+                <tr class="h-24">
+                    @for ($j=0; $j<3; $j++)
+                    <td id="bag{{ $j + $i * 3 }}" class="w-24"></td>
                     @endfor
-                    <td class="w-10"></td>
                 </tr>
                 @endfor
                 <tr>
-                    <td colspan="5" class="h-8"></td>
+                    <td colspan="3" class="h-8"></td>
                 </tr>
             </tbody>
         </table>
@@ -83,11 +77,11 @@
     @if ($character->configure && $character->configure->change_class)
     <button class="absolute z-[55] w-16 h-12 left-1/3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onclick="change_class();">轉職</button>
     @endif
-    <div class="w-full h-screen inline-flex flex-row justify-center">
+    <div class="w-1/3 h-screen inline-flex flex-row justify-center">
         <img src="{{ $character->image->url() }}" id="big" class="absolute w-auto h-screen bottom-0 z-50" />
     </div>
-    <div class="w-1/2">
-        <div class="bg-gray-500 text-white">技能書</div>
+    <div class="w-1/3">
+        <div class="bg-gray-500 text-white text-center">技能書</div>
         <table class="w-full text-left font-normal bg-game-book bg-cover">
             <tbody class="bg-white bg-opacity-50">
                 <tr>
@@ -203,7 +197,7 @@
             items = [];
             for (var k in response.data.items) {
                 var item = response.data.items[k];
-                items[item.id] = item;
+                items[k] = item;
             }
             items.forEach( (item, k) => {
                 var node = document.getElementById('bag' + k);
@@ -500,6 +494,7 @@
                 xp.innerHTML = character.xp;
                 var gp = document.getElementById('gp');
                 gp.innerHTML = character.gp;
+                bag();
             });
         }
         if (data_type == 'item') {
@@ -546,6 +541,7 @@
                 xp.innerHTML = character.xp;
                 var gp = document.getElementById('gp');
                 gp.innerHTML = character.gp;
+                bag();
             });
         }
     }

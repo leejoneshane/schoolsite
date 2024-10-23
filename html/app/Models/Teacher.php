@@ -325,8 +325,8 @@ class Teacher extends Model
     public function game_logs($class_id)
     {
         return GameLog::where('classroom_id', $class_id)
-            ->whereRaw('DATE(created_at) > ?', Carbon::now()->subDay()->toDateString())
-            ->orderBy('created_at')
+            ->orderBy('created_at', 'desc')
+            ->take(45)
             ->get();
     }
 

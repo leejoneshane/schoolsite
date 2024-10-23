@@ -411,6 +411,9 @@ class GameController extends Controller
         }
         GameSetting::positive_act($teacher, $characters, $rule_id, $reason, $xp, $gp, $item_id);
         $characters = GameCharacter::findByClass(session('gameclass'));
+        foreach ($characters as $char) {
+            $char->refresh();
+        }
         return response()->json([ 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
@@ -440,6 +443,9 @@ class GameController extends Controller
         }
         GameSetting::negative_act($teacher, $characters, $rule_id, $reason, $hp, $mp);
         $characters = GameCharacter::findByClass(session('gameclass'));
+        foreach ($characters as $char) {
+            $char->refresh();
+        }
         return response()->json([ 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
@@ -449,7 +455,7 @@ class GameController extends Controller
         $characters = explode(',', $request->input('uuids'));
         if ($request->input('rule') > 0) {
             $rule = GameSetting::find($request->input('rule'));
-            GameDelay::create([
+            $delay = GameDelay::create([
                 'classroom_id' => session('gameclass'),
                 'uuid' => $teacher,
                 'characters' => $characters,
@@ -458,7 +464,7 @@ class GameController extends Controller
                 'mp' => $request->input('mp'),
             ]);
         } else {
-            GameDelay::create([
+            $delay = GameDelay::create([
                 'classroom_id' => session('gameclass'),
                 'uuid' => $teacher,
                 'characters' => $characters,
@@ -467,6 +473,7 @@ class GameController extends Controller
                 'mp' => $request->input('mp') ?: 0,
             ]);
         }
+        return response()->json([ 'url' => route('game.regress', [ 'delay_id' => $delay->id ]), 'delay' => $delay ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function regress($delay_id) {

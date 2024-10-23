@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\GameCharacter;
-use App\Events\GamePartyChannel;
+use App\Events\GameCharacterChannel;
 
 class GameSetting extends Model
 {
@@ -94,7 +94,7 @@ class GameSetting extends Model
                 'content' => $character->seat.' '.$character->name.$message,
             ]);
             if ($character->party_id) {
-                broadcast(new GamePartyChannel($character->party_id, $character->seat.' '.$character->name.$message));
+                broadcast(new GameCharacterChannel($character->stdno, $message));
             }
         }
     }
@@ -121,7 +121,7 @@ class GameSetting extends Model
             }
             $message .= implode('、', $add).'。';
             if ($character->status == "DEAD") {
-                $message .= '但因為冒險者已經死亡，所以沒有作用';
+                $message .= '但因為'.$character->name.'已經死亡，所以沒有作用';
                 GameLog::create([
                     'classroom_id' => session('gameclass'),
                     'uuid' => $teacher,
@@ -206,7 +206,7 @@ class GameSetting extends Model
                 'content' => $message,
             ]);
             if ($target->party_id) {
-                broadcast(new GamePartyChannel($target->party_id, $message));
+                broadcast(new GameCharacterChannel($target->stdno, $message));
             }
         }
     }

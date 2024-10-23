@@ -46,9 +46,6 @@
         <div class="py-2 text-center">
             <a href="{{ route('game.item_shop') }}"><i class="text-2xl fa-solid fa-cart-shopping" title="妖精道具屋"></i></a>
         </div>
-        <div class="py-2 text-center">
-            <a href="#"><i class="text-2xl text-gray-500 fa-solid fa-horse" title="寵物牧場"></i></a>
-        </div>
         @endstudent
     </div>
 </aside>
