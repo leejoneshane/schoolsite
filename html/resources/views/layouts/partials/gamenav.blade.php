@@ -153,7 +153,7 @@
           <div id="delays" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-80 dark:bg-gray-700 dark:divide-gray-600">
               <ul id="delayUL" class="p-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
                 @forelse (employee()->game_delay as $d)
-                <li class="border-b">
+                <li class="border-b py-2">
                   <a href="{{ route('game.regress', [ 'delay_id' => $d->id ]) }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
                     {{ $d->description }}
                   </a>
@@ -175,7 +175,7 @@
           <div id="logs" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-80 dark:bg-gray-700 dark:divide-gray-600">
               <ul class="p-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
                 @forelse (employee()->game_logs(session('gameclass')) as $l)
-                <li class="border-b">
+                <li class="border-b py-2">
                     {{ $l->content }}
                 </li>
                 @empty
