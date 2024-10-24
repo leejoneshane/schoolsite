@@ -1,16 +1,17 @@
 @extends('layouts.game')
 
 @section('content')
+<div class="fixed w-full h-12 text-center z-30">
+    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onclick="openModal(1);">
+        <i class="fa-solid fa-plus"></i>獎勵
+    </button>
+    <button class="ml-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" onclick="openModal(2);">
+        <i class="fa-solid fa-minus"></i>懲罰
+    </button>
+</div>
+<div class="relative top-40">
 <p><div class="pb-3">
     @locked($room->id)
-    <p class="w-full text-center">
-        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onclick="openModal(1);">
-            <i class="fa-solid fa-plus"></i>獎勵
-        </button>
-        <button class="ml-6 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full" onclick="openModal(2);">
-            <i class="fa-solid fa-minus"></i>懲罰
-        </button>
-    </p>
     <input type="checkbox" id="all" onchange="select_all();" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:bg-white disabled:border-gray-100">
     @endlocked
     <div class="inline text-3xl">
@@ -236,6 +237,7 @@
     </tr>
     @endforeach
 </table>
+</div>
 @endif
 <div id="warnModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[80] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
