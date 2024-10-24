@@ -6,21 +6,21 @@
         <div class="relative h-full flex flex-row">
             <div id="me" class="w-1/3 inline-flex content-end">
                 <div class="m-2 flex flex-col gap-1">
-                    <div class="w-24 h-8 text-white text-xl font-extrabold" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">L{{ $character->level }} {{ $character->name }}</div>
+                    <div class="w-24 h-8 text-white text-xl font-extrabold text-shadow">L{{ $character->level }} {{ $character->name }}</div>
                     <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
                         <div id="hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->hp / $character->max_hp * 100) }}%;">{{ $character->hp }}</div>
                     </div>
                     <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
                         <div id="mp" class="h-4 bg-blue-500 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->mp / $character->max_mp * 100) }}%;">{{ $character->mp }}</div>
                     </div>
-                    <div id="status" class="w-24 h-8 text-white" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">正常</div>
+                    <div id="status" class="w-24 h-8 text-white text-shadow">正常</div>
                     <img title="{{ $character->name }}" src="{{ $character->url ?: '' }}" class="absolute bottom-40 w-1/3 z-50">
                 </div>
             </div>
             <div class="w-1/3 text-center inline-flex flex-col">
-                <h1 id="caption" class="hidden text-white text-3xl" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;"></h1>
+                <h1 id="caption" class="hidden text-white text-3xl text-shadow"></h1>
                 <div id="help" class="p-2">
-                    <ul class="text-left text-white" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
+                    <ul class="text-left text-white text-shadow">
                         <li>地下城遊戲規則：</li>
                         <li>1. 先選擇要進入的地下城。</li>
                         <li>2. 你有 30 秒的時間回答問題，超過時間怪物會採取行動。</li>
@@ -44,11 +44,11 @@
             </div>
             <div class="w-1/3 inline-flex content-end">
                 <div id="monster" class="hidden m-2 flex flex-col gap-1">
-                    <div id="monster_name" class="w-24 h-8 text-white text-xl font-extrabold" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;"></div>
+                    <div id="monster_name" class="w-24 h-8 text-white text-xl font-extrabold text-shadow"></div>
                     <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
                         <div id="monster_hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: 100%;"></div>
                     </div>
-                    <div id="monster_status" class="w-24 h-8 text-white" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;"></div>
+                    <div id="monster_status" class="w-24 h-8 text-white text-shadow"></div>
                     <img id="monster_img" title="" src="" class="absolute bottom-40 w-1/3 z-50">
                 </div>
             </div>    

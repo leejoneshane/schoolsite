@@ -1324,27 +1324,7 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( response => {
-            for (var k in response.data.characters) {
-                characters[response.data.characters[k].seat] = response.data.characters[k];
-            };
-            characters.forEach(char => {
-                var lvl = document.getElementById('level' + char.seat);
-                lvl.innerHTML = char.level;
-                var hp = document.getElementById('hp' + char.seat);
-                hp.innerHTML = char.hp + '/' + char.max_hp;
-                var mp = document.getElementById('mp' + char.seat);
-                mp.innerHTML = char.mp + '/' + char.max_mp;
-                var ap = document.getElementById('ap' + char.seat);
-                ap.innerHTML = char.final_ap + '[' + char.ap + ']';
-                var dp = document.getElementById('dp' + char.seat);
-                dp.innerHTML = char.final_dp + '[' + char.dp + ']';
-                var sp = document.getElementById('sp' + char.seat);
-                sp.innerHTML = char.final_sp + '[' + char.sp + ']';
-                var xp = document.getElementById('xp' + char.seat);
-                xp.innerHTML = char.xp;
-                var gp = document.getElementById('gp' + char.seat);
-                gp.innerHTML = char.gp;
-            });
+            location.reload();
         });
     }
 </script>

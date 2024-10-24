@@ -103,6 +103,11 @@ class GameCharacter extends Model
         'image',
     ];
 
+    //以下屬性需進行資料庫欄位格式轉換
+    protected $casts = [
+        'effect_timeout' => 'datetime:Y-m-d H:i:s',
+    ];
+
     //更新角色時，自動進行升級
     protected static function booted()
     {

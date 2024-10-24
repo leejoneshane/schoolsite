@@ -1,4 +1,4 @@
-<nav class="relative z-40 bg-teal-500 border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+<nav class="fixed z-40 w-full h-12 top-16 bg-teal-500 border-gray-200 dark:bg-gray-900 dark:border-gray-700">
   <div class="w-full flex justify-between mx-0 px-4 py-2.5">
     <button data-collapse-toggle="navbar-dropdown" type="button" class="inline-flex items-center p-2 ms-3 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600" aria-controls="navbar-dropdown" aria-expanded="false">
       <span class="sr-only">下拉選單</span>
@@ -15,7 +15,7 @@
         </li>
         @teacher
         <li>
-          <button id="classList" data-dropdown-toggle="classes" data-dropdown-placement="bottom" class="flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
+          <button id="classList" data-dropdown-toggle="classes" data-dropdown-placement="bottom" class="inline-flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
             選擇班級
             <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
@@ -23,7 +23,7 @@
           </button>
           <!-- Dropdown menu -->
           <div id="classes" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-auto dark:bg-gray-700 dark:divide-gray-600">
-              <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
+              <ul class="p-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="classList">
                 @foreach (employee()->classrooms as $cls)
                 <li>
                   <a href="{{ route('game.room', [ 'room_id' => $cls->id ]) }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
@@ -38,7 +38,7 @@
           </div>
         </li>
         <li>
-          <button id="teacherMenu" data-dropdown-toggle="settings" class="flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
+          <button id="teacherMenu" data-dropdown-toggle="settings" class="inline-flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
             教室規則
             <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
@@ -46,7 +46,7 @@
           </button>
           <!-- Dropdown menu -->
           <div id="settings" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-auto dark:bg-gray-700 dark:divide-gray-600">
-              <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
+              <ul class="p-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="teacherMenu">
                 <li>
                   <a href="{{ route('game.positive') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">獎勵條款</a>
                 </li>
@@ -64,7 +64,7 @@
         </li>
         @locked(session('gameclass'))
         <li>
-          <button id="classroomMenu" data-dropdown-toggle="configure" class="flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
+          <button id="classroomMenu" data-dropdown-toggle="configure" class="inline-flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
             班級規則
             <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
@@ -72,7 +72,7 @@
           </button>
           <!-- Dropdown menu -->
           <div id="configure" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-auto dark:bg-gray-700 dark:divide-gray-600">
-              <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
+              <ul class="p-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="classroomMenu">
                 <li>
                   <a href="{{ route('game.classroom_config') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">遊戲規則</a>
                 </li>
@@ -94,7 +94,7 @@
         @endlocked
         @if (Auth::user()->is_admin || Auth::user()->hasPermission('game.manager'))
         <li>
-          <button id="adminMenu" data-dropdown-toggle="administration" class="flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
+          <button id="adminMenu" data-dropdown-toggle="administration" class="inline-flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
             系統管理
             <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
@@ -102,7 +102,7 @@
           </button>
           <!-- Dropdown menu -->
           <div id="administration" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-auto dark:bg-gray-700 dark:divide-gray-600">
-              <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
+              <ul class="p-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="adminMenu">
                 <li>
                   <a href="{{ route('game.classes') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">職業</a>
                 </li>
@@ -143,7 +143,7 @@
         @teacher
         @locked(session('gameclass'))
         <li>
-          <button id="delayList" data-dropdown-toggle="delays" data-dropdown-placement="bottom" class="flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
+          <button id="delayList" data-dropdown-toggle="delays" data-dropdown-placement="bottom" class="inline-flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
             延遲處置
             <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
@@ -151,7 +151,7 @@
           </button>
           <!-- Dropdown menu -->
           <div id="delays" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-80 dark:bg-gray-700 dark:divide-gray-600">
-              <ul id="delayUL" class="p-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
+              <ul id="delayUL" class="h-screen p-2 overflow-y-auto text-sm text-gray-700 dark:text-gray-200" aria-labelledby="delayList">
                 @forelse (employee()->game_delay as $d)
                 <li class="border-b py-2">
                   <a href="{{ route('game.regress', [ 'delay_id' => $d->id ]) }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">
@@ -159,13 +159,13 @@
                   </a>
                 </li>
                 @empty
-                <li>恭喜，沒有需要處理的事項！</li>
+                <li class="text-center">恭喜，沒有需要處理的事項！</li>
                 @endforelse
               </ul>
           </div>
         </li>
         <li>
-          <button id="logList" data-dropdown-toggle="logs" data-dropdown-placement="bottom" class="flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
+          <button id="logList" data-dropdown-toggle="logs" data-dropdown-placement="bottom" class="inline-flex items-center justify-between w-full py-2 px-3 text-gray-700 rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 md:p-0 md:w-auto dark:text-gray-400 dark:hover:text-white dark:focus:text-white dark:border-gray-700 dark:hover:bg-gray-700 md:dark:hover:bg-transparent">
             遊戲日誌
             <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
@@ -173,10 +173,10 @@
           </button>
           <!-- Dropdown menu -->
           <div id="logs" class="z-10 hidden font-normal bg-teal-100 divide-y divide-gray-100 rounded-lg shadow w-80 dark:bg-gray-700 dark:divide-gray-600">
-              <ul class="p-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownLargeButton">
+              <ul class="h-screen p-2 overflow-y-auto text-sm text-gray-700 dark:text-gray-200" aria-labelledby="logList">
                 @forelse (employee()->game_logs(session('gameclass')) as $l)
                 <li class="border-b py-2">
-                    {{ $l->content }}
+                    <span class="flex">{{ $l->content }}</span>
                 </li>
                 @empty
                 <li>沒有遊戲紀錄！</li>

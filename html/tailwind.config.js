@@ -2,6 +2,7 @@ const colors = require('tailwindcss/colors')
 const defaultTheme = require('tailwindcss/defaultTheme')
 
 module.exports = {
+    mode: 'jit',
     content: [
         './resources/**/*.blade.php',
         './resources/**/*.ts',
@@ -44,7 +45,6 @@ module.exports = {
                 'game-itemshop': "url('/images/game/item.png')",
                 'game-petshop': "url('/images/game/pet.png')",
                 'game-book': "url('/images/game/book.png')",
-                'game-bag': "url('/images/game/bag.png')",
                 'game-chest': "url('/images/game/chest.png')",
             }
         }

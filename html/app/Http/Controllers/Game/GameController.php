@@ -257,8 +257,9 @@ class GameController extends Controller
             $pro = GameClass::find($request->input('profession'));
             $character->change_class($pro->id);
         }
-        $characters = GameCharacter::findByClass(session('gameclass'));
-        return response()->json([ 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        $character->save();
+        $character->refresh();
+        return response()->json([ 'character' => $character ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function get_skills(Request $request)
@@ -513,15 +514,12 @@ class GameController extends Controller
                 $pick->pick_up ++;
                 $pick->save();
                 foreach ($pick->members as $m) {
-                    if ($m->absent == 0) {
-                        $m->pick_up ++;
-                        $m->save();
-                        $uuids[] = $m;
-                    }
+                    $m->pick_up ++;
+                    $m->save();
+                    $uuids[] = $m;
                 }
-                return response()->json([ 'type' => 1, 'name' => $pick->name, 'uuids' => $uuids ]);
+                return response()->json([ 'type' => 1, 'party' => $pick->name,'uuids' => $uuids ]);
             }
-            return response()->json([ 'type' => 1, 'name' => '', 'uuids' => [] ]);
         }
     }
 

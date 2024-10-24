@@ -2,23 +2,23 @@
 
 @section('content')
 <div class="w-full h-screen flex flex-col">
-    <div class="relative w-full h-2/3 truncate flex flex-col">
+    <div class="relative w-full h-2/3 shrink-0 truncate">
         @if ($party->fundation)
         <img src="{{  $party->fundation->url() }}" class="absolute bottom-0 w-full z-0" />
         @endif
         <div class="absolute w-full h-3/4 bottom-0 inline-flex flex-row justify-center z-10">
             @foreach ($party->members as $m)
             @if ($m->image)
-            <img src="{{ $m->image->url() }}" title="{{ $m->name }}" class="h-full z-10" onclick="prepare_item('{{ $m->uuid }}')" />
+            <img src="{{ $m->image->url() }}" title="{{ $m->name }}" class="{{ $m->uuid == $character->uuid  ? '' : 'cursor-pointer ' }}h-full z-10" onclick="prepare_item('{{ $m->uuid }}')" />
             @endif
             @endforeach
         </div>
         <div class="w-full inline-flex flex-row justify-center rounded bg-transparent font-extrabold drop-shadow-md p-8 z-20">
-            <input type="text" id="name" name="name" value="{{ $party ? $party->name : '' }}" class="w-64 h-8 text-3xl text-white rounded border-0 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none bg-transparent" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;" 
+            <input type="text" id="name" name="name" value="{{ $party ? $party->name : '' }}" class="w-64 h-8 text-3xl text-white rounded border-0 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none bg-transparent text-shadow" 
                 placeholder="請輸入公會名稱..." onchange="change_name();"{{ ($character->uuid != $party->uuid) ? ' disabled' : '' }}>
-            <textarea id="description" class="z-20 w-96 text-3xl text-white rounded border-0 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none bg-transparent" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;" 
+            <textarea id="description" class="z-20 w-96 text-3xl text-white rounded border-0 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none bg-transparent text-shadow" 
                 name="description" rows="2" cols="12" placeholder="請輸入公會成立宗旨、目標、或口號..." onchange="change_desc();"{{ ($character->uuid != $party->uuid) ? ' disabled' : '' }}>{{ $party ? $party->description : '' }}</textarea>
-            <div class="text-3xl text-white" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
+            <div class="text-3xl text-white text-shadow">
                 @if ($character->uuid == $party->uuid)
                 <label for="leader">公會長：</label>
                 <select id="leader" name="leader" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
@@ -33,7 +33,7 @@
                 @endif
             </div>
             @if ($party->configure && $party->configure->change_base)
-            <div class="ml-2 text-3xl text-white" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
+            <div class="ml-2 text-3xl text-white text-shadow">
                 @if ($character->uuid == $party->uuid)
                 <label for="base">變更據點：</label>
                 <select id="base" name="base" class="form-select w-48 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
@@ -48,7 +48,7 @@
             @endif
         </div>
     </div>
-    <div class="w-full h-1/3  bg-white flex flex-row justify-center">
+    <div class="w-full h-1/3 shrink bg-white bg-opacity-80 flex flex-row justify-center">
         <div class="w-52">
             <table class="text-left font-normal">
                 <tr>
@@ -137,8 +137,8 @@
         <div class="w-auto">
             <div class="sr-only">金庫</div>
             <button type="button" title="捐款" onclick="donateModal.show();" class="hover:border hover:border-2 hover:border-blue-700 text-white font-bold rounded-full">
-                <div class="relative w-36 h-36 bg-game-chest bg-contain bg-no-repeat">
-                    <span id="treasury" class="absolute bottom-0 text-lg text-amber-500 font-bold">{{ $party->treasury }}</span>
+                <div class="relative w-32 h-32 bg-game-chest bg-contain bg-no-repeat">
+                    <span id="treasury" class="relative top-10 text-2xl text-amber-100 font-extrabold text-shadow">{{ $party->treasury }}</span>
                 </div>
             </button>
         </div>

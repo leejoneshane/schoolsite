@@ -276,7 +276,7 @@ class PlayerController extends Controller
             if ($item) $message .= $item->name;
         }
         $me->refresh();
-        if ($message) broadcast(new GameCharacterChannel($me->stdno, $message));
+        if (isset($message)) broadcast(new GameCharacterChannel($me->stdno, $message));
         return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
@@ -337,10 +337,10 @@ class PlayerController extends Controller
         foreach ($characters as $char) {
             $char->refresh();
         }
-        $namespace = 'arena:'.$me->party->classroom_id.':battle:'.$me->party->id;
+        $namespace = 'arena:'.$me->classroom_id.':battle:'.$me->party->id;
         if (Redis::exists($namespace)) {
             $enemy = Redis::get($namespace);
-            BattleAction::dispatch($me->party, $message);
+            if (isset($message)) BattleAction::dispatch($me->party, $message);
             $enemys = GameParty::find($enemy)->members;
             foreach ($enemys as $char) {
                 $char->refresh();
@@ -376,7 +376,7 @@ class PlayerController extends Controller
             }
         }
         $me->refresh();
-        if ($message) broadcast(new GameCharacterChannel($me->stdno, $message));
+        if (isset($message)) broadcast(new GameCharacterChannel($me->stdno, $message));
         return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
@@ -408,10 +408,10 @@ class PlayerController extends Controller
         foreach ($characters as $char) {
             $char->refresh();
         }
-        $namespace = 'arena:'.$me->party->classroom_id.':battle:'.$me->party->id;
+        $namespace = 'arena:'.$me->classroom_id.':battle:'.$me->party->id;
         if (Redis::exists($namespace)) {
             $enemy = Redis::get($namespace);
-            BattleAction::dispatch($me->party, $message);
+            if (isset($message)) BattleAction::dispatch($me->party, $message);
             $enemys = GameParty::find($enemy)->members;
             foreach ($enemys as $char) {
                 $char->refresh();

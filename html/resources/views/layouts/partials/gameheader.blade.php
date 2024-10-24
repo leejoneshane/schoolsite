@@ -1,4 +1,4 @@
-<header class="relative p-2">
+<header class="fixed w-full top-0 z-40 p-2">
     <div class="z-20 relative mx-auto">
         <h1 class="text-center font-mono font-bold text-5xl">
             <span class="italic text-teal-200">課堂大冒險</span>

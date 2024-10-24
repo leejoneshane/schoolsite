@@ -1,4 +1,4 @@
-<main class="w-full h-full min-h-screen bg-game-map50 bg-cover bg-center bg-no-repeat">
+<main class="relative left-16 top-28 w-full h-full min-h-screen bg-game-map50 bg-cover bg-center bg-no-repeat">
     @teacher
     <div class="m-5 relative dark:bg-gray-700 text-black dark:text-gray-200">
         <div>

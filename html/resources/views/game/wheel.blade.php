@@ -1,10 +1,8 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="w-full h-full flex">
+<div class="w-full h-screen flex">
     <div class="w-1/2 items-center flex flex-col">
-        <img id="choise_character" src="{{ asset('images/game/one.png') }}" class="mt-0" />
-        <img id="choise_party" src="{{ asset('images/game/group.png') }}" class="hidden mt-0" />
         <div class="text-lg text-white sm:block drop-shadow-lg">
             <label for="choise" class="ml-3 cursor-pointer">抽選角色</label>
             <label for="choise" class="relative align-center inline-flex items-center cursor-pointer">
@@ -12,6 +10,9 @@
                 <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
             </label>
             <label for="choise" class="ml-3 cursor-pointer">抽選公會</label>
+        </div>
+        <img id="choise_character" src="" class="mt-0 h-3/4" />
+        <div id="choise_party" class="relative mt-0 min-w-full h-3/4 hidden">
         </div>
     </div>
     <div class="w-1/2 text-center flex flex-col">
@@ -140,6 +141,7 @@
         </div>
     </div>
 </div>
+<span class="hidden top-0 top-20 top-40 left-0 left-20 left-40 left-60 left-80"></span>
 <script nonce="selfhost">
     var type = 0;
     var uuids = [];
@@ -198,6 +200,11 @@
             var body = document.createElement('tbody');
             if (type == 0) {
                 var character = response.data.uuids[0];
+                uuids = [ character ];
+                if (character.url) {
+                    var image = document.getElementById('choise_character');
+                    image.setAttribute('src', character.url);
+                }
                 var tr = document.createElement('tr');
                 var td = document.createElement('td');
                 td.setAttribute('colSpan', '2');
@@ -218,8 +225,8 @@
                 tr.appendChild(td);
                 body.appendChild(tr);
                 table.appendChild(body);
-                uuids = [ character.uuid ];
             } else {
+                var party = response.data.party;
                 var table = document.createElement('table');
                 table.classList.add('text-2xl','text-white','drop-shadow-md');
                 var body = document.createElement('tbody');
@@ -227,12 +234,42 @@
                 var td = document.createElement('td');
                 td.setAttribute('colSpan', '2');
                 td.classList.add('text-center');
-                td.appendChild(document.createTextNode(response.data.name));
+                td.appendChild(document.createTextNode(party));
                 tr.appendChild(td);
                 body.appendChild(tr);
+                var images = document.getElementById('choise_party');
+                images.innerHTML = '';
+                var characters = response.data.uuids;
                 uuids = [];
-                var loop = 0;
-                response.data.uuids.forEach( (character) => {
+                z = 10;
+                col = 1;
+                i = 0;
+                l = 0;
+                t = 0;
+                characters.forEach( (character, k) => {
+                    uuids[k] = character;
+                    if (character.url) {
+                        var image = document.createElement('img');
+                        image.setAttribute('src', character.url);
+                        image.classList.add('absolute','top-' + t,'left-' + l,'h-3/4','z-' + z);
+                        images.appendChild(image);
+                        l += 40;
+                        i++;
+                        if (col == 1 && i > 2) {
+                            i = 0;
+                            col = 2;
+                            l = 20;
+                            z += 10;
+                            t += 20;
+                        }
+                        if (col == 2 && i > 1) {
+                            i = 0;
+                            col = 3;
+                            l = 40;
+                            z += 10;
+                            t += 20;
+                        }
+                    }
                     tr = document.createElement('tr');
                     td = document.createElement('td');
                     td.classList.add('text-right');
@@ -243,8 +280,6 @@
                     td.appendChild(document.createTextNode(character.name));
                     tr.appendChild(td);
                     body.appendChild(tr);
-                    uuids[loop] = character.uuid;
-                    loop ++;
                 });
             }
             table.appendChild(body);

@@ -326,7 +326,7 @@ class Teacher extends Model
     {
         return GameLog::where('classroom_id', $class_id)
             ->orderBy('created_at', 'desc')
-            ->take(45)
+            ->take(100)
             ->get();
     }
 

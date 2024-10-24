@@ -7,7 +7,7 @@
             <div class="w-1/3">
                 <ul id="our_action"></ul>
             </div>
-            <div id="connect" class="w-1/3 text-center inline-flex flex-col" style="text-shadow: 1px 1px 0 #000000, -1px -1px 0 black, -1px 1px 0 black, 1px -1px 0 black, 1px 1px 0 black;">
+            <div id="connect" class="w-1/3 text-center inline-flex flex-col text-shadow">
             @if ($character->configure && $character->configure->arena_open)
                 <div class="p-2">
                     <span class="text-xl text-white">等候公會成員集合......</span>
@@ -152,7 +152,7 @@
     var ls_leader = {{ $character->is_leader() }};
     var enemy_party = '';
     var invite_from;
-    var member_count = {{ $character->party->members->count() }};
+    var member_count = {{ $character->party ? $character->party->members->count() : 99 }};
     var members = [];
     var parties = [];
     var enemys = [];

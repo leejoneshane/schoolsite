@@ -145,7 +145,7 @@
             <td class="p-2">{{ $s->gp }}</td>
             <td class="p-2">{{ $s->temp_effect }}</td>
             <td class="p-2">{{ $s->effect_value }}</td>
-            <td class="p-2">{{ $s->effect_timeout ? date('m/d/Y H:i:s', $s->effect_timeout) : ''}}</td>
+            <td class="p-2">{{ $s->effect_timeout ? $s->effect_timeout->format('m/d/Y H:i:s') : ''}}</td>
             <td class="p-2">{{ $s->status == DEAD ? '死亡' : '' }}{{ $s->status == COMA ? '昏迷' : '' }}{{ $s->status == NORMAL ? '正常' : '' }}</td>
         </tr>
         @endforeach
