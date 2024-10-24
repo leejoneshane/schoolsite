@@ -7,6 +7,29 @@
         <i class="fa-solid fa-circle-plus"></i>新增技能
     </a>
 </div>
+<div class="text-xl font-bold">選擇職業：
+    <select class="form-select w-48 m-0 px-3 py-2 text-xl font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+    name="profession" onchange="
+        var section = this.value;
+        window.location.replace('{{ route('game.skills') }}/class/' + section );
+    ">
+        <option value="all"></option>
+        @foreach ($classes as $c)
+        <option {{ ($type == 'class' && $c->id == $id) ? 'selected' : ''}} value="{{ $c->id }}">{{ $c->name }}</option>
+        @endforeach
+    </select>
+    <label class="inline pl-10 text-xl font-bold">選擇怪物：</label>
+    <select class="form-select w-48 m-0 px-3 py-2 text-xl font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+    name="monster" onchange="
+        var section = this.value;
+        window.location.replace('{{ route('game.skills') }}/monster/' + section );
+    ">
+        <option value="all"></option>
+        @foreach ($monsters as $m)
+        <option {{ ($type == 'monster' && $m->id == $id) ? 'selected' : ''}} value="{{ $m->id }}">{{ $m->name }}</option>
+        @endforeach
+    </select>
+</div>
 <table class="w-full py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
         <th scope="col" class="p-2">

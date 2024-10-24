@@ -85,12 +85,22 @@ class GameSkill extends Model
     }
 
     //篩選指定職業的技能，靜態函式
-    public static function forClass($class_id)
+    public static function forClass($id)
     {
         return GameSkill::select('game_skills.*', 'game_classes_skills.level')
             ->leftjoin('game_classes_skills', 'game_skills.id', '=', 'game_classes_skills.skill_id')
-            ->where('game_classes_skills.class_id', $class_id)
+            ->where('game_classes_skills.class_id', $id)
             ->orderBy('game_classes_skills.level')
+            ->get();
+    }
+
+    //篩選指定職業的技能，靜態函式
+    public static function forMonster($id)
+    {
+        return GameSkill::select('game_skills.*', 'game_monsters_skills.level')
+            ->leftjoin('game_monsters_skills', 'game_skills.id', '=', 'game_monsters_skills.skill_id')
+            ->where('game_monsters_skills.monster_id', $id)
+            ->orderBy('game_monsters_skills.level')
             ->get();
     }
 

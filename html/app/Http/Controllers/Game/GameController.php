@@ -461,8 +461,8 @@ class GameController extends Controller
                 'uuid' => $teacher,
                 'characters' => $characters,
                 'rule' => $rule->id,
-                'hp' => $request->input('hp'),
-                'mp' => $request->input('mp'),
+                'hp' => $request->input('hp') ?: 0,
+                'mp' => $request->input('mp') ?: 0,
             ]);
         } else {
             $delay = GameDelay::create([

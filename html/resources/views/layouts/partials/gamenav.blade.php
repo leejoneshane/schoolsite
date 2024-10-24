@@ -159,7 +159,7 @@
                   </a>
                 </li>
                 @empty
-                <li class="text-center">恭喜，沒有需要處理的事項！</li>
+                <li id="delay_info" class="text-center">恭喜，沒有需要處理的事項！</li>
                 @endforelse
               </ul>
           </div>

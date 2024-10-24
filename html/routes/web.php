@@ -447,7 +447,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('classes/faces/upload/{image_id}', 'App\Http\Controllers\Game\ClassController@face_upload')->name('game.face_upload');
     Route::get('classes/skills/{class_id?}', 'App\Http\Controllers\Game\ClassController@skills');
     Route::post('classes/skills/{class_id?}', 'App\Http\Controllers\Game\ClassController@skills_update')->name('game.class_skills');
-    Route::get('skills', 'App\Http\Controllers\Game\SkillController@index')->name('game.skills');
+    Route::get('skills/{type?}/{id?}', 'App\Http\Controllers\Game\SkillController@index')->name('game.skills');
     Route::get('skills/add', 'App\Http\Controllers\Game\SkillController@add');
     Route::post('skills/add', 'App\Http\Controllers\Game\SkillController@insert')->name('game.skill_add');
     Route::get('skills/edit/{skill_id}', 'App\Http\Controllers\Game\SkillController@edit');

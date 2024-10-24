@@ -9,7 +9,7 @@
         <i class="fa-solid fa-minus"></i>懲罰
     </button>
 </div>
-<div class="relative top-40">
+<div class="relative top-16">
 <p><div class="pb-3">
     @locked($room->id)
     <input type="checkbox" id="all" onchange="select_all();" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:bg-white disabled:border-gray-100">
@@ -766,11 +766,11 @@
         var rule_id = rule.value;
         var reason = document.getElementById('n_reason').value;
         if (rule_id == 0) {
-            var hp = document.getElementById('hp').value;
-            var mp = document.getElementById('mp').value;
+            var hp = document.getElementById('nhp').value;
+            var mp = document.getElementById('nmp').value;
         } else {
-            var hp = document.getElementById('hp' + rule_id).value;
-            var mp = document.getElementById('mp' + rule_id).value;
+            var hp = document.getElementById('nhp' + rule_id).value;
+            var mp = document.getElementById('nmp' + rule_id).value;
         }
         restore();
         window.axios.post('{{ route('game.negative_delay') }}', {
@@ -790,12 +790,14 @@
             var delays = document.getElementById('delayUL');
             var li = document.createElement('li');
             li.classList.add('border-b');
-            var href = document.createElement('li');
+            var href = document.createElement('a');
             href.setAttribute('href', url);
             href.classList.add('block','px-4','py-2','hover:bg-gray-100','dark:hover:bg-gray-600','dark:hover:text-white');
             href.innerHTML = delay.description;
             li.appendChild(href);
             delays.appendChild(li);
+            var info = document.getElementById('delay_info');
+            if (info) info.classList.add('hidden');
         });
     }
 

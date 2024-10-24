@@ -8,19 +8,29 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
+use App\Models\GameClass;
 use App\Models\GameSkill;
+use App\Models\GameMonster;
 use App\Models\Watchdog;
 
 class SkillController extends Controller
 {
 
-    public function index()
+    public function index($type = null, $id = null)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $skills = GameSkill::all()->sortBy('object');
-            return view('game.skills', ['skills' => $skills]);
+            if (!$type || $id == 'all') {
+                $skills = GameSkill::all()->sortBy('object');
+            } elseif ($type == 'class') {
+                $skills = GameSkill::forClass($id);
+            } elseif ($type == 'monster') {
+                $skills = GameSkill::forMonster($id);
+            }
+            $classes = GameClass::all();
+            $monsters = GameMonster::all();
+            return view('game.skills', ['type' => $type, 'id' => $id, 'monsters' => $monsters, 'classes' => $classes, 'skills' => $skills]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }

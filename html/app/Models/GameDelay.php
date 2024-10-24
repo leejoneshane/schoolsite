@@ -37,7 +37,6 @@ class GameDelay extends Model
 
     //以下屬性隱藏不顯示（toJson 時忽略）
     protected $hidden = [
-        'description',
         'classroom',
         'teacher',
     ];
@@ -46,6 +45,7 @@ class GameDelay extends Model
     public function getDescriptionAttribute()
     {
         $students = [];
+        $add = [];
         foreach ($this->students() as $stu) {
             $students[] = $stu->seat.' '.$stu->realname;
         }
@@ -58,7 +58,9 @@ class GameDelay extends Model
         if ($this->mp > 0) {
             $add[] = '法力（行動力）' . $this->mp . '點';
         }
-        $message .= implode('、', $add).'。';
+        if (!empty($add)) {
+            $message .= implode('、', $add).'。';
+        }
         return $message;
     }
 
