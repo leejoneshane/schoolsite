@@ -38,7 +38,7 @@ module.exports = {
                 'game-timer': "url('/images/game/timer.png')",
                 'game-sound': "url('/images/game/sound.png')",
                 'game-door': "url('/images/game/door.png')",
-                'game-area': "url('/images/game/area.png')",
+                'game-arena': "url('/images/game/arena.png')",
                 'game-dungeon': "url('/images/game/dungeon.png')",
                 'game-map': "url('/images/game/map.png')",
                 'game-workshop': "url('/images/game/furniture.png')",

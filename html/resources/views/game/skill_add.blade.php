@@ -9,6 +9,7 @@
 </div>
 <form id="add-class" action="{{ route('game.skill_add') }}" method="POST" enctype="multipart/form-data">
     @csrf
+    <input type="hidden" name="referer" value="{{ $referer }}">
     <p><div class="p-3">
         <label for="name" class="text-base">技能名稱：</label>
         <input type="text" id="name" name="name" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>

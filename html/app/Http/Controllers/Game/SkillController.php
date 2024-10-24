@@ -36,12 +36,13 @@ class SkillController extends Controller
         }
     }
 
-    public function add()
+    public function add(Request $request)
     {
+        $referer = $request->headers->get('referer');
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            return view('game.skill_add');
+            return view('game.skill_add', [ 'referer' => $referer ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -82,19 +83,20 @@ class SkillController extends Controller
                 $sk->save();
             }
             Watchdog::watch($request, '新增遊戲技能：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('game.skills')->with('success', '已新增技能：'.$request->input('name').'！');
+            return redirect()->to($request->input('referer'))->with('success', '已新增技能：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
     }
 
-    public function edit($skill_id)
+    public function edit(Request $request, $skill_id)
     {
+        $referer = $request->headers->get('referer');
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $skill = GameSkill::find($skill_id);
-            return view('game.skill_edit', [ 'skill' => $skill ]);
+            return view('game.skill_edit', [ 'skill' => $skill, 'referer' => $referer ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -137,7 +139,7 @@ class SkillController extends Controller
             }
             $sk->save();
             Watchdog::watch($request, '修改遊戲技能：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return redirect()->route('game.skills')->with('success', '已修改技能：'.$request->input('name').'！');
+            return redirect()->to($request->input('referer'))->with('success', '已修改技能：'.$request->input('name').'！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
