@@ -45,6 +45,12 @@ class News extends Model
         'inside' => 'boolean',
     ];
 
+    //篩選指定物件模型的電子報
+    public static function findByModel($model)
+    {
+        return News::where('model', $model)->first();
+    }
+
     //提供派報時間字串
     public function getJobAttribute()
     {

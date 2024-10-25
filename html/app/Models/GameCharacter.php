@@ -687,16 +687,15 @@ class GameCharacter extends Model
     //獲得指定的道具
     public function get_item($id)
     {
-        $item = GameItem::find($id);
         if ($this->items->firstWhere('id', $id)) {
             DB::table('game_characters_items')
                 ->where('uuid', $this->uuid)
-                ->where('item_id', $item->id)
+                ->where('item_id', $id)
                 ->increment('quantity');
         } else {
             DB::table('game_characters_items')->insert([
                 'uuid' => $this->uuid,
-                'item_id' => $item->id,
+                'item_id' => $id,
                 'quantity' => 1,
             ]);
         }
@@ -705,18 +704,17 @@ class GameCharacter extends Model
     ///失去指定的道具
     public function loss_item($id)
     {
-        $item = GameItem::find($id);
         $record = $this->items->firstWhere('id', $id); 
         if ($record) {
             if ($record->pivot->quantity > 1) {
                 DB::table('game_characters_items')
                 ->where('uuid', $this->uuid)
-                ->where('item_id', $item->id)
+                ->where('item_id', $id)
                 ->decrement('quantity');
             } else {
                 DB::table('game_characters_items')
                 ->where('uuid', $this->uuid)
-                ->where('item_id', $item->id)
+                ->where('item_id', $id)
                 ->delete();
             }
         }

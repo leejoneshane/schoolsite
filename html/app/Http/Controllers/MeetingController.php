@@ -8,6 +8,7 @@ use App\Models\Meeting;
 use App\Models\Watchdog;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Jobs\SendMeeting;
 
 class MeetingController extends Controller
 {
@@ -20,16 +21,27 @@ class MeetingController extends Controller
             $dt = Carbon::today();
         }
         $meets = Meeting::inTime($dt);
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $teacher = employee();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $create = $user->is_admin || $user->hasPermission('meeting.director');
         return view('app.meetings', ['date' => $dt->toDateString(), 'create' => $create, 'unit' => $teacher->mainunit, 'meets' => $meets]);
     }
 
+    public function send()
+    {
+        $user = User::find(Auth::user()->id);
+        if ($user->is_admin || $user->hasPermission('meeting.director')) {
+            SendMeeting::dispatch();
+            return redirect()->route('meeting')->with('success', '已為您排程補寄本週份的朝會報告！');
+        } else {
+            return redirect()->route('meeting')->with('error', '只有管理員才能寄送電子報！');
+        }
+    }
+
     public function add()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $teacher = employee();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         if ($user->is_admin || $user->hasPermission('meeting.director')) {
@@ -41,7 +53,7 @@ class MeetingController extends Controller
 
     public function insert(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         $teacher = employee();
         if ($user->is_admin || $user->hasPermission('meeting.director')) {
@@ -63,7 +75,7 @@ class MeetingController extends Controller
 
     public function edit($id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $teacher = employee();
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         if ($user->is_admin || $user->hasPermission('meeting.director')) {
@@ -77,7 +89,7 @@ class MeetingController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         if ($user->is_admin || $user->hasPermission('meeting.director')) {
             $meet = Meeting::find($id);
@@ -107,7 +119,7 @@ class MeetingController extends Controller
 
     public function remove(Request $request, $id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type != 'Teacher') return redirect()->route('home')->with('error', '只有教職員才能連結此頁面！');
         if ($user->is_admin || $user->hasPermission('meeting.director')) {
             $m = Meeting::find($id);

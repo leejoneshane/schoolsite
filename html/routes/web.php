@@ -195,6 +195,7 @@ Route::group(['prefix' => 'public', 'middleware' => [ 'auth'] ], function () {
 // 網路朝會
 Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth'] ], function () {
     Route::get('list/{date?}', 'App\Http\Controllers\MeetingController@index')->name('meeting');
+    Route::post('send', 'App\Http\Controllers\MeetingController@send')->name('meeting.send');
     Route::get('add', 'App\Http\Controllers\MeetingController@add');
     Route::post('add', 'App\Http\Controllers\MeetingController@insert')->name('meeting.add');
     Route::get('edit/{id}', 'App\Http\Controllers\MeetingController@edit');

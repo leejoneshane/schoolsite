@@ -29,6 +29,9 @@
             電子郵件
         </th>
         <th scope="col" class="p-2">
+            訂閱者身份
+        </th>
+        <th scope="col" class="p-2">
             已驗證
         </th>
         <th scope="col" class="p-2">
@@ -46,6 +49,9 @@
         </td>
         <td class="p-2">
             <span class="text-sm">{{ $email->email }}</span>
+        </td>
+        <td class="p-2">
+            <span class="text-sm">{{ $email->user_type == 'Teacher' ? '校內教職員' : '校外人士' }}</span>
         </td>
         <td class="p-2">
             <i class="fa-solid fa-check"></i>

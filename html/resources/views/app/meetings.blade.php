@@ -3,7 +3,7 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     網路朝會
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('meeting', ['date' => date("Y-m-d", strtotime('+1 day', strtotime($date)))]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('meeting', ['date' => date("Y-m-d", strtotime('-1 day', strtotime($date)))]) }}">
         <i class="fa-solid fa-backward"></i>前一天
     </a>
     <span class="pl-6">
@@ -18,6 +18,14 @@
         <i class="fa-solid fa-circle-plus"></i>張貼業務報告
     </a>
     @endif
+    <button type="button" class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600"
+    onclick="
+        const myform = document.getElementById('remove');
+        myform.action = '{{ route('meeting.send') }}';
+        myform.submit();
+    ">
+        <i class="fa-regular fa-paper-plane"></i>補寄業務報告
+    </button>
 </div>
 <table class="w-full py-4 text-left font-normal">
     @forelse ($meets as $meet)

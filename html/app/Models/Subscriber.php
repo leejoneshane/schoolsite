@@ -97,9 +97,13 @@ class Subscriber extends Model
     }
 
     //取消訂閱指定的電子報
-    public function cancel($news_id)
+    public function cancel($news_id = null)
     {
-        return DB::table('news_subscribers')->where('news_id', $news_id)->where('subscriber_id', $this->id)->delete();
+        if ($news_id) {
+            return DB::table('news_subscribers')->where('news_id', $news_id)->where('subscriber_id', $this->id)->delete();
+        } else {
+            return DB::table('news_subscribers')->where('subscriber_id', $this->id)->delete();
+        }
     }
 
 }

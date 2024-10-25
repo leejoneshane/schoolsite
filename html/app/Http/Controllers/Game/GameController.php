@@ -270,18 +270,15 @@ class GameController extends Controller
             return response()->json([]);
         }
         $skills = $char->passive_skills();
-        return response()->json([ 'skills' => $skills ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return response()->json([ 'character' => $char, 'skills' => $skills ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function get_items(Request $request)
     {
         $uuid = $request->input('uuid');
         $char = GameCharacter::find($uuid);
-        if (!$char->class_id) {
-            return response()->json([]);
-        }
         $items = $char->useable_items();
-        return response()->json([ 'items' => $items ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return response()->json([ 'character' => $char, 'items' => $items ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function get_teammate(Request $request)
@@ -295,7 +292,7 @@ class GameController extends Controller
     {
         $uuid = $request->input('uuid');
         $char = GameCharacter::find($uuid);
-        return response()->json($char)->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return response()->json([ 'character' => $char ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function skill_cast(Request $request)

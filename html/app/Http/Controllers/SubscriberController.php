@@ -12,6 +12,7 @@ use Carbon\Carbon;
 
 class SubscriberController extends Controller
 {
+
     public function index($email = null)
     {
         $subscriber = null;
@@ -139,4 +140,5 @@ class SubscriberController extends Controller
         $expired = Carbon::now()->subDays($days);
         Subscriber::whereNull('email_verified_at')->where('created_at', '<', $expired)->delete();
     }
+
 }

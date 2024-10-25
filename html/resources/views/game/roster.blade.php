@@ -268,10 +268,10 @@
                     <input type="radio" id="{{ $r->id }}" name="positive" value="{{ $r->id }}" class="hidden peer" />
                     <label for="{{ $r->id }}" class="inline-block w-full p-2 text-gray-500 bg-white rounded-lg border-2 border-gray-200 cursor-pointer dark:hover:text-teal-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-teal-600 dark:peer-checked:text-blue-300 peer-checked:text-blue-600 hover:bg-teal-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-teal-700">
                         <span class="inline-block w-96">{{ $r->description }}</span>
-                        XP:<input type="number" id="pxp{{ $r->id }}" name="xp" value="{{ $r->effect_xp }}" class="inline w-8 border-0 border-b p-0"> 
-                        GP:<input type="number" id="pgp{{ $r->id }}" name="gp" value="{{ $r->effect_gp }}" class="inline w-8 border-0 border-b p-0"> 
-                        <select id="pitem{{ $r->id }}" name="item" class="ms-1 inline w-12 border-0 border-b p-0">
-                        <option value=""></option>
+                        XP:<input type="number" id="pxp{{ $r->id }}" name="xp" min="0" max="1000" value="{{ $r->effect_xp }}" class="inline w-8 border-0 border-b p-0"> 
+                        GP:<input type="number" id="pgp{{ $r->id }}" name="gp" min="0" max="1000" value="{{ $r->effect_gp }}" class="inline w-8 border-0 border-b p-0"> 
+                        <select id="pitem{{ $r->id }}" name="pitem" class="ms-1 inline w-12 border-0 border-b p-0">
+                        <option value="0"></option>
                         @foreach ($items as $i)
                         <option value="{{ $i->id }}"{{ $i->id == $r->effect_item ? ' selected' : '' }}>{{ $i->name }}</option>
                         @endforeach
@@ -283,10 +283,10 @@
                     <input type="radio" id="p0" name="positive" value="0" class="hidden peer" />
                     <label for="p0" class="inline-block w-full  p-2 text-gray-500 bg-white rounded-lg border-2 border-gray-200 cursor-pointer dark:hover:text-teal-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-teal-600 dark:peer-checked:text-blue-300 peer-checked:text-blue-600 hover:bg-teal-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-teal-700">
                         <input type="text" id="p_reason" name="reason" class="inline w-96 border-0 border-b p-0" placeholder="請輸入臨時獎勵條款...">
-                        XP:<input type="number" id="pxp" name="xp" class="inline w-8 border-0 border-b p-0"> 
-                        GP:<input type="number" id="pgp" name="gp" class="inline w-8 border-0 border-b p-0"> 
+                        XP:<input type="number" id="pxp" name="xp" min="0" max="1000" class="inline w-8 border-0 border-b p-0"> 
+                        GP:<input type="number" id="pgp" name="gp" min="0" max="1000" class="inline w-8 border-0 border-b p-0"> 
                         <select name="item" id="pitem" class="ms-1 inline w-12 border-0 border-b p-0">
-                        <option value=""></option>
+                        <option value="0"></option>
                         @foreach ($items as $i)
                         <option value="{{ $i->id }}">{{ $i->name }}</option>
                         @endforeach
@@ -319,8 +319,8 @@
                     <input type="radio" id="{{ $r->id }}" name="negative" value="{{ $r->id }}" class="hidden peer" />
                     <label for="{{ $r->id }}" class="inline-block w-full p-2 text-gray-500 bg-white border-2 border-gray-200 cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <span class="inline-block w-[28rem]">{{ $r->description }}</span>
-                        HP:<input type="number" id="nhp{{ $r->id }}" name="hp" value="{{ $r->effect_hp }}" class="inline w-8 border-0 border-b p-0"> 
-                        MP:<input type="number" id="nmp{{ $r->id }}" name="mp" value="{{ $r->effect_mp }}" class="inline w-8 border-0 border-b p-0"> 
+                        HP:<input type="number" id="nhp{{ $r->id }}" name="hp" min="0" max="1000" value="{{ $r->effect_hp }}" class="inline w-8 border-0 border-b p-0"> 
+                        MP:<input type="number" id="nmp{{ $r->id }}" name="mp" min="0" max="1000" value="{{ $r->effect_mp }}" class="inline w-8 border-0 border-b p-0"> 
                     </label>
                     </li>
                     @endforeach
@@ -328,8 +328,8 @@
                     <input type="radio" id="n0" name="negative" value="0" class="hidden peer" />
                     <label for="n0" class="inline-block w-full w-full p-2 text-gray-500 bg-white border-2 border-gray-200 cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 peer-checked:border-blue-600 hover:text-gray-600 dark:peer-checked:text-gray-300 peer-checked:text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700">
                         <input type="text" id="n_reason" name="reason" class="inline w-[28rem] border-0 border-b p-0" placeholder="請輸入臨時懲罰條款...">
-                        HP:<input type="number" id="nhp" name="hp" class="inline w-8 border-0 border-b p-0">
-                        MP:<input type="number" id="nmp" name="mp" class="inline w-8 border-0 border-b p-0">
+                        HP:<input type="number" id="nhp" name="hp" min="0" max="1000" class="inline w-8 border-0 border-b p-0">
+                        MP:<input type="number" id="nmp" name="mp" min="0" max="1000" class="inline w-8 border-0 border-b p-0">
                     </label>
                     </li>
                 </ul>
@@ -641,7 +641,6 @@
             warnModal.show();
             return;
         }
-        positiveModal.hide();
         var rule_id = rule.value;
         var reason = document.getElementById('p_reason').value;
         if (rule_id == 0) {
@@ -653,6 +652,19 @@
             var gp = document.getElementById('pgp' + rule_id).value;
             var item = document.getElementById('pitem' + rule_id).value;
         }
+        if (rule_id == 0 && reason == '') {
+            var msg = document.getElementById('message');
+            msg.innerHTML = '您尚未輸入獎勵原因！';
+            warnModal.show();
+            return;
+        }
+        if (xp == 0 && gp == 0 && item == 0) {
+            var msg = document.getElementById('message');
+            msg.innerHTML = '您尚未輸入獎勵點數或道具！';
+            warnModal.show();
+            return;
+        }
+        positiveModal.hide();
         restore();
         window.axios.post('{{ route('game.positive_act') }}', {
             uuids: uuids.toString(),
@@ -703,7 +715,6 @@
             warnModal.show();
             return;
         }
-        negativeModal.hide();
         var rule_id = rule.value;
         var reason = document.getElementById('n_reason').value;
         if (rule_id == 0) {
@@ -713,6 +724,19 @@
             var hp = document.getElementById('nhp' + rule_id).value;
             var mp = document.getElementById('nmp' + rule_id).value;
         }
+        if (rule_id == 0 && reason == '') {
+            var msg = document.getElementById('message');
+            msg.innerHTML = '您尚未輸入懲罰理由！';
+            warnModal.show();
+            return;
+        }
+        if (hp == 0 && mp == 0) {
+            var msg = document.getElementById('message');
+            msg.innerHTML = '您尚未輸入懲罰點數！';
+            warnModal.show();
+            return;
+        }
+        negativeModal.hide();
         restore();
         window.axios.post('{{ route('game.negative_act') }}', {
             uuids: uuids.toString(),
@@ -762,7 +786,6 @@
             warnModal.show();
             return;
         }
-        negativeModal.hide();
         var rule_id = rule.value;
         var reason = document.getElementById('n_reason').value;
         if (rule_id == 0) {
@@ -772,6 +795,13 @@
             var hp = document.getElementById('nhp' + rule_id).value;
             var mp = document.getElementById('nmp' + rule_id).value;
         }
+        if (hp == 0 && mp == 0) {
+            var msg = document.getElementById('message');
+            msg.innerHTML = '您尚未輸入懲罰點數！';
+            warnModal.show();
+            return;
+        }
+        negativeModal.hide();
         restore();
         window.axios.post('{{ route('game.negative_delay') }}', {
             uuids: uuids.toString(),
@@ -802,17 +832,17 @@
     }
 
     function prepare_skill(uuid) {
-        character = uuid;
         var ul = document.getElementById('skillList');
         ul.innerHTML = '';
         window.axios.post('{{ route('game.get_skills') }}', {
-            uuid: character,
+            uuid: uuid,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( response => {
+            character = response.data.character;
             skills = [];
             for (var k in response.data.skills) {
                 var skill = response.data.skills[k];
@@ -865,30 +895,36 @@
                     ul.appendChild(li);
                 });
             } else {
-                ul.innerHTML = '沒有可用的技能！';
+                if (character.class_id == '') {
+                    ul.innerHTML = '尚未設定職業，所以沒有任何技能！';
+                } else {
+                    ul.innerHTML = '沒有可用的技能！';
+                }
             }
             skillsModal.show();
         });
     }
 
     function prepare_item(uuid) {
-        character = uuid;
         var ul = document.getElementById('itemList');
         ul.innerHTML = '';
         window.axios.post('{{ route('game.get_items') }}', {
-            uuid: character,
+            uuid: uuid,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( response => {
+            character = response.data.character;
             items = [];
             for (var k in response.data.items) {
                 var item = response.data.items[k];
                 items[item.id] = item;
             }
-            if (items.length > 0) {
+            if (character.class_id == '') {
+                ul.innerHTML = '尚未設定職業，無法使用道具！';
+            } else if (items.length > 0) {
                 items.forEach( item => {
                     var li = document.createElement('li');
                     var radio = document.createElement('input');
@@ -975,7 +1011,7 @@
             var ul = document.getElementById('memberList');
             ul.innerHTML = '';
             window.axios.post('{{ route('game.get_teammate') }}', {
-                uuid: character,
+                uuid: character.uuid,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -1016,8 +1052,8 @@
             teamModal.show();
         } else {
             window.axios.post('{{ route('game.skill_cast') }}', {
-                self: character,
-                target: character,
+                self: character.uuid,
+                target: character.uuid,
                 skill: data_skill,
             }, {
                 headers: {
@@ -1070,7 +1106,7 @@
             var ul = document.getElementById('memberList');
             ul.innerHTML = '';
             window.axios.post('{{ route('game.get_teammate') }}', {
-                uuid: character,
+                uuid: character.uuid,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -1111,8 +1147,8 @@
             teamModal.show();
         } else {
             window.axios.post('{{ route('game.item_use') }}', {
-                self: character,
-                target: character,
+                self: character.uuid,
+                target: character.uuid,
                 item: data_item,
             }, {
                 headers: {
@@ -1156,7 +1192,7 @@
             }
             teamModal.hide();
             window.axios.post('{{ route('game.skill_cast') }}', {
-                self: character,
+                self: character.uuid,
                 target: obj.value,
                 skill: data_skill,
             }, {
@@ -1198,7 +1234,7 @@
             }
             teamModal.hide();
             window.axios.post('{{ route('game.skill_cast') }}', {
-                self: character,
+                self: character.uuid,
                 target: obj.value,
                 skill: data_skill,
                 item: data_item,
@@ -1241,7 +1277,7 @@
             }
             teamModal.hide();
             window.axios.post('{{ route('game.item_use') }}', {
-                self: character,
+                self: character.uuid,
                 target: obj.value,
                 item: data_item,
             }, {
@@ -1276,33 +1312,32 @@
     }
 
     function prepare_character(uuid) {
-        character = uuid;
         window.axios.post('{{ route('game.get_character') }}', {
-            uuid: character,
+            uuid: uuid,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( response => {
-            var temp = response.data;
+            character = response.data.character;
             var party = document.getElementById('party');
             for (var op in party.options) {
-                if (party.options[op].value == temp.party_id) {
+                if (party.options[op].value == character.party_id) {
                     party.options[op].selected = true;
                 } else {
                     party.options[op].selected = false;
                 }
             }
             var title = document.getElementById('title');
-            if (temp.title) {
-                title.value = temp.title;
+            if (character.title) {
+                title.value = character.title;
             } else {
                 title.value = '';
             }
             var myclass = document.getElementById('profession');
             for (var op in myclass.options) {
-                if (myclass.options[op].value == temp.class_id) {
+                if (myclass.options[op].value == character.class_id) {
                     myclass.options[op].selected = true;
                 } else {
                     myclass.options[op].selected = false;
@@ -1318,7 +1353,7 @@
         var title = document.getElementById('title').value;
         var profession = document.getElementById('profession').value;
         window.axios.post('{{ route('game.character_edit') }}', {
-            uuid: character,
+            uuid: character.uuid,
             party: party,
             title: title,
             profession: profession,

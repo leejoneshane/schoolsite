@@ -277,7 +277,7 @@ class PlayerController extends Controller
         }
         $me->refresh();
         if (isset($message)) broadcast(new GameCharacterChannel($me->stdno, $message));
-        return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => ($result ?: ''), 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function arena_skill(Request $request)
