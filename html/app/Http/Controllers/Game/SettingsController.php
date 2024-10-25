@@ -376,6 +376,7 @@ class SettingsController extends Controller
             }
             foreach ($classes as $cls) {
                 $e = GameDungeon::create([
+                    'syear' => current_year(),
                     'uuid' => $user->uuid,
                     'title' => $request->input('title'),
                     'description' => $request->input('description'),

@@ -13,6 +13,7 @@ class GameDungeon extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
+        'syear',        //學年
         'uuid',         //指派者
         'title',        //地下城名稱
         'description',  //地下城闖關說明
@@ -67,6 +68,7 @@ class GameDungeon extends Model
     public static function findByTeacher($uuid)
     {
         return GameDungeon::where('uuid', $uuid)
+            ->where('syear', current_year())
             ->orderBy('classroom_id')
             ->get();
     }
@@ -75,6 +77,7 @@ class GameDungeon extends Model
     public static function findByEvaluate($id)
     {
         return GameDungeon::where('evaluate_id', $id)
+            ->where('syear', current_year())
             ->orderBy('classroom_id')
             ->get();
     }
@@ -83,6 +86,7 @@ class GameDungeon extends Model
     public static function findByClassroom($id)
     {
         return GameDungeon::where('classroom_id', $id)
+            ->where('syear', current_year())
             ->orderBy('opened_at', 'desc')
             ->get();
     }

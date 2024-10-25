@@ -336,7 +336,7 @@ class GameCharacter extends Model
                 $rnd = mt_rand()/mt_getrandmax();
                 if ($rnd < $this->profession->hp_lvlup) {
                     if ($this->profession->hp_lvlup >= 1) {
-                        $this->max_hp += rand(1,$this->profession->hp_lvlup);
+                        $this->max_hp += rand(1, $this->profession->hp_lvlup);
                     } else {
                         $this->max_hp++;
                     }

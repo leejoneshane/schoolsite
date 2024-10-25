@@ -14,7 +14,7 @@ class GameMap extends Model
         'map',
     ];
 
-    //更新角色時，自動進行升級
+    //刪除地圖時，一併刪除實體檔案
     protected static function booted()
     {
         self::deleting(function($item)
