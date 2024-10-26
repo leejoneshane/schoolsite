@@ -32,7 +32,7 @@
                 公會長：{{ $party->leader ? $party->leader->name : '' }}
                 @endif
             </div>
-            @if ($party->configure && $party->configure->change_base)
+            @if ($configure && $configure->change_base)
             <div class="ml-2 text-3xl text-white text-shadow">
                 @if ($character->uuid == $party->uuid)
                 <label for="base">變更據點：</label>

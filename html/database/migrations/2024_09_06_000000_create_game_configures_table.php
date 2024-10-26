@@ -14,7 +14,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('game_configures', function (Blueprint $table) {
-            $table->uuid('classroom_id')->primary();
+            $table->id();
+            $table->integer('syear');
+            $table->integer('classroom_id');
             $table->integer('daily_mp')->default(4);
             $table->boolean('change_base')->default(1);
             $table->boolean('change_class')->default(1);

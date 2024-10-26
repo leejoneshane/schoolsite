@@ -88,6 +88,7 @@ class GameSetting extends Model
             }
             $character->save();
             GameLog::create([
+                'syear' => current_year(),
                 'classroom_id' => session('gameclass'),
                 'uuid' => $teacher,
                 'character_uuid' => $character->uuid,
@@ -123,6 +124,7 @@ class GameSetting extends Model
             if ($character->status == "DEAD") {
                 $message .= '但因為'.$character->name.'已經死亡，所以沒有作用';
                 GameLog::create([
+                    'syear' => current_year(),
                     'classroom_id' => session('gameclass'),
                     'uuid' => $teacher,
                     'character_uuid' => $character->uuid,
@@ -200,6 +202,7 @@ class GameSetting extends Model
                 $target->save();
             }
             GameLog::create([
+                'syear' => current_year(),
                 'classroom_id' => session('gameclass'),
                 'uuid' => $teacher,
                 'character_uuid' => $target->uuid,

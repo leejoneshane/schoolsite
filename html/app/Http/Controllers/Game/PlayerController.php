@@ -50,14 +50,15 @@ class PlayerController extends Controller
             $character = GameCharacter::find($user->uuid);
             ExitArena::dispatch($character);
             if (!$character) {
-                GameCharacter::create([
+                $character = GameCharacter::create([
                     'uuid' => $stu->uuid,
                     'classroom_id' => $stu->class_id,
                     'seat' => $stu->seat,
                     'name' => $stu->realname,
                 ]);
             }
-            return view('game.player', [ 'character' => $character ]);
+            $configure = GameConfigure::findByClass($stu->class_id);
+            return view('game.player', [ 'configure' => $configure, 'character' => $character ]);
         } else {
             return redirect()->route('game');
         }
@@ -184,7 +185,8 @@ class PlayerController extends Controller
                 $party->save();
             }
             $bases = GameBase::all();
-            return view('game.fundation', [ 'character' => $character, 'party' => $party, 'bases' => $bases ]);
+            $configure = GameConfigure::findByClass($party->classroom_id);
+            return view('game.fundation', [ 'configure' => $configure, 'character' => $character, 'party' => $party, 'bases' => $bases ]);
         } else {
             return redirect()->route('game.player')->with('error', '您尚未加入公會，無法使用據點！');
         }
@@ -377,7 +379,7 @@ class PlayerController extends Controller
         }
         $me->refresh();
         if (isset($message)) broadcast(new GameCharacterChannel($me->stdno, $message));
-        return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return response()->json([ 'item' => $item, 'result' => ($result ?: ''), 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function arena_item(Request $request)
@@ -427,7 +429,8 @@ class PlayerController extends Controller
         $character = GameCharacter::find(Auth::user()->uuid);
         ExitArena::dispatch($character);
         $furnitures = GameFurniture::all();
-        return view('game.furniture_shop', [ 'character' => $character, 'furnitures' => $furnitures ]);
+        $configure = GameConfigure::findByClass($character->classroom_id);
+        return view('game.furniture_shop', [ 'configure' => $configure, 'character' => $character, 'furnitures' => $furnitures ]);
     }
 
     public function buy_furniture(Request $request)
@@ -455,7 +458,8 @@ class PlayerController extends Controller
         $character = GameCharacter::find(Auth::user()->uuid);
         ExitArena::dispatch($character);
         $items = GameItem::all();
-        return view('game.item_shop', [ 'character' => $character, 'items' => $items ]);
+        $configure = GameConfigure::findByClass($character->classroom_id);
+        return view('game.item_shop', [ 'configure' => $configure, 'character' => $character, 'items' => $items ]);
     }
 
     public function buy_item(Request $request)
@@ -480,7 +484,8 @@ class PlayerController extends Controller
     {
         $character = GameCharacter::find(Auth::user()->uuid);
         EnterArena::dispatch($character);
-        return view('game.arena', [ 'character' => $character ]);
+        $configure = GameConfigure::findByClass($character->classroom_id);
+        return view('game.arena', [ 'configure' => $configure, 'character' => $character ]);
     }
 
     public function refresh_arena(Request $request)
@@ -586,7 +591,8 @@ class PlayerController extends Controller
     {
         $character = GameCharacter::find(Auth::user()->uuid);
         ExitArena::dispatch($character);
-        return view('game.dungeon', [ 'character' => $character ]);
+        $configure = GameConfigure::findByClass($character->classroom_id);
+        return view('game.dungeon', [ 'configure' => $configure, 'character' => $character ]);
     }
 
     public function get_dungeons()
@@ -664,9 +670,9 @@ class PlayerController extends Controller
         $me->refresh();
         $spawn = GameMonsterSpawn::find($request->input('target'));
         if ($item) {
-            return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => $result, 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+            return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => ($result ?: ''), 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         } else {
-            return response()->json([ 'skill' => $skill, 'result' => $result, 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+            return response()->json([ 'skill' => $skill, 'result' => ($result ?: ''), 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         }
     }
 
@@ -681,7 +687,7 @@ class PlayerController extends Controller
         }
         $me->refresh();
         $spawn = GameCharacter::find($request->input('target'));
-        return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return response()->json([ 'item' => $item, 'result' => ($result ?: ''), 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function journey(Request $request) {

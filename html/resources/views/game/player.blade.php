@@ -74,7 +74,7 @@
             </tbody>
         </table>
     </div>
-    @if ($character->configure && $character->configure->change_class)
+    @if ($configure && $configure->change_class)
     <button class="absolute z-[55] w-16 h-12 left-1/3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onclick="change_class();">轉職</button>
     @endif
     <div class="w-1/3 h-screen inline-flex flex-row justify-center">

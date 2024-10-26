@@ -8,12 +8,10 @@ class GameConfigure extends Model
 {
 
     protected $table = 'game_configures';
-    protected $primaryKey = 'classroom_id';
-    public $incrementing = false;
-    protected $keyType = 'string';
 
     //以下屬性可以批次寫入
     protected $fillable = [
+        'syear',
         'classroom_id',
         'daily_mp',          //每日回復行動力
         'change_base',       //允許小組重選據點
@@ -28,6 +26,12 @@ class GameConfigure extends Model
     protected $hidden = [
         'classroom',
     ];
+
+    //篩選指定學年、班級的組態
+    public static function findByClass($room_id)
+    {
+        return GameConfigure::where('syear', current_year())->where('classroom_id', $room_id)->first();
+    }
 
     //取得設定此組態適用班級
     public function classroom()

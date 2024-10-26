@@ -28,9 +28,10 @@ class ClassroomController extends Controller
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
             $room = Classroom::find(session('gameclass'));
-            $config = GameConfigure::find($room->id);
+            $config = GameConfigure::findByClass($room->id);
             if (!$config) {
                 $config = GameConfigure::create([
+                    'syear' => current_year(),
                     'classroom_id' => $room->id,
                 ]);
             }
@@ -45,7 +46,7 @@ class ClassroomController extends Controller
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('game.manager');
         if ($user->is_admin || $manager) {
-            $sk = GameConfigure::find(session('gameclass'));
+            $sk = GameConfigure::findByClass(session('gameclass'));
             $sk->daily_mp = $request->input('mp');
             if ($request->input('change_base') == 'yes') {
                 $sk->change_base = true;

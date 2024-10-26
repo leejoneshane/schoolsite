@@ -317,6 +317,7 @@ class Teacher extends Model
     {
         $room_id = session('gameclass');
         return $this->hasMany('App\Models\GameDelay', 'uuid', 'uuid')
+            ->where('syear', current_year())
             ->where('classroom_id', $room_id)
             ->where('act', 0)->orderBy('created_at');
     }
@@ -324,7 +325,8 @@ class Teacher extends Model
     //取得教師兩天內的遊戲日誌
     public function game_logs($class_id)
     {
-        return GameLog::where('classroom_id', $class_id)
+        return GameLog::where('syear', current_year())
+            ->where('classroom_id', $class_id)
             ->orderBy('created_at', 'desc')
             ->take(100)
             ->get();

@@ -72,7 +72,7 @@
 </div>
 <script nonce="selfhost">
     var character = '{{ $character->uuid }}';
-    var shop_open = {{ $character->configure && $character->configure->furniture_shop }}; 
+    var shop_open = {{ $configure && $configure->furniture_shop }}; 
     var is_leader = {{ $character->is_leader() }};
     var furnitures = [];
     var cash;

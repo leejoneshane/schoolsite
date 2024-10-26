@@ -72,7 +72,7 @@
 </div>
 <script nonce="selfhost">
     var character = '{{ $character->uuid }}';
-    var shop_open = {{ $character->configure && $character->configure->item_shop }}; 
+    var shop_open = {{ $configure && $configure->item_shop }}; 
     var items = [];
     var step;
     var item;

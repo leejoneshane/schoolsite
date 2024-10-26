@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Models\GameBase;
+use App\Models\GameConfigure;
 
 class GameParty extends Model
 {
@@ -101,7 +102,7 @@ class GameParty extends Model
     //取得此班級組態
     public function configure()
     {
-        return $this->hasOne('App\Models\GameConfigure', 'classroom_id', 'classroom_id');
+        return GameConfigure::findByClass($this->classroom_id);
     }
 
     //取得此隊伍的所有家具

@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('game_logs', function (Blueprint $table) {
             $table->id();
+            $table->integer('syear');
             $table->integer('classroom_id');
             $table->uuid('uuid')->nullable();
             $table->integer('party_id')->nullable();

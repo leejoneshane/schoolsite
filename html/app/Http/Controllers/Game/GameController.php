@@ -346,7 +346,7 @@ class GameController extends Controller
         }
         broadcast(new GameCharacterChannel($me->stdno, $message));
         $characters = GameCharacter::findByClass($me->classroom_id);
-        return response()->json([ 'skill' => $skill, 'result' => $result, 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return response()->json([ 'skill' => $skill, 'result' => ($result ?: ''), 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function item_use(Request $request)
@@ -375,7 +375,7 @@ class GameController extends Controller
         }
         broadcast(new GameCharacterChannel($me->stdno, $message));
         $characters = GameCharacter::findByClass($me->classroom_id);
-        return response()->json([ 'item' => $item, 'result' => $result, 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return response()->json([ 'item' => $item, 'result' => ($result ?: ''), 'characters' => $characters ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function positive_act(Request $request)
@@ -454,6 +454,7 @@ class GameController extends Controller
         if ($request->input('rule') > 0) {
             $rule = GameSetting::find($request->input('rule'));
             $delay = GameDelay::create([
+                'syear' => current_year(),
                 'classroom_id' => session('gameclass'),
                 'uuid' => $teacher,
                 'characters' => $characters,
@@ -463,6 +464,7 @@ class GameController extends Controller
             ]);
         } else {
             $delay = GameDelay::create([
+                'syear' => current_year(),
                 'classroom_id' => session('gameclass'),
                 'uuid' => $teacher,
                 'characters' => $characters,

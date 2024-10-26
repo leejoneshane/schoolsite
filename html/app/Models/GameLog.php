@@ -12,6 +12,7 @@ class GameLog extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
+        'syear',
         'classroom_id', //班級
         'uuid',         //教師 uuid，若無可省略
         'party_id',     //公會 id，若無可省略
@@ -23,6 +24,7 @@ class GameLog extends Model
     public static function log(Array $data)
     {
         $log = GameLog::create([
+            'syear' => current_year(),
             'classroom_id' => $data['classroom'],
         ]);
         if ($data['uuid']) $log->uuid = $data['uuid'];
@@ -41,7 +43,8 @@ class GameLog extends Model
         } elseif (is_string($date)) {
             $date = Carbon::createFromFormat('Y-m-d', $date);
         }
-        return GameLog::where('classroom_id', $room_id)
+        return GameLog::where('syear', current_year())
+            ->where('classroom_id', $room_id)
             ->whereRaw('DATE(created_at) = ?', $date->format('Y-m-d'))
             ->get();
     }
@@ -52,12 +55,13 @@ class GameLog extends Model
         if (!$uuid) {
             $uuid = auth()->user()->uuid;
         }
-        return GameLog::where('classroom_id', $room_id)
+        return GameLog::where('syear', current_year())
+            ->where('classroom_id', $room_id)
             ->where('uuid', $uuid)
             ->get();
     }
 
-    //取得產生此紀錄的帳號
+    //取得此紀錄所屬班級
     public function classroom()
     {
         return $this->belongsTo('App\Models\Classroom');

@@ -14,6 +14,7 @@ class GameDelay extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
+        'syear',
         'classroom_id', //班級
         'uuid',         //教師 uuid
         'characters',   //受處罰學生的 uuid (Json 格式)
@@ -72,7 +73,8 @@ class GameDelay extends Model
         } elseif (is_string($date)) {
             $date = Carbon::createFromFormat('Y-m-d', $date);
         }
-        return GameDelay::where('classroom_id', $room_id)
+        return GameDelay::where('syear', current_year())
+            ->where('classroom_id', $room_id)
             ->whereRaw('DATE(created_at) = ?', $date->format('Y-m-d'))
             ->where('act', 0)
             ->get();
@@ -84,7 +86,8 @@ class GameDelay extends Model
         if (!$uuid) {
             $uuid = auth()->user()->uuid;
         }
-        return GameDelay::where('classroom_id', $room_id)
+        return GameDelay::where('syear', current_year())
+            ->where('classroom_id', $room_id)
             ->where('uuid', $uuid)
             ->where('act', 0)
             ->get();

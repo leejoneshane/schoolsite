@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('game_delays', function (Blueprint $table) {
             $table->id();
+            $table->integer('syear');
             $table->integer('classroom_id');
             $table->uuid('uuid');
             $table->json('characters');

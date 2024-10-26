@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-use App\Models\GameSence;
+use App\Models\GameConfigure;
 use App\Models\Classroom;
 use App\Models\GameClass;
 use App\Models\GameDungeon;
@@ -416,7 +416,7 @@ class GameCharacter extends Model
     //取得此班級組態
     public function configure()
     {
-        return $this->hasOne('App\Models\GameConfigure', 'classroom_id', 'classroom_id');
+        return GameConfigure::findByClass($this->classroom_id);
     }
 
     //取得此角色的學生物件
@@ -566,8 +566,9 @@ class GameCharacter extends Model
     public function newday()
     {
         if (!$this->party) return;
-        if ($this->party->configure) {
-            $this->mp += $this->party->configure->daily_mp;
+        $config = $this->configure();
+        if ($config) {
+            $this->mp += $config->daily_mp;
             if ($this->party->effect_hp != 0) {
                 $i = intval($this->party->effect_hp);
                 $d = $this->party->effect_hp - $i;
