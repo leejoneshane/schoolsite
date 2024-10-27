@@ -11,11 +11,11 @@ class GameWorksheet extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
+        'uuid',        //設計者
         'title',       //學習單名稱
         'subject',     //科目名稱
         'description', //內容說明
         'grade_id',    //適用年級
-        'uuid',        //設計者
         'map_id',      //地圖編號
         'next_task',   //下一個任務的 id
         'intro',       //故事綱要

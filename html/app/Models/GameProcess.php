@@ -21,6 +21,7 @@ class GameProcess extends Model
         'task_id',      //任務編號
         'completed_at', //完成時間
         'comments',     //評語
+        'noticed',      //需要重審
         'reviewed_at',  //審核通過時間
     ];
 
@@ -40,7 +41,7 @@ class GameProcess extends Model
     ];
 
     //篩選指定班級、指定任務的完成紀錄
-    public static function findByClass($room_id, $task_id)
+    public static function findByClassroom($room_id, $task_id)
     {
         return GameProcess::where('classroom_id', $room_id)
             ->where('task_id', $task_id)

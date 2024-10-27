@@ -14,9 +14,6 @@ use App\Models\GameParty;
 use App\Models\GameCharacter;
 use App\Models\GameClass;
 use App\Models\GameBase;
-use App\Models\GameDungeon;
-use App\Models\GameAnswer;
-use App\Models\GameJourney;
 use App\Models\Watchdog;
 
 class ClassroomController extends Controller
@@ -231,34 +228,6 @@ class ClassroomController extends Controller
         $character->image_id = $request->input('image_id');
         $character->save();
         return redirect()->route('game.characters');
-    }
-
-    public function dungeons()
-    {
-        $dungeons = GameDungeon::findByClassroom(session('gameclass'));
-        return view('game.dungeons', [ 'dungeons' => $dungeons ]);
-    }
-
-    public function answers($dungeon_id)
-    {
-        $answers = GameAnswer::findByDungeon($dungeon_id);
-        return view('game.answers', [ 'answers' => $answers ]);
-    }
-
-    public function answer_remove($answer_id)
-    {
-        $answer = GameAnswer::find($answer_id);
-        $dungeon_id = $answer->dungeon_id;
-        $answer->delete();
-        GameJourney::where('answer_id', $answer_id)->delete();
-        return redirect()->route('game.answers', [ 'dungeon_id' => $dungeon_id ])->with([ 'success' => '答案卷已經刪除！' ]);
-    }
-
-    public function journeys($answer_id)
-    {
-        $answer = GameAnswer::find($answer_id);
-        $journeys = GameJourney::findByAnswer($answer_id);
-        return view('game.journeys', [ 'answer' => $answer, 'journeys' => $journeys ]);
     }
 
     public function reset()

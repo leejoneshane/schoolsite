@@ -44,7 +44,7 @@ class GameAdventure extends Model
     }
 
     //篩選指定班級的所有地圖冒險
-    public static function findByClass($room_id)
+    public static function findByClassroom($room_id)
     {
         return GameAdventure::where('syear', current_year())->where('classroom_id', $room_id)->get();
     }
