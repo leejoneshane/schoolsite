@@ -15,6 +15,7 @@ class GameAdventure extends Model
         'uuid',         //指派者
         'classroom_id', //指派班級
         'worksheet_id', //學習單編號
+        'open',         //是否開放
     ];
 
     //以下屬性隱藏不顯示（toJson 時忽略）
@@ -22,7 +23,19 @@ class GameAdventure extends Model
         'teacher',
         'classroom',
         'worksheet',
+        'processes',
     ];
+
+    //自動移除所有學習任務
+    protected static function booted()
+    {
+        self::deleting(function($item)
+        {
+            foreach ($item->processes as $p) {
+                $p->delete();
+            }
+        });
+    }
 
     //篩選指定教師指派的所有地圖冒險
     public static function findByUuid($uuid)
@@ -55,6 +68,11 @@ class GameAdventure extends Model
     public function worksheet()
     {
         return $this->hasOne('App\Models\GameWorksheet', 'id', 'worksheet_id');
+    }
+
+    public function processes()
+    {
+        return $this->hasMany('App\Models\GameProcess', 'adventure_id');
     }
 
 }

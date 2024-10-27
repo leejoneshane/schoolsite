@@ -21,6 +21,7 @@ use App\Models\Student;
 use App\Models\Classroom;
 use App\Models\Seats;
 use App\Models\GameSence;
+use App\Models\GameConfigure;
 use App\Models\GameBase;
 use App\Models\GameParty;
 use App\Models\GameCharacter;

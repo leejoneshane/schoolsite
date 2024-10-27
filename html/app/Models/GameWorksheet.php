@@ -17,7 +17,8 @@ class GameWorksheet extends Model
         'grade_id',    //適用年級
         'uuid',        //設計者
         'map_id',      //地圖編號
-        'story',       //故事
+        'next_task',   //下一個任務的 id
+        'intro',       //故事綱要
         'share',       //是否分享
     ];
 
@@ -27,11 +28,17 @@ class GameWorksheet extends Model
         'teacher',
         'map',
         'tasks',
+        'begin',
     ];
 
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
         'share' => 'boolean',
+    ];
+
+    //以下為透過程式動態產生之屬性
+    protected $appends = [
+        'orphans',
     ];
 
     //自動移除所有學習任務
@@ -52,6 +59,14 @@ class GameWorksheet extends Model
             ->orWhere('share', 1)
             ->orderBy('grade_id')
             ->get();
+    }
+
+    //提供尚未組織完成的任務集合
+    public function getOrphansAttribute()
+    {
+        return $this->tasks->filter(function ($task) {
+            return $task->is_orphan;
+        });
     }
 
     //取得此學習單的適用年級
@@ -76,6 +91,12 @@ class GameWorksheet extends Model
     public function tasks()
     {
         return $this->hasMany('App\Models\GameTask', 'worksheet_id');
+    }
+
+    //取得此學習單的第一個任務
+    public function begin()
+    {
+        return $this->hasOne('App\Models\GameTask', 'id', 'next_task');
     }
 
 }
