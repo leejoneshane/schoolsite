@@ -1,6 +1,8 @@
 @extends('layouts.game')
 
 @section('content')
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/translations/zh.js"></script>
 <div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
     試題管理
     <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ route('game.evaluates') }}">
@@ -47,12 +49,12 @@
 <tbody id="qlist">
 @foreach ($evaluate->questions as $q)
     <tr id="q{{ $q->id }}" class="bg-teal-100 text-black font-semibold text-lg">
-        <td class="p-2">{{ $q->sequence }}</td>
+        <td class="w-12 p-2">{{ $q->sequence }}</td>
         <td id="caption{{ $q->id }}" class="p-2">{{ $q->question }}</td>
-        <td id="score{{ $q->id }}" class="p-2">{{ $q->score }}</td>
-        <td class="p-2">
+        <td id="score{{ $q->id }}" class="p-2">配分：{{ $q->score }}</td>
+        <td class="w-48 p-2">
             <button class="mx-3 text-blue-300 hover:text-blue-600" title="新增選項" onclick="open_option({{ $q->id }}, 0);">
-                <i class="fa-regular fa-circle-dot"></i>
+                <i class="fa-solid fa-circle-plus"></i>
             </button>
             <button class="mx-3 text-blue-300 hover:text-blue-600" title="編輯" onclick="open_question({{ $q->id }});">
                 <i class="fa-solid fa-pen"></i>
@@ -61,27 +63,29 @@
                 <i class="fa-solid fa-trash"></i>
             </button>
         </td>
+        <td class="w-1/2"></td>
     </tr>
     <tr class="bg-white dark:bg-gray-700">
         <td class="p-2" colspan="4">
-            <table class="w-2/3 float-right text-left font-normal">
-            <tbody id="olist{{ $q->id }}">
-                @foreach ($q->options as $o)
-                <tr class="odd:bg-white even:bg-gray-100">
-                    <td class="p-2">{{ $o->sequence }}</td>
-                    <td id="option{{ $o->id }}" class="p-2">{{ $o->option }}</td>
-                    <td class="p-2">
-                        <input type="radio" name="answer{{ $q->id }}" value="{{ $o->id }}"{{ $q->answer == $o->id ? ' checked' : '' }} onchange="set_answer({{ $q->id }});" class="mx-3" title="設為答案">
-                        <button class="mx-3 text-blue-300 hover:text-blue-600" title="編輯" onclick="open_option({{ $q->id }}, {{ $o->id }});">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                        <button class="mx-3 text-red-300 hover:text-red-600" title="刪除" onclick="del_option({{ $o->id }});">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
+        <td>
+            <table class="w-full float-right text-left font-normal">
+                <tbody id="olist{{ $q->id }}">
+                    @foreach ($q->options as $o)
+                    <tr class="odd:bg-white even:bg-gray-100">
+                        <td class="w-12 p-2">{{ $o->sequence }}</td>
+                        <td id="option{{ $o->id }}" class="p-2">{{ $o->option }}</td>
+                        <td class="w-48 p-2">
+                            <input type="radio" name="answer{{ $q->id }}" value="{{ $o->id }}"{{ $q->answer == $o->id ? ' checked' : '' }} onchange="set_answer({{ $q->id }});" class="mx-3" title="設為答案">
+                            <button class="mx-3 text-blue-300 hover:text-blue-600" title="編輯" onclick="open_option({{ $q->id }}, {{ $o->id }});">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button class="mx-3 text-red-300 hover:text-red-600" title="刪除" onclick="del_option({{ $o->id }});">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
             </table>
         </td>
     </tr>
@@ -103,8 +107,8 @@
             </div>
             <div class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 <p><div class="p-3">
-                    <label for="question" class="text-base">題目：</label>
-                    <input type="text" id="question" value="" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
+                    <label class="text-base">題目：</label>
+                    <div id="question"></div>
                 </div></p>
                 <p><div class="p-3">
                     <label for="score" class="text-base">配分：</label>
@@ -130,8 +134,8 @@
             </div>
             <div class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 <p><div class="p-3">
-                    <label for="option" class="text-base">選項：</label>
-                    <input type="text" id="option" value="" class="inline w-96 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
+                    <label class="text-base">選項：</label>
+                    <div id="option"></div>
                 </div></p>
             </div>
             <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
@@ -168,22 +172,22 @@
         var question = document.getElementById('question');
         var score = document.getElementById('score');
         if (qid == 0) {
-            question.value = '';
+            window.question.setData('');
             score.value = '';
         } else {
-            question.value = questions[qid].question;
+            window.question.setData(questions[qid].question);
             score.value = questions[qid].score;
         }
         questionModal.show();
     }
 
     function save_question() {
-        var question = document.getElementById('question');
+        var question = window.question.getData();
         var score = document.getElementById('score');
         if (qid == 0) {
             window.axios.post('{{ route('game.question_add') }}', {
                 eid: eid,
-                question: question.value,
+                question: question,
                 score: score.value,
             }, {
                 headers: {
@@ -210,7 +214,7 @@
                 td = document.createElement('td');
                 td.setAttribute('id', 'score' + qid);
                 td.classList.add('p-2');
-                td.innerHTML = questions[qid].score;
+                td.innerHTML = '配分：' + questions[qid].score;
                 tr.appendChild(td);
                 td = document.createElement('td');
                 td.classList.add('p-2');
@@ -304,19 +308,19 @@
         oid = ono;
         var option = document.getElementById('option');
         if (oid == 0) {
-            option.value = '';
+            window.option.setData('');
         } else {
-            option.value = options[oid].option;
+            window.option.setData(options[oid].option);
         }
         optionModal.show();
     }
 
     function save_option() {
-        var option = document.getElementById('option');
+        var option = window.option.getData();
         if (oid == 0) {
             window.axios.post('{{ route('game.option_add') }}', {
                 qid: qid,
-                option: option.value,
+                option: option,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -396,5 +400,124 @@
             }
         });
     }
+
+    class MyUploadAdapter {
+        constructor( loader ) {
+            // The file loader instance to use during the upload.
+            this.loader = loader;
+        }
+
+        // Starts the upload process.
+        upload() {
+            return this.loader.file
+                .then( file => new Promise( ( resolve, reject ) => {
+                    this._initRequest();
+                    this._initListeners( resolve, reject, file );
+                    this._sendRequest( file );
+                } ) );
+        }
+
+        // Aborts the upload process.
+        abort() {
+            if ( this.xhr ) {
+                this.xhr.abort();
+            }
+        }
+
+        // Initializes the XMLHttpRequest object using the URL passed to the constructor.
+        _initRequest() {
+            const xhr = this.xhr = new XMLHttpRequest();
+            // Note that your request may look different. It is up to you and your editor
+            // integration to choose the right communication channel. This example uses
+            // a POST request with JSON as a data structure but your configuration
+            // could be different.
+            xhr.open( 'POST', '{{ route('game.image_upload') }}', true );
+            xhr.responseType = 'json';
+        }
+
+        // Initializes XMLHttpRequest listeners.
+        _initListeners( resolve, reject, file ) {
+            const xhr = this.xhr;
+            const loader = this.loader;
+            const genericErrorText = `無法上傳檔案：${ file.name }`;
+            xhr.addEventListener( 'error', () => reject( genericErrorText ) );
+            xhr.addEventListener( 'abort', () => reject() );
+            xhr.addEventListener( 'load', () => {
+                const response = xhr.response;
+                // This example assumes the XHR server's "response" object will come with
+                // an "error" which has its own "message" that can be passed to reject()
+                // in the upload promise.
+                //
+                // Your integration may handle upload errors in a different way so make sure
+                // it is done properly. The reject() function must be called when the upload fails.
+                if ( !response || response.error ) {
+                    return reject( response && response.error ? response.error.message : genericErrorText );
+                }
+                // If the upload is successful, resolve the upload promise with an object containing
+                // at least the "default" URL, pointing to the image on the server.
+                // This URL will be used to display the image in the content. Learn more in the
+                // UploadAdapter#upload documentation.
+                resolve( {
+                    default: response.url
+                } );
+            } );
+
+            // Upload progress when it is supported. The file loader has the #uploadTotal and #uploaded
+            // properties which are used e.g. to display the upload progress bar in the editor
+            // user interface.
+            if ( xhr.upload ) {
+                xhr.upload.addEventListener( 'progress', evt => {
+                    if ( evt.lengthComputable ) {
+                        loader.uploadTotal = evt.total;
+                        loader.uploaded = evt.loaded;
+                    }
+                } );
+            }
+        }
+
+        // Prepares the data and sends the request.
+        _sendRequest( file ) {
+            // Prepare the form data.
+            const data = new FormData();
+            data.append( 'upload', file );
+            // Important note: This is the right place to implement security mechanisms
+            // like authentication and CSRF protection. For instance, you can use
+            // XMLHttpRequest.setRequestHeader() to set the request headers containing
+            // the CSRF token generated earlier by your application.
+            data.append( '_token', '{{ csrf_token() }}');
+            // Send the request.
+            this.xhr.send( data );
+        }
+    }
+
+    function MyCustomUploadAdapterPlugin( editor ) {
+        editor.plugins.get( 'FileRepository' ).createUploadAdapter = ( loader ) => {
+            // Configure the URL to the upload script in your back-end here!
+            return new MyUploadAdapter( loader );
+        };
+    }
+
+    ClassicEditor
+        .create( document.querySelector( '#question' ), {
+            extraPlugins: [ MyCustomUploadAdapterPlugin ],
+            licenseKey: '',
+        })
+        .then( editor => {
+            window.question = editor;
+        })
+        .catch( error => {
+            console.log( error );
+        });
+    ClassicEditor
+        .create( document.querySelector( '#option' ), {
+            extraPlugins: [ MyCustomUploadAdapterPlugin ],
+            licenseKey: '',
+        })
+        .then( editor => {
+            window.option = editor;
+        })
+        .catch( error => {
+            console.log( error );
+        });
 </script>
 @endsection

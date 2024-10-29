@@ -93,7 +93,6 @@ class GameCharacter extends Model
 
     //以下屬性隱藏不顯示（toJson 時忽略）
     protected $hidden = [
-        'configure',
         'student',
         'profession',
         'party',
@@ -298,9 +297,9 @@ class GameCharacter extends Model
     //提供角色狀態
     public function getStatusAttribute()
     {
-        if ($this->hp < 1) return DEAD;
-        if ($this->mp < 1) return COMA;
-        return NORMAL;
+        if ($this->hp < 1) return 'DEAD';
+        if ($this->mp < 1) return 'COMA';
+        return 'NORMAL';
     }
 
     //提供角色狀態
@@ -605,8 +604,8 @@ class GameCharacter extends Model
     //使用指定的技能
     public function use_skill($id, $uuid = null, $party_id = null, $item_id = null)
     {
-        if ($this->status == 'DEAD') return 'dead';
-        if ($this->status == 'COMA') return 'coma';
+        if ($this->status == 'DEAD') return 'DEAD';
+        if ($this->status == 'COMA') return 'COMA';
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
                 return 'coma';
@@ -627,11 +626,11 @@ class GameCharacter extends Model
     //使用指定的技能在怪物身上
     public function use_skill_on_monster($id, $monster_id, $item_id = null)
     {
-        if ($this->status == 'DEAD') return 'dead';
-        if ($this->status == 'COMA') return 'coma';
+        if ($this->status == 'DEAD') return 'DEAD';
+        if ($this->status == 'COMA') return 'COMA';
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
-                return 'coma';
+                return 'COMA';
             } else {
                 $this->effect_timeout = null;
                 $this->buff = null;
@@ -648,7 +647,7 @@ class GameCharacter extends Model
     public function buy_item($id)
     {
         $item = GameItem::find($id);
-        if ($this->gp < $item->gp) return NOT_ENOUGH_GP;
+        if ($this->gp < $item->gp) return "not enough gp";
         if ($this->items->firstWhere('id', $id)) {
             DB::table('game_characters_items')
                 ->where('uuid', $this->uuid)
@@ -669,7 +668,7 @@ class GameCharacter extends Model
     public function sell_item($id)
     {
         $item = $this->items->firstWhere('id', $id);
-        if (!$item) return NOT_EXISTS;
+        if (!$item) return 'not_exists';
         if ($item->pivot->quantity > 1) {
             DB::table('game_characters_items')
                 ->where('uuid', $this->uuid)
@@ -724,10 +723,10 @@ class GameCharacter extends Model
     //使用指定的道具
     public function use_item($id, $uuid = null, $party_id = null)
     {
-        if ($this->status == 'DEAD') return 'dead';
+        if ($this->status == 'DEAD') return 'DEAD';
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
-                return 'coma';
+                return 'COMA';
             } else {
                 $this->effect_timeout = null;
                 $this->buff = null;
@@ -754,10 +753,10 @@ class GameCharacter extends Model
     //使用指定的道具
     public function use_item_on_monster($id, $monster_id)
     {
-        if ($this->status == 'DEAD') return 'dead';
+        if ($this->status == 'DEAD') return 'DEAD';
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
-                return 'coma';
+                return 'COMA';
             } else {
                 $this->effect_timeout = null;
                 $this->buff = null;

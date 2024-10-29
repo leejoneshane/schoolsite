@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-class" action="{{ route('game.evaluate_edit', [ 'evaluate_id' => $evaluate->id ]) }}" method="POST" enctype="multipart/form-data">
+<form id="add-class" action="{{ route('game.evaluate_edit', [ 'evaluate_id' => $evaluate->id ]) }}" method="POST">
     @csrf
     <p><div class="p-3">
         <label for="title" class="text-base">試卷名稱：</label>

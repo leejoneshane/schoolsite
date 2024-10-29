@@ -26,6 +26,12 @@
     margin-left: auto;
     margin-right: auto;
 }
+:root {
+    --ck-sample-editor-min-height: 100px;
+}
+.ck-editor__editable {
+    max-height: 300px;
+}
 </style>
 
 <!-- Scripts -->

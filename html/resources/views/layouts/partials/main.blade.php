@@ -1,29 +1,31 @@
 <main class="relative left-16 top-28 w-full h-full min-h-screen bg-game-map50 bg-cover bg-center bg-no-repeat">
-    @teacher
-    <div class="m-5 relative dark:bg-gray-700 text-black dark:text-gray-200">
-        <div>
-            @if (isset($error) || session()->has('error'))
-            <div class="py-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                <i class="fa-regular fa-bell"></i> {{ isset($error) ? $error : session()->get('error') }}
+    <div class="w-11/12">
+        @teacher
+        <div class="m-5 relative dark:bg-gray-700 text-black dark:text-gray-200">
+            <div>
+                @if (isset($error) || session()->has('error'))
+                <div class="py-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <i class="fa-regular fa-bell"></i> {{ isset($error) ? $error : session()->get('error') }}
+                </div>
+                @endif
+                @if (isset($success) || session()->has('success'))
+                <div class="py-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    <i class="fa-regular fa-bell"></i> {{ isset($success) ? $success : session()->get('success') }}
+                </div>
+                @endif
+                @if (isset($message) || session()->has('message'))
+                <div class="py-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
+                    <i class="fa-regular fa-bell"></i> {{ isset($message) ? $message : session()->get('message') }}
+                </div>
+                @endif
             </div>
-            @endif
-            @if (isset($success) || session()->has('success'))
-            <div class="py-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
-                <i class="fa-regular fa-bell"></i> {{ isset($success) ? $success : session()->get('success') }}
-            </div>
-            @endif
-            @if (isset($message) || session()->has('message'))
-            <div class="py-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
-                <i class="fa-regular fa-bell"></i> {{ isset($message) ? $message : session()->get('message') }}
-            </div>
-            @endif
+            @yield('content')
         </div>
+        @endteacher
+        @student
         @yield('content')
+        @endstudent    
     </div>
-    @endteacher
-    @student
-    @yield('content')
-    @endstudent
 </main>
 <audio id="received" muted autoplay>
     <source src="{{ asset('sound/notify.mp3') }}" type="audio/mpeg">

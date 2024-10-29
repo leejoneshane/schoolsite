@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('game_tasks', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
             $table->integer('worksheet_id');
             $table->integer('next_task')->nullable();
             $table->integer('coordinate_x');

@@ -54,7 +54,7 @@ class AdventureController extends Controller
                 'description' => $request->input('desc'),
                 'grade_id' => $request->input('grade'),
                 'map_id' => $request->input('map'),
-                'intro' => $request->input('intro'),
+                'intro' => nl2br($request->input('intro')),
                 'share' => $request->input('share') == 'yes',
             ]);
             Watchdog::watch($request, '新增學習單：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -70,8 +70,9 @@ class AdventureController extends Controller
         if ($user->user_type == 'Teacher') {
             $teacher = Teacher::find($user->uuid);
             $grades = Grade::all();
+            $maps = GameMap::all();
             $worksheet = GameWorksheet::find($worksheet_id);
-            return view('game.worksheet_edit', [ 'teacher' => $teacher, 'worksheet' => $worksheet, 'grades' => $grades ]);
+            return view('game.worksheet_edit', [ 'teacher' => $teacher, 'worksheet' => $worksheet, 'grades' => $grades, 'maps' => $maps ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -88,7 +89,7 @@ class AdventureController extends Controller
                 'description' => $request->input('desc'),
                 'grade_id' => $request->input('grade'),
                 'map_id' => $request->input('map'),
-                'intro' => $request->input('intro'),
+                'intro' => nl2br($request->input('intro')),
                 'share' => $request->input('share') == 'yes',
             ]);
             Watchdog::watch($request, '修改學習單：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -120,6 +121,40 @@ class AdventureController extends Controller
             $worksheet = GameWorksheet::find($worksheet_id);
             $items = GameItem::all();
             return view('game.worksheet_manage', [ 'worksheet' => $worksheet, 'items' => $items ]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
+    public function worksheet_duplicate($worksheet_id)
+    {
+        $user = Auth::user();
+        if ($user->user_type == 'Teacher') {
+            $old = GameWorksheet::find($worksheet_id);
+            $next_id = $old->next_task;
+            $new = $old->replicate();
+            $new->uuid = $user->uuid;
+            $new->share = false;
+            $new->save();
+            $task = GameTask::find($next_id);
+            $newt = $task->replicate();
+            $newt->worksheet_id = $new->id;
+            $newt->save();
+            $new->next_task = $newt->id;
+            $new->save();
+            $prev = $newt;
+            $next_id = $task->next_task;
+            while ($next_id != null) {
+                $task = GameTask::find($next_id);
+                $newt = $task->replicate();
+                $newt->worksheet_id = $new->id;
+                $newt->save();
+                $prev->next_task = $newt->id;
+                $prev->save();
+                $prev = $newt;
+                $next_id = $task->next_task;
+            }
+            return redirect()->route('game.worksheets')->with('success', '已為您複製學習單！');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }

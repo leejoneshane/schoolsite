@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-class" action="{{ route('game.evaluate_add') }}" method="POST" enctype="multipart/form-data">
+<form id="add-class" action="{{ route('game.evaluate_add') }}" method="POST">
     @csrf
     <input type="hidden" name="uuid" value="{{ $teacher->uuid }}">
     <p><div class="p-3">

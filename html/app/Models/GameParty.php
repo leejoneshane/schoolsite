@@ -35,7 +35,6 @@ class GameParty extends Model
         'members',
         'foundation',
         'furnitures',
-        'configure',
         'leader',
     ];
 
@@ -112,7 +111,7 @@ class GameParty extends Model
     }
 
     //移除據點
-    public function remove_foundation()
+    public function remove_fundation()
     {
         $old = $this->foundation;
         if ($old) {
@@ -127,7 +126,7 @@ class GameParty extends Model
     }
 
     //變更據點
-    public function change_foundation($id)
+    public function change_fundation($id)
     {
         $old = $this->foundation;
         $new = GameBase::find($id);
@@ -154,11 +153,11 @@ class GameParty extends Model
     {
         if ($this->furnitures) {
             $furniture = $this->furnitures->firstWhere('id', $id); 
-            if ($furniture) return ALREADY_EXISTS;
-            if ($this->furnitures->count() > 4) return FUNDATION_FULLED;
+            if ($furniture) return "already exists";
+            if ($this->furnitures->count() > 4) return "fundation fulled";
         }
         $furniture = GameFurniture::find($id); 
-        if ($this->treasury < $furniture->gp) return NOT_ENOUGH_GP;
+        if ($this->treasury < $furniture->gp) return "not enough gp";
         DB::table('game_parties_furnitures')->insert([
             'party_id' => $this->id,
             'furniture_id' => $furniture->id,
@@ -196,7 +195,7 @@ class GameParty extends Model
         $newgay = GameCharacter::find($uuid);
         if ($newgay) {
             $newgay->party_id = $this->id;
-            $newgay->save();    
+            $newgay->save();
         }
     }
 
@@ -206,7 +205,7 @@ class GameParty extends Model
         $gay = GameCharacter::find($uuid);
         if ($gay) {
             $gay->party_id = null;
-            $gay->save();    
+            $gay->save();
         }
     }
 

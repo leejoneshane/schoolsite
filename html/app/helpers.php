@@ -13,19 +13,7 @@ const GAME_FURNITURE = 'images/game/furnitures/'; //遊戲家具圖片路徑
 const GAME_ITEM = 'images/game/items/'; //遊戲道具圖片路徑
 const GAME_MONSTER = 'images/game/monsters/'; //遊戲怪物圖片路徑
 const GAME_MAP = 'images/game/maps/'; //遊戲地圖路徑
-const NOT_ENOUGH_GP = 1; //無法購買
-const ALREADY_EXISTS = 2; //不可重複購買
-const NOT_EXISTS = 3; //物品已用完
-const LOCK_ALREADY = 4; //班級已被鎖定
-const MISS = 5; //攻擊失敗或物品使用失敗
-const PEACE = 6; //非戰鬥時刻
-const LESS_MP = 7; //行動力不足
-const DEAD = 8; //角色已死亡
-const COMA = 9; //角色已昏迷
-const NORMAL = 10; //角色正常
-const LOCKED = 100; //班級鎖定成功
-const UNLOCKED = 101; //班級解鎖成功
-const FUNDATION_FULLED = 11; //據點空格已滿，無法採購家具
+const GAME_UPLOAD = 'images/game/upload/'; //遊戲評量、學習單圖片路徑
 
 function locked($room_id = null) {
     if ($room_id) {

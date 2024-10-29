@@ -112,11 +112,11 @@ class GameController extends Controller
         } else {
             $result = GameSence::unlock($room_id, $uuid);
         }
-        if ($result == LOCKED) {
+        if ($result == 'LOCKED') {
             $lock = GameSence::find($room_id);
             Watchdog::watch($request, '遊戲鎖定：' . $lock->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
-        if ($result == UNLOCKED) {
+        if ($result == 'UNLOCKED') {
             Watchdog::watch($request, '遊戲解鎖：' . $room_id);
         }
         return response()->json(['success' => $result]);
@@ -536,6 +536,20 @@ class GameController extends Controller
         $items = GameItem::all();
         $characters = GameCharacter::withoutAbsent($room_id);
         return view('game.silence', [ 'room' => $room, 'characters' => $characters, 'items' => $items ]);
+    }
+
+    public function storeImage(Request $request)
+    {
+        if ($request->hasFile('upload')) {
+            $originName = $request->file('upload')->getClientOriginalName();
+            $fileName = pathinfo($originName, PATHINFO_FILENAME);
+            $extension = $request->file('upload')->getClientOriginalExtension();
+            $fileName = $fileName . '_' . time() . '.' . $extension;
+            $request->file('upload')->move(public_path(GAME_UPLOAD), $fileName);
+            $url = asset(GAME_UPLOAD.$fileName);
+            Watchdog::watch($request, '上傳遊戲評量、學習單插圖：' . $url);
+            return response()->json(['fileName' => $fileName, 'uploaded'=> 1, 'url' => $url]);
+        }
     }
 
 }

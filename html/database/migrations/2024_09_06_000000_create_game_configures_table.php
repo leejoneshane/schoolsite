@@ -17,13 +17,12 @@ return new class extends Migration
             $table->id();
             $table->integer('syear');
             $table->integer('classroom_id');
-            $table->integer('daily_mp')->default(4);
-            $table->boolean('change_base')->default(1);
-            $table->boolean('change_class')->default(1);
+            $table->integer('daily_mp')->default(8);
+            $table->boolean('change_base')->default(0);
+            $table->boolean('change_class')->default(0);
             $table->boolean('arena_open')->default(1);
             $table->boolean('furniture_shop')->default(1);
             $table->boolean('item_shop')->default(1);
-            $table->boolean('pet_shop')->default(0);
             $table->timestamps();
         });
     }

@@ -31,6 +31,9 @@ module.exports = {
             'mono': ['cwTeXFangSong', ...defaultTheme.fontFamily.mono],
         },
         extend: {
+            spacing: {
+                '128': '32rem',
+            },
             backgroundImage: {
                 'game-map': "url('/images/game/map.png')",
                 'game-map50': "url('/images/game/map50.png')",

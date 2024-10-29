@@ -120,6 +120,36 @@ class DungeonController extends Controller
         }
     }
 
+    public function evaluate_duplicate($evaluate_id)
+    {
+        $user = Auth::user();
+        if ($user->user_type == 'Teacher') {
+            $old = GameEvaluate::find($evaluate_id);
+            $new = $old->replicate();
+            $new->uuid = $user->uuid;
+            $new->share = false;
+            $new->save();
+            foreach ($old->questions as $q) {
+                $newq = $q->replicate();
+                $newq->evaluate_id = $new->id;
+                $newq->save();
+                foreach ($q->options as $o) {
+                    $newo = $o->replicate();
+                    $newo->evaluate_id = $new->id;
+                    $newo->question_id = $newq->id;
+                    $newo->save();
+                    if ($o->id == $q->answer) {
+                        $newq->answer = $newo->id;
+                        $newq->save();
+                    }
+                }
+            }
+            return redirect()->route('game.evaluates')->with('success', '已為您複製評量！');
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
     public function question_insert(Request $request)
     {
         $q = GameEvaluate::find($request->input('eid'))->max();

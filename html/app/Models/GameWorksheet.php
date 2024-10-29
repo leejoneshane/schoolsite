@@ -39,6 +39,7 @@ class GameWorksheet extends Model
     //以下為透過程式動態產生之屬性
     protected $appends = [
         'orphans',
+        'teacher_name',
     ];
 
     //自動移除所有學習任務
@@ -50,6 +51,12 @@ class GameWorksheet extends Model
                 $t->delete();
             }
         });
+    }
+
+    //提供此評量的出題教師姓名
+    public function getTeacherNameAttribute()
+    {
+        return $this->teacher->realname;
     }
 
     //篩選指定設計者的所有學習單

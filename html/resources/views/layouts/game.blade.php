@@ -3,7 +3,7 @@
 <head>
     @include('layouts.partials.head')
 </head>
-<body>
+<body class="w-full">
     @include('layouts.partials.gameheader')
     @include('layouts.partials.gamenav')
     <div class="min-h-screen w-full flex bg-white dark:bg-gray-700 text-black dark:text-gray-200">

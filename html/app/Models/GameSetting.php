@@ -121,7 +121,7 @@ class GameSetting extends Model
                 $add[] = '法力（行動力）' . $mp . '點';
             }
             $message .= implode('、', $add).'。';
-            if ($character->status == "DEAD") {
+            if ($character->status == 'DEAD') {
                 $message .= '但因為'.$character->name.'已經死亡，所以沒有作用';
                 GameLog::create([
                     'syear' => current_year(),
@@ -130,7 +130,7 @@ class GameSetting extends Model
                     'character_uuid' => $character->uuid,
                     'content' => $message,
                 ]);
-                break;
+                continue;
             }
             $hatred = $protect = false;
             foreach ($character->teammate() as $m) {

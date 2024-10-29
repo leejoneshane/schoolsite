@@ -31,13 +31,13 @@ class GameSence extends Model
     {
         GameSence::where('ended_at', '<', Carbon::now())->delete();
         $endtime = Carbon::now()->addMinutes(40);
-        if (GameSence::is_lock($classroom_id)) return LOCK_ALREADY;
+        if (GameSence::is_lock($classroom_id)) return 'lock already';
         GameSence::insert([
             'classroom_id' => $classroom_id,
             'uuid' => $uuid,
             'ended_at' => $endtime,
         ]);
-        return LOCKED;
+        return 'locked';
     }
 
     //鎖定指定班級，靜態函式
@@ -45,7 +45,7 @@ class GameSence extends Model
     {
         GameSence::where('ended_at', '<', Carbon::now())->delete();
         GameSence::where('classroom_id', $classroom_id)->where('uuid', $uuid)->delete();
-        return UNLOCKED;
+        return 'unlocked';
     }
 
     //取得指定班級鎖定者，靜態函式

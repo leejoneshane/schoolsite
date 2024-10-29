@@ -11,6 +11,7 @@ class GameTask extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
+        'title',        //任務標題
         'worksheet_id', //學習單編號
         'next_task',    //下一個任務的 id
         'coordinate_x', //X座標

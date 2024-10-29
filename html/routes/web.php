@@ -510,6 +510,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('evaluate/edit/{evaluate_id}', 'App\Http\Controllers\Game\DungeonController@evaluate_update')->name('game.evaluate_edit');
     Route::post('evaluate/remove/{evaluate_id}', 'App\Http\Controllers\Game\DungeonController@evaluate_remove')->name('game.evaluate_remove');
     Route::get('evaluate/manage/{evaluate_id}', 'App\Http\Controllers\Game\DungeonController@evaluate_manage')->name('game.evaluate_manage');
+    Route::post('evaluate/duplicate/{evaluate_id}', 'App\Http\Controllers\Game\DungeonController@evaluate_duplicate')->name('game.evaluate_duplicate');
     Route::post('question/add', 'App\Http\Controllers\Game\DungeonController@question_insert')->name('game.question_add');
     Route::post('question/edit', 'App\Http\Controllers\Game\DungeonController@question_update')->name('game.question_edit');
     Route::post('question/remove', 'App\Http\Controllers\Game\DungeonController@question_remove')->name('game.question_remove');
@@ -530,6 +531,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('worksheet/edit/{worksheet_id}', 'App\Http\Controllers\Game\AdventureController@worksheet_update')->name('game.worksheet_edit');
     Route::post('worksheet/remove/{worksheet_id}', 'App\Http\Controllers\Game\AdventureController@worksheet_remove')->name('game.worksheet_remove');
     Route::get('worksheet/manage/{worksheet_id}', 'App\Http\Controllers\Game\AdventureController@worksheet_manage')->name('game.worksheet_manage');
+    Route::post('worksheet/duplicate/{worksheet_id}', 'App\Http\Controllers\Game\AdventureController@worksheet_duplicate')->name('game.worksheet_duplicate');
     Route::post('task/add', 'App\Http\Controllers\Game\AdventureController@question_insert')->name('game.task_add');
     Route::post('task/edit', 'App\Http\Controllers\Game\AdventureController@question_update')->name('game.task_edit');
     Route::post('task/remove', 'App\Http\Controllers\Game\AdventureController@question_remove')->name('game.task_remove');
@@ -539,6 +541,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('adventure/add/{worksheet_id}', 'App\Http\Controllers\Game\AdventureController@adventure_insert')->name('game.adventure_add');
     Route::post('adventure/edit/{adventure_id}', 'App\Http\Controllers\Game\AdventureController@adventure_switch')->name('game.adventure_switch');
     Route::post('adventure/remove/{adventure_id}', 'App\Http\Controllers\Game\AdventureController@adventure_remove')->name('game.adventure_remove');
+    Route::post('image/upload', 'App\Http\Controllers\Game\GameController@storeImage')->name('game.image_upload');
     //班級管理介面
     Route::get('configure', 'App\Http\Controllers\Game\ClassroomController@config');
     Route::post('configure', 'App\Http\Controllers\Game\ClassroomController@save_config')->name('game.classroom_config');
@@ -608,4 +611,3 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
         Route::post('monster/item', 'App\Http\Controllers\Game\PlayerController@item_monster')->name('game.item_monster');
     });
 });
-
