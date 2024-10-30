@@ -552,7 +552,7 @@ class GameCharacter extends Model
     {
         $dungeons = GameDungeon::findByClassroom($this->classroom_id);
         $dungeons->reject(function ($dun) {
-            if ($dun->opened_at > Carbon::today() || $dun->closed_at < Carbon::today()) return true;
+            if ($dun->opened_at->format('Y-m-d') > Carbon::today() || $dun->closed_at->format('Y-m-d') < Carbon::today()) return true;
             if ($dun->times == 0) return false;
             $times = $this->dungeon_times($dun->id);
             if ($dun->times <= $times) return true;

@@ -3,106 +3,100 @@
 @section('content')
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/translations/zh.js"></script>
-<div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
-    學習任務管理
-    <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ route('game.worksheets') }}">
-        <i class="fa-solid fa-eject"></i>返回上一頁
-    </a>
-</div>
-<table class="w-full text-left font-normal">
-    <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
-        <th scope="col" class="p-2">
-            學習單標題
-        </th>
-        <th scope="col" class="p-2">
-            設計者
-        </th>
-        <th scope="col" class="p-2">
-            科目名稱
-        </th>
-        <th scope="col" class="p-2">
-            學習目標
-        </th>
-        <th scope="col" class="p-2">
-            適用年級
-        </th>
-    </tr>
-    <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
-        <td class="p-2">{{ $worksheet->title }}</td>
-        <td class="p-2">{{ $worksheet->teacher_name }}</td>
-        <td class="p-2">{{ $worksheet->subject }}</td>
-        <td class="p-2">{{ $worksheet->description }}</td>
-        <td class="p-2">{{ $worksheet->grade->name }}</td>
-    </tr>
-</table>
-<div class="w-full flex gap-4 justify-between">
-    <canvas id="myCanvas" class="w-[32rem] h-[32rem]" onmousedown="draw(event)"></canvas>
-    <div class="flex bg-white">
-        <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
-            <ul class="flex flex-col text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" data-tabs-active-classes="text-purple-600 hover:text-purple-600 border-purple-600" data-tabs-inactive-classes="text-gray-500 hover:text-gray-600 border-gray-100 hover:border-gray-300" role="tablist">
-                <li class="me-2" role="presentation">
-                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="profile-tab" data-tabs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Profile</button>
-                </li>
-                <li class="me-2" role="presentation">
-                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="dashboard-tab" data-tabs-target="#dashboard" type="button" role="tab" aria-controls="dashboard" aria-selected="false">Dashboard</button>
-                </li>
-                <li class="me-2" role="presentation">
-                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="settings-tab" data-tabs-target="#settings" type="button" role="tab" aria-controls="settings" aria-selected="false">Settings</button>
-                </li>
-                <li role="presentation">
-                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="contacts-tab" data-tabs-target="#contacts" type="button" role="tab" aria-controls="contacts" aria-selected="false">Contacts</button>
-                </li>
-            </ul>
+<div class="w-full flex gap-4">
+    <div class="w-80 h-full flex flex-col">
+        <div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
+            學習任務管理
+            <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ route('game.worksheets') }}">
+                <i class="fa-solid fa-eject"></i>返回上一頁
+            </a>
         </div>
-        <div id="default-tab-content">
-            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                <div class="w-full rounded-lg shadow dark:bg-blue-700">
-                    <h3 id="head" class="text-center text-xl font-semibold text-gray-900 dark:text-white">編輯任務</h3>
-                    <div class="p-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                        <label for="title" class="text-base">標題：</label>
-                        <input type="text" id="title" name="title" value="" class="block w-80 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none">
-                        <label class="text-base">故事：</label>
-                        <div id="story"></div>
-                        <label class="text-base">任務：</label>
-                        <div id="task"></div>
-                        <div class="p-2">
-                            <label for="review" class="inline-flex relative items-center cursor-pointer">
-                                <input type="checkbox" id="review" name="review" value="yes" class="sr-only peer">
-                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                <span class="ml-3 text-gray-900 dark:text-gray-300">需要審核</span>
-                            </label>
-                        </div>
-                        <div class="p-2">
-                            <label for="xp" class="text-base">經驗獎勵：</label>
-                            <input id="xp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                                type="number" name="xp" min="0" max="500" step="1" value="">
-                            <label for="gp" class="text-base">金幣獎勵：</label>
-                            <input id="gp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                                type="number" name="gp" min="0" max="500" step="1" value="">
-                            <label for="item" class="text-base">道具獎勵：</label>
-                            <select id="item" name="item" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-                                <option value="">無</option>
-                                @foreach ($items as $item)
-                                <option value="{{ $item->id }}">{{ $item->name }}</option>
-                                @endforeach
-                            </select>
-                            <button onclick="save_task();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-                                儲存
-                            </button>
-                        </div>
-                    </div>
+        <table class="w-full h-full text-left font-normal">
+            <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+                <th scope="row" class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg p-2">學習單標題</th>
+                <td class="p-2">{{ $worksheet->title }}</td>
+            </tr>
+            <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+                <th scope="row" class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg p-2">設計者</th>
+                <td class="p-2">{{ $worksheet->teacher_name }}</td>
+            </tr>
+            <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+                <th scope="row" class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg p-2">科目名稱</th>
+                <td class="p-2">{{ $worksheet->subject }}</td>
+            </tr>
+            <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+                <th scope="row" class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg p-2">適用年級</th>
+                <td class="p-2">{{ $worksheet->grade->name }}</td>
+            </tr>
+            <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+                <th scope="row" colspan="2" class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg p-2">任務列表：</th>
+            </tr>
+            <tr id="empty" class="{{ $worksheet->tasks->count() > 0 ? 'hidden ' : '' }}odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+                <td colspan="2" class="p-2">還沒有學習任務！</td>
+            </tr>
+            @foreach ($worksheet->tasks as $t)
+            <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+                <td colspan="2" class="p-2">
+                    <button id="task{{ $t->id }}" onclick="open_task({{ $t->id }})">{{ $t->title }}</button>
+                </td>
+            </tr>
+            @endforeach
+        </table>
+    </div>
+    <div id="myCanvas" class="w-full h-full flex justify-center">
+        <canvas class="w-[800px] h-[700px] z-0" onmousedown="draw(event)"></canvas>
+    </div>
+</div>
+<div class="sr-only">
+    <svg id="dot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="width:1.5em;height:1.5em;vertical-align:-0.125em;color:darkgrey;">
+        <path fill="currentColor" d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
+    </svg>
+</div>
+<div id="taskModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[60] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+    <div class="relative w-auto h-full max-w-2xl md:h-auto">
+        <div class="relative bg-white rounded-lg shadow dark:bg-blue-700">
+            <div class="p-4 border-b rounded-t dark:border-gray-600">
+                <h3 id="head" class="text-center text-xl font-semibold text-gray-900 dark:text-white">編輯任務</h3>
+            </div>
+            <div class="p-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                <label for="title" class="text-base">標題：</label>
+                <input type="text" id="title" name="title" value="" class="block w-80 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none">
+                <label class="text-base">故事：</label>
+                <div id="story"></div>
+                <label class="text-base">任務：</label>
+                <div id="task"></div>
+                <div class="p-2">
+                    <label for="review" class="inline-flex relative items-center cursor-pointer">
+                        <input type="checkbox" id="review" name="review" value="yes" class="sr-only peer">
+                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                        <span class="ml-3 text-gray-900 dark:text-gray-300">需要審核</span>
+                    </label>
+                </div>
+                <div class="p-2">
+                    <label for="xp" class="text-base">經驗獎勵：</label>
+                    <input id="xp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                        type="number" name="xp" min="0" max="500" step="1" value="">
+                    <label for="gp" class="text-base">金幣獎勵：</label>
+                    <input id="gp" class="w-16 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
+                        type="number" name="gp" min="0" max="500" step="1" value="">
+                    <label for="item" class="text-base">道具獎勵：</label>
+                    <select id="item" name="item" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+                        <option value="">無</option>
+                        @foreach ($items as $item)
+                        <option value="{{ $item->id }}">{{ $item->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                    <button onclick="save_task();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        儲存
+                    </button>
+                    <button onclick="taskModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                        取消
+                    </button>
                 </div>
             </div>
-            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="dashboard" role="tabpanel" aria-labelledby="dashboard-tab">
-                <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">Dashboard tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
-            </div>
-            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="settings" role="tabpanel" aria-labelledby="settings-tab">
-                <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">Settings tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
-            </div>
-            <div class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800" id="contacts" role="tabpanel" aria-labelledby="contacts-tab">
-                <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">Contacts tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
-            </div>
-        </div>  
+        </div>
     </div>
 </div>
 <script nonce="selfhost">
@@ -113,50 +107,97 @@
     tasks[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE); !!};
     @endforeach
 
-    const canvas = document.getElementById("myCanvas");
+    var $targetEl = document.getElementById('taskModal');
+    const taskModal = new window.Modal($targetEl);
+    var pos;
+    const canvas = document.querySelector('canvas');
     const ctx = canvas.getContext("2d");
-    const orphan = document.getElementById("orphan");
-    const normal = document.getElementById("normal");
-    const map = new Image(512, 512);
+    const dot = document.getElementById('dot');
+    const tmp = document.getElementById('tmp');
+    const map = new Image(800, 700);
     map.src = '{{ $worksheet->map->url() }}';
     map.addEventListener("load", (e) => {
-        canvas.width = 512;
-        canvas.height = 512;
+        canvas.width = 800;
+        canvas.height = 700;
         ctx.drawImage(map, 0, 0, canvas.width, canvas.height);
+    });
+    window.addEventListener("resize", (event) => {
+        var rect = canvas.getBoundingClientRect();
+        var nodes = document.querySelectorAll('img[role="task"]');
+        if (nodes) {
+            nodes.forEach( (node) => {
+                node.style.top = parseInt(node.getAttribute('data-y')) + rect.top + 'px';
+                node.style.left = parseInt(node.getAttribute('data-x')) + rect.left + 'px';
+            });
+        }
     });
 
     function getMousePos(evt) {
-        var rect = canvas.getBoundingClientRect();
-        return {
-            x: evt.clientX - rect.left,
-            y: evt.clientY - rect.top
+        pos = {
+            x: parseInt(evt.offsetX - 12),
+            y: parseInt(evt.offsetY - 32)
         };
     }
 
     function draw(evt) {
-        var pos = getMousePos(evt);
-        console.log(pos);
+        var rect = canvas.getBoundingClientRect();
+        getMousePos(evt);
+        dot.style.color = 'aqua';
+        var xml = new XMLSerializer().serializeToString(dot);
+        var b64 = 'data:image/svg+xml;base64,' + btoa(xml);
+        var tmp = document.createElement('img');
+        tmp.setAttribute('role', 'task');
+        tmp.setAttribute('data-x', pos.x);
+        tmp.setAttribute('data-y', pos.y);
+        tmp.setAttribute('id', 0);
+        tmp.setAttribute('src', b64);
+        tmp.setAttribute('onclick', 'moveto(this)');
+        tmp.style.position = 'absolute';
+        tmp.style.zIndex = 2;
+        tmp.style.top = pos.y + rect.top + 'px';
+        tmp.style.left = pos.x + rect.left + 'px';
+        tmp.style.width = '24px';
+        tmp.style.height = '32px';
+        document.body.appendChild(tmp);
+//        open_task(0);
     }
 
     function open_task(tno) {
         tid = tno;
-        window.story.setData(tasks[tid].story);
-        window.task.setData(tasks[tid].task);
-        document.getElementById('review').checked = tasks[tid].review;
-        document.getElementById('xp').value = tasks[tid].xp;
-        document.getElementById('gp').value = tasks[tid].gp;
-        var options = document.querySelector('option');
-        options.forEach( opt => {
-            if (opt.value == tasks[tid].item) {
-                opt.setAttribute('selected', null);
-            } else {
-                opt.removeAttribute('selected');
-            }
-        });
+        if (tid == 0) {
+            document.getElementById('title').value = '';
+            window.story.setData('');
+            window.task.setData('');
+            document.getElementById('review').checked = true;
+            document.getElementById('xp').value = 0;
+            document.getElementById('gp').value = 0;
+            var items = document.getElementById('item').options;
+            items.forEach( item => {
+                item.removeAttribute('selected');
+            });
+            document.getElementById('head').innerHTML = '新增任務';
+        } else {
+            document.getElementById('title').value = tasks[tid].title;
+            window.story.setData(tasks[tid].story);
+            window.task.setData(tasks[tid].task);
+            document.getElementById('review').checked = tasks[tid].review;
+            document.getElementById('xp').value = tasks[tid].xp;
+            document.getElementById('gp').value = tasks[tid].gp;
+            var items = document.getElementById('item').options;
+            items.forEach( item => {
+                if (item.value == tasks[tid].item) {
+                    item.setAttribute('selected', null);
+                } else {
+                    item.removeAttribute('selected');
+                }
+            });
+            document.getElementById('head').innerHTML = '編輯任務';
+        }
         taskModal.show();
     }
 
     function save_task() {
+        var title = document.getElementById('title').value;
         var story = window.story.getData();
         var task = window.task.getData();
         var node = document.getElementById('review');
@@ -171,6 +212,9 @@
         if (tid == 0) {
             window.axios.post('{{ route('game.task_add') }}', {
                 wid: wid,
+                title: title,
+                x: pos.x,
+                y: pos.y,
                 story: story,
                 task: task,
                 review: review,

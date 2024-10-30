@@ -331,12 +331,10 @@ class DungeonController extends Controller
         if ($user->user_type == 'Teacher') {
             $e = GameDungeon::find($dungeon_id);
             $evaluate_id = $e->evaluate_id;
-            $classroom_id = $e->classroom_id;
             Watchdog::watch($request, '刪除遊戲地下城：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $e->delete();
-            $answers = GameAnswer::findBy($evaluate_id, $classroom_id);
+            $answers = GameAnswer::findByDungeon($dungeon_id);
             foreach ($answers as $a) {
-                $a->journeys()->delete();
                 $a->delete();
             }
             return redirect()->route('game.evaluate_assign', [ 'evaluate_id' => $evaluate_id ])->with('success', '地下城已經刪除!');
