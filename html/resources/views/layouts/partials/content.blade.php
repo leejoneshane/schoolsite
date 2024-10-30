@@ -78,7 +78,7 @@
             let parent = document.getElementById('messager');
             parent.appendChild(popup);
             document.getElementById('received').play();
-            new window.Dismiss(popup, { triggerEl: btn });
+            new window.Dismiss(popup, btn);
         });
     @auth
         window.Echo.private('private.{{ auth()->user()->id }}').listen('PrivateMessage', (e) => {
@@ -112,7 +112,7 @@
             let parent = document.getElementById('messager');
             parent.appendChild(popup);
             document.getElementById('received').play();
-            new window.Dismiss(popup, { triggerEl: btn });
+            new window.Dismiss(popup, btn);
         });
     @endauth
     @admin
@@ -139,7 +139,7 @@
             let parent = document.getElementById('messager');
             parent.appendChild(popup);
             document.getElementById('received').play();
-            new window.Dismiss(popup, { triggerEl: btn });
+            new window.Dismiss(popup, btn);
         });
     @endadmin
     });

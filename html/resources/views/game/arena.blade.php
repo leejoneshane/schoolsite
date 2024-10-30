@@ -51,7 +51,7 @@
         </div>
     </div>
 </div>
-<div id="warnModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[90] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+<div id="warnModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[90] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-teal-300 rounded-lg shadow dark:bg-blue-700">
             <div class="p-4 border-b rounded-t dark:border-gray-600">
@@ -67,7 +67,7 @@
         </div>
     </div>
 </div>
-<div id="confirmModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+<div id="confirmModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-teal-300 rounded-lg shadow dark:bg-blue-700">
             <div class="p-4 border-b rounded-t dark:border-gray-600">
@@ -86,7 +86,7 @@
         </div>
     </div>
 </div>
-<div id="actionModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[60] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+<div id="actionModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[60] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-teal-300 rounded-lg shadow dark:bg-blue-700">
             <div class="p-4 border-b rounded-t dark:border-gray-600">
@@ -101,11 +101,14 @@
                 <button onclick="prepare_item(); actionModal.hide();" type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full">
                     道具
                 </button>
+                <button onclick="actionModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    取消
+                </button>
             </div>
         </div>
     </div>
 </div>
-<div id="skillsModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[70] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+<div id="skillsModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[70] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <div class="p-4 border-b rounded-t dark:border-gray-600">
@@ -126,7 +129,7 @@
         </div>
     </div>
 </div>
-<div id="itemsModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[70] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+<div id="itemsModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[70] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <div class="p-4 border-b rounded-t dark:border-gray-600">

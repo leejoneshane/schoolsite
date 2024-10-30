@@ -70,11 +70,6 @@ class ClassroomController extends Controller
             } else {
                 $sk->item_shop = false;
             }
-            if ($request->input('pet_shop') == 'yes') {
-                $sk->pet_shop = true;
-            } else {
-                $sk->pet_shop = false;
-            }
             $sk->save();
             Watchdog::watch($request, '修改遊戲規則：' . $sk->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->back()->with('success', '已修改遊戲規則！');

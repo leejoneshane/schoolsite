@@ -78,7 +78,7 @@
     <button class="absolute z-[55] w-16 h-12 left-1/3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onclick="change_class();">轉職</button>
     @endif
     <div class="w-1/3 inline-flex flex-row justify-center">
-        <img src="{{ $character->image->url() }}" id="big" class="absolute w-auto h-3/4 z-50" />
+        <img src="{{ $character->image->url() }}" id="big" class="relative w-auto h-full z-50" />
     </div>
     <div class="w-1/3">
         <div class="bg-gray-500 text-white text-center">技能書</div>
@@ -107,7 +107,7 @@
         </table>
     </div>
 </div>
-<div id="itemsModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[60] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+<div id="itemsModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[60] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <div class="p-4 border-b rounded-t dark:border-gray-600">
@@ -128,7 +128,7 @@
         </div>
     </div>
 </div>
-<div id="teammateModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[70] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+<div id="teammateModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[70] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
             <div class="p-4 border-b rounded-t dark:border-gray-600">
@@ -182,7 +182,7 @@
     const teamModal = new window.Modal($targetEl);
 
     function bag() {
-        for (i=1; i<13; i++) {
+        for (i=0; i<15; i++) {
             var node = document.getElementById('bag' + i);
             node.innerHTML = '';
         }

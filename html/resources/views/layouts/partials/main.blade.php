@@ -39,11 +39,9 @@
     <div id="template" class="hidden flex items-center p-4 max-w-xs text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
         <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200"></div>
         <div class="ml-3 text-sm font-normal"></div>
-        <div class="flex gap-2">
-            <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-7 w-7 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#template" aria-label="Close">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
+        <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-7 w-7 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#template" aria-label="Close">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
     </div>
 </div>
 <script nonce="selfhost">
@@ -73,7 +71,7 @@
             popup.classList.add('flex', 'items-center', 'p-4', 'max-w-xs', 'text-gray-500', 'bg-white', 'rounded-lg', 'shadow', 'dark:text-gray-400', 'dark:bg-gray-80');
             popup.role = 'alert';
             let from = document.createElement('div');
-            from.classList.add('inline-flex', 'flex-shrink-0', 'justify-center', 'items-center', 'w-12', 'h-8', 'text-blue-500', 'bg-blue-100', 'rounded-lg', 'dark:bg-blue-800', 'dark:text-blue-200');
+            from.classList.add('inline-flex', 'flex-shrink-0', 'justify-center', 'items-center', 'w-16', 'h-8', 'text-blue-500', 'bg-blue-100', 'rounded-lg', 'dark:bg-blue-800', 'dark:text-blue-200');
             from.innerText = '全班廣播';
             popup.appendChild(from);
             let info = document.createElement('div');
@@ -89,7 +87,7 @@
             let parent = document.getElementById('messager');
             parent.appendChild(popup);
             document.getElementById('received').play();
-            new window.Dismiss(popup, { triggerEl: btn });
+            new window.Dismiss(popup, btn);
         });
 
         @if (player() && player()->party)
@@ -100,7 +98,7 @@
             popup.classList.add('flex', 'items-center', 'p-4', 'max-w-xs', 'text-gray-500', 'bg-white', 'rounded-lg', 'shadow', 'dark:text-gray-400', 'dark:bg-gray-80');
             popup.role = 'alert';
             let from = document.createElement('div');
-            from.classList.add('inline-flex', 'flex-shrink-0', 'justify-center', 'items-center', 'w-12', 'h-8', 'text-blue-500', 'bg-blue-100', 'rounded-lg', 'dark:bg-blue-800', 'dark:text-blue-200');
+            from.classList.add('inline-flex', 'flex-shrink-0', 'justify-center', 'items-center', 'w-16', 'h-8', 'text-blue-500', 'bg-blue-100', 'rounded-lg', 'dark:bg-blue-800', 'dark:text-blue-200');
             from.innerText = '公會頻道';
             popup.appendChild(from);
             let info = document.createElement('div');
@@ -116,7 +114,7 @@
             let parent = document.getElementById('messager');
             parent.appendChild(popup);
             document.getElementById('received').play();
-            new window.Dismiss(popup, { triggerEl: btn });
+            new window.Dismiss(popup, btn);
         });
         @endif
 
@@ -128,8 +126,8 @@
             popup.classList.add('flex', 'items-center', 'p-4', 'max-w-xs', 'text-gray-500', 'bg-white', 'rounded-lg', 'shadow', 'dark:text-gray-400', 'dark:bg-gray-80');
             popup.role = 'alert';
             let from = document.createElement('div');
-            from.classList.add('inline-flex', 'flex-shrink-0', 'justify-center', 'items-center', 'w-12', 'h-8', 'text-blue-500', 'bg-blue-100', 'rounded-lg', 'dark:bg-blue-800', 'dark:text-blue-200');
-            from.innerText = e.from.name;
+            from.classList.add('inline-flex', 'flex-shrink-0', 'justify-center', 'items-center', 'w-16', 'h-8', 'text-blue-500', 'bg-blue-100', 'rounded-lg', 'dark:bg-blue-800', 'dark:text-blue-200');
+            from.innerText = '私人頻道';
             popup.appendChild(from);
             let info = document.createElement('div');
             info.classList.add('ml-3', 'text-sm', 'font-normal');
@@ -147,7 +145,7 @@
             let parent = document.getElementById('messager');
             parent.appendChild(popup);
             document.getElementById('received').play();
-            new window.Dismiss(popup, { triggerEl: btn });
+            new window.Dismiss(popup, btn);
         });
 
         window.Echo.private('dialog.{{ player()->stdno }}').listen('GameDialogChannel', (e) => {

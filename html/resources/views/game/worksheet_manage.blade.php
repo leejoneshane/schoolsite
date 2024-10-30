@@ -43,8 +43,8 @@
             @endforeach
         </table>
     </div>
-    <div id="myCanvas" class="w-full h-full flex justify-center">
-        <canvas class="w-[800px] h-[700px] z-0" onmousedown="draw(event)"></canvas>
+    <div class="w-full h-full flex justify-center">
+        <canvas id="myCanvas" class="w-[800px] h-[700px] z-0" onmousedown="draw(event)"></canvas>
     </div>
 </div>
 <div class="sr-only">
@@ -52,7 +52,7 @@
         <path fill="currentColor" d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
     </svg>
 </div>
-<div id="taskModal" data-modal-placement="center-center" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-[60] hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+<div id="taskModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-white rounded-lg shadow dark:bg-blue-700">
             <div class="p-4 border-b rounded-t dark:border-gray-600">
@@ -91,7 +91,10 @@
                     <button onclick="save_task();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                         儲存
                     </button>
-                    <button onclick="taskModal.hide();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
+                    <button onclick="remove_task();" type="button" class="px-5 ms-3 text-white bg-red-700 hover:bg-bred-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                        刪除
+                    </button>
+                    <button onclick="cancle_task();" type="button" class="py-2.5 px-5 ms-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-blue-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700">
                         取消
                     </button>
                 </div>
@@ -110,7 +113,7 @@
     var $targetEl = document.getElementById('taskModal');
     const taskModal = new window.Modal($targetEl);
     var pos;
-    const canvas = document.querySelector('canvas');
+    const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext("2d");
     const dot = document.getElementById('dot');
     const tmp = document.getElementById('tmp');
@@ -149,7 +152,7 @@
         tmp.setAttribute('role', 'task');
         tmp.setAttribute('data-x', pos.x);
         tmp.setAttribute('data-y', pos.y);
-        tmp.setAttribute('id', 0);
+        tmp.setAttribute('id', 'task0');
         tmp.setAttribute('src', b64);
         tmp.setAttribute('onclick', 'moveto(this)');
         tmp.style.position = 'absolute';
@@ -159,10 +162,10 @@
         tmp.style.width = '24px';
         tmp.style.height = '32px';
         document.body.appendChild(tmp);
-//        open_task(0);
+        open_editor(0);
     }
 
-    function open_task(tno) {
+    function open_editor(tno) {
         tid = tno;
         if (tid == 0) {
             document.getElementById('title').value = '';
@@ -194,6 +197,14 @@
             document.getElementById('head').innerHTML = '編輯任務';
         }
         taskModal.show();
+    }
+
+    function cancle_task() {
+        var node = document.getElementById('task0');
+        if (node) {
+            document.body.removeChild(node);
+        }
+        taskModal.hide();
     }
 
     function save_task() {
