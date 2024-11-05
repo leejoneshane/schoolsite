@@ -6,7 +6,7 @@
 <div class="w-full flex gap-4">
     <div class="w-80 h-full flex flex-col">
         <div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
-            學習任務管理
+            學習任務
             <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ route('game.worksheets') }}">
                 <i class="fa-solid fa-eject"></i>返回上一頁
             </a>
@@ -37,19 +37,22 @@
             @foreach ($worksheet->tasks as $t)
             <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
                 <td colspan="2" class="p-2">
-                    <button id="task{{ $t->id }}" onclick="open_task({{ $t->id }})">{{ $t->title }}</button>
+                    <button type="button" id="list{{ $t->id }}" onclick="open_editor({{ $t->id }})">{{ $t->title }}</button>
                 </td>
             </tr>
             @endforeach
         </table>
     </div>
     <div class="w-full h-full flex justify-center">
-        <canvas id="myCanvas" class="w-[800px] h-[700px] z-0" onmousedown="draw(event)"></canvas>
+        <canvas id="myCanvas" class="w-[700px] h-[700px] z-0" onmousedown="add_task(event)" ondrop="move_task(event)"></canvas>
     </div>
 </div>
 <div class="sr-only">
     <svg id="dot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" style="width:1.5em;height:1.5em;vertical-align:-0.125em;color:darkgrey;">
         <path fill="currentColor" d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/>
+    </svg>
+    <svg id="spot" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" style="width:1.5em;height:1.5em;vertical-align:-0.125em;color:darkgrey;">
+        <path fill="currentColor" d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256zm256-96a96 96 0 1 1 0 192 96 96 0 1 1 0-192z"/>
     </svg>
 </div>
 <div id="taskModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
@@ -105,22 +108,30 @@
 <script nonce="selfhost">
     var wid = {{ $worksheet->id }};
     var tid;
+    var pos;
     var tasks = [];
     @foreach ($worksheet->tasks as $t)
     tasks[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE); !!};
     @endforeach
+    @foreach ($worksheet->tasks as $t)
+    create_dot({{ $t->id }}, tasks[{{ $t->id }}].coordinate_x, tasks[{{ $t->id }}].coordinate_y);
+    @endforeach
+    @foreach ($worksheet->tasks as $t)
+    @if ($t->next_task)
+    draw_line({{ $t->id }}, {{ $t->next_task }});
+    @endif
+    @endforeach
 
     var $targetEl = document.getElementById('taskModal');
     const taskModal = new window.Modal($targetEl);
-    var pos;
     const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext("2d");
     const dot = document.getElementById('dot');
-    const tmp = document.getElementById('tmp');
-    const map = new Image(800, 700);
+    const spot = document.getElementById('spot');
+    const map = new Image(700, 700);
     map.src = '{{ $worksheet->map->url() }}';
     map.addEventListener("load", (e) => {
-        canvas.width = 800;
+        canvas.width = 700;
         canvas.height = 700;
         ctx.drawImage(map, 0, 0, canvas.width, canvas.height);
     });
@@ -137,32 +148,120 @@
 
     function getMousePos(evt) {
         pos = {
-            x: parseInt(evt.offsetX - 12),
-            y: parseInt(evt.offsetY - 32)
+            x: parseInt(evt.offsetX),
+            y: parseInt(evt.offsetY)
         };
     }
 
-    function draw(evt) {
+    function draw_line(from, to) {
+        ctx.beginPath();
+        ctx.moveTo(tasks[from].coordinate_x, tasks[from].coordinate_y);
+        ctx.lineTo(tasks[to].coordinate_x, tasks[to].coordinate_y);
+        ctx.stroke();
+    }
+
+    function create_dot(id, x, y) {
         var rect = canvas.getBoundingClientRect();
-        getMousePos(evt);
+        spot.style.color = 'aqua';
+        var xml = new XMLSerializer().serializeToString(spot);
+        var b64 = 'data:image/svg+xml;base64,' + btoa(xml);
+        var tmp = document.createElement('img');
+        tmp.setAttribute('id', 'spot' + id);
+        tmp.setAttribute('src', b64);
+        tmp.setAttribute('data-x', x);
+        tmp.setAttribute('data-y', y);
+        tmp.setAttribute('draggable', true);
+        tmp.setAttribute('onclick', 'cancle_line(this)');
+        tmp.setAttribute('ondragstart', 'add_line(event)');
+        tmp.setAttribute('role', 'task');
+        tmp.style.position = 'absolute';
+        tmp.style.zIndex = 2;
+        tmp.style.top = y + rect.top + 'px';
+        tmp.style.left = x + rect.left + 'px';
+        tmp.style.width = '32px';
+        tmp.style.height = '32px';
+        document.body.appendChild(tmp);
+
+        x -= 12;
+        y -= 32;
         dot.style.color = 'aqua';
         var xml = new XMLSerializer().serializeToString(dot);
         var b64 = 'data:image/svg+xml;base64,' + btoa(xml);
         var tmp = document.createElement('img');
-        tmp.setAttribute('role', 'task');
-        tmp.setAttribute('data-x', pos.x);
-        tmp.setAttribute('data-y', pos.y);
-        tmp.setAttribute('id', 'task0');
+        tmp.setAttribute('id', 'task' + id);
         tmp.setAttribute('src', b64);
-        tmp.setAttribute('onclick', 'moveto(this)');
+        if (tasks[id]) {
+            tmp.setAttribute('title', tasks[id].title);
+        }
+        tmp.setAttribute('data-id', id);
+        tmp.setAttribute('data-x', x);
+        tmp.setAttribute('data-y', y);
+        tmp.setAttribute('draggable', true);
+        tmp.setAttribute('onclick', 'edit_task(this)');
+        tmp.setAttribute('ondragstart', 'darg_task(event)');
+        tmp.setAttribute('role', 'task');
         tmp.style.position = 'absolute';
-        tmp.style.zIndex = 2;
-        tmp.style.top = pos.y + rect.top + 'px';
-        tmp.style.left = pos.x + rect.left + 'px';
+        tmp.style.zIndex = 3;
+        tmp.style.top = y + rect.top + 'px';
+        tmp.style.left = x + rect.left + 'px';
         tmp.style.width = '24px';
         tmp.style.height = '32px';
         document.body.appendChild(tmp);
+    }
+
+    function add_task(evt) {
+        getMousePos(evt);
+        create_dot(0, pos.x, pos.y);
         open_editor(0);
+    }
+
+    function cancle_task() {
+        var node = document.getElementById('task0');
+        if (node) {
+            document.body.removeChild(node);
+        }
+        var node = document.getElementById('spot0');
+        if (node) {
+            document.body.removeChild(node);
+        }
+        taskModal.hide();
+    }
+
+    function edit_task(img) {
+        tid = img.getAttribute('data-id');
+        open_editor(tid);
+    }
+
+    function drag_task(evt) {
+        evt.dataTransfer.setData("Text", evt.target.id);
+    }
+
+    function move_task(evt) {
+        var rect = canvas.getBoundingClientRect();
+        getMousePos(evt);
+        var myid = evt.dataTransfer.getData("Text");
+        var tmp = document.getElementById('spot' + myid);
+        tmp.setAttribute('data-x', pos.x);
+        tmp.setAttribute('data-y', pos.y);
+        tmp.style.top = pos.y + rect.top + 'px';
+        tmp.style.left = pos.x + rect.left + 'px';
+        var x = pos.x - 12;
+        var y = pos.y - 32;
+        var tmp = document.getElementById('task' + myid);
+        tmp.setAttribute('data-x', x);
+        tmp.setAttribute('data-y', y);
+        tmp.style.top = y + rect.top + 'px';
+        tmp.style.left = x + rect.left + 'px';
+        window.axios.post('{{ route('game.task_moveto') }}', {
+            tid: myid,
+            x: pos.x,
+            y: pos.y,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        });
     }
 
     function open_editor(tno) {
@@ -199,14 +298,6 @@
         taskModal.show();
     }
 
-    function cancle_task() {
-        var node = document.getElementById('task0');
-        if (node) {
-            document.body.removeChild(node);
-        }
-        taskModal.hide();
-    }
-
     function save_task() {
         var title = document.getElementById('title').value;
         var story = window.story.getData();
@@ -238,12 +329,36 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             }).then( (response) => {
+                if (tasks.length > 0) {
+                    var last = tasks.slice(-1);
+                }
                 var task = response.data.task;
                 tasks[task.id] = task;
+                var tmp = document.getElementById('task0');
+                tmp.setAttribute('id', 'task' + task.id);
+                tmp.setAttribute('title', task.title);
+                tmp.setAttribute('data-id', id);
+                var parent = document.getElementById('empty').parentElement;
+                var tr = document.createElement('tr');
+                tr.classList.add('odd:bg-white','even:bg-gray-100','dark:odd:bg-gray-700','dark:even:bg-gray-600');
+                var td = document.createElement('td');
+                td.setAttribute('colspan', 2);
+                td.classList.add('p-2');
+                var btn = document.createElement('button');
+                btn.setAttribute('type', 'button');
+                btn.setAttribute('id', 'list' + task.id);
+                btn.setAttribute('onclick', 'open_editor(' + task.id + ')');
+                btn.innerHTML = task.title;
+                td.appendChild(btn);
+                tr.appendChild(td);
+                parent.appendChild(tr);
+                if (tasks.length > 1) {
+                    draw_line(last.id, task.id);
+                }
             });
         } else {
             window.axios.post('{{ route('game.task_edit') }}', {
-                wid: wid,
+                tid: tid,
                 story: story,
                 task: task,
                 review: review,
@@ -258,38 +373,44 @@
             }).then( (response) => {
                 var task = response.data.task;
                 tasks[task.id] = task;
+                var tmp = document.getElementById('task' + task.id);
+                tmp.setAttribute('title', task.title);
+                var btn = document.getElementById('list' + task.id);
+                btn.innerHTML = task.title;
             });
         }
-        questionModal.hide();
+        taskModal.hide();
     }
 
-    function del_task(tno) {
+    function remove_task() {
         window.axios.post('{{ route('game.task_remove') }}', {
-            tid: tno,
+            tid: tid,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( (response) => {
-            if (response.data.success) {
-                delete tasks[response.data.success];
-            }
-        });
-    }
+            var myid = response.data.success; 
+            if (myid) {
+                delete tasks[myid];
+                var node = document.getElementById('task' + myid);
+                if (node) {
+                    document.body.removeChild(node);
+                }
+                var node = document.getElementById('spot' + myid);
+                if (node) {
+                    document.body.removeChild(node);
+                }
+                var parent = document.getElementById('empty').parentElement;
+                var btn = document.getElementById('list' + myid);
+                if (btn) {
+                    parent.removeChild(btn.parentElement.parentElement);
+                }
 
-    function set_coordinate(tno) {
-        var answer = document.querySelector('input[name="answer' + qno + '"]:checked');
-        window.axios.post('{{ route('game.task_moveto') }}', {
-            tid: tno,
-            x: answer.value,
-            y: answer.value,
-        }, {
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         });
+        taskModal.hide();
     }
 
     class MyUploadAdapter {

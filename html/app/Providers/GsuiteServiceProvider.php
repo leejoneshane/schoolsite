@@ -5,6 +5,19 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Database\Eloquent\Model;
+use Google_Service_Directory;
+use Google_Service_Exception;
+use Google_Service_Directory_OrgUnit;
+use Google_Service_Directory_User;
+use Google_Service_Directory_UserExternalId;
+use Google_Service_Directory_UserName;
+use Google_Service_Directory_UserOrganization;
+use Google_Service_Directory_UserPhone;
+use Google_Service_Directory_UserGender;
+use Google_Service_Directory_Alias;
+use Google_Service_Directory_Group;
+use Google_Service_Directory_Member;
+use Google_Client;
 use App\Models\Unit;
 use App\Models\Gsuite;
 use App\Models\Grade;
@@ -29,20 +42,20 @@ class GsuiteServiceProvider extends ServiceProvider
         $path = config('services.gsuite.auth_config');
         $user_to_impersonate = config('services.gsuite.admin');
         $scopes = [
-            \Google_Service_Directory::ADMIN_DIRECTORY_ORGUNIT,
-            \Google_Service_Directory::ADMIN_DIRECTORY_USER,
-            \Google_Service_Directory::ADMIN_DIRECTORY_GROUP,
-            \Google_Service_Directory::ADMIN_DIRECTORY_GROUP_MEMBER,
+            Google_Service_Directory::ADMIN_DIRECTORY_ORGUNIT,
+            Google_Service_Directory::ADMIN_DIRECTORY_USER,
+            Google_Service_Directory::ADMIN_DIRECTORY_GROUP,
+            Google_Service_Directory::ADMIN_DIRECTORY_GROUP_MEMBER,
         ];
 
-        $client = new \Google_Client();
+        $client = new Google_Client();
         $client->setAuthConfig($path);
         $client->setApplicationName('School Web Site');
         $client->setScopes($scopes);
         $client->setSubject($user_to_impersonate);
         try {
-            $this->directory = new \Google_Service_Directory($client);
-        } catch (\Google_Service_Exception $e) {
+            $this->directory = new Google_Service_Directory($client);
+        } catch (Google_Service_Exception $e) {
             Log::error('google directory:' . $e->getMessage());
         }
     }
@@ -52,7 +65,7 @@ class GsuiteServiceProvider extends ServiceProvider
         try {
             $result = $this->directory->orgunits->listOrgunits('my_customer');	
             return $result->getOrganizationUnits();
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice('google listOrgUnits:' . $e->getMessage());
             return false;
         }
@@ -62,7 +75,7 @@ class GsuiteServiceProvider extends ServiceProvider
     {
         try {
             return $this->directory->orgunits->get('my_customer', $orgPath);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google getOrgUnit($orgPath):" . $e->getMessage());
             return false;
         }
@@ -70,13 +83,13 @@ class GsuiteServiceProvider extends ServiceProvider
 
     public function create_orgunit($orgPath, $orgName, $orgDescription)
     {
-        $org_unit = new \Google_Service_Directory_OrgUnit();
+        $org_unit = new Google_Service_Directory_OrgUnit();
         $org_unit->setName($orgName);
         $org_unit->setDescription($orgDescription);
         $org_unit->setParentOrgUnitPath($orgPath);
         try {
             return $this->directory->orgunits->insert('my_customer', $org_unit);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google createOrgUnit($orgPath,$orgName,$orgDescription):" . $e->getMessage());	
             return false;
         }
@@ -84,11 +97,11 @@ class GsuiteServiceProvider extends ServiceProvider
 
     public function update_orgunit($orgPath, $orgName)
     {
-        $org_unit = new \Google_Service_Directory_OrgUnit();
+        $org_unit = new Google_Service_Directory_OrgUnit();
         $org_unit->setDescription($orgName);
         try {
             return $this->directory->orgunits->update('my_customer', $orgPath, $org_unit);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google updateOrgUnit($orgPath,$orgName):" . $e->getMessage());
             return false;
         }
@@ -98,7 +111,7 @@ class GsuiteServiceProvider extends ServiceProvider
     {
         try {
             return $this->directory->orgunits->delete('my_customer', $orgPath);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google deleteOrgUnit($orgPath):" . $e->getMessage());
             return false;
         }
@@ -125,7 +138,7 @@ class GsuiteServiceProvider extends ServiceProvider
                 $users = array_merge($users, $result->getUsers());
             } while ($page_token);
             return $users;
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google allUsers($user_type):" . $e->getMessage());
             return false;
         }
@@ -149,7 +162,7 @@ class GsuiteServiceProvider extends ServiceProvider
                 }
             } while ($page_token);
             return $users;
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google findUsers($filter):" . $e->getMessage());
             return false;
         }
@@ -162,30 +175,30 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         try {
             return $this->directory->users->get($userKey);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google getUser($userKey):" . $e->getMessage());
             return false;
         }
     }
 
-    public function create_user(\Google_Service_Directory_User $userObj)
+    public function create_user(Google_Service_Directory_User $userObj)
     {
         try {
             return $this->directory->users->insert($userObj);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice('google createUser('.var_export($userObj, true).'):' . $e->getMessage());
             return false;
         }
     }
 
-    public function update_user($userKey, \Google_Service_Directory_User $userObj)
+    public function update_user($userKey, Google_Service_Directory_User $userObj)
     {
         if (!strpos($userKey, '@')) {
             $userKey .= '@' . config('services.gsuite.domain');
         }
         try {
             return $this->directory->users->update($userKey, $userObj);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google updateUser($userKey,".var_export($userObj, true).'):' . $e->getMessage());
             return false;
         }
@@ -200,7 +213,7 @@ class GsuiteServiceProvider extends ServiceProvider
             $user = $this->directory->users->get($userKey);
             $user->setSuspended(true);
             return $this->directory->users->update($userKey, $user);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google deleteUser($userKey):" . $e->getMessage());
             return false;
         }
@@ -213,7 +226,7 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         try {
             return $this->directory->users->delete($userKey);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google deleteUser($userKey):" . $e->getMessage());
             return false;
         }
@@ -257,7 +270,7 @@ class GsuiteServiceProvider extends ServiceProvider
             }
         } else {
             $create = true;
-            $user = new \Google_Service_Directory_User();
+            $user = new Google_Service_Directory_User();
             $user->setChangePasswordAtNextLogin(false);
             $user->setAgreedToTerms(true);
             $user->setPrimaryEmail($userKey);
@@ -295,11 +308,11 @@ class GsuiteServiceProvider extends ServiceProvider
                 ]);
             }
         }
-        $sysid = new \Google_Service_Directory_UserExternalId();
+        $sysid = new Google_Service_Directory_UserExternalId();
         $sysid->setType('organization');
         $sysid->setValue($t->uuid);
         $user->setExternalIds([$sysid]);
-        $names = new \Google_Service_Directory_UserName();
+        $names = new Google_Service_Directory_UserName();
         if ($user_type == 'Student') {
             $seat = ($t->seat < 10) ? '0'.$t->seat : $t->seat;
             $names->setFamilyName($seat . $t->sn);
@@ -316,7 +329,7 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         $orgs = [];
         if ($user_type == 'Student') {
-            $neworg = new \Google_Service_Directory_UserOrganization();
+            $neworg = new Google_Service_Directory_UserOrganization();
             $neworg->setType('school');
             $neworg->setDescription('Student');
             $neworg->setDepartment(substr($t->id, 0, 3));
@@ -329,7 +342,7 @@ class GsuiteServiceProvider extends ServiceProvider
         } elseif ($user_type == 'Teacher') {
             $jobs = $t->roles;
             foreach ($jobs as $job) {
-                $neworg = new \Google_Service_Directory_UserOrganization();
+                $neworg = new Google_Service_Directory_UserOrganization();
                 $neworg->setType('school');
                 $neworg->setDescription('Teacher');
                 $neworg->setDepartment($job->unit->name);
@@ -349,7 +362,7 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         if (!empty($t->mobile)) {
             $phones = $user->getPhones();
-            $phone = new \Google_Service_Directory_UserPhone();
+            $phone = new Google_Service_Directory_UserPhone();
             $phone->setPrimary(true);
             $phone->setType('mobile');
             $phone->setValue($t->mobile);
@@ -362,7 +375,7 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         if (!empty($t->telephone)) {
             $phones = $user->getPhones();
-            $phone = new \Google_Service_Directory_UserPhone();
+            $phone = new Google_Service_Directory_UserPhone();
             $phone->setPrimary(false);
             $phone->setValue($t->telephone);
             if (is_array($phones)) {
@@ -373,7 +386,7 @@ class GsuiteServiceProvider extends ServiceProvider
             $user->setPhones($phones);
         }
 
-        $gender = new \Google_Service_Directory_UserGender();
+        $gender = new Google_Service_Directory_UserGender();
         if (!empty($t->gender)) {
             switch ($t->gender) {
                 case 0:
@@ -406,11 +419,11 @@ class GsuiteServiceProvider extends ServiceProvider
         if (!strpos($alias, '@')) {
             $alias .= '@' . config('services.gsuite.domain');
         }
-        $email_alias = new \Google_Service_Directory_Alias();
+        $email_alias = new Google_Service_Directory_Alias();
         $email_alias->setAlias($alias);
         try {
             return $this->directory->users_aliases->insert($userKey, $email_alias);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google createUserAlias($userKey, $alias):" . $e->getMessage());
             return false;
         }
@@ -443,7 +456,7 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         try {
             return $this->directory->users_aliases->listUsersAliases($userKey)->getAliases();
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google listUserAliases($userKey):" . $e->getMessage());
             return false;
         }
@@ -459,7 +472,7 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         try {
             return $this->directory->users_aliases->delete($userKey, $alias);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google removeUserAlias($userKey,$alias):" . $e->getMessage());
             return false;
         }
@@ -469,7 +482,7 @@ class GsuiteServiceProvider extends ServiceProvider
     {
         try {
             return $this->directory->groups->listGroups(['domain' => config('services.gsuite.domain')])->getGroups();
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice('google listGroups for All:' . $e->getMessage());
             return false;
         }
@@ -482,7 +495,7 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         try {
             return $this->directory->groups->get($groupKey);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google getGroup($groupKey):" . $e->getMessage());
             return false;
         }
@@ -495,7 +508,7 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         try {
             return $this->directory->groups->listGroups(['domain' => config('services.gsuite.domain'), 'userKey' => $userKey])->getGroups();
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google listGroups for user $userKey:" . $e->getMessage());
             return false;
         }
@@ -506,13 +519,13 @@ class GsuiteServiceProvider extends ServiceProvider
         if (!strpos($groupId, '@')) {
             $groupId .= '@' . config('services.gsuite.domain');
         }
-        $group = new \Google_Service_Directory_Group();
+        $group = new Google_Service_Directory_Group();
         $group->setEmail($groupId);
         $group->setDescription($groupName);
         $group->setName($groupName);
         try {
             return $this->directory->groups->insert($group);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google createGroup($groupId,$groupName):" . $e->getMessage());
             return false;
         }
@@ -525,7 +538,7 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         try {
             return $this->directory->members->listMembers($groupId)->getMembers();
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::debug("gs_listMembers($groupId):".$e->getMessage());
     
             return false;
@@ -541,14 +554,14 @@ class GsuiteServiceProvider extends ServiceProvider
             $userKey .= '@' . config('services.gsuite.domain');
         }
         if (!$role) $role = 'MEMBER';
-        $memberObj = new \Google_Service_Directory_Member();
+        $memberObj = new Google_Service_Directory_Member();
         $memberObj->setEmail($userKey);
         $memberObj->setRole($role);
         $memberObj->setType('USER');
         $memberObj->setStatus('ACTIVE');
         try {
             return $this->directory->members->insert($groupId, $memberObj);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google addMember($groupId,$userKey):" . $e->getMessage());
             return false;
         }
@@ -564,7 +577,7 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         try {
             return $this->directory->members->delete($groupId, $userKey);
-        } catch (\Google_Service_Exception $e) {
+        } catch (Google_Service_Exception $e) {
             Log::notice("google removeMember($groupId,$userKey):" . $e->getMessage());
             return false;
         }

@@ -163,6 +163,7 @@ class AdventureController extends Controller
     public function task_insert(Request $request)
     {
         $e = GameTask::create([
+            'title' => $request->input('title'),
             'worksheet_id' => $request->input('wid'),
             'coordinate_x' => $request->input('x'),
             'coordinate_y' => $request->input('y'),
@@ -180,6 +181,7 @@ class AdventureController extends Controller
     public function task_update(Request $request)
     {
         $e = GameTask::find($request->input('tid'));
+        if ($request->has('title')) $e->title = $request->input('title');
         if ($request->has('story')) $e->story = $request->input('story');
         if ($request->has('task')) $e->task = $request->input('task');
         if ($request->has('review')) $e->review = ($request->input('task') == 'yes');
