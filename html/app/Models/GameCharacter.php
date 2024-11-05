@@ -412,12 +412,6 @@ class GameCharacter extends Model
         $this->save();
     }
 
-    //取得此班級組態
-    public function configure()
-    {
-        return GameConfigure::findByClass($this->classroom_id);
-    }
-
     //取得此角色的學生物件
     public function student()
     {
@@ -565,7 +559,7 @@ class GameCharacter extends Model
     public function newday()
     {
         if (!$this->party) return;
-        $config = $this->configure();
+        $config = GameConfigure::findByClass($this->classroom_id);
         if ($config) {
             $this->mp += $config->daily_mp;
             if ($this->party->effect_hp != 0) {

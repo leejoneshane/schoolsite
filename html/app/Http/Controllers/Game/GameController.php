@@ -112,11 +112,11 @@ class GameController extends Controller
         } else {
             $result = GameSence::unlock($room_id, $uuid);
         }
-        if ($result == 'LOCKED') {
+        if ($result == 'locked') {
             $lock = GameSence::find($room_id);
             Watchdog::watch($request, '遊戲鎖定：' . $lock->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
-        if ($result == 'UNLOCKED') {
+        if ($result == 'unlocked') {
             Watchdog::watch($request, '遊戲解鎖：' . $room_id);
         }
         return response()->json(['success' => $result]);

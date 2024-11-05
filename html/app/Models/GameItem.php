@@ -170,7 +170,7 @@ class GameItem extends Model
             if ($character->buff == 'invincible') {
                 $character->buff = null;
                 $character->save();
-                return MISS;
+                return 'miss';
             }
             if ($this->hp != 0) {
                 if ($character->status == 'DEAD') {

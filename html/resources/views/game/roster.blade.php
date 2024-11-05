@@ -495,13 +495,13 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( (response) => {
-            var uuids = response.data.present;
-            for (var k in uuids) {
-                document.getElementById('absent' + uuids[k]).checked = false;
+            var myuuids = response.data.present;
+            for (var k in myuuids) {
+                document.getElementById('absent' + myuuids[k]).checked = false;
             }
-            var uuids = response.data.absent;
-            for (var k in uuids) {
-                document.getElementById('absent' + uuids[k]).checked = true;
+            var myuuids = response.data.absent;
+            for (var k in myuuids) {
+                document.getElementById('absent' + myuuids[k]).checked = true;
             }
         });
     }
@@ -631,6 +631,7 @@
     }
 
     function positive_act() {
+        uuids = [];
         var nodes = document.querySelectorAll('input[type="checkbox"][data-group]:checked');
         nodes.forEach( (node) => {
             uuids.push(node.id);
@@ -705,6 +706,7 @@
     }
 
     function negative_act() {
+        uuids = [];
         var nodes = document.querySelectorAll('input[type="checkbox"][data-group]:checked');
         nodes.forEach( (node) => {
             uuids.push(node.id);
@@ -776,6 +778,7 @@
     }
 
     function negative_delay() {
+        uuids = [];
         var nodes = document.querySelectorAll('input[type="checkbox"][data-group]:checked');
         nodes.forEach( (node) => {
             uuids.push(node.id);

@@ -42,10 +42,10 @@
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
         }).then( (response) => {
-            if (response.data.success == 'LOCKED') {
+            if (response.data.success == 'locked') {
                 alert("已將此班級鎖定，預計 40 分鐘後自動解鎖！");
             }
-            if (response.data.success == 'UNLOCKED') {
+            if (response.data.success == 'unlocked') {
                 alert("已將此班級解鎖！");
             }
         }).catch( (response) => {

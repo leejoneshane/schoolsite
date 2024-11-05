@@ -77,6 +77,7 @@ class GameSetting extends Model
         if (is_string($uuids)) $uuids[] = $uuids;
         foreach ($uuids as $uuid) {
             $character = GameCharacter::find($uuid);
+            if (!$character) continue;
             if ($xp) {
                 $character->xp += $xp;
             }
@@ -106,6 +107,7 @@ class GameSetting extends Model
         if (is_string($uuids)) $uuids[] = $uuids;
         foreach ($uuids as $uuid) {
             $character = GameCharacter::find($uuid);
+            if (!$character) continue;
             $message = $character->seat.' '.$character->name;
             $add = [];
             if ($rule_id) {

@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Models\GameBase;
-use App\Models\GameConfigure;
 
 class GameParty extends Model
 {
@@ -93,15 +92,9 @@ class GameParty extends Model
     }
 
     //取得此隊伍的基地
-    public function fundation()
+    public function foundation()
     {
         return $this->hasOne('App\Models\GameBase', 'id', 'base_id');
-    }
-
-    //取得此班級組態
-    public function configure()
-    {
-        return GameConfigure::findByClass($this->classroom_id);
     }
 
     //取得此隊伍的所有家具
@@ -111,7 +104,7 @@ class GameParty extends Model
     }
 
     //移除據點
-    public function remove_fundation()
+    public function remove_foundation()
     {
         $old = $this->foundation;
         if ($old) {
@@ -126,7 +119,7 @@ class GameParty extends Model
     }
 
     //變更據點
-    public function change_fundation($id)
+    public function change_foundation($id)
     {
         $old = $this->foundation;
         $new = GameBase::find($id);

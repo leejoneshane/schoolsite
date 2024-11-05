@@ -37,7 +37,7 @@ class PublicController extends Controller
 
     public function index(Request $request, $section = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能瀏覽公開課！');
         }
@@ -57,6 +57,7 @@ class PublicController extends Controller
         $domainmanager = $user->hasPermission('public.domain');
         $teacher = Teacher::find($user->uuid);
         $domain = $teacher->domains->first();
+        $publics = null;
         if ($manager) {
             $publics = PublicClass::bySection($section);
         } elseif ($domainmanager || $domain) {
@@ -78,7 +79,7 @@ class PublicController extends Controller
 
     public function add(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能新增公開課！');
         }
@@ -112,7 +113,7 @@ class PublicController extends Controller
 
     public function insert(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能新增公開課！');
         }
@@ -182,7 +183,7 @@ class PublicController extends Controller
 
     public function edit($id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能修改公開課資訊！');
         }
@@ -206,7 +207,7 @@ class PublicController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能修改公開課資訊！');
         }
@@ -310,7 +311,7 @@ class PublicController extends Controller
 
     public function new($section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能補登公開課！');
         }
@@ -333,7 +334,7 @@ class PublicController extends Controller
 
     public function append(Request $request, $section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能補登公開課！');
         }
@@ -404,7 +405,7 @@ class PublicController extends Controller
 
     public function remove(Request $request, $id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能刪除公開課資訊！');
         }
@@ -419,7 +420,7 @@ class PublicController extends Controller
                         unlink($path);
                     }
                 }
-                if (!empty($public->eduplan)) {
+                if (!empty($public->discuss)) {
                     $path = public_path('public_class/' . $public->discuss);
                     if (file_exists($path)) {
                         unlink($path);
@@ -437,7 +438,7 @@ class PublicController extends Controller
 
     public function show(Request $request)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         if ($user->user_type == 'Student') {
             return redirect()->route('home')->with('error', '只有教職員才能瀏覽公開課資訊！');
         }
@@ -491,7 +492,7 @@ class PublicController extends Controller
     }
 
     public function pdf($section, $domain_id) {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
         if ($manager) {
             $domain = Domain::find($domain_id);
@@ -504,7 +505,7 @@ class PublicController extends Controller
     }
 
     public function docx($section, $domain_id) {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
         if ($manager) {
             $domain = Domain::find($domain_id);
@@ -517,7 +518,7 @@ class PublicController extends Controller
     }
 
     public function excel($section) {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
         if ($manager) {
             $filename = section_name($section) . '公開課彙整.xlsx';

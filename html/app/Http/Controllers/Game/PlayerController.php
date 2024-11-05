@@ -248,6 +248,7 @@ class PlayerController extends Controller
 
     public function skill_cast(Request $request)
     {
+        $result = null;
         $me = GameCharacter::find($request->input('self'));
         $skill = GameSkill::find($request->input('skill'));
         if ($request->has('item')) {
@@ -356,6 +357,7 @@ class PlayerController extends Controller
 
     public function item_use(Request $request)
     {
+        $result = null;
         $me = GameCharacter::find($request->input('self'));
         $item = GameItem::find($request->input('item'));
         if ($item->object == 'self') {
@@ -652,6 +654,7 @@ class PlayerController extends Controller
 
     public function skill_monster(Request $request)
     {
+        $result = null;
         $me = GameCharacter::find($request->input('self'));
         $skill = GameSkill::find($request->input('skill'));
         if ($request->has('item')) {
@@ -679,6 +682,7 @@ class PlayerController extends Controller
 
     public function item_monster(Request $request)
     {
+        $result = null;
         $me = GameCharacter::find($request->input('self'));
         $item = GameItem::find($request->input('item'));
         if ($item->object == 'self') {
