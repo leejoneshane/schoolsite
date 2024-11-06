@@ -8,20 +8,20 @@
                 <td colspan="2" class="bg-gray-500 text-white text-center">基本資料</td>
             </tr>
             <tr>
-                <td colspan="2">{{ $character->seat }} {{ $character->name }}</td>
+                <td colspan="2" class="p-2">{{ $character->seat }} {{ $character->name }}</td>
             </tr>
             <tr>
-                <td class="w-16">稱號</td><td>{{ $character->title ?: '無' }}</td>
+                <td class="w-16 p-2">稱號</td><td>{{ $character->title ?: '無' }}</td>
             </tr>
             <tr>
-                <td class="w-16">職業</td>
+                <td class="w-16 p-2">職業</td>
                 <td>{{ $character->profession->name }}</td>
             </tr>
             <tr>
-                <td class="w-16">等級</td><td id="level">{{ $character->level }}</td>
+                <td class="w-16 p-2">等級</td><td id="level">{{ $character->level }}</td>
             </tr>
             <tr>
-                <td class="w-16">HP</td>
+                <td class="w-16 p-2">HP</td>
                 <td>
                     <div class="w-full h-4 bg-gray-200 rounded-full dark:bg-gray-700 text-right leading-none text-xs font-medium">
                         <div id="hp" class="h-4 bg-green-600 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->hp / $character->max_hp * 100) }}%">{{ $character->hp }}</div>
@@ -29,7 +29,7 @@
                 </td>
             </tr>
             <tr>
-                <td class="w-16">MP</td>
+                <td class="w-16 p-2">MP</td>
                 <td>
                     <div class="w-full h-4 bg-gray-200 rounded-full dark:bg-gray-700 text-right leading-none text-xs font-medium">
                         <div id="mp" class="h-4 bg-blue-600 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->mp / $character->max_mp * 100) }}%">{{ $character->mp }}</div>
@@ -37,22 +37,22 @@
                 </td>
             </tr>
             <tr>
-                <td class="w-16">AP</td><td><span id="final_ap" class="text-red-500">{{ $character->final_ap }}</span>[<span id="ap" class="text-blue-500">{{ $character->ap }}</span>]</td>
+                <td class="w-16 p-2">AP</td><td><span id="final_ap" class="text-red-500">{{ $character->final_ap }}</span>[<span id="ap" class="text-blue-500">{{ $character->ap }}</span>]</td>
             </tr>
             <tr>
-                <td class="w-16">DP</td><td><span id="final_dp" class="text-red-500">{{ $character->final_dp }}</span>[<span id="dp" class="text-blue-500">{{ $character->dp }}</span>]</td>
+                <td class="w-16 p-2">DP</td><td><span id="final_dp" class="text-red-500">{{ $character->final_dp }}</span>[<span id="dp" class="text-blue-500">{{ $character->dp }}</span>]</td>
             </tr>
             <tr>
-                <td class="w-16">SP</td><td><span id="final_sp" class="text-red-500">{{ $character->final_sp }}</span>[<span id="sp" class="text-blue-500">{{ $character->sp }}</span>]</td>
+                <td class="w-16 p-2">SP</td><td><span id="final_sp" class="text-red-500">{{ $character->final_sp }}</span>[<span id="sp" class="text-blue-500">{{ $character->sp }}</span>]</td>
             </tr>
             <tr>
-                <td class="w-16">狀態</td><td><span id="status" class="text-blue-500">{{ $character->status_desc }}</span></td>
+                <td class="w-16 p-2">狀態</td><td><span id="status" class="text-blue-500">{{ $character->status_desc }}</span></td>
             </tr>
             <tr>
-                <td class="w-16">XP</td><td><span id="xp" class="text-lime-500">{{ $character->xp }}</span></td>
+                <td class="w-16 p-2">XP</td><td><span id="xp" class="text-lime-500">{{ $character->xp }}</span></td>
             </tr>
             <tr>
-                <td class="w-16">GP</td><td><span id="gp" class="text-lime-500">{{ $character->gp }}</span></td>
+                <td class="w-16 p-2">GP</td><td><span id="gp" class="text-lime-500">{{ $character->gp }}</span></td>
             </tr>
         </table>
     </div>
@@ -201,7 +201,7 @@
             }
             items.forEach( (item, k) => {
                 var node = document.getElementById('bag' + k);
-                if (item.passive == 1) {
+                if (item.passive == 1 && character.status != 'DEAD' && character.status != 'COMA') {
                     var btn = document.createElement('button');
                     btn.setAttribute('type', 'button');
                     btn.classList.add('relative','inline-flex','items-center','p-3','text-sm','font-medium','text-center','text-white','rounded-lg','hover:bg-blue-800','focus:ring-4','focus:outline-none','focus:ring-blue-300',);
@@ -358,6 +358,7 @@
 
     function item_use(id) {
         data_item = id;
+        data_type = 'item';
         var data_target = items[id].object;
         if (data_target == 'partner') {
             teamModal.show();
@@ -393,6 +394,8 @@
                 sp.innerHTML = character.final_sp;
                 var sp = document.getElementById('sp');
                 sp.innerHTML = character.sp;
+                var status = document.getElementById('status');
+                status.innerHTML = character.status_desc;
                 var xp = document.getElementById('xp');
                 xp.innerHTML = character.xp;
                 var gp = document.getElementById('gp');
@@ -443,6 +446,8 @@
                 sp.innerHTML = character.final_sp;
                 var sp = document.getElementById('sp');
                 sp.innerHTML = character.sp;
+                var status = document.getElementById('status');
+                status.innerHTML = character.status_desc;
                 var xp = document.getElementById('xp');
                 xp.innerHTML = character.xp;
                 var gp = document.getElementById('gp');
@@ -490,6 +495,8 @@
                 sp.innerHTML = character.final_sp;
                 var sp = document.getElementById('sp');
                 sp.innerHTML = character.sp;
+                var status = document.getElementById('status');
+                status.innerHTML = character.status_desc;
                 var xp = document.getElementById('xp');
                 xp.innerHTML = character.xp;
                 var gp = document.getElementById('gp');
@@ -537,6 +544,8 @@
                 sp.innerHTML = character.final_sp;
                 var sp = document.getElementById('sp');
                 sp.innerHTML = character.sp;
+                var status = document.getElementById('status');
+                status.innerHTML = character.status_desc;
                 var xp = document.getElementById('xp');
                 xp.innerHTML = character.xp;
                 var gp = document.getElementById('gp');

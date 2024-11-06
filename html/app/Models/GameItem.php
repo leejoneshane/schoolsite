@@ -181,6 +181,7 @@ class GameItem extends Model
                     }
                 }
             } else {
+                if ($this->status == 'DEAD') return 'miss';
                 if ($this->hp > 1 || $this->hp < -1) {
                     $character->hp += $this->hp;
                 } else {
@@ -196,6 +197,7 @@ class GameItem extends Model
                     }
                 }
             } else {
+                if ($this->status == 'COMA') return 'miss';
                 if ($this->mp > 1 || $this->mp < -1) {
                     $character->mp += $this->mp;
                 } else {

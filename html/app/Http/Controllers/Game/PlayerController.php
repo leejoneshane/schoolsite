@@ -250,6 +250,7 @@ class PlayerController extends Controller
     {
         $result = null;
         $me = GameCharacter::find($request->input('self'));
+        $target = GameCharacter::find($request->input('target'));
         $skill = GameSkill::find($request->input('skill'));
         if ($request->has('item')) {
             $item = GameItem::find($request->input('item'));
@@ -260,7 +261,6 @@ class PlayerController extends Controller
             $result = $me->use_skill($skill->id);
             $message = $me->name.'對自己施展'.$skill->name;
         } elseif ($skill->object == 'partner') {
-            $target = GameCharacter::find($request->input('target'));
             if ($target) {
                 if ($item) {
                     $result = $me->use_skill($skill->id, $target->uuid, null, $item->id);
@@ -279,14 +279,21 @@ class PlayerController extends Controller
             $message = $me->name.'對全隊施展'.$skill->name;
             if ($item) $message .= $item->name;
         }
-        if ($result == 'DEAD') {
-            $message .= '因為您已經死亡無法施展！';
-        } elseif ($result == 'COMA') {
-            $message .= '因為您已經昏迷無法施展！';
-        } elseif ($result == 'miss') {
-            $message .= '，未命中！';
+        if (isset($message)) {
+            if ($result == 'DEAD') {
+                $message .= '因為您已經死亡無法施展！';
+            } elseif ($result == 'COMA') {
+                $message .= '因為您已經昏迷無法施展！';
+            } elseif ($result == 'not_exists') {
+                $message .= '，技能不存在！';
+            }
+            if (is_array($result)) {
+                foreach ($result as $k => $r) {
+                    if ($k == $target->seat && $r == 'miss') $message .= '，未命中！';
+                }
+            }
+            broadcast(new GameCharacterChannel($me->stdno, $message));
         }
-        if (isset($message)) broadcast(new GameCharacterChannel($me->stdno, $message));
         $me->refresh();
         return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
@@ -366,19 +373,18 @@ class PlayerController extends Controller
     {
         $result = null;
         $me = GameCharacter::find($request->input('self'));
+        $target = GameCharacter::find($request->input('target'));
         $item = GameItem::find($request->input('item'));
         if ($item->object == 'self') {
             $result = $me->use_item($item->id);
             $message = $me->name.'對自己使用'.$item->name;
         } elseif ($item->object == 'partner') {
-            $target = GameCharacter::find($request->input('target'));
             $result = $me->use_item($item->id, $target->uuid);
             $message = $me->name.'對'.$target->name.'使用'.$item->name;
         } elseif ($item->object == 'party') {
             $result = $me->use_item($item->id, null, $me->party_id);
             $message = $me->name.'對全隊使用'.$item->name;
         } else {
-            $target = GameCharacter::find($request->input('target'));
             if ($item->object == 'all') {
                 $result = $me->use_item($item->id, null, $target->party_id);
                 $message = $me->name.'對所有對手使用'.$item->name;
@@ -387,14 +393,21 @@ class PlayerController extends Controller
                 $message = $me->name.'對'.$target->name.'使用'.$item->name;
             }
         }
-        if ($result == 'DEAD') {
-            $message .= '因為您已經死亡無法使用！';
-        } elseif ($result == 'COMA') {
-            $message .= '因為您已經昏迷無法使用！';
-        } elseif ($result == 'miss') {
-            $message .= '，未命中！';
+        if (isset($message)) {
+            if ($result == 'DEAD') {
+                $message .= '因為您已經死亡無法使用！';
+            } elseif ($result == 'COMA') {
+                $message .= '因為您已經昏迷無法使用！';
+            } elseif ($result == 'not_exists') {
+                $message .= '，技能不存在！';
+            }
+            if (is_array($result)) {
+                foreach ($result as $k => $r) {
+                    if ($k == $target->seat && $r == 'miss') $message .= '，未命中！';
+                }
+            }
+            broadcast(new GameCharacterChannel($me->stdno, $message));
         }
-        if (isset($message)) broadcast(new GameCharacterChannel($me->stdno, $message));
         $me->refresh();
         return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }

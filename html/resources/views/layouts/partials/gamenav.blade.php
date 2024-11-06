@@ -216,6 +216,7 @@
     </form>
 </nav>
 @locked(session('gameclass'))
+@teacher
 <script nonce="selfhost">
     function health() {
         window.axios.get('{{ route('game.health') }}')
@@ -227,4 +228,5 @@
     }
     window.setInterval(health, 60000);
 </script>
+@endteacher
 @endlocked
