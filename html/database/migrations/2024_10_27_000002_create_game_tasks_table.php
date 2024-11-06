@@ -20,8 +20,8 @@ return new class extends Migration
             $table->integer('next_task')->nullable();
             $table->integer('coordinate_x');
             $table->integer('coordinate_y');
-            $table->string('story')->nullable();
-            $table->string('task')->nullable();
+            $table->text('story')->nullable();
+            $table->text('task')->nullable();
             $table->boolean('review')->default(1);
             $table->integer('reward_xp')->default(0);
             $table->integer('reward_gp')->default(0);

@@ -178,13 +178,19 @@ class AdventureController extends Controller
         if (!$w->next_task) {
             $w->next_task = $e->id;
             $w->save();
+            $w->refresh();
         } else {
             $last = GameTask::last($w->id);
             $last->next_task = $e->id;
             $last->save();
+            $last->refresh();
         }
         Watchdog::watch($request, '新增學習任務：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return response()->json([ 'task' => $e ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        if (isset($last)) {
+            return response()->json([ 'last' => $last, 'task' => $e ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        } else {
+            return response()->json([ 'worksheet' => $w, 'task' => $e ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        }
     }
 
     public function task_update(Request $request)
@@ -224,6 +230,7 @@ class AdventureController extends Controller
             $e->save();    
         }
         Watchdog::watch($request, '學習任務移動到新的地圖座標：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        return response()->json([ 'task' => $e ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function worksheet_assign($worksheet_id)

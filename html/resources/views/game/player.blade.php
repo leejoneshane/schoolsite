@@ -197,10 +197,11 @@
             items = [];
             for (var k in response.data.items) {
                 var item = response.data.items[k];
-                items[k] = item;
+                items[item.id] = item;
             }
-            items.forEach( (item, k) => {
-                var node = document.getElementById('bag' + k);
+            var seq = 0;
+            items.forEach( (item) => {
+                var node = document.getElementById('bag' + seq);
                 if (item.passive == 1 && character.status != 'DEAD' && character.status != 'COMA') {
                     var btn = document.createElement('button');
                     btn.setAttribute('type', 'button');
@@ -228,6 +229,7 @@
                     btn.appendChild(badge);
                     node.appendChild(btn);
                 }
+                seq ++;
             });
         });
     }

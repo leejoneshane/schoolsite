@@ -37,7 +37,7 @@
             @foreach ($worksheet->tasks as $t)
             <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
                 <td colspan="2" class="p-2">
-                    <button type="button" id="list{{ $t->id }}" onclick="open_editor({{ $t->id }})">{{ $t->title }}</button>
+                    <button type="button" id="list{{ $t->id }}" onclick="open_editor({{ $t->id }})" class="hover:bg-teal-100">{{ $t->title }}</button>
                 </td>
             </tr>
             @endforeach
@@ -106,7 +106,7 @@
     </div>
 </div>
 <script nonce="selfhost">
-    var wid = {{ $worksheet->id }};
+    var worksheet = {!! $worksheet->toJson(JSON_UNESCAPED_UNICODE) !!};
     var tid;
     var pos;
     var tasks = [];
@@ -121,17 +121,9 @@
     canvas.addEventListener('dragleave', function (event) { event.preventDefault(); return false; });
     canvas.addEventListener('drop', function (event) { 
         event.preventDefault();
-        var type = event.dataTransfer.getData('type');
         var myid = event.dataTransfer.getData('id');
         getMousePos(event);
-        if (type == 'task') {
-            move_task(myid, pos.x, pos.y);
-        } else {
-            var s = document.getElementById('spot' + myid); 
-            var sx = s.getAttribute('data-x');
-            var sy = s.getAttribute('data-y');
-            animate_line(sx, sy, pos.x, pos.y);
-        }
+        move_task(myid, pos.x, pos.y);
         return false;
     });
     const ctx = canvas.getContext("2d");
@@ -140,7 +132,10 @@
     const map = new Image(700, 700);
     map.src = '{{ $worksheet->map->url() }}';
     map.addEventListener("load", (e) => {
-        ctx.drawImage(map, 0, 0, canvas.width, canvas.height);
+        @foreach ($worksheet->tasks as $t)
+        create_dot({{ $t->id }}, {{ $t->coordinate_x }}, {{ $t->coordinate_y }});
+        @endforeach
+        redraw_lines();
     });
     window.addEventListener("resize", (event) => {
         var rect = canvas.getBoundingClientRect();
@@ -153,15 +148,6 @@
         }
     });
 
-    @foreach ($worksheet->tasks as $t)
-    create_dot({{ $t->id }}, {{ $t->coordinate_x }}, {{ $t->coordinate_y }});
-    @endforeach
-    @foreach ($worksheet->tasks as $t)
-    @if ($t->next_task)
-    draw_line({{ $t->id }}, {{ $t->next_task }});
-    @endif
-    @endforeach
-
     function getMousePos(evt) {
         var rect = canvas.getBoundingClientRect();
         pos = {
@@ -170,11 +156,22 @@
         };
     }
 
-    function draw_line(from, to) {
-        ctx.beginPath();
-        ctx.moveTo(tasks[from].coordinate_x, tasks[from].coordinate_y);
-        ctx.lineTo(tasks[to].coordinate_x, tasks[to].coordinate_y);
-        ctx.stroke();
+    function redraw_lines() {
+        ctx.drawImage(map, 0, 0, canvas.width, canvas.height);
+        var seq = 0;
+        var from = worksheet.next_task;
+        while (from > 0) {
+            var to = tasks[from].next_task;
+            if (to > 0) {
+                ctx.beginPath();
+                ctx.moveTo(tasks[from].coordinate_x, tasks[from].coordinate_y);
+                ctx.lineTo(tasks[to].coordinate_x, tasks[to].coordinate_y);
+                ctx.strokeStyle = 'aqua';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+            from = to;
+        }
     }
 
     function create_dot(id, x, y) {
@@ -191,8 +188,8 @@
         tmp.setAttribute('data-x', x);
         tmp.setAttribute('data-y', y);
         tmp.setAttribute('draggable', true);
-        tmp.setAttribute('onclick', 'cancle_line(this)');
-        tmp.setAttribute('ondragstart', 'add_line(event)');
+        tmp.setAttribute('onclick', 'edit_task(this)');
+        tmp.setAttribute('ondragstart', 'drag_task(event)');
         tmp.setAttribute('ondrop', 'lineup(event)');
         tmp.setAttribute('role', 'task');
         tmp.style.position = 'absolute';
@@ -200,32 +197,6 @@
         tmp.style.top = y + parseInt(rect.top) + 'px';
         tmp.style.left = x + parseInt(rect.left) + 'px';
         tmp.style.width = '32px';
-        tmp.style.height = '32px';
-        document.body.appendChild(tmp);
-
-        x += 4;
-        y -= 16;
-        dot.style.color = 'aqua';
-        var xml = new XMLSerializer().serializeToString(dot);
-        var b64 = 'data:image/svg+xml;base64,' + btoa(xml);
-        var tmp = document.createElement('img');
-        tmp.setAttribute('id', 'task' + id);
-        tmp.setAttribute('src', b64);
-        if (tasks[id]) {
-            tmp.setAttribute('title', tasks[id].title);
-        }
-        tmp.setAttribute('data-id', id);
-        tmp.setAttribute('data-x', x);
-        tmp.setAttribute('data-y', y);
-        tmp.setAttribute('draggable', true);
-        tmp.setAttribute('onclick', 'edit_task(this)');
-        tmp.setAttribute('ondragstart', 'drag_task(event)');
-        tmp.setAttribute('role', 'task');
-        tmp.style.position = 'absolute';
-        tmp.style.zIndex = 3;
-        tmp.style.top = y + parseInt(rect.top) + 'px';
-        tmp.style.left = x + parseInt(rect.left) + 'px';
-        tmp.style.width = '24px';
         tmp.style.height = '32px';
         document.body.appendChild(tmp);
     }
@@ -237,10 +208,6 @@
     }
 
     function cancle_task() {
-        var node = document.getElementById('task0');
-        if (node) {
-            document.body.removeChild(node);
-        }
         var node = document.getElementById('spot0');
         if (node) {
             document.body.removeChild(node);
@@ -254,12 +221,6 @@
     }
 
     function drag_task(evt) {
-        evt.dataTransfer.setData('type', 'task');
-        evt.dataTransfer.setData('id', evt.target.getAttribute('data-id'));
-    }
-
-    function add_line(evt) {
-        evt.dataTransfer.setData('type', 'spot');
         evt.dataTransfer.setData('id', evt.target.getAttribute('data-id'));
     }
 
@@ -267,15 +228,7 @@
         var rect = canvas.getBoundingClientRect();
         x -= 16;
         y -= 16;
-        var myid = evt.dataTransfer.getData('id');
         var tmp = document.getElementById('spot' + myid);
-        tmp.setAttribute('data-x', x);
-        tmp.setAttribute('data-y', y);
-        tmp.style.top = y + parseInt(rect.top) + 'px';
-        tmp.style.left = x + parseInt(rect.left) + 'px';
-        x += 4;
-        y -= 16;
-        var tmp = document.getElementById('task' + myid);
         tmp.setAttribute('data-x', x);
         tmp.setAttribute('data-y', y);
         tmp.style.top = y + parseInt(rect.top) + 'px';
@@ -289,6 +242,10 @@
                 'Content-Type': 'application/json;charset=utf-8',
                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
             }
+        }).then( (response) => {
+            var task = response.data.task;
+            tasks[task.id] = task;
+            redraw_lines();
         });
     }
 
@@ -341,7 +298,7 @@
         var item = document.getElementById('item').value;
         if (tid == 0) {
             window.axios.post('{{ route('game.task_add') }}', {
-                wid: wid,
+                wid: worksheet.id,
                 title: title,
                 x: pos.x,
                 y: pos.y,
@@ -357,16 +314,16 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
             }).then( (response) => {
-                if (tasks.length > 0) {
-                    var last = tasks.slice(-1);
+                var last = response.data.last;
+                if (typeof last === 'undefined' || last === null) {
+                    worksheet = response.data.worksheet;
+                } else {
+                    tasks[last.id] = last;
                 }
                 var task = response.data.task;
                 tasks[task.id] = task;
                 var tmp = document.getElementById('spot0');
                 tmp.setAttribute('id', 'spot' + task.id);
-                tmp.setAttribute('data-id', task.id);
-                var tmp = document.getElementById('task0');
-                tmp.setAttribute('id', 'task' + task.id);
                 tmp.setAttribute('title', task.title);
                 tmp.setAttribute('data-id', task.id);
                 var parent = document.getElementById('empty').parentElement;
@@ -379,12 +336,13 @@
                 btn.setAttribute('type', 'button');
                 btn.setAttribute('id', 'list' + task.id);
                 btn.setAttribute('onclick', 'open_editor(' + task.id + ')');
+                btn.classList.add('hover:bg-teal-100');
                 btn.innerHTML = task.title;
                 td.appendChild(btn);
                 tr.appendChild(td);
                 parent.appendChild(tr);
                 if (tasks.length > 1) {
-                    draw_line(last.id, task.id);
+                    redraw_lines();
                 }
             });
         } else {
@@ -404,7 +362,7 @@
             }).then( (response) => {
                 var task = response.data.task;
                 tasks[task.id] = task;
-                var tmp = document.getElementById('task' + task.id);
+                var tmp = document.getElementById('spot' + task.id);
                 tmp.setAttribute('title', task.title);
                 var btn = document.getElementById('list' + task.id);
                 btn.innerHTML = task.title;
@@ -425,10 +383,6 @@
             var myid = response.data.success; 
             if (myid) {
                 delete tasks[myid];
-                var node = document.getElementById('task' + myid);
-                if (node) {
-                    document.body.removeChild(node);
-                }
                 var node = document.getElementById('spot' + myid);
                 if (node) {
                     document.body.removeChild(node);
@@ -438,7 +392,6 @@
                 if (btn) {
                     parent.removeChild(btn.parentElement.parentElement);
                 }
-
             }
         });
         taskModal.hide();
