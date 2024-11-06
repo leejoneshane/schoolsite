@@ -279,9 +279,16 @@ class PlayerController extends Controller
             $message = $me->name.'對全隊施展'.$skill->name;
             if ($item) $message .= $item->name;
         }
-        $me->refresh();
+        if ($result == 'DEAD') {
+            $message .= '因為您已經死亡無法施展！';
+        } elseif ($result == 'COMA') {
+            $message .= '因為您已經昏迷無法施展！';
+        } elseif ($result == 'miss') {
+            $message .= '，未命中！';
+        }
         if (isset($message)) broadcast(new GameCharacterChannel($me->stdno, $message));
-        return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => ($result ?: ''), 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        $me->refresh();
+        return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function arena_skill(Request $request)
@@ -373,16 +380,23 @@ class PlayerController extends Controller
         } else {
             $target = GameCharacter::find($request->input('target'));
             if ($item->object == 'all') {
-                $result = $me->use_skill($item->id, null, $target->party_id);
+                $result = $me->use_item($item->id, null, $target->party_id);
                 $message = $me->name.'對所有對手使用'.$item->name;
             } else {
-                $result = $me->use_skill($item->id, $target->uuid);
+                $result = $me->use_item($item->id, $target->uuid);
                 $message = $me->name.'對'.$target->name.'使用'.$item->name;
             }
         }
-        $me->refresh();
+        if ($result == 'DEAD') {
+            $message .= '因為您已經死亡無法使用！';
+        } elseif ($result == 'COMA') {
+            $message .= '因為您已經昏迷無法使用！';
+        } elseif ($result == 'miss') {
+            $message .= '，未命中！';
+        }
         if (isset($message)) broadcast(new GameCharacterChannel($me->stdno, $message));
-        return response()->json([ 'item' => $item, 'result' => ($result ?: ''), 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        $me->refresh();
+        return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function arena_item(Request $request)
@@ -674,9 +688,9 @@ class PlayerController extends Controller
         $me->refresh();
         $spawn = GameMonsterSpawn::find($request->input('target'));
         if ($item) {
-            return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => ($result ?: ''), 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+            return response()->json([ 'skill' => $skill, 'item' => $item, 'result' => $result, 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         } else {
-            return response()->json([ 'skill' => $skill, 'result' => ($result ?: ''), 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+            return response()->json([ 'skill' => $skill, 'result' => $result, 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         }
     }
 
@@ -692,7 +706,7 @@ class PlayerController extends Controller
         }
         $me->refresh();
         $spawn = GameCharacter::find($request->input('target'));
-        return response()->json([ 'item' => $item, 'result' => ($result ?: ''), 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        return response()->json([ 'item' => $item, 'result' => $result, 'character' => $me, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function journey(Request $request) {

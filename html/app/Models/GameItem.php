@@ -172,38 +172,34 @@ class GameItem extends Model
                 $character->save();
                 return 'miss';
             }
-            if ($this->hp != 0) {
-                if ($character->status == 'DEAD') {
-                    if ($this->status == 'DEAD') {
-                        if ($this->hp > 1 || $this->hp < -1) {
-                            $character->hp += $this->hp;
-                        } else {
-                            $character->hp += intval($character->max_hp * $this->hp);
-                        }
-                    }
-                } else {
+            if ($character->status == 'DEAD') {
+                if ($this->status == 'DEAD') {
                     if ($this->hp > 1 || $this->hp < -1) {
                         $character->hp += $this->hp;
                     } else {
                         $character->hp += intval($character->max_hp * $this->hp);
                     }
                 }
-            }
-            if ($this->mp != 0) {
-                if ($character->status == 'COMA') {
-                    if ($this->status == 'COMA') {
-                        if ($this->mp > 1 || $this->mp < -1) {
-                            $character->mp += $this->mp;
-                        } else {
-                            $character->mp += intval($character->max_hp * $this->mp);
-                        }
-                    }
+            } else {
+                if ($this->hp > 1 || $this->hp < -1) {
+                    $character->hp += $this->hp;
                 } else {
+                    $character->hp += intval($character->max_hp * $this->hp);
+                }
+            }
+            if ($character->status == 'COMA') {
+                if ($this->status == 'COMA') {
                     if ($this->mp > 1 || $this->mp < -1) {
                         $character->mp += $this->mp;
                     } else {
                         $character->mp += intval($character->max_hp * $this->mp);
                     }
+                }
+            } else {
+                if ($this->mp > 1 || $this->mp < -1) {
+                    $character->mp += $this->mp;
+                } else {
+                    $character->mp += intval($character->max_hp * $this->mp);
                 }
             }
             if ($this->ap != 0) {

@@ -39,7 +39,13 @@ class GameTask extends Model
     //篩選指定學習單的所有學習任務
     public static function findByWorksheet($id)
     {
-        return GameTask::where('worksheet_id', $id)->orderBy('seqence')->get();
+        return GameTask::where('worksheet_id', $id)->orderBy('id')->get();
+    }
+
+    //取得指定學習單的最後一個學習任務
+    public static function last($id)
+    {
+        return GameTask::where('worksheet_id', $id)->whereNull('next_task')->first();
     }
 
     //提供可報名年級中文字串

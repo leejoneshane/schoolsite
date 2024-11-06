@@ -44,7 +44,7 @@
         </table>
     </div>
     <div class="w-full h-full flex justify-center">
-        <canvas id="myCanvas" class="w-[700px] h-[700px] z-0" onmousedown="add_task(event)" ondrop="move_task(event)"></canvas>
+        <canvas id="myCanvas" width="700px" height="700px" z-index="0" onclick="add_task(event)"></canvas>
     </div>
 </div>
 <div class="sr-only">
@@ -113,26 +113,33 @@
     @foreach ($worksheet->tasks as $t)
     tasks[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE); !!};
     @endforeach
-    @foreach ($worksheet->tasks as $t)
-    create_dot({{ $t->id }}, tasks[{{ $t->id }}].coordinate_x, tasks[{{ $t->id }}].coordinate_y);
-    @endforeach
-    @foreach ($worksheet->tasks as $t)
-    @if ($t->next_task)
-    draw_line({{ $t->id }}, {{ $t->next_task }});
-    @endif
-    @endforeach
 
     var $targetEl = document.getElementById('taskModal');
     const taskModal = new window.Modal($targetEl);
     const canvas = document.getElementById('myCanvas');
+    canvas.addEventListener('dragover', function (event) { event.preventDefault(); });
+    canvas.addEventListener('dragleave', function (event) { event.preventDefault(); return false; });
+    canvas.addEventListener('drop', function (event) { 
+        event.preventDefault();
+        var type = event.dataTransfer.getData('type');
+        var myid = event.dataTransfer.getData('id');
+        getMousePos(event);
+        if (type == 'task') {
+            move_task(myid, pos.x, pos.y);
+        } else {
+            var s = document.getElementById('spot' + myid); 
+            var sx = s.getAttribute('data-x');
+            var sy = s.getAttribute('data-y');
+            animate_line(sx, sy, pos.x, pos.y);
+        }
+        return false;
+    });
     const ctx = canvas.getContext("2d");
     const dot = document.getElementById('dot');
     const spot = document.getElementById('spot');
     const map = new Image(700, 700);
     map.src = '{{ $worksheet->map->url() }}';
     map.addEventListener("load", (e) => {
-        canvas.width = 700;
-        canvas.height = 700;
         ctx.drawImage(map, 0, 0, canvas.width, canvas.height);
     });
     window.addEventListener("resize", (event) => {
@@ -140,16 +147,26 @@
         var nodes = document.querySelectorAll('img[role="task"]');
         if (nodes) {
             nodes.forEach( (node) => {
-                node.style.top = parseInt(node.getAttribute('data-y')) + rect.top + 'px';
-                node.style.left = parseInt(node.getAttribute('data-x')) + rect.left + 'px';
+                node.style.top = parseInt(node.getAttribute('data-y')) + parseInt(rect.top) + 'px';
+                node.style.left = parseInt(node.getAttribute('data-x')) + parseInt(rect.left) + 'px';
             });
         }
     });
 
+    @foreach ($worksheet->tasks as $t)
+    create_dot({{ $t->id }}, {{ $t->coordinate_x }}, {{ $t->coordinate_y }});
+    @endforeach
+    @foreach ($worksheet->tasks as $t)
+    @if ($t->next_task)
+    draw_line({{ $t->id }}, {{ $t->next_task }});
+    @endif
+    @endforeach
+
     function getMousePos(evt) {
+        var rect = canvas.getBoundingClientRect();
         pos = {
-            x: parseInt(evt.offsetX),
-            y: parseInt(evt.offsetY)
+            x: parseInt(evt.clientX - rect.left),
+            y: parseInt(evt.clientY - rect.top)
         };
     }
 
@@ -161,6 +178,8 @@
     }
 
     function create_dot(id, x, y) {
+        x -= 16;
+        y -= 16;
         var rect = canvas.getBoundingClientRect();
         spot.style.color = 'aqua';
         var xml = new XMLSerializer().serializeToString(spot);
@@ -168,22 +187,24 @@
         var tmp = document.createElement('img');
         tmp.setAttribute('id', 'spot' + id);
         tmp.setAttribute('src', b64);
+        tmp.setAttribute('data-id', id);
         tmp.setAttribute('data-x', x);
         tmp.setAttribute('data-y', y);
         tmp.setAttribute('draggable', true);
         tmp.setAttribute('onclick', 'cancle_line(this)');
         tmp.setAttribute('ondragstart', 'add_line(event)');
+        tmp.setAttribute('ondrop', 'lineup(event)');
         tmp.setAttribute('role', 'task');
         tmp.style.position = 'absolute';
         tmp.style.zIndex = 2;
-        tmp.style.top = y + rect.top + 'px';
-        tmp.style.left = x + rect.left + 'px';
+        tmp.style.top = y + parseInt(rect.top) + 'px';
+        tmp.style.left = x + parseInt(rect.left) + 'px';
         tmp.style.width = '32px';
         tmp.style.height = '32px';
         document.body.appendChild(tmp);
 
-        x -= 12;
-        y -= 32;
+        x += 4;
+        y -= 16;
         dot.style.color = 'aqua';
         var xml = new XMLSerializer().serializeToString(dot);
         var b64 = 'data:image/svg+xml;base64,' + btoa(xml);
@@ -198,12 +219,12 @@
         tmp.setAttribute('data-y', y);
         tmp.setAttribute('draggable', true);
         tmp.setAttribute('onclick', 'edit_task(this)');
-        tmp.setAttribute('ondragstart', 'darg_task(event)');
+        tmp.setAttribute('ondragstart', 'drag_task(event)');
         tmp.setAttribute('role', 'task');
         tmp.style.position = 'absolute';
         tmp.style.zIndex = 3;
-        tmp.style.top = y + rect.top + 'px';
-        tmp.style.left = x + rect.left + 'px';
+        tmp.style.top = y + parseInt(rect.top) + 'px';
+        tmp.style.left = x + parseInt(rect.left) + 'px';
         tmp.style.width = '24px';
         tmp.style.height = '32px';
         document.body.appendChild(tmp);
@@ -233,25 +254,32 @@
     }
 
     function drag_task(evt) {
-        evt.dataTransfer.setData("Text", evt.target.id);
+        evt.dataTransfer.setData('type', 'task');
+        evt.dataTransfer.setData('id', evt.target.getAttribute('data-id'));
     }
 
-    function move_task(evt) {
+    function add_line(evt) {
+        evt.dataTransfer.setData('type', 'spot');
+        evt.dataTransfer.setData('id', evt.target.getAttribute('data-id'));
+    }
+
+    function move_task(myid, x, y) {
         var rect = canvas.getBoundingClientRect();
-        getMousePos(evt);
-        var myid = evt.dataTransfer.getData("Text");
+        x -= 16;
+        y -= 16;
+        var myid = evt.dataTransfer.getData('id');
         var tmp = document.getElementById('spot' + myid);
-        tmp.setAttribute('data-x', pos.x);
-        tmp.setAttribute('data-y', pos.y);
-        tmp.style.top = pos.y + rect.top + 'px';
-        tmp.style.left = pos.x + rect.left + 'px';
-        var x = pos.x - 12;
-        var y = pos.y - 32;
+        tmp.setAttribute('data-x', x);
+        tmp.setAttribute('data-y', y);
+        tmp.style.top = y + parseInt(rect.top) + 'px';
+        tmp.style.left = x + parseInt(rect.left) + 'px';
+        x += 4;
+        y -= 16;
         var tmp = document.getElementById('task' + myid);
         tmp.setAttribute('data-x', x);
         tmp.setAttribute('data-y', y);
-        tmp.style.top = y + rect.top + 'px';
-        tmp.style.left = x + rect.left + 'px';
+        tmp.style.top = y + parseInt(rect.top) + 'px';
+        tmp.style.left = x + parseInt(rect.left) + 'px';
         window.axios.post('{{ route('game.task_moveto') }}', {
             tid: myid,
             x: pos.x,
@@ -283,11 +311,11 @@
             window.story.setData(tasks[tid].story);
             window.task.setData(tasks[tid].task);
             document.getElementById('review').checked = tasks[tid].review;
-            document.getElementById('xp').value = tasks[tid].xp;
-            document.getElementById('gp').value = tasks[tid].gp;
+            document.getElementById('xp').value = tasks[tid].reward_xp;
+            document.getElementById('gp').value = tasks[tid].reward_gp;
             var items = document.getElementById('item').options;
             items.forEach( item => {
-                if (item.value == tasks[tid].item) {
+                if (item.value == tasks[tid].reward_item) {
                     item.setAttribute('selected', null);
                 } else {
                     item.removeAttribute('selected');
@@ -334,10 +362,13 @@
                 }
                 var task = response.data.task;
                 tasks[task.id] = task;
+                var tmp = document.getElementById('spot0');
+                tmp.setAttribute('id', 'spot' + task.id);
+                tmp.setAttribute('data-id', task.id);
                 var tmp = document.getElementById('task0');
                 tmp.setAttribute('id', 'task' + task.id);
                 tmp.setAttribute('title', task.title);
-                tmp.setAttribute('data-id', id);
+                tmp.setAttribute('data-id', task.id);
                 var parent = document.getElementById('empty').parentElement;
                 var tr = document.createElement('tr');
                 tr.classList.add('odd:bg-white','even:bg-gray-100','dark:odd:bg-gray-700','dark:even:bg-gray-600');

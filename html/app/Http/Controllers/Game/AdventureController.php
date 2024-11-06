@@ -162,9 +162,10 @@ class AdventureController extends Controller
 
     public function task_insert(Request $request)
     {
+        $w = GameWorksheet::find($request->input('wid'));
         $e = GameTask::create([
             'title' => $request->input('title'),
-            'worksheet_id' => $request->input('wid'),
+            'worksheet_id' => $w->id,
             'coordinate_x' => $request->input('x'),
             'coordinate_y' => $request->input('y'),
             'story' => $request->input('story'),
@@ -174,6 +175,14 @@ class AdventureController extends Controller
             'reward_gp' => $request->input('gp'),
             'reward_item' => $request->input('item'),
         ]);
+        if (!$w->next_task) {
+            $w->next_task = $e->id;
+            $w->save();
+        } else {
+            $last = GameTask::last($w->id);
+            $last->next_task = $e->id;
+            $last->save();
+        }
         Watchdog::watch($request, '新增學習任務：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return response()->json([ 'task' => $e ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
@@ -196,6 +205,11 @@ class AdventureController extends Controller
     public function task_remove(Request $request)
     {
         $e = GameTask::find($request->input('tid'));
+        $w = $e->worksheet;
+        if ($w->next_task == $e->id) {
+            $w->next_task = $e->next_task;
+            $w->save();
+        }
         Watchdog::watch($request, '刪除學習任務：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $e->delete();
         return response()->json([ 'success' => $request->input('tid') ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
@@ -204,9 +218,11 @@ class AdventureController extends Controller
     public function task_moveto(Request $request)
     {
         $e = GameTask::find($request->input('tid'));
-        if ($request->has('x')) $e->coordinate_x = $request->input('x');
-        if ($request->has('y')) $e->coordinate_y = $request->input('y');
-        $e->save();
+        if ($e) {
+            if ($request->has('x')) $e->coordinate_x = $request->input('x');
+            if ($request->has('y')) $e->coordinate_y = $request->input('y');
+            $e->save();    
+        }
         Watchdog::watch($request, '學習任務移動到新的地圖座標：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
     }
 

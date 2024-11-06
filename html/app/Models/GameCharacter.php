@@ -602,7 +602,7 @@ class GameCharacter extends Model
         if ($this->status == 'COMA') return 'COMA';
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
-                return 'coma';
+                return 'COMA';
             } else {
                 $this->effect_timeout = null;
                 $this->buff = null;
@@ -718,6 +718,7 @@ class GameCharacter extends Model
     public function use_item($id, $uuid = null, $party_id = null)
     {
         if ($this->status == 'DEAD') return 'DEAD';
+        if ($this->status == 'COMA') return 'COMA';
         if ($this->buff == 'paralysis') {
             if ($this->effect_timeout >= Carbon::now()) {
                 return 'COMA';

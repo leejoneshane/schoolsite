@@ -532,10 +532,10 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('worksheet/remove/{worksheet_id}', 'App\Http\Controllers\Game\AdventureController@worksheet_remove')->name('game.worksheet_remove');
     Route::get('worksheet/manage/{worksheet_id}', 'App\Http\Controllers\Game\AdventureController@worksheet_manage')->name('game.worksheet_manage');
     Route::post('worksheet/duplicate/{worksheet_id}', 'App\Http\Controllers\Game\AdventureController@worksheet_duplicate')->name('game.worksheet_duplicate');
-    Route::post('task/add', 'App\Http\Controllers\Game\AdventureController@question_insert')->name('game.task_add');
-    Route::post('task/edit', 'App\Http\Controllers\Game\AdventureController@question_update')->name('game.task_edit');
-    Route::post('task/remove', 'App\Http\Controllers\Game\AdventureController@question_remove')->name('game.task_remove');
-    Route::post('task/moveto', 'App\Http\Controllers\Game\AdventureController@question_answer')->name('game.task_moveto');
+    Route::post('task/add', 'App\Http\Controllers\Game\AdventureController@task_insert')->name('game.task_add');
+    Route::post('task/edit', 'App\Http\Controllers\Game\AdventureController@task_update')->name('game.task_edit');
+    Route::post('task/remove', 'App\Http\Controllers\Game\AdventureController@task_remove')->name('game.task_remove');
+    Route::post('task/moveto', 'App\Http\Controllers\Game\AdventureController@task_moveto')->name('game.task_moveto');
     Route::get('worksheet/assign/{worksheet_id}', 'App\Http\Controllers\Game\AdventureController@worksheet_assign')->name('game.worksheet_assign');
     Route::get('adventure/add/{worksheet_id}', 'App\Http\Controllers\Game\AdventureController@adventure_add');
     Route::post('adventure/add/{worksheet_id}', 'App\Http\Controllers\Game\AdventureController@adventure_insert')->name('game.adventure_add');
