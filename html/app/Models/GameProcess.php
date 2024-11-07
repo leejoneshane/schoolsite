@@ -12,11 +12,11 @@ class GameProcess extends Model
 
     //以下屬性可以批次寫入
     protected $fillable = [
-        'uuid',         //冒險者
+        'uuid',         //探險者
         'classroom_id', //答題者班級代號
         'seat',         //答題者座號
         'student',      //答題者姓名
-        'adventure_id', //冒險代號
+        'adventure_id', //探險代號
         'worksheet_id', //學習單代號
         'task_id',      //任務編號
         'completed_at', //完成時間
@@ -36,6 +36,7 @@ class GameProcess extends Model
 
     //以下屬性需進行資料庫欄位格式轉換
     protected $casts = [
+        'noticed' => 'boolean',
         'completed_at' => 'datetime:Y-m-d H:i:s',
         'reviewed_at' => 'datetime:Y-m-d H:i:s',
     ];

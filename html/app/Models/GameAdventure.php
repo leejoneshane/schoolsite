@@ -26,6 +26,11 @@ class GameAdventure extends Model
         'processes',
     ];
 
+    //以下屬性需進行資料庫欄位格式轉換
+    protected $casts = [
+        'open' => 'boolean',
+    ];
+
     //自動移除所有學習任務
     protected static function booted()
     {
@@ -37,19 +42,19 @@ class GameAdventure extends Model
         });
     }
 
-    //篩選指定教師指派的所有地圖冒險
+    //篩選指定教師指派的所有地圖探險
     public static function findByUuid($uuid)
     {
         return GameAdventure::where('syear', current_year())->where('uuid', $uuid)->get();
     }
 
-    //篩選指定班級的所有地圖冒險
+    //篩選指定班級的所有地圖探險
     public static function findByClassroom($room_id)
     {
-        return GameAdventure::where('syear', current_year())->where('classroom_id', $room_id)->get();
+        return GameAdventure::where('syear', current_year())->where('classroom_id', $room_id)->where('open', true)->get();
     }
 
-    //篩選指定學習單的所有地圖冒險
+    //篩選指定學習單的所有地圖探險
     public static function findByWorksheet($worksheet_id)
     {
         return GameAdventure::where('syear', current_year())->where('worksheet_id', $worksheet_id)->get();

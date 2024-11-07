@@ -7,7 +7,7 @@
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
-<form id="add-class" action="{{ route('game.dungeon_add', [ 'evaluate_id' => $evaluate->id ]) }}" method="POST" enctype="multipart/form-data">
+<form id="add-class" action="{{ route('game.dungeon_add', [ 'evaluate_id' => $evaluate->id ]) }}" method="POST">
     @csrf
     <p><div class="p-3">
         <label for="title" class="text-base">地下城名稱：</label>
@@ -25,7 +25,7 @@
         <label class="text-base">指派班級：</label>
         @foreach ($teacher->classrooms as $cls)
         <span class="px-2">
-            <input type="checkbox" id="cls{{ $cls->id }}" name="classrooms" value="{{ $cls->id }}">{{ $cls->name }}
+            <input type="checkbox" id="cls{{ $cls->id }}" name="classrooms[]" value="{{ $cls->id }}">{{ $cls->name }}
         </span>
         @endforeach
     </div></p>

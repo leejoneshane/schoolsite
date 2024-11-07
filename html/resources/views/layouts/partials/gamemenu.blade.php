@@ -18,7 +18,7 @@
             <a href="{{ route('game.silence', [ 'room_id' => session('gameclass') ]) }}"><i class="text-2xl fa-solid fa-ear-listen" title="分貝計"></i></a>
         </div>
         <div class="py-2 text-center">
-            <a href="{{ route('game.adventures') }}"><i class="text-2xl fa-solid fa-map-location-dot" title="地圖冒險"></i></a>
+            <a href="{{ route('game.adventures') }}"><i class="text-2xl fa-solid fa-map-location-dot" title="地圖探險"></i></a>
         </div>
         @endlocked
         @endteacher
@@ -33,10 +33,12 @@
         <div class="py-2 text-center">
             <a href="{{ route('game.arena') }}"><i class="text-2xl fa-brands fa-battle-net" title="競技場"></i></a>
         </div>
-        <div class="py-2 text-center">
-            <a href="/game/travel"><i class="text-2xl fa-solid fa-map-location-dot" title="冒險地圖"></i></a>
-        </div>
         @endlocked
+        @map
+        <div class="py-2 text-center">
+            <a href="{{ route('game.adventure') }}"><i class="text-2xl fa-solid fa-map-location-dot" title="探險地圖"></i></a>
+        </div>
+        @endmap
         <div class="py-2 text-center">
             <a href="{{ route('game.dungeon') }}"><i class="text-2xl fa-solid fa-dungeon" title="地下城"></i></a>
         </div>

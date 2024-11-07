@@ -37,6 +37,9 @@ use App\Models\GameJourney;
 use App\Models\GameMonster;
 use App\Models\GameMonsterSpawn;
 use App\Models\GameDungeon;
+use App\Models\GameAdventure;
+use App\Models\GameProcess;
+use App\Models\GameTask;
 use App\Models\Watchdog;
 use Carbon\Carbon;
 
@@ -615,6 +618,47 @@ class PlayerController extends Controller
         if ($object) {
             broadcast(new GameDialogChannel($character->uuid, $object->uuid, 'reject_invite'));
         }
+    }
+
+    public function adventure()
+    {
+        $character = GameCharacter::find(Auth::user()->uuid);
+        ExitArena::dispatch($character);
+        $items = GameItem::all();
+        $adventure = GameAdventure::findByClassroom($character->classroom_id)->first();
+        if ($adventure) {
+            return view('game.adventure', [ 'adventure' => $adventure, 'character' => $character, 'items' => $items ]);
+        } else {
+            return redirect()->route('game.player')->with('error', '目前沒有開放的探險地圖！');
+        }
+    }
+
+    public function task_done(Request $request)
+    {
+        $character = GameCharacter::find($request->input('uuid'));
+        $adventure = GameAdventure::find($request->input('aid'));
+        $task = GameTask::find($request->input('tid'));
+        $process = GameProcess::create([
+            'uuid' => $character->uuid,
+            'classroom_id' => $character->classroom_id,
+            'seat' => $character->seat,
+            'student' => $character->name,
+            'adventure_id' => $adventure->id,
+            'worksheet_id' => $adventure->worksheet_id,
+            'task_id' => $task->id,
+        ]);
+        if ($task->review) {
+            $result = 'wait_review';
+        } else {
+            $result = 'success';
+            $process->reviewed_at = $process->completed_at;
+            $process->save();
+            if ($task->reward_xp > 0) $character->xp += $task->reward_xp;
+            if ($task->reward_gp > 0) $character->gp += $task->reward_gp;
+            if ($task->reward_item > 0) $character->get_item($task->reward_item);
+            $character->save();
+        }
+        return response()->json([ 'result' => $result, 'process' => $process ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function dungeon()

@@ -126,6 +126,18 @@ class AdventureController extends Controller
         }
     }
 
+    public function worksheet_view($worksheet_id)
+    {
+        $user = Auth::user();
+        if ($user->user_type == 'Teacher') {
+            $worksheet = GameWorksheet::find($worksheet_id);
+            $items = GameItem::all();
+            return view('game.worksheet_view', [ 'worksheet' => $worksheet, 'items' => $items ]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
     public function worksheet_duplicate($worksheet_id)
     {
         $user = Auth::user();
@@ -252,7 +264,7 @@ class AdventureController extends Controller
         if ($user->user_type == 'Teacher') {
             $teacher = Teacher::find($user->uuid);
             $worksheet = GameWorksheet::find($worksheet_id);
-            return view('game.dungeon_add', [ 'teacher' => $teacher, 'worksheet' => $worksheet ]);
+            return view('game.adventure_add', [ 'teacher' => $teacher, 'worksheet' => $worksheet ]);
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }
@@ -269,14 +281,20 @@ class AdventureController extends Controller
                 $classes = $request->input('classrooms');
             }
             foreach ($classes as $cls) {
+                $count = GameAdventure::findByClassroom($cls)->count();
+                if ($count > 0) {
+                    $open = false;
+                } else {
+                    $open = true;
+                }
                 $e = GameAdventure::create([
                     'syear' => current_year(),
                     'uuid' => $user->uuid,
                     'classroom_id' => $cls,
                     'worksheet_id' => $worksheet_id,
-                    'open' => true,
+                    'open' => $open,
                 ]);
-                Watchdog::watch($request, '新增地圖冒險：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));    
+                Watchdog::watch($request, '新增地圖探險：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));    
             }
             return redirect()->route('game.worksheet_assign', [ 'worksheet_id' => $worksheet_id ])->with('success', '學習單'.$w->title.'指派完成!');
         } else {
@@ -289,18 +307,23 @@ class AdventureController extends Controller
         $user = Auth::user();
         if ($user->user_type == 'Teacher') {
             $e = GameAdventure::find($adventure_id);
-            if ($request->input('open')) {
-                $e->open = true;
+            $count = GameAdventure::findByClassroom($e->classroom_id)->count();
+            if ($count > 0 && $request->input('open')) {
+                return redirect()->route('game.worksheet_assign', [ 'worksheet_id' => $e->worksheet_id ])->with('error', '該班級已經在其它地圖中進行探險，因此無法開啟探險任務!');
             } else {
-                $e->open = false;
+                if ($request->input('open')) {
+                    $e->open = true;
+                } else {
+                    $e->open = false;
+                }
+                $e->save();
             }
-            $e->save();
-            if ($request->input('open')) {
-                Watchdog::watch($request, '開啟地圖冒險：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-                return redirect()->route('game.worksheet_assign', [ 'worksheet_id' => $e->worksheet_id ])->with('success', '地圖冒險已經開啟!');
+            if ($e->open) {
+                Watchdog::watch($request, '開啟地圖探險：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                return redirect()->route('game.worksheet_assign', [ 'worksheet_id' => $e->worksheet_id ])->with('success', '地圖探險已經開啟!');
             } else {
-                Watchdog::watch($request, '關閉地圖冒險：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));                
-                return redirect()->route('game.worksheet_assign', [ 'worksheet_id' => $e->worksheet_id ])->with('success', '地圖冒險已經關閉!');
+                Watchdog::watch($request, '關閉地圖探險：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));                
+                return redirect()->route('game.worksheet_assign', [ 'worksheet_id' => $e->worksheet_id ])->with('success', '地圖探險已經關閉!');
             }
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
@@ -313,9 +336,9 @@ class AdventureController extends Controller
         if ($user->user_type == 'Teacher') {
             $e = GameAdventure::find($adventure_id);
             $wid = $e->worksheet->id;
-            Watchdog::watch($request, '刪除地圖冒險：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            Watchdog::watch($request, '刪除地圖探險：' . $e->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             $e->delete();
-            return redirect()->route('game.worksheet_assign', [ 'worksheet_id' => $wid ])->with('success', '地圖冒險已經刪除!');
+            return redirect()->route('game.worksheet_assign', [ 'worksheet_id' => $wid ])->with('success', '地圖探險已經刪除!');
         } else {
             return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
         }

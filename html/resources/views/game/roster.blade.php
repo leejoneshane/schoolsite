@@ -589,6 +589,13 @@
         });
     }
 
+    function select_none() {
+        var nodes = document.querySelectorAll('input[type="checkbox"][data-group]');
+        nodes.forEach( (node) => {
+            node.checked = false;
+        });
+    }
+
     function openModal(type) {
         const nodes = document.querySelectorAll('input[type="checkbox"][data-group]:checked');
         if (nodes.length < 1) {
@@ -702,6 +709,7 @@
                 var gp = document.getElementById('gp' + char.seat);
                 gp.innerHTML = char.gp;
             });
+            select_none();
         });
     }
 
@@ -774,6 +782,7 @@
                 var gp = document.getElementById('gp' + char.seat);
                 gp.innerHTML = char.gp;
             });
+            select_none();
         });
     }
 
@@ -833,6 +842,7 @@
             var info = document.getElementById('delay_info');
             if (info) info.classList.add('hidden');
         });
+        select_none();
     }
 
     function prepare_skill(uuid) {

@@ -2,6 +2,7 @@
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\GameCharacter;
+use App\Models\GameAdventure;
 use App\Models\Student;
 use App\Models\Teacher;
 use Carbon\Carbon;
@@ -14,6 +15,16 @@ const GAME_ITEM = 'images/game/items/'; //遊戲道具圖片路徑
 const GAME_MONSTER = 'images/game/monsters/'; //遊戲怪物圖片路徑
 const GAME_MAP = 'images/game/maps/'; //遊戲地圖路徑
 const GAME_UPLOAD = 'images/game/upload/'; //遊戲評量、學習單圖片路徑
+
+function map($room_id = null) {
+    if ($room_id) {
+        $adventure = GameAdventure::findByClassroom($room_id)->first();
+        return $adventure;
+    } else {
+        $adventure = GameAdventure::findByClassroom(employee()->class_id)->first();
+        return $adventure;
+    }
+}
 
 function locked($room_id = null) {
     if ($room_id) {

@@ -10,6 +10,8 @@ use App\Models\Classroom;
 use App\Models\GameClass;
 use App\Models\GameDungeon;
 use App\Models\GameAnswer;
+use App\Models\GameAdventure;
+use App\Models\GameProcess;
 
 class GameCharacter extends Model
 {
@@ -539,6 +541,30 @@ class GameCharacter extends Model
     public function dungeon_times($dungeon_id)
     {
         return GameAnswer::findByUuid($dungeon_id, $this->uuid)->count();
+    }
+
+    //取得此角色的已經探險的學習任務
+    public function travel($adventure_id)
+    {
+        return GameProcess::findByUuid($this->uuid, $adventure_id);
+    }
+
+    //檢查此角色是否已經完成指定的學習任務
+    public function visited($adventure_id, $task_id)
+    {
+        return GameProcess::where('uuid', $this->uuid)->where('adventure_id', $adventure_id)->where('task_id', $task_id)->first();
+    }
+
+    //取得此角色的下一個探險任務
+    public function next_visite($adventure_id)
+    {
+        $process = GameProcess::where('uuid', $this->uuid)->where('adventure_id', $adventure_id)->orderBy('task_id', 'desc')->first();
+        if ($process) {
+            return $process->task->next;
+        } else {
+            $adventure = GameAdventure::find($adventure_id);
+            return $adventure->worksheet->begin;
+        }
     }
 
     //取得此角色可進入的地下城

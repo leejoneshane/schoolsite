@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
-    管理冒險地圖
+    管理探險地圖
 </div>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>

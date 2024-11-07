@@ -37,7 +37,7 @@
         <td class="p-2">{{ $e->grade->name }}</td>
         <td class="p-2">
             <a class="py-2 pr-6 text-blue-500 hover:text-blue-600"
-                href="{{ route('game.worksheet_assign', ['worksheet_id' => $e->id]) }}" title="指派地圖冒險">
+                href="{{ route('game.worksheet_assign', ['worksheet_id' => $e->id]) }}" title="指派地圖探險">
                 <i class="fa-solid fa-map"></i>
             </a>
             @if ($e->uuid == Auth::user()->uuid)
@@ -66,6 +66,10 @@
             ">
                 <i class="fa-solid fa-clone"></i>
             </button>
+            <a class="py-2 pr-6 text-blue-500 hover:text-blue-600"
+                href="{{ route('game.worksheet_view', ['worksheet_id' => $e->id]) }}" title="學習單瀏覽">
+                <i class="fa-solid fa-eye"></i>
+            </a>
             @endif
         </td>
     </tr>

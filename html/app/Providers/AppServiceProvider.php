@@ -64,6 +64,10 @@ class AppServiceProvider extends ServiceProvider
             return locked($room_id);
         });
 
+        Blade::if('map', function ($room_id = null) {
+            return map($room_id);
+        });
+
         Queue::before(function (JobProcessing $event) {
             // $event->connectionName
             // $event->job

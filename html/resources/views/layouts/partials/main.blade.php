@@ -45,24 +45,6 @@
     </div>
 </div>
 <script nonce="selfhost">
-    var me = '{{ player()->uuid }}';
-
-    function reply(uuid) {
-        var tell = prompt('您要告訴對方什麼？');
-        if (tell) {
-            window.axios.post('{{ route('game.private') }}', {
-                from: me,
-                to: uuid,
-                message: tell,
-            }, {
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            });
-        }
-    }
-
     document.addEventListener("DOMContentLoaded", function(event) { 
         window.Echo.channel('classroom.{{ player()->class_id }}').listen('GameRoomChannel', (e) => {
             let rnd = Math.floor(Math.random() * 100000);

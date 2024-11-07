@@ -5,7 +5,7 @@
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/translations/zh.js"></script>
 <div class="w-full flex gap-4">
     <div class="w-80 h-full flex flex-col">
-        <div class="text-2xl font-bold leading-normal pb-5 drop-shadow-md">
+        <div class="text-2xl font-bold leading-normal p-5 drop-shadow-md">
             學習任務
             <a class="text-sm py-2 pl-6 rounded text-blue-500 hover:text-blue-600" href="{{ route('game.worksheets') }}">
                 <i class="fa-solid fa-eject"></i>返回上一頁
@@ -158,7 +158,6 @@
 
     function redraw_lines() {
         ctx.drawImage(map, 0, 0, canvas.width, canvas.height);
-        var seq = 0;
         var from = worksheet.next_task;
         while (from > 0) {
             var to = tasks[from].next_task;

@@ -66,6 +66,10 @@
             ">
                 <i class="fa-solid fa-clone"></i>
             </button>
+            <a class="py-2 pr-6 text-blue-500 hover:text-blue-600"
+                href="{{ route('game.evaluate_view', ['evaluate_id' => $e->id]) }}" title="試題瀏覽">
+                <i class="fa-solid fa-eye"></i>
+            </a>
             @endif
         </td>
     </tr>

@@ -120,6 +120,17 @@ class DungeonController extends Controller
         }
     }
 
+    public function evaluate_view($evaluate_id)
+    {
+        $user = Auth::user();
+        if ($user->user_type == 'Teacher') {
+            $evaluate = GameEvaluate::find($evaluate_id);
+            return view('game.evaluate_view', [ 'evaluate' => $evaluate ]);
+        } else {
+            return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        }
+    }
+
     public function evaluate_duplicate($evaluate_id)
     {
         $user = Auth::user();

@@ -17,7 +17,7 @@
         <input type="text" id="title" name="title" class="inline w-48 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
     </div></p>
     <p><div class="p-3">
-        <label for="subject" class="text-base">評量科目：</label>
+        <label for="subject" class="text-base">科目名稱：</label>
         <select id="subject" name="subject" class="inline w-48 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
             @foreach ($teacher->subjects as $sub)
             <option value="{{ $sub->name }}">{{ $sub->name }}</option>
