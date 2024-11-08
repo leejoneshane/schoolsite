@@ -190,7 +190,7 @@
         var y = tasks[id].coordinate_y - 16;
         var rect = canvas.getBoundingClientRect();
         spot.style.color = 'aqua';
-        if (tasks[id].visited) {
+        if (tasks[id].visited && process[id].reviewed_at != null) {
             spot.style.color = 'darkgray';
         }
         var xml = new XMLSerializer().serializeToString(spot);
@@ -204,7 +204,7 @@
         tmp.setAttribute('data-y', y);
         tmp.setAttribute('role', 'task');
         tmp.setAttribute('draggable', false);
-        if (tasks[id].visited) {
+        if (tasks[id].visited && process[id].reviewed_at != null) {
             tmp.setAttribute('onclick', 'view_process(this)');
         } else {
             tmp.setAttribute('onclick', 'move_mark(' + id + ')');
@@ -232,7 +232,7 @@
             }
             if (done) {
                 var to = tasks[from].next_task;
-                var next = tasks[to].visited;
+                var next = (tasks[to].visited && process[to].reviewed_at != null);
                 if (to > 0) {
                     if (next) {
                         ctx.beginPath();
@@ -261,7 +261,7 @@
             if (typeof tmp === 'undefined' || tmp === null) {
                 create_mark(from);
             }
-            var done = tasks[from].visited;
+            var done = (tasks[from].visited && process[from].reviewed_at != null);
             if (done) {
                 var to = tasks[from].next_task;
                 if (to > 0) {
@@ -295,6 +295,7 @@
     }
 
     function open_view(tno) {
+        tid = tno;
         document.getElementById('title').innerHTML = tasks[tno].title;
         document.getElementById('story').innerHTML = tasks[tno].story;
         document.getElementById('task').innerHTML = tasks[tno].task;
@@ -315,6 +316,10 @@
             document.getElementById('item').innerHTML = items[myid].name;
         } else {
             document.getElementById('item').innerHTML = '無';
+        }
+        if (tasks[tno].visited && process[tno].reviewed_at != null) {
+            document.getElementById('done').setAttribute('checked', true);
+            document.getElementById('done').setAttribute('disabled', true);
         }
         taskModal.show();
     }

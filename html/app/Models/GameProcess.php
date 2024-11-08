@@ -59,6 +59,15 @@ class GameProcess extends Model
             ->get();
     }
 
+    //篩選指定學生、指定學習單的完成紀錄
+    public static function findByTask($uuid, $adventure_id, $task_id)
+    {
+        return GameProcess::where('uuid', $uuid)
+            ->where('adventure_id', $adventure_id)
+            ->where('task_id', $task_id)
+            ->first();
+    }
+
     public function character()
     {
         return $this->hasOne('App\Models\GameCharacter', 'uuid', 'uuid');

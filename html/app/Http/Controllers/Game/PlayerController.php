@@ -635,28 +635,32 @@ class PlayerController extends Controller
 
     public function task_done(Request $request)
     {
+        $result = 'already';
         $character = GameCharacter::find($request->input('uuid'));
         $adventure = GameAdventure::find($request->input('aid'));
         $task = GameTask::find($request->input('tid'));
-        $process = GameProcess::create([
-            'uuid' => $character->uuid,
-            'classroom_id' => $character->classroom_id,
-            'seat' => $character->seat,
-            'student' => $character->name,
-            'adventure_id' => $adventure->id,
-            'worksheet_id' => $adventure->worksheet_id,
-            'task_id' => $task->id,
-        ]);
-        if ($task->review) {
-            $result = 'wait_review';
-        } else {
-            $result = 'success';
-            $process->reviewed_at = $process->completed_at;
-            $process->save();
-            if ($task->reward_xp > 0) $character->xp += $task->reward_xp;
-            if ($task->reward_gp > 0) $character->gp += $task->reward_gp;
-            if ($task->reward_item > 0) $character->get_item($task->reward_item);
-            $character->save();
+        $process = GameProcess::findByTask($character->uuid, $adventure->id, $task->id);
+        if (!$process) {
+            $process = GameProcess::create([
+                'uuid' => $character->uuid,
+                'classroom_id' => $character->classroom_id,
+                'seat' => $character->seat,
+                'student' => $character->name,
+                'adventure_id' => $adventure->id,
+                'worksheet_id' => $adventure->worksheet_id,
+                'task_id' => $task->id,
+            ]);
+            if ($task->review) {
+                $result = 'wait_review';
+            } else {
+                $result = 'success';
+                $process->reviewed_at = $process->completed_at;
+                $process->save();
+                if ($task->reward_xp > 0) $character->xp += $task->reward_xp;
+                if ($task->reward_gp > 0) $character->gp += $task->reward_gp;
+                if ($task->reward_item > 0) $character->get_item($task->reward_item);
+                $character->save();
+            }    
         }
         return response()->json([ 'result' => $result, 'process' => $process ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }

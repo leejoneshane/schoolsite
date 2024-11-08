@@ -552,13 +552,13 @@ class GameCharacter extends Model
     //檢查此角色是否已經完成指定的學習任務
     public function visited($adventure_id, $task_id)
     {
-        return GameProcess::where('uuid', $this->uuid)->where('adventure_id', $adventure_id)->where('task_id', $task_id)->first();
+        return GameProcess::where('uuid', $this->uuid)->where('adventure_id', $adventure_id)->where('task_id', $task_id)->whereNotNull('reviewed_at')->first();
     }
 
     //取得此角色的下一個探險任務
     public function next_visite($adventure_id)
     {
-        $process = GameProcess::where('uuid', $this->uuid)->where('adventure_id', $adventure_id)->orderBy('task_id', 'desc')->first();
+        $process = GameProcess::where('uuid', $this->uuid)->where('adventure_id', $adventure_id)->whereNotNull('reviewed_at')->orderBy('task_id', 'desc')->first();
         if ($process) {
             return $process->task->next;
         } else {
