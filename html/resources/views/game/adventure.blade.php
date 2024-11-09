@@ -83,12 +83,12 @@
                     </li>
                 </ul>
             </div>
-            <div id="default-tab-content" class="w-[42rem]">
-                <div class="hidden p-4 rounded-lg w-full max-h-64 overflow-y-auto" id="story" role="tabpanel" aria-labelledby="story-tab">
+            <div id="default-tab-content" class="w-[42rem] h-64">
+                <div class="hidden p-4 rounded-lg w-full h-64 overflow-y-auto" id="story" role="tabpanel" aria-labelledby="story-tab">
                 </div>
-                <div class="hidden p-4 rounded-lg w-full max-h-64 overflow-y-auto" id="task" role="tabpanel" aria-labelledby="task-tab">
+                <div class="hidden p-4 rounded-lg w-full h-64 overflow-y-auto" id="task" role="tabpanel" aria-labelledby="task-tab">
                 </div>
-                <div class="hidden p-4 rounded-lg w-full max-h-64 overflow-y-auto" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                <div class="hidden p-4 rounded-lg w-full h-64 overflow-y-auto" id="comments" role="tabpanel" aria-labelledby="comments-tab">
                 </div>
             </div>
             <div class="px-2 text-base leading-relaxed text-gray-500">
@@ -119,7 +119,7 @@
                 </button>
             </div>
             <div class="p-2 w-[42rem] text-base leading-relaxed text-gray-500">
-                <div class="w-full max-h-96 overflow-y-auto">
+                <div class="w-full h-64 overflow-y-auto">
                     {!! $adventure->worksheet->intro !!}
                 </div>
             </div>
