@@ -102,6 +102,18 @@
 
         @if (player())
         window.Echo.private('character.{{ player()->stdno }}').listen('GameCharacterChannel', (e) => {
+            if (e.message.substring(0, 14) == 'task_comments:') {
+                task_comments(e.message.substring(14));
+                return;
+            }
+            if (e.message.substring(0, 12) == 'task_notice:') {
+                task_notice(e.message.substring(12));
+                return;
+            }
+            if (e.message.substring(0, 10) == 'task_pass:') {
+                task_pass(e.message.substring(10));
+                return;
+            }
             let rnd = Math.floor(Math.random() * 100000);
             let popup = document.createElement('div');
             popup.id = 'messager_' + rnd;

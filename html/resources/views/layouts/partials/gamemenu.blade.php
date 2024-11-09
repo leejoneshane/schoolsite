@@ -17,9 +17,17 @@
         <div class="py-2 text-center">
             <a href="{{ route('game.silence', [ 'room_id' => session('gameclass') ]) }}"><i class="text-2xl fa-solid fa-ear-listen" title="分貝計"></i></a>
         </div>
+        @map(session('gameclass'))
         <div class="py-2 text-center">
-            <a href="{{ route('game.adventures') }}"><i class="text-2xl fa-solid fa-map-location-dot" title="地圖探險"></i></a>
+            <a href="{{ route('game.adventures') }}"><i class="text-2xl fa-solid fa-map-location-dot" title="探險地圖"></i></a>
         </div>
+        @endmap
+        @else
+        @map(session('viewclass'))
+        <div class="py-2 text-center">
+            <a href="{{ route('game.adventures') }}"><i class="text-2xl fa-solid fa-map-location-dot" title="探險地圖"></i></a>
+        </div>
+        @endmap
         @endlocked
         @endteacher
         @student

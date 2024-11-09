@@ -21,8 +21,11 @@ function map($room_id = null) {
         $adventure = GameAdventure::findByClassroom($room_id)->first();
         return $adventure;
     } else {
-        $adventure = GameAdventure::findByClassroom(employee()->class_id)->first();
-        return $adventure;
+        if (auth()->user()->user_type == 'Student') {
+            $adventure = GameAdventure::findByClassroom(employee()->class_id)->first();
+            return $adventure;    
+        }
+        return null;
     }
 }
 

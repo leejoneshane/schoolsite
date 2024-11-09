@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Teacher;
+use App\Models\Classroom;
 use App\Models\Grade;
+use App\Models\GameCharacter;
 use App\Models\GameItem;
 use App\Models\GameMap;
 use App\Models\GameAdventure;
@@ -14,6 +16,7 @@ use App\Models\GameProcess;
 use App\Models\GameWorksheet;
 use App\Models\GameTask;
 use App\Models\Watchdog;
+use App\Events\GameCharacterChannel;
 use Carbon\Carbon;
 
 class AdventureController extends Controller
@@ -344,28 +347,46 @@ class AdventureController extends Controller
         }
     }
 
-    public function adventures($adventure_id = null)
+    public function adventures()
     {
-        $adventures = GameAdventure::findByClassroom(session('gameclass'));
-        if (!$adventure_id) {
-            $adventure = $adventures->first();
-        } else {
-            $adventure = GameAdventure::find($adventure_id);
-        }
-        return view('game.adventures', [ 'adventure' => $adventure, 'adventures' => $adventures ]);
+        $room_id = session('gameclass');
+        if (!$room_id) $room_id = session('viewclass');
+        $classroom = Classroom::find($room_id);
+        $characters = GameCharacter::findByClass($room_id);
+        $adventure = GameAdventure::findByClassroom($room_id);
+        $items = GameItem::all();
+        return view('game.adventures', [ 'classroom' => $classroom, 'adventure' => $adventure, 'characters' => $characters, 'items' => $items]);
     }
 
-    public function get_processes($task_id)
+    public function get_processes(Request $request)
     {
-        $processes = GameProcess::findByClassroom(session('gameclass'), $task_id);
+        $room_id = session('gameclass');
+        if (!$room_id) $room_id = session('viewclass');
+        $adventure_id = $request->input('aid');
+        $task_id = $request->input('tid');
+        $processes = GameProcess::findByClassroom($room_id, $adventure_id, $task_id);
         return response()->json([ 'processes' => $processes ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
+    public function process_comments(Request $request)
+    {
+        $teacher = Teacher::find(Auth::user()->uuid);
+        $p = GameProcess::find($request->input('pid'));
+        $p->comments = $request->input('comments');
+        $p->save();
+        broadcast(new GameCharacterChannel($p->character->stdno, 'task_comments:'.$p->toJson(JSON_UNESCAPED_UNICODE)));
+        return response()->json([ 'process' => $p ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
     public function process_overrule(Request $request)
     {
         $p = GameProcess::find($request->input('pid'));
-        if (!empty($request->input('comments'))) $p->comments = $request->input('comments');
-        $p->noticed = true;
+        if ($request->input('notice') == 'yes') {
+            $p->noticed = true;
+            broadcast(new GameCharacterChannel($p->character->stdno, 'task_notice:'.$p->toJson(JSON_UNESCAPED_UNICODE)));
+        } else {
+            $p->noticed = false;
+        }
         $p->save();
         return response()->json([ 'process' => $p ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
@@ -373,10 +394,16 @@ class AdventureController extends Controller
     public function process_pass(Request $request)
     {
         $p = GameProcess::find($request->input('pid'));
-        if (!empty($request->input('comments'))) $p->comments = $request->input('comments');
-        $p->noticed = false;
-        $p->reviewed_at = Carbon::now();
-        $p->save();
+        if ($request->input('pass') == 'yes') {
+            $p->noticed = false;
+            $p->reviewed_at = Carbon::now();
+            $p->save();
+            broadcast(new GameCharacterChannel($p->character->stdno, 'task_pass:'.$p->toJson(JSON_UNESCAPED_UNICODE)));
+        } else {
+            $p->reviewed_at = null;
+            $p->save();
+            broadcast(new GameCharacterChannel($p->character->stdno, 'task_pass:'.$p->toJson(JSON_UNESCAPED_UNICODE)));
+        }
         return response()->json([ 'process' => $p ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 

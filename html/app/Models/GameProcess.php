@@ -42,9 +42,10 @@ class GameProcess extends Model
     ];
 
     //篩選指定班級、指定任務的完成紀錄
-    public static function findByClassroom($room_id, $task_id)
+    public static function findByClassroom($room_id, $adventure_id, $task_id)
     {
         return GameProcess::where('classroom_id', $room_id)
+            ->where('adventure_id', $adventure_id)
             ->where('task_id', $task_id)
             ->orderBy('seat')
             ->get();

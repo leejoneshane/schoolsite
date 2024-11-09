@@ -434,8 +434,9 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('timer/{room_id}', 'App\Http\Controllers\Game\GameController@timer')->name('game.timer');
     Route::get('silence/{room_id}', 'App\Http\Controllers\Game\GameController@silence')->name('game.silence');
     Route::get('adventures/{adventure_id?}', 'App\Http\Controllers\Game\AdventureController@adventures')->name('game.adventures');
-    Route::post('adventure/processes/{adventure_id}', 'App\Http\Controllers\Game\AdventureController@get_processes')->name('game.processes');
-    Route::post('adventure/process/overrule', 'App\Http\Controllers\Game\AdventureController@process_overrule')->name('game.process_overrule');
+    Route::post('adventure/processes', 'App\Http\Controllers\Game\AdventureController@get_processes')->name('game.get_processes');
+    Route::post('adventure/process/comments', 'App\Http\Controllers\Game\AdventureController@process_comments')->name('game.process_comments');
+    Route::post('adventure/process/notice', 'App\Http\Controllers\Game\AdventureController@process_overrule')->name('game.process_notice');
     Route::post('adventure/process/pass', 'App\Http\Controllers\Game\AdventureController@process_pass')->name('game.process_pass');
     //系統管理介面
     Route::get('classes', 'App\Http\Controllers\Game\ClassController@index')->name('game.classes');

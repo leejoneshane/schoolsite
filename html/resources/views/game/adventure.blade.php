@@ -26,6 +26,11 @@
             <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
                 <th scope="row" colspan="2" class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg p-2">任務列表：</th>
             </tr>
+            <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+                <td colspan="2" class="p-2">
+                    <button type="button" id="list0" onclick="open_view(0)" class="text-teal-500 hover:bg-teal-100">介紹</button>
+                </td>
+            </tr>
             @foreach ($adventure->worksheet->tasks as $t)
             <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
                 <td colspan="2" class="p-2">
@@ -72,44 +77,42 @@
                 <div id="story" class="block w-full max-h-64 overflow-y-scroll"></div>
                 <label class="text-lg text-black font-bold">任務：</label>
                 <div id="task" class="block w-full max-h-64 overflow-y-scroll"></div>
-                <div class="p-2">
-                    <label for="xp" class="text-lg text-black font-bold">經驗獎勵：</label>
-                    <div id="xp" class="inline-block w-16 rounded bg-white"></div>
-                    <label for="gp" class="pl-2 text-lg text-black font-bold">金幣獎勵：</label>
-                    <div id="gp" class="inline-block w-16 rounded bg-white"></div>
-                    <label for="item" class="pl-2 text-lg text-black font-bold">道具獎勵：</label>
-                    <div id="item" class="inline-block w-16 rounded bg-white"></div>
-                </div>
+                <label class="text-lg text-black font-bold">獎勵：<span id="reward" class="text-base font-normal"></span></label>
             </div>
             <div class="p-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 <label for="done" class="inline-flex relative items-center cursor-pointer">
                     <input type="checkbox" id="done" name="done" value="yes" class="sr-only peer" onchange="task_done()">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                    <span class="ml-3 text-blue-700 dark:text-blue-300">我已經完成！</span>
+                    <span class="ml-3 text-blue-700 dark:text-blue-300">我已經完成！</span><span id="completed" class="block w-full rounded"></span>
                 </label>
+            </div>
+            <div class="p-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                <label class="text-lg text-black font-bold">評語：</label>
+                <div id="comments" class="block w-full max-h-64 overflow-y-scroll"></div>
+            </div>
+            <div class="p-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                <label class="text-lg text-black font-bold">過關時間：</label>
+                <div id="reviewed" class="block w-full max-h-64 overflow-y-scroll"></div>
             </div>
         </div>
     </div>
 </div>
-<div id="processModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+<div id="introModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-white rounded-lg shadow dark:bg-blue-700">
             <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
                 <h3 id="modalHeader" class="text-xl font-semibold text-gray-900 dark:text-white">
-                    探險歷程
+                    探險地圖介紹
                 </h3>
-                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" onclick="processModal.hide();">
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" onclick="introModal.hide();">
                     <i class="fa-solid fa-xmark"></i>
                     <span class="sr-only">關閉視窗</span>
                 </button>
             </div>
             <div class="p-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                <label for="title" class="text-lg text-black font-bold">完成時間：</label>
-                <div id="completed" class="block w-full rounded"></div>
-                <label class="text-lg text-black font-bold">評語：</label>
-                <div id="comments" class="block w-full max-h-64 overflow-y-scroll"></div>
-                <label class="text-lg text-black font-bold">過關時間：</label>
-                <div id="reviewed" class="block w-full max-h-64 overflow-y-scroll"></div>
+                <div class="block w-full max-h-96 overflow-y-scroll">
+                    {!! $adventure->worksheet->intro !!}
+                </div>
             </div>
         </div>
     </div>
@@ -138,8 +141,8 @@
 
     var $targetEl = document.getElementById('taskModal');
     const taskModal = new window.Modal($targetEl);
-    var $targetEl = document.getElementById('processModal');
-    const processModal = new window.Modal($targetEl);
+    var $targetEl = document.getElementById('introModal');
+    const introModal = new window.Modal($targetEl);
     const canvas = document.getElementById('myCanvas');
     const ctx = canvas.getContext("2d");
     const dot = document.getElementById('dot');
@@ -148,6 +151,7 @@
     map.src = '{{ $adventure->worksheet->map->url() }}';
     map.addEventListener("load", (e) => {
         redraw_lines();
+        introModal.show();
     });
     window.addEventListener("resize", (event) => {
         var rect = canvas.getBoundingClientRect();
@@ -205,7 +209,7 @@
         tmp.setAttribute('role', 'task');
         tmp.setAttribute('draggable', false);
         if (tasks[id].visited && process[id].reviewed_at != null) {
-            tmp.setAttribute('onclick', 'view_process(this)');
+            tmp.setAttribute('onclick', 'view_task(this)');
         } else {
             tmp.setAttribute('onclick', 'move_mark(' + id + ')');
         }
@@ -295,49 +299,44 @@
     }
 
     function open_view(tno) {
-        tid = tno;
-        document.getElementById('title').innerHTML = tasks[tno].title;
-        document.getElementById('story').innerHTML = tasks[tno].story;
-        document.getElementById('task').innerHTML = tasks[tno].task;
-        var xp = tasks[tno].reward_xp;
-        if (xp) {
-            document.getElementById('xp').innerHTML = xp;
+        if (tno == 0) {
+            introModal.show();
         } else {
-            document.getElementById('xp').innerHTML = '無';
+            tid = tno;
+            document.getElementById('title').innerHTML = tasks[tno].title;
+            document.getElementById('story').innerHTML = tasks[tno].story;
+            document.getElementById('task').innerHTML = tasks[tno].task;
+            var msg = '';
+            if (tasks[tno].reward_xp) {
+                msg += '　經驗值：' + tasks[tno].reward_xp;
+            }
+            if (tasks[tno].reward_gp) {
+                msg += '　金幣：' + tasks[tno].reward_gp;
+            }
+            var myid = tasks[tno].reward_item;
+            if (myid) {
+                msg += '　道具：' + items[myid].name;
+            }
+            document.getElementById('reward').innerHTML = msg;
+            if (tasks[tno].visited && process[tno].reviewed_at != null) {
+                document.getElementById('done').setAttribute('checked', true);
+                document.getElementById('done').setAttribute('disabled', true);
+            } else {
+                document.getElementById('done').removeAttribute('disabled');
+            }
+            document.getElementById('completed').innerHTML = process[tno].completed_at;
+            if (process[tno].comments) {
+                document.getElementById('comments').innerHTML = process[tno].comments;
+            } else {
+                document.getElementById('comments').innerHTML = '無';
+            }
+            if (process[tno].reviewed_at) {
+                document.getElementById('reviewed').innerHTML = '已通過！';
+            } else {
+                document.getElementById('reviewed').innerHTML = '尚未通過！';
+            }
+            taskModal.show();
         }
-        var gp = tasks[tno].reward_gp;
-        if (gp) {
-            document.getElementById('gp').innerHTML = gp;
-        } else {
-            document.getElementById('gp').innerHTML = '無';
-        }
-        var myid = tasks[tno].reward_item;
-        if (myid) {
-            document.getElementById('item').innerHTML = items[myid].name;
-        } else {
-            document.getElementById('item').innerHTML = '無';
-        }
-        if (tasks[tno].visited && process[tno].reviewed_at != null) {
-            document.getElementById('done').setAttribute('checked', true);
-            document.getElementById('done').setAttribute('disabled', true);
-        }
-        taskModal.show();
-    }
-
-    function view_process(img) {
-        var tno = img.getAttribute('data-id');
-        document.getElementById('completed').innerHTML = process[tno].completed_at;
-        if (process[tno].comments) {
-            document.getElementById('comments').innerHTML = process[tno].comments;
-        } else {
-            document.getElementById('comments').innerHTML = '無';
-        }
-        if (process[tno].reviewed_at) {
-            document.getElementById('reviewed').innerHTML = process[tno].reviewed_at;
-        } else {
-            document.getElementById('reviewed').innerHTML = '尚未通過！';
-        }
-        processModal.show();
     }
 
     function task_done() {
@@ -366,6 +365,32 @@
             redraw_lines();
             taskModal.hide();
         });
+    }
+
+    function task_comments(json_str) {
+        var pro = JSON.parse(json_str);
+        process[pro.task_id] = pro;
+    }
+
+    function task_notice(json_str) {
+        var pro = JSON.parse(json_str);
+        tid = pro.task_id;
+        process[tid] = pro;
+        open_view(tid);
+    }
+
+    function task_pass(json_str) {
+        var pro = JSON.parse(json_str);
+        tid = pro.task_id;
+        process[tid] = pro;
+        var node = document.getElementById('list' + tid);
+        node.classList.replace('text-blue-500', 'text-teal-500');
+        var myid = tasks[tid].next_task;
+        var node = document.getElementById('list' + myid);
+        node.classList.replace('text-gray-300', 'text-blue-500');
+        node.setAttribute('onclick', 'open_view(' + myid + ')');
+        redraw_lines();
+        open_view(tid);
     }
 </script>
 @endsection

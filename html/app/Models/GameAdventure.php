@@ -48,10 +48,10 @@ class GameAdventure extends Model
         return GameAdventure::where('syear', current_year())->where('uuid', $uuid)->get();
     }
 
-    //篩選指定班級的所有地圖探險
+    //篩選指定班級的開放中的探險地圖
     public static function findByClassroom($room_id)
     {
-        return GameAdventure::where('syear', current_year())->where('classroom_id', $room_id)->where('open', true)->get();
+        return GameAdventure::where('syear', current_year())->where('classroom_id', $room_id)->where('open', true)->first();
     }
 
     //篩選指定學習單的所有地圖探險
