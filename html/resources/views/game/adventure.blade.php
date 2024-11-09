@@ -62,7 +62,7 @@
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-white rounded-lg shadow dark:bg-blue-700">
             <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
-                <h3 id="modalHeader" class="text-xl font-semibold text-gray-900 dark:text-white">
+                <h3 id="title" class="text-xl font-semibold text-gray-900 dark:text-white">
                     瀏覽學習任務
                 </h3>
                 <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" onclick="taskModal.hide();">
@@ -70,29 +70,38 @@
                     <span class="sr-only">關閉視窗</span>
                 </button>
             </div>
-            <div class="p-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                <label for="title" class="text-lg text-black font-bold">標題：</label>
-                <div id="title" class="block w-full rounded"></div>
-                <label class="text-lg text-black font-bold">故事：</label>
-                <div id="story" class="block w-full max-h-64 overflow-y-scroll"></div>
-                <label class="text-lg text-black font-bold">任務：</label>
-                <div id="task" class="block w-full max-h-64 overflow-y-scroll"></div>
+            <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+                <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+                    <li class="me-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="story-tab" data-tabs-target="#story" type="button" role="tab" aria-controls="story" aria-selected="false">故事</button>
+                    </li>
+                    <li class="me-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="task-tab" data-tabs-target="#task" type="button" role="tab" aria-controls="task" aria-selected="false">任務</button>
+                    </li>
+                    <li class="me-2" role="presentation">
+                        <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="comments-tab" data-tabs-target="#comments" type="button" role="tab" aria-controls="comments" aria-selected="false">評語</button>
+                    </li>
+                </ul>
+            </div>
+            <div id="default-tab-content" class="w-[42rem]">
+                <div class="hidden p-4 rounded-lg w-full max-h-64 overflow-y-auto" id="story" role="tabpanel" aria-labelledby="story-tab">
+                </div>
+                <div class="hidden p-4 rounded-lg w-full max-h-64 overflow-y-auto" id="task" role="tabpanel" aria-labelledby="task-tab">
+                </div>
+                <div class="hidden p-4 rounded-lg w-full max-h-64 overflow-y-auto" id="comments" role="tabpanel" aria-labelledby="comments-tab">
+                </div>
+            </div>
+            <div class="px-2 text-base leading-relaxed text-gray-500">
                 <label class="text-lg text-black font-bold">獎勵：<span id="reward" class="text-base font-normal"></span></label>
             </div>
-            <div class="p-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                <label for="done" class="inline-flex relative items-center cursor-pointer">
+            <div class="px-2 text-base leading-relaxed text-gray-500 flex justify-between">
+                <label id="label_done" class="inline-flex relative items-center cursor-pointer">
                     <input type="checkbox" id="done" name="done" value="yes" class="sr-only peer" onchange="task_done()">
                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                    <span class="ml-3 text-blue-700 dark:text-blue-300">我已經完成！</span><span id="completed" class="block w-full rounded"></span>
+                    <span class="ml-3 text-blue-700 dark:text-blue-300">我已經完成！</span>
                 </label>
-            </div>
-            <div class="p-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                <label class="text-lg text-black font-bold">評語：</label>
-                <div id="comments" class="block w-full max-h-64 overflow-y-scroll"></div>
-            </div>
-            <div class="p-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                <label class="text-lg text-black font-bold">過關時間：</label>
-                <div id="reviewed" class="block w-full max-h-64 overflow-y-scroll"></div>
+                <label id="completed" class="hidden text-lg text-black font-bold"></label>
+                <label class="text-lg text-black font-bold">審核結果：<span id="reviewed" class="text-base font-normal"></span></label>
             </div>
         </div>
     </div>
@@ -109,8 +118,8 @@
                     <span class="sr-only">關閉視窗</span>
                 </button>
             </div>
-            <div class="p-2 text-base leading-relaxed text-gray-500 dark:text-gray-400">
-                <div class="block w-full max-h-96 overflow-y-scroll">
+            <div class="p-2 w-[42rem] text-base leading-relaxed text-gray-500">
+                <div class="w-full max-h-96 overflow-y-auto">
                     {!! $adventure->worksheet->intro !!}
                 </div>
             </div>
@@ -208,11 +217,7 @@
         tmp.setAttribute('data-y', y);
         tmp.setAttribute('role', 'task');
         tmp.setAttribute('draggable', false);
-        if (tasks[id].visited && process[id].reviewed_at != null) {
-            tmp.setAttribute('onclick', 'view_task(this)');
-        } else {
-            tmp.setAttribute('onclick', 'move_mark(' + id + ')');
-        }
+        tmp.setAttribute('onclick', 'move_mark(' + id + ')');
         tmp.style.position = 'absolute';
         tmp.style.zIndex = 2;
         tmp.style.top = y + parseInt(rect.top) + 'px';
@@ -282,10 +287,10 @@
     }
 
     function move_mark(id) {
-        var rect = canvas.getBoundingClientRect();
-        var tmp = document.getElementById('mark');
         var x = tasks[id].coordinate_x - 12;
         var y = tasks[id].coordinate_y - 32;
+        var rect = canvas.getBoundingClientRect();
+        var tmp = document.getElementById('mark');
         tmp.setAttribute('data-id', id);
         tmp.setAttribute('data-x', x);
         tmp.setAttribute('data-y', y);
@@ -318,23 +323,27 @@
                 msg += '　道具：' + items[myid].name;
             }
             document.getElementById('reward').innerHTML = msg;
-            if (tasks[tno].visited && process[tno].reviewed_at != null) {
-                document.getElementById('done').setAttribute('checked', true);
-                document.getElementById('done').setAttribute('disabled', true);
+            if (tasks[tno].visited && process[tno].completed_at != null) {
+                document.getElementById('label_done').classList.add('hidden');
+                document.getElementById('completed').innerHTML = '完成於' + process[tno].completed_at;
+                document.getElementById('completed').classList.remove('hidden');
             } else {
-                document.getElementById('done').removeAttribute('disabled');
+                document.getElementById('done').removeAttribute('checked');
+                document.getElementById('label_done').classList.remove('hidden');
+                document.getElementById('completed').classList.add('hidden');
             }
-            document.getElementById('completed').innerHTML = process[tno].completed_at;
             if (process[tno].comments) {
                 document.getElementById('comments').innerHTML = process[tno].comments;
             } else {
-                document.getElementById('comments').innerHTML = '無';
+                document.getElementById('comments').innerHTML = '<p> </p>';
             }
             if (process[tno].reviewed_at) {
                 document.getElementById('reviewed').innerHTML = '已通過！';
             } else {
                 document.getElementById('reviewed').innerHTML = '尚未通過！';
             }
+            move_mark(tno);
+            redraw_lines();
             taskModal.show();
         }
     }
