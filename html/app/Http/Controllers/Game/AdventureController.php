@@ -395,11 +395,30 @@ class AdventureController extends Controller
     {
         $p = GameProcess::find($request->input('pid'));
         if ($request->input('pass') == 'yes') {
-            $p->noticed = false;
+            if ($p->task->reward_xp) {
+                $p->character->xp += $p->task->reward_xp;
+            }
+            if ($p->task->reward_gp) {
+                $p->character->gp += $p->task->reward_gp;
+            }
+            $p->character->save();
+            if ($p->task->reward_item) {
+                $p->character->get_item($p->task->reward_item);
+            }
             $p->reviewed_at = Carbon::now();
             $p->save();
             broadcast(new GameCharacterChannel($p->character->stdno, 'task_pass:'.$p->toJson(JSON_UNESCAPED_UNICODE)));
         } else {
+            if ($p->task->reward_xp) {
+                $p->character->xp -= $p->task->reward_xp;
+            }
+            if ($p->task->reward_gp) {
+                $p->character->gp -= $p->task->reward_gp;
+            }
+            $p->character->save();
+            if ($p->task->reward_item) {
+                $p->character->loss_item($p->task->reward_item);
+            }
             $p->reviewed_at = null;
             $p->save();
             broadcast(new GameCharacterChannel($p->character->stdno, 'task_pass:'.$p->toJson(JSON_UNESCAPED_UNICODE)));

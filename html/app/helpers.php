@@ -18,11 +18,11 @@ const GAME_UPLOAD = 'images/game/upload/'; //遊戲評量、學習單圖片路�
 
 function map($room_id = null) {
     if ($room_id) {
-        $adventure = GameAdventure::findByClassroom($room_id)->first();
+        $adventure = GameAdventure::findByClassroom($room_id);
         return $adventure;
     } else {
         if (auth()->user()->user_type == 'Student') {
-            $adventure = GameAdventure::findByClassroom(employee()->class_id)->first();
+            $adventure = GameAdventure::findByClassroom(employee()->class_id);
             return $adventure;    
         }
         return null;
