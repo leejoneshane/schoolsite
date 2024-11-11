@@ -50,6 +50,9 @@
             <th scope="col" class="p-2">
                 等級
             </th>
+            <th scope="col" class="p-2">
+                狀態
+            </th>
             @locked($room->id)
             <th scope="col" class="p-2">
                 技能
@@ -99,6 +102,7 @@
             </td>
             <td class="p-2">{{ ($s->profession) ? $s->profession->name : '無'}}</td>
             <td id="level{{ $s->seat }}" class="p-2">{{ $s->level }}</td>
+            <td id="status{{ $s->seat }}" class="p-2">{{ $s->status_desc }}</td>
             @locked($room->id)
             <td class="p-2">
                 <button class="bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_skill('{{ $s->uuid }}')">
@@ -159,6 +163,9 @@
         <th scope="col" class="p-2">
             等級
         </th>
+        <th scope="col" class="p-2">
+            狀態
+        </th>
         @locked($room->id)
         <th scope="col" class="p-2">
             技能
@@ -208,6 +215,7 @@
         </td>
         <td class="p-2">{{ ($s->profession) ? $s->profession->name : '無'}}</td>
         <td id="level{{ $s->seat }}" class="p-2">{{ $s->level }}</td>
+        <td id="status{{ $s->seat }}" class="p-2">{{ $s->status_desc }}</td>
         @locked($room->id)
         <td class="p-2">
             <button class="ml-6 bg-amber-300 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-full" onclick="prepare_skill('{{ $s->uuid }}');">
@@ -694,6 +702,8 @@
             characters.forEach(char => {
                 var lvl = document.getElementById('level' + char.seat);
                 lvl.innerHTML = char.level;
+                var stat = document.getElementById('status' + char.seat);
+                stat.innerHTML = char.status_desc;
                 var hp = document.getElementById('hp' + char.seat);
                 hp.innerHTML = char.hp + '/' + char.max_hp;
                 var mp = document.getElementById('mp' + char.seat);
@@ -767,6 +777,8 @@
             characters.forEach(char => {
                 var lvl = document.getElementById('level' + char.seat);
                 lvl.innerHTML = char.level;
+                var stat = document.getElementById('status' + char.seat);
+                stat.innerHTML = char.status_desc;
                 var hp = document.getElementById('hp' + char.seat);
                 hp.innerHTML = char.hp + '/' + char.max_hp;
                 var mp = document.getElementById('mp' + char.seat);
@@ -1081,6 +1093,8 @@
                 characters.forEach(char => {
                     var lvl = document.getElementById('level' + char.seat);
                     lvl.innerHTML = char.level;
+                    var stat = document.getElementById('status' + char.seat);
+                    stat.innerHTML = char.status_desc;
                     var hp = document.getElementById('hp' + char.seat);
                     hp.innerHTML = char.hp + '/' + char.max_hp;
                     var mp = document.getElementById('mp' + char.seat);
@@ -1176,6 +1190,8 @@
                 characters.forEach(char => {
                     var lvl = document.getElementById('level' + char.seat);
                     lvl.innerHTML = char.level;
+                    var stat = document.getElementById('status' + char.seat);
+                    stat.innerHTML = char.status_desc;
                     var hp = document.getElementById('hp' + char.seat);
                     hp.innerHTML = char.hp + '/' + char.max_hp;
                     var mp = document.getElementById('mp' + char.seat);
@@ -1221,6 +1237,8 @@
                 characters.forEach(char => {
                     var lvl = document.getElementById('level' + char.seat);
                     lvl.innerHTML = char.level;
+                    var stat = document.getElementById('status' + char.seat);
+                    stat.innerHTML = char.status_desc;
                     var hp = document.getElementById('hp' + char.seat);
                     hp.innerHTML = char.hp + '/' + char.max_hp;
                     var mp = document.getElementById('mp' + char.seat);
@@ -1264,6 +1282,8 @@
                 characters.forEach(char => {
                     var lvl = document.getElementById('level' + char.seat);
                     lvl.innerHTML = char.level;
+                    var stat = document.getElementById('status' + char.seat);
+                    stat.innerHTML = char.status_desc;
                     var hp = document.getElementById('hp' + char.seat);
                     hp.innerHTML = char.hp + '/' + char.max_hp;
                     var mp = document.getElementById('mp' + char.seat);
@@ -1306,6 +1326,8 @@
                 characters.forEach(char => {
                     var lvl = document.getElementById('level' + char.seat);
                     lvl.innerHTML = char.level;
+                    var stat = document.getElementById('status' + char.seat);
+                    stat.innerHTML = char.status_desc;
                     var hp = document.getElementById('hp' + char.seat);
                     hp.innerHTML = char.hp + '/' + char.max_hp;
                     var mp = document.getElementById('mp' + char.seat);

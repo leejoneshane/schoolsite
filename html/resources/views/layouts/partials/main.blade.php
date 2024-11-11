@@ -2,7 +2,7 @@
     <div class="block w-full h-28"></div>
     <div class="relative w-full h-full flex">
         <div class="relative block w-16 min-h-full"></div>
-        <div class="relative w-full">
+        <div class="w-full h-full">
             @teacher
             <div class="m-5 relative dark:bg-gray-700 text-black dark:text-gray-200">
                 <div>
