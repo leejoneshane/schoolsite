@@ -31,8 +31,10 @@
             <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
                 <th scope="row" colspan="2" class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg p-2">任務列表：</th>
             </tr>
-            <tr id="empty" class="{{ $worksheet->tasks->count() > 0 ? 'hidden ' : '' }}odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
-                <td colspan="2" class="p-2">還沒有學習任務！</td>
+            <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
+                <td colspan="2" class="p-2">
+                    <button type="button" id="list0" onclick="open_view()">介紹</button>
+                </td>
             </tr>
             @foreach ($worksheet->tasks as $t)
             <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
@@ -105,6 +107,26 @@
         </div>
     </div>
 </div>
+<div id="introModal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
+    <div class="relative w-auto h-full max-w-2xl md:h-auto">
+        <div class="relative bg-white rounded-lg shadow dark:bg-blue-700">
+            <div class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600">
+                <h3 id="modalHeader" class="text-xl font-semibold text-gray-900 dark:text-white">
+                    探險地圖介紹
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" onclick="introModal.hide();">
+                    <i class="fa-solid fa-xmark"></i>
+                    <span class="sr-only">關閉視窗</span>
+                </button>
+            </div>
+            <div class="p-2 w-[42rem] text-base leading-relaxed text-gray-500">
+                <div class="w-full h-64 overflow-y-auto">
+                    {!! $worksheet->intro !!}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script nonce="selfhost">
     var worksheet = {!! $worksheet->toJson(JSON_UNESCAPED_UNICODE) !!};
     var tid;
@@ -116,6 +138,8 @@
 
     var $targetEl = document.getElementById('taskModal');
     const taskModal = new window.Modal($targetEl);
+    var $targetEl = document.getElementById('introModal');
+    const introModal = new window.Modal($targetEl);
     const canvas = document.getElementById('myCanvas');
     canvas.addEventListener('dragover', function (event) { event.preventDefault(); });
     canvas.addEventListener('dragleave', function (event) { event.preventDefault(); return false; });
@@ -248,6 +272,10 @@
         });
     }
 
+    function open_view() {
+        introModal.show();
+    }
+
     function open_editor(tno) {
         tid = tno;
         if (tid == 0) {
@@ -325,7 +353,7 @@
                 tmp.setAttribute('id', 'spot' + task.id);
                 tmp.setAttribute('title', task.title);
                 tmp.setAttribute('data-id', task.id);
-                var parent = document.getElementById('empty').parentElement;
+                var parent = document.getElementById('list0').parentElement;
                 var tr = document.createElement('tr');
                 tr.classList.add('odd:bg-white','even:bg-gray-100','dark:odd:bg-gray-700','dark:even:bg-gray-600');
                 var td = document.createElement('td');
@@ -386,7 +414,7 @@
                 if (node) {
                     document.body.removeChild(node);
                 }
-                var parent = document.getElementById('empty').parentElement;
+                var parent = document.getElementById('list0').parentElement;
                 var btn = document.getElementById('list' + myid);
                 if (btn) {
                     parent.removeChild(btn.parentElement.parentElement);

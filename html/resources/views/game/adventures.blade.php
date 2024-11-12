@@ -40,16 +40,31 @@
             @endforeach
         </table>
     </div>
-    <div class="p-2 w-96 h-full rounded-lg bg-white inline-flex flex-col">
-        <label class="text-lg text-black font-bold">標題：</label>
-        <div id="title" class="inline">冒險地圖介紹</div>
-        <label class="text-lg text-black font-bold">故事：</label>
-        <div id="story" class="block w-full max-h-60 overflow-y-auto">{!! $adventure->worksheet->intro !!}</div>
-        <label class="text-lg text-black font-bold">任務：</label>
-        <div id="task" class="block w-full max-h-60 overflow-y-auto">{!! $adventure->worksheet->description !!}</div>
-        <label class="text-lg text-black font-bold">獎勵：<span id="reward" class="text-base font-normal"></span></label>
+    <div class="p-2 w-fit h-[36rem] rounded-lg bg-white inline-flex flex-col">
+        <label class="text-lg text-black font-bold">標題：<span id="title" class="text-base font-normal">冒險地圖介紹</span></label>
+        <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+            <ul class="flex flex-wrap -mb-px text-sm font-medium text-center" id="default-tab" data-tabs-toggle="#default-tab-content" role="tablist">
+                <li class="me-2" role="presentation">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="story-tab" data-tabs-target="#story" type="button" role="tab" aria-controls="story" aria-selected="false">故事</button>
+                </li>
+                <li class="me-2" role="presentation">
+                    <button class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300" id="task-tab" data-tabs-target="#task" type="button" role="tab" aria-controls="task" aria-selected="false">任務</button>
+                </li>
+            </ul>
+        </div>
+        <div id="default-tab-content" class="w-[42rem] h-[26rem]">
+            <div class="hidden p-4 rounded-lg w-full h-full overflow-y-auto" id="story" role="tabpanel" aria-labelledby="story-tab">
+                {!! $adventure->worksheet->intro !!}
+            </div>
+            <div class="hidden p-4 rounded-lg w-full h-full overflow-y-auto" id="task" role="tabpanel" aria-labelledby="task-tab">
+                {!! $adventure->worksheet->description !!}
+            </div>
+        </div>
+        <div class="py-2 text-base leading-relaxed text-gray-500">
+            <label class="text-lg text-black font-bold">獎勵：<span id="reward" class="text-base font-normal"></span></label>
+        </div>
     </div>
-    <div id="progress" class="w-fit h-[32rem] overflow-clip flex flex-col">
+    <div id="progress" class="w-fit h-[36rem] overflow-clip flex flex-col">
         <table class="w-full">
             <thead class="sticky top-0">
                 <tr class="bg-gray-300">
@@ -101,7 +116,7 @@
             </table>
         </div>
     </div>
-    <div id="process" class="hidden w-fit h-[32rem] overflow-clip flex flex-col">
+    <div id="process" class="hidden w-fit h-[36rem] overflow-clip flex flex-col">
         <table class="w-[40rem] table-fixed">
             <thead class="sticky top-0">
                 <tr class="bg-gray-300">
