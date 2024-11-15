@@ -1,6 +1,7 @@
 @extends('layouts.game')
 
 @section('content')
+@locked($room->id)
 <div class="fixed w-full h-12 text-center z-30">
     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onclick="openModal(1);">
         <i class="fa-solid fa-plus"></i>獎勵
@@ -9,6 +10,7 @@
         <i class="fa-solid fa-minus"></i>懲罰
     </button>
 </div>
+@endlocked
 <div class="relative top-16">
 <p><div class="pb-3">
     @locked($room->id)
@@ -17,9 +19,11 @@
     <div class="inline text-3xl">
         {{ $room->name }}
     </div>
+    @locked($room->id)
     <button class="inline bg-teal-200 hover:bg-teal-500 text-normal font-bold py-2 px-4 rounded-full" onclick="auto_absent('{{ $room->id }}');">
         自動點名
     </button>
+    @endlocked
 </div></p>
 @foreach ($parties as $p)
 <p><div class="pb-3">

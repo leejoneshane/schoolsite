@@ -309,6 +309,10 @@ class GameCharacter extends Model
     {
         if ($this->hp < 1) return '死亡';
         if ($this->mp < 1) return '昏迷';
+        if (Carbon::now() > $this->effect_timeout) {
+            $this->buff = null;
+            $this->save();
+        }
         if ($this->buff == 'invincible') return '無敵狀態';
         if ($this->buff == 'hatred') return '集中仇恨';
         if ($this->buff == 'protect') return '護衛';

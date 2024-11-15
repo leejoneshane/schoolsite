@@ -92,7 +92,7 @@ class GameController extends Controller
                 if (count($error) > 0) {
                     $cls->error = implode('，', $error).'。';
                 } else {
-                    $cls->error = null;
+                    $cls->error = '太好了，班級準備完成！';
                 }
             }
             return view('game.index', [ 'classes' => $classes ]);
