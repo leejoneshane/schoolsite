@@ -92,7 +92,7 @@ class GameParty extends Model
     }
 
     //取得此隊伍的基地
-    public function foundation()
+    public function fundation()
     {
         return $this->hasOne('App\Models\GameBase', 'id', 'base_id');
     }
@@ -104,7 +104,7 @@ class GameParty extends Model
     }
 
     //移除據點
-    public function remove_foundation()
+    public function remove_fundation()
     {
         $old = $this->foundation;
         if ($old) {
@@ -119,7 +119,7 @@ class GameParty extends Model
     }
 
     //變更據點
-    public function change_foundation($id)
+    public function change_fundation($id)
     {
         $old = $this->foundation;
         $new = GameBase::find($id);

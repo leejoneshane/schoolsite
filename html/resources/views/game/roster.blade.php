@@ -38,6 +38,8 @@
             <th scope="col" class="p-2">
                 座號
             </th>
+            <th scope="col" class="w-6">
+            </th>
             <th scope="col" class="p-2">
                 姓名
             </th>
@@ -94,13 +96,14 @@
                 @endlocked
             </td>
             <td class="p-2">{{ $s->seat }}</td>
-            <td class="p-2">{{ $s->name }}</td>
+            <td class="py-2 pl-2">{!! $s->title ? '<i class="fa-solid fa-crown" title="'.$s->title.'"></i>' : '' !!}</td>
+            <td class="py-2 pr-2">{{ $s->name }}</td>      
             <td class="p-2">
                 @locked($room->id)
                 <input type="checkbox" id="absent{{ $s->uuid }}" name="absent" value="yes"{{ ($s->absent) ? ' checked' : '' }} onchange="absent('{{ $s->uuid }}');" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:bg-white disabled:border-gray-100">
                 @endlocked
             </td>
-            <td class="p-2">{{ ($s->profession) ? $s->profession->name : '無'}}</td>
+            <td class="p-2">{{ ($s->profession) ? $s->profession->name : '村民'}}</td>
             <td id="level{{ $s->seat }}" class="p-2">{{ $s->level }}</td>
             <td id="status{{ $s->seat }}" class="p-2">{{ $s->status_desc }}</td>
             @locked($room->id)
@@ -147,6 +150,8 @@
         </th>
         <th scope="col" class="p-2">
             座號
+        </th>
+        <th scope="col" class="w-6">
         </th>
         <th scope="col" class="p-2">
             姓名
@@ -207,13 +212,14 @@
             @endlocked
         </td>
         <td class="p-2">{{ $s->student->seat }}</td>
-        <td class="p-2">{{ $s->name }}</td>
+        <td class="py-2 pl-2">{!! $s->title ? '<i class="fa-solid fa-crown" title="'.$s->title.'"></i>' : '' !!}</td>
+        <td class="py-2 pr-2">{{ $s->name }}</td>
         <td class="p-2">
             @locked($room->id)
             <input type="checkbox" id="absent{{ $s->uuid }}" name="absent" value="yes"{{ ($s->absent) ? ' checked' : '' }} onchange="absent('{{ $s->uuid }}');" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2 disabled:bg-white disabled:border-gray-100">
             @endlocked
         </td>
-        <td class="p-2">{{ ($s->profession) ? $s->profession->name : '無'}}</td>
+        <td class="p-2">{{ ($s->profession) ? $s->profession->name : '村民'}}</td>
         <td id="level{{ $s->seat }}" class="p-2">{{ $s->level }}</td>
         <td id="status{{ $s->seat }}" class="p-2">{{ $s->status_desc }}</td>
         @locked($room->id)

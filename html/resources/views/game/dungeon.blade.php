@@ -1,7 +1,7 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="w-full h-screen flex flex-col justify-between">
+<div class="px-5 w-full h-screen flex flex-col justify-between">
     <div class="w-full h-screen flex-initial">
         <div class="relative h-full flex flex-row">
             <div id="me" class="w-1/3 inline-flex content-end">
@@ -14,7 +14,7 @@
                         <div id="mp" class="h-4 bg-blue-500 text-xs font-medium text-blue-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->mp / $character->max_mp * 100) }}%;">{{ $character->mp }}</div>
                     </div>
                     <div id="status" class="w-24 h-8 text-white text-shadow">正常</div>
-                    <img title="{{ $character->name }}" src="{{ $character->url ?: '' }}" class="absolute bottom-40 w-1/3 z-50">
+                    <img title="{{ $character->name }}" src="{{ $character->url ?: '' }}" class="absolute bottom-40 h-4/5 z-50">
                 </div>
             </div>
             <div class="w-1/3 text-center inline-flex flex-col">
@@ -49,7 +49,7 @@
                         <div id="monster_hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: 100%;"></div>
                     </div>
                     <div id="monster_status" class="w-24 h-8 text-white text-shadow"></div>
-                    <img id="monster_img" title="" src="" class="absolute bottom-40 w-1/3 z-50">
+                    <img id="monster_img" title="" src="" class="absolute bottom-40 h-4/5 z-50">
                 </div>
             </div>    
         </div>

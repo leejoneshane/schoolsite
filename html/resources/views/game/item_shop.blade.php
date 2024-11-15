@@ -1,7 +1,7 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="relative w-full h-full flex flex-col gap-10 justify-between">
+<div class="relative w-full h-full flex flex-col gap-10">
     <div class="w-1/2 h-64 inline-flex flex-wrap gap-4">
         @foreach ($items as $f)
             @if ($f->image_avaliable())

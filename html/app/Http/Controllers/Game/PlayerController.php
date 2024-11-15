@@ -528,6 +528,7 @@ class PlayerController extends Controller
         $room = $party->classroom_id;
         $namespace = 'arena:'.$room.':party:'.$party->id;
         $uuids = Redis::smembers($namespace);
+        $characters = [];
         foreach($uuids as $uuid){
             $characters[] = GameCharacter::find($uuid);
         }

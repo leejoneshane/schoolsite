@@ -1,7 +1,7 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="relative w-full h-full flex flex-col gap-10 justify-between">
+<div class="relative w-full h-full flex flex-col gap-10">
     <div class="w-1/2 h-64 inline-flex flex-wrap gap-4">
         @foreach ($furnitures as $f)
             @if ($f->image_avaliable())
@@ -207,6 +207,8 @@
         fur = buywhat.value;
         if (furnitures[fur].gp > treasury) {
             seller.innerHTML = '客倌，您的錢不夠喔！您要不要選別的？';
+        } else if (fur in old_furnitures) {
+            seller.innerHTML = '客倌，這件家具已經安置在貴公會的據點裡了，您要不要選別的？';
         } else {
             seller.innerHTML = '客倌，這件家具是' + furnitures[fur].description + '需要花你' + furnitures[fur].gp +'枚金幣，您確定要購買嗎？';
             dialog.classList.add('hidden');

@@ -1,6 +1,6 @@
 <main class="w-full h-full min-h-screen bg-game-map50 bg-cover bg-center bg-no-repeat flex flex-col">
     <div class="block w-full h-28"></div>
-    <div class="relative w-full h-full flex">
+    <div class="relative w-full h-screen flex">
         <div class="relative block w-16 min-h-full"></div>
         <div class="w-full h-full">
             @teacher
@@ -27,8 +27,8 @@
             @endteacher
             @student
             @yield('content')
-            @endstudent    
-        </div>    
+            @endstudent
+        </div>
     </div>
 </main>
 <audio id="received" muted autoplay>

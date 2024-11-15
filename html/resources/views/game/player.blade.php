@@ -1,7 +1,7 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="w-full flex flex-row justify-between">
+<div class="w-full h-full flex flex-row justify-between">
     <div class="w-48">
         <table class="w-full bg-white text-left font-normal">
             <tr>
@@ -78,7 +78,7 @@
     <button class="absolute z-[55] w-16 h-12 left-1/3 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full" onclick="change_class();">轉職</button>
     @endif
     <div class="w-1/3 inline-flex flex-row justify-center">
-        <img src="{{ $character->image->url() }}" id="big" class="relative w-auto h-full z-50" />
+        <img src="{{ $character->image->url() }}" id="big" class="absolute h-4/5 z-50" />
     </div>
     <div class="w-1/3">
         <div class="bg-gray-500 text-white text-center">技能書</div>

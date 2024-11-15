@@ -1,7 +1,7 @@
 @extends('layouts.game')
 
 @section('content')
-<div class="w-full flex gap-4">
+<div class="px-5 w-full flex gap-4">
     <div class="w-80 h-full flex flex-col">
         <div class="text-2xl font-bold leading-normal p-5 drop-shadow-md">
             地圖探險

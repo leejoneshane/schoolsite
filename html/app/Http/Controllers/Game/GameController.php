@@ -252,6 +252,8 @@ class GameController extends Controller
         }
         if (!empty($request->input('title'))) {
             $character->title = $request->input('title');
+        } else {
+            $character->title = null;
         }
         if ($character->class_id != $request->input('profession')) {
             $pro = GameClass::find($request->input('profession'));
