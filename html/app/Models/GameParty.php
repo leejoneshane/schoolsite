@@ -92,7 +92,7 @@ class GameParty extends Model
     }
 
     //取得此隊伍的基地
-    public function fundation()
+    public function foundation()
     {
         return $this->hasOne('App\Models\GameBase', 'id', 'base_id');
     }
@@ -104,7 +104,7 @@ class GameParty extends Model
     }
 
     //移除據點
-    public function remove_fundation()
+    public function remove_foundation()
     {
         $old = $this->foundation;
         if ($old) {
@@ -119,7 +119,7 @@ class GameParty extends Model
     }
 
     //變更據點
-    public function change_fundation($id)
+    public function change_foundation($id)
     {
         $old = $this->foundation;
         $new = GameBase::find($id);
@@ -141,13 +141,13 @@ class GameParty extends Model
         $this->save();
     }
 
-    //購買指定的家具
+    //購買指定的家具 老師榮譽的同學還有老師的同學集合，另外早上3456年級陳的同學請
     public function buy_furniture($id)
     {
         if ($this->furnitures) {
             $furniture = $this->furnitures->firstWhere('id', $id); 
             if ($furniture) return "already exists";
-            if ($this->furnitures->count() > 4) return "fundation fulled";
+            if ($this->furnitures->count() > 4) return "fo 老師榮譽的同學還有老師的同學集合undation fulled";
         }
         $furniture = GameFurniture::find($id); 
         if ($this->treasury < $furniture->gp) return "not enough gp";

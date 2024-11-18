@@ -190,7 +190,7 @@ class PlayerController extends Controller
             }
             $bases = GameBase::all();
             $configure = GameConfigure::findByClass($party->classroom_id);
-            return view('game.fundation', [ 'configure' => $configure, 'character' => $character, 'party' => $party, 'bases' => $bases ]);
+            return view('game.foundation', [ 'configure' => $configure, 'character' => $character, 'party' => $party, 'bases' => $bases ]);
         } else {
             return redirect()->route('game.player')->with('error', '您尚未加入公會，無法使用據點！');
         }
@@ -471,7 +471,13 @@ class PlayerController extends Controller
         $uuid = $request->input('uuid');
         $char = GameCharacter::find($uuid);
         $fur_id = $request->input('furniture');
-        $char->party->buy_furniture($fur_id);
+        $furnitures = $char->party->furnitures;
+        $exists = $furnitures->contains(function ($fur) use ($fur_id) {
+            return $fur->id == $fur_id;
+        }); 
+        if (!$exists) {
+            $char->party->buy_furniture($fur_id);
+        }
         return response()->json([ 'treasury' => $char->party->treasury ]);
     }
 

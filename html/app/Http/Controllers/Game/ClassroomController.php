@@ -130,9 +130,9 @@ class ClassroomController extends Controller
             $party->description = $request->input('description');
         }
         if ($request->input('base') == 0) {
-            $party->remove_fundation();
+            $party->remove_foundation();
         } else {
-            $party->change_fundation($request->input('base'));
+            $party->change_foundation($request->input('base'));
         }
         return redirect()->to($request->input('url'));
     }
@@ -158,9 +158,9 @@ class ClassroomController extends Controller
         $party->description = $request->input('description');
         $party->uuid = $request->input('leader');
         if ($request->input('base') == 0) {
-            $party->remove_fundation();
+            $party->remove_foundation();
         } else {
-            $party->change_fundation($request->input('base'));
+            $party->change_foundation($request->input('base'));
         }
         return redirect()->to($request->input('url'));
     }
@@ -279,12 +279,12 @@ class ClassroomController extends Controller
             if ($request->input('base') == 'yes') {
                 $parties = GameParty::findByClass($room_id);
                 foreach ($parties as $p) {
-                    if ($p->fundation) {
-                        $p->effect_hp -= $p->fundation->hp;
-                        $p->effect_mp -= $p->fundation->mp;
-                        $p->effect_ap -= $p->fundation->ap;
-                        $p->effect_dp -= $p->fundation->dp;
-                        $p->effect_sp -= $p->fundation->sp;
+                    if ($p->foundation) {
+                        $p->effect_hp -= $p->foundation->hp;
+                        $p->effect_mp -= $p->foundation->mp;
+                        $p->effect_ap -= $p->foundation->ap;
+                        $p->effect_dp -= $p->foundation->dp;
+                        $p->effect_sp -= $p->foundation->sp;
                     }
                     $p->base_id = null;
                     $p->save();
@@ -294,12 +294,12 @@ class ClassroomController extends Controller
                 $parties = GameParty::findByClass($room_id);
                 foreach ($parties as $p) {
                     DB::table('game_parties_furnitures')->where('party_id', $p->id)->delete();
-                    if ($p->fundation) {
-                        $p->effect_hp = $p->fundation->hp;
-                        $p->effect_mp = $p->fundation->mp;
-                        $p->effect_ap = $p->fundation->ap;
-                        $p->effect_dp = $p->fundation->dp;
-                        $p->effect_sp = $p->fundation->sp;
+                    if ($p->foundation) {
+                        $p->effect_hp = $p->foundation->hp;
+                        $p->effect_mp = $p->foundation->mp;
+                        $p->effect_ap = $p->foundation->ap;
+                        $p->effect_dp = $p->foundation->dp;
+                        $p->effect_sp = $p->foundation->sp;
                     } else {
                         $p->effect_hp = 0;
                         $p->effect_mp = 0;

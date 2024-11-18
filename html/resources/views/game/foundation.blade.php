@@ -3,8 +3,8 @@
 @section('content')
 <div class="w-full h-screen flex flex-col">
     <div class="relative w-full h-2/3 shrink-0 truncate">
-        @if ($party->fundation)
-        <img src="{{  $party->fundation->url() }}" class="absolute bottom-0 w-full z-0" />
+        @if ($party->foundation)
+        <img src="{{  $party->foundation->url() }}" class="absolute bottom-0 w-full z-0" />
         @endif
         <div class="absolute w-full h-3/4 bottom-0 inline-flex flex-row justify-center z-10">
             @foreach ($party->members as $m)

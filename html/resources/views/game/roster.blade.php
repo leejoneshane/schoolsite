@@ -33,7 +33,7 @@
     <div class="inline text-2xl">{{ $p->name }}</div>
     <br><span class="text-sm">{{ $p->description }}</span>
 </div></p>
-<div class="relative inline-flex items-center justify-between w-full py-4 rounded-md border border-teal-300 mb-6 bg-cover bg-center z-0" style="background-image: url('{{ $p->fundation && $p->fundation->avaliable() ? $p->fundation->url() : '' }}')">
+<div class="relative inline-flex items-center justify-between w-full py-4 rounded-md border border-teal-300 mb-6 bg-cover bg-center z-0" style="background-image: url('{{ $p->foundation && $p->foundation->avaliable() ? $p->foundation->url() : '' }}')">
     <div class="absolute w-full h-full z-10 opacity-30" /></div>
     <table class="w-full h-full z-20 text-left font-normal">
         <tr class="font-semibold text-lg">

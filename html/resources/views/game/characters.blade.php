@@ -48,8 +48,8 @@
             <td class="p-2">{{ $p->name }}</td>
             <td class="p-2">{{ $p->description }}</td>
             <td class="p-2">{{ $p->leader ? $p->leader->name : '尚未設定' }}</td>
-            @if ($p->base_id && $p->fundation)
-            <td class="p-2">{{ $p->fundation->name }}</td>
+            @if ($p->base_id && $p->foundation)
+            <td class="p-2">{{ $p->foundation->name }}</td>
             @else
             <td class="p-2">
                 <a class="text-blue-500 hover:text-blue-600" href="{{ route('game.party_edit', ['party_id' => $p->id]) }}">設定據點</a>
