@@ -408,6 +408,9 @@
     }
 
     function monster_attack() {
+        if (monster === null || monster.id === null) {
+            monster_respawn();
+        }
         window.axios.post('{{ route('game.monster_attack') }}', {
             spawn_id: monster.id,
         }, {

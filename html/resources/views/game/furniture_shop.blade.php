@@ -84,9 +84,11 @@
     @endforeach
     var new_furnitures = [];
     var old_furnitures = [];
+    @if ($character->party->furniture)
     @foreach ($character->party->furnitures as $f)
     old_furnitures[{{ $f->id }}] = {!! $f->toJson(JSON_UNESCAPED_UNICODE); !!}
     @endforeach
+    @endif
 
     var main = document.getElementsByTagName('main')[0];
     main.classList.replace('bg-game-map50', 'bg-game-workshop');
