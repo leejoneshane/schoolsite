@@ -38,7 +38,7 @@ class LunchController extends Controller
         if ($user->user_type == 'Student') {
             $class_id = employee()->class_id;
             $classroom = Classroom::find($class_id);
-            $survey = LunchSurvey::findBy($user->uuid, $section);
+            $survey = LunchSurvey::findBy($user->uuid, $section);    
         } elseif ($manager) {
             $class_id = $request->input('class');
             if (!$class_id) $class_id = '101';
@@ -46,6 +46,9 @@ class LunchController extends Controller
             $surveys = LunchSurvey::class_survey($class_id, $section);
         } elseif ($user->user_type == 'Teacher') {
             $class_id = employee()->tutor_class;
+            if (!$class_id) {
+                return redirect()->route('home')->with('error', '只有導師和管理員才能瀏覽午餐調查！');
+            } 
             $classroom = Classroom::find($class_id);
             $surveys = LunchSurvey::class_survey($class_id, $section);
         }

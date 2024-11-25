@@ -472,9 +472,12 @@ class PlayerController extends Controller
         $char = GameCharacter::find($uuid);
         $fur_id = $request->input('furniture');
         $furnitures = $char->party->furnitures;
-        $exists = $furnitures->contains(function ($fur) use ($fur_id) {
-            return $fur->id == $fur_id;
-        }); 
+        $exists = false;
+        if ($furnitures) {
+            $exists = $furnitures->contains(function ($fur) use ($fur_id) {
+                return $fur->id == $fur_id;
+            });     
+        }
         if (!$exists) {
             $char->party->buy_furniture($fur_id);
         }
