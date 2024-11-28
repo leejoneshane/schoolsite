@@ -37,11 +37,6 @@ class GameParty extends Model
         'leader',
     ];
 
-    //以下屬性需進行資料庫欄位格式轉換
-    protected $casts = [
-        'furnitures' => 'array',
-    ];
-
     //選取可抽籤的公會
     public static function wheel($room_id)
     {

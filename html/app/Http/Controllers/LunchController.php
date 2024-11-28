@@ -19,7 +19,7 @@ class LunchController extends Controller
 
     public function index(Request $request, $section = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
         $sections = LunchSurvey::sections();
         $next = next_section();
