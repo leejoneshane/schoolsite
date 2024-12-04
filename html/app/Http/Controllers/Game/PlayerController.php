@@ -463,7 +463,11 @@ class PlayerController extends Controller
         ExitArena::dispatch($character);
         $furnitures = GameFurniture::all();
         $configure = GameConfigure::findByClass($character->classroom_id);
-        return view('game.furniture_shop', [ 'configure' => $configure, 'character' => $character, 'furnitures' => $furnitures ]);
+        if ($character->party) {
+            return view('game.furniture_shop', [ 'configure' => $configure, 'character' => $character, 'furnitures' => $furnitures ]);
+        } else {
+            return redirect()->route('game.player')->with('error', '您尚未加入公會，無法使用據點！');
+        }
     }
 
     public function buy_furniture(Request $request)
