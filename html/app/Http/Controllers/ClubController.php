@@ -565,12 +565,10 @@ class ClubController extends Controller
             return redirect()->route('clubs.sections', ['club_id' => $club_id])->with('error', '本學期已經開班！');
         }
         $weekdays = [];
-        if (!($request->has('selfdefine'))) {
-            $data = $request->input('weekdays');
-            if (!empty($data)) {
-                foreach ($data as $k => $w) {
-                    $weekdays[$k] = (integer) $w;
-                }
+        $data = $request->input('weekdays');
+        if (!empty($data)) {
+            foreach ($data as $k => $w) {
+                $weekdays[$k] = (integer) $w;
             }
         }
         $admit = null;
@@ -633,12 +631,10 @@ class ClubController extends Controller
     {
         $section = ClubSection::find($section_id);
         $weekdays = [];
-        if (!($request->has('selfdefine'))) {
-            $data = $request->input('weekdays');
-            if (!empty($data)) {
-                foreach ($data as $k => $w) {
-                    $weekdays[$k] = (integer) $w;
-                }
+        $data = $request->input('weekdays');
+        if (!empty($data)) {
+            foreach ($data as $k => $w) {
+                $weekdays[$k] = (integer) $w;
             }
         }
         $admit = null;
@@ -705,6 +701,9 @@ class ClubController extends Controller
         $club = Club::find($club_id);
         $student = Student::find($user->uuid);
         $section = $club->section();
+        if (!$section) {
+            return redirect()->route('clubs.enroll')->with('error', '找不到該社團的開課紀錄，因此無法報名！');
+        }
         if ($student->has_enroll($club_id, $section->section)) {
             return redirect()->route('clubs.enroll')->with('error', '您已經報名該社團，無法再次報名！');
         }
@@ -790,7 +789,9 @@ class ClubController extends Controller
         if ($enroll->uuid != $user->uuid) {
             return redirect()->route('home')->with('error', '這不是您的報名紀錄，因此無法修改！');
         }
-        return view('app.club_editenroll', ['club' => $enroll->club, 'enroll' => $enroll]);
+        $club = $enroll->club;
+        $section = $club->section($enroll->section);
+        return view('app.club_editenroll', ['club' => $club, 'section' => $section, 'enroll' => $enroll]);
     }
 
     public function enrollUpdate(Request $request, $enroll_id)

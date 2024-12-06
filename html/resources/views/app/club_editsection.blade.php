@@ -76,6 +76,7 @@
             <input class="w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                 type="time" name="endtime" value="{{ $section->endTime }}" step="300">
         </div>
+        <br><span class="text-teal-500"><i class="fa-solid fa-circle-exclamation"></i>勾選多個上課日時，如果同時勾選「家長自訂」，則表示家長可從上課日中挑選一個或多個上課日！如果僅勾選「家長自訂」未勾選任何上課日，則表示家長可勾選週一到週五的任一天或多天。</span>
     </div></p>
     <p><div class="p-3">
         <label for="cash" class="inline">費用：</label>

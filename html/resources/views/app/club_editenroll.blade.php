@@ -83,20 +83,30 @@
                 </select>
             </div>
             @endif
-            @if ($club->section($enroll->section)->self_defined)
+            @if ($section->self_defined)
             <div class="p-3">
                 <label class="inline">自選上課日：每週</label>
                 <div id="weekdays" class="inline">
+                    @if (empty($section->weekdays) || in_array(1, $section->weekdays))
                     <input class="rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                        type="checkbox" name="weekdays[]" value="1"{{ in_array('1', $enroll->weekdays) ? ' checked' : '' }}><span class="text-sm">一　</span>
+                        type="checkbox" name="weekdays[]" value="1"><span class="text-sm">一　</span>
+                    @endif
+                    @if (empty($section->weekdays) || in_array(2, $section->weekdays))
                     <input class="pl-3 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                        type="checkbox" name="weekdays[]" value="2"{{ in_array('2', $enroll->weekdays) ? ' checked' : '' }}><span class="text-sm">二　</span>
+                        type="checkbox" name="weekdays[]" value="2"><span class="text-sm">二　</span>
+                    @endif
+                    @if (empty($section->weekdays) || in_array(3, $section->weekdays))
                     <input class="pl-3 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                        type="checkbox" name="weekdays[]" value="3"{{ in_array('3', $enroll->weekdays) ? ' checked' : '' }}><span class="text-sm">三　</span>
+                        type="checkbox" name="weekdays[]" value="3"><span class="text-sm">三　</span>
+                    @endif
+                    @if (empty($section->weekdays) || in_array(4, $section->weekdays))
                     <input class="pl-3 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                        type="checkbox" name="weekdays[]" value="4"{{ in_array('4', $enroll->weekdays) ? ' checked' : '' }}><span class="text-sm">四　</span>
+                        type="checkbox" name="weekdays[]" value="4"><span class="text-sm">四　</span>
+                    @endif
+                    @if (empty($section->weekdays) || in_array(5, $section->weekdays))
                     <input class="pl-3 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700"
-                        type="checkbox" name="weekdays[]" value="5"{{ in_array('5', $enroll->weekdays) ? ' checked' : '' }}><span class="text-sm">五　</span>
+                        type="checkbox" name="weekdays[]" value="5"><span class="text-sm">五　</span>
+                    @endif
                 </div>
             </div>
             @endif
