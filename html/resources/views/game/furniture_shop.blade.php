@@ -71,7 +71,7 @@
     </div>
 </div>
 <script nonce="selfhost">
-    var character = '{{ $character->uuid }}';
+    var party = {!! $party->toJson(JSON_UNESCAPED_UNICODE) !!};
     var shop_open = {{ $configure && $configure->furniture_shop }}; 
     var is_leader = {{ $character->is_leader() }};
     var furnitures = [];
@@ -84,8 +84,8 @@
     @endforeach
     var new_furnitures = [];
     var old_furnitures = [];
-    @if ($character->party->furniture)
-    @foreach ($character->party->furnitures as $f)
+    @if ($party->furniture)
+    @foreach ($party->furnitures as $f)
     old_furnitures[{{ $f->id }}] = {!! $f->toJson(JSON_UNESCAPED_UNICODE); !!}
     @endforeach
     @endif
@@ -103,7 +103,7 @@
     window.onload = init;
 
     function init() {
-        if (shop_open) {
+        if (shop_open && is_leader) {
             seller.innerHTML = '歡迎光臨，今天需要什麼服務呢？';
             dialog.classList.add('hidden');
             service.classList.remove('hidden');
@@ -111,15 +111,21 @@
             newgoods.classList.add('hidden');
             confirm.classList.add('hidden');
         } else {
-            seller.innerHTML = '很抱歉，東西都賣完了，請下次再來！';
+            if (!shop_open) {
+                seller.innerHTML = '很抱歉，東西都賣完了，請下次再來！';
+            }
+            if (!is_leader) {
+                seller.innerHTML = '抱歉，我們只接受公會長訂購商品！';
+            }
             dialog.classList.remove('hidden');
             service.classList.add('hidden');
             oldgoods.classList.add('hidden');
             newgoods.classList.add('hidden');
             confirm.classList.add('hidden');
+            return;
         }
         window.axios.post('{{ route('game.get_myfurnitures') }}', {
-            uuid: character,
+            party: party.id,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
@@ -160,14 +166,7 @@
     }
 
     function buy() {
-        if (!is_leader) {
-            seller.innerHTML = '抱歉，我們只接受公會長訂購商品！';
-            dialog.classList.remove('hidden');
-            service.classList.add('hidden');
-            oldgoods.classList.add('hidden');
-            newgoods.classList.add('hidden');
-            confirm.classList.add('hidden');
-        } else if (old_furnitures.length > 4) {
+        if (old_furnitures.length > 4) {
             seller.innerHTML = '您的據點空間不足，要不要先賣掉幾件家具？';
             dialog.classList.add('hidden');
             service.classList.remove('hidden');
@@ -184,14 +183,7 @@
     }
 
     function sell() {
-        if (!is_leader) {
-            seller.innerHTML = '抱歉，我們只接受公會長販售商品！';
-            dialog.classList.remove('hidden');
-            service.classList.add('hidden');
-            oldgoods.classList.add('hidden');
-            newgoods.classList.add('hidden');
-            confirm.classList.add('hidden');
-        } else if (old_furnitures.length < 1) {
+        if (old_furnitures.length < 1) {
             seller.innerHTML = '您的據點空無一物，沒有家具可以販賣!';
             dialog.classList.add('hidden');
             service.classList.remove('hidden');
@@ -239,7 +231,7 @@
     function done() {
         if (step == 'buy') {
             window.axios.post('{{ route('game.buy_furniture') }}', {
-                uuid: character,
+                party: party.id,
                 furniture: fur,
             }, {
                 headers: {
@@ -251,7 +243,7 @@
             });
         } else {
             window.axios.post('{{ route('game.sell_furniture') }}', {
-                uuid: character,
+                party: party.id,
                 furniture: fur,
                 cash: cash,
             }, {

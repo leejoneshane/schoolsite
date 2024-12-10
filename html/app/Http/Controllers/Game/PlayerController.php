@@ -171,10 +171,15 @@ class PlayerController extends Controller
 
     public function get_furnitures(Request $request)
     {
-        $uuid = $request->input('uuid');
-        $char = GameCharacter::find($uuid);
-        $furnitures = $char->party->furnitures;
-        $treasury = $char->party->treasury;
+        $id = $request->input('party');
+        $party = GameParty::find($id);
+        if ($party) {
+            $furnitures = $party->furnitures;
+            $treasury = $party->treasury;
+        } else {
+            $furnitures = null;
+            $treasury = 0;
+        }
         return response()->json([ 'furnitures' => $furnitures, 'treasury' => $treasury ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
@@ -464,7 +469,7 @@ class PlayerController extends Controller
         $furnitures = GameFurniture::all();
         $configure = GameConfigure::findByClass($character->classroom_id);
         if ($character->party) {
-            return view('game.furniture_shop', [ 'configure' => $configure, 'character' => $character, 'furnitures' => $furnitures ]);
+            return view('game.furniture_shop', [ 'configure' => $configure, 'character' => $character, 'party' => $character->party, 'furnitures' => $furnitures ]);
         } else {
             return redirect()->route('game.player')->with('error', '您尚未加入公會，無法使用據點！');
         }
@@ -472,10 +477,10 @@ class PlayerController extends Controller
 
     public function buy_furniture(Request $request)
     {
-        $uuid = $request->input('uuid');
-        $char = GameCharacter::find($uuid);
+        $id = $request->input('party');
+        $party = GameParty::find($id);
         $fur_id = $request->input('furniture');
-        $furnitures = $char->party->furnitures;
+        $furnitures = $party->furnitures;
         $exists = false;
         if ($furnitures) {
             $exists = $furnitures->contains(function ($fur) use ($fur_id) {
@@ -483,20 +488,20 @@ class PlayerController extends Controller
             });     
         }
         if (!$exists) {
-            $char->party->buy_furniture($fur_id);
+            $party->buy_furniture($fur_id);
         }
-        return response()->json([ 'treasury' => $char->party->treasury ]);
+        return response()->json([ 'treasury' => $party->treasury ]);
     }
 
     public function sell_furniture(Request $request)
     {
-        $uuid = $request->input('uuid');
-        $char = GameCharacter::find($uuid);
+        $id = $request->input('party');
+        $party = GameParty::find($id);
         $fur_id = $request->input('furniture');
         $cash = $request->input('cash');
         if (!$cash) $cash = 0;
-        $char->party->buy_furniture($fur_id, $cash);
-        return response()->json([ 'treasury' => $char->party->treasury ]);
+        $party->sell_furniture($fur_id, $cash);
+        return response()->json([ 'treasury' => $party->treasury ]);
     }
 
     public function item_shop()
@@ -510,20 +515,18 @@ class PlayerController extends Controller
 
     public function buy_item(Request $request)
     {
-        $uuid = $request->input('uuid');
-        $char = GameCharacter::find($uuid);
+        $character = GameCharacter::find(Auth::user()->uuid);
         $item_id = $request->input('item');
-        $char->buy_item($item_id);
-        return response()->json([ 'gp' => $char->gp ]);
+        $character->buy_item($item_id);
+        return response()->json([ 'gp' => $character->gp ]);
     }
 
     public function sell_item(Request $request)
     {
-        $uuid = $request->input('uuid');
-        $char = GameCharacter::find($uuid);
+        $character = GameCharacter::find(Auth::user()->uuid);
         $item_id = $request->input('item');
-        $char->sell_item($item_id);
-        return response()->json([ 'gp' => $char->gp ]);
+        $character->sell_item($item_id);
+        return response()->json([ 'gp' => $character->gp ]);
     }
 
     public function arena()
@@ -531,7 +534,11 @@ class PlayerController extends Controller
         $character = GameCharacter::find(Auth::user()->uuid);
         EnterArena::dispatch($character);
         $configure = GameConfigure::findByClass($character->classroom_id);
-        return view('game.arena', [ 'configure' => $configure, 'character' => $character ]);
+        if ($character->party) {
+            return view('game.arena', [ 'configure' => $configure, 'character' => $character ]);
+        } else {
+            return redirect()->route('game.player')->with('error', '您尚未加入公會，無法使用據點！');
+        }
     }
 
     public function refresh_arena(Request $request)

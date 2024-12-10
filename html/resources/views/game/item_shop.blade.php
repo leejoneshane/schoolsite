@@ -71,7 +71,7 @@
     </div>
 </div>
 <script nonce="selfhost">
-    var character = '{{ $character->uuid }}';
+    var character = {!! $character->toJson(JSON_UNESCAPED_UNICODE) !!};
     var shop_open = {{ $configure && $configure->item_shop }}; 
     var items = [];
     var step;
@@ -112,7 +112,7 @@
             confirm.classList.add('hidden');
         }
         window.axios.post('{{ route('game.get_myitems') }}', {
-            uuid: character,
+            uuid: character.uuid,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
@@ -200,7 +200,7 @@
     function done() {
         if (step == 'buy') {
             window.axios.post('{{ route('game.buy_item') }}', {
-                uuid: character,
+                uuid: character.uuid,
                 item: item,
             }, {
                 headers: {
@@ -212,7 +212,7 @@
             });
         } else {
             window.axios.post('{{ route('game.sell_item') }}', {
-                uuid: character,
+                uuid: character.uuid,
                 item: item,
             }, {
                 headers: {
