@@ -22,9 +22,9 @@
     @csrf
     <input type="hidden" name="current" value="{{ $current }}">
     <p><div class="p-3">
-        <label for="unit_id" class="inline">同步行事曆：</label>
+        <label for="calendar_id" class="inline">同步行事曆：</label>
         <select class="inline w-44 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            name="calendar_id">
+            id="calendar_id" name="calendar_id">
             @foreach ($calendars as $c)
             <option value="{{ $c->id }}"{{ ($c->id == $event->id) ? ' selected' : ''}}>{{ $c->summary }}</option>
             @endforeach
@@ -33,7 +33,7 @@
     <p><div class="p-3">
         <label for="unit_id" class="inline">負責單位：</label>
         <select class="inline w-28 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            name="unit_id">
+            id="unit_id" name="unit_id">
             @foreach ($units as $u)
             <option value="{{ $u->id }}"{{($u->id == $event->unit_id) ? ' selected' : '' }}>{{ $u->name }}</option>
             @endforeach
@@ -54,11 +54,11 @@
         </label>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">起迄日期：</label>
+        <label for="sdate" class="inline">起迄日期：</label>
         <input class="w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" name="start_date" value="{{ $event->startDate->toDateString() }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}">到
+            type="date" id="sdate" name="start_date" value="{{ $event->startDate->toDateString() }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}">到
         <input class="w-36 rounded px-2 py-5 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="date" name="end_date" value="{{ $event->endDate->toDateString() }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}">
+            type="date" id="edate" name="end_date" value="{{ $event->endDate->toDateString() }}" min="{{ $seme->mindate }}" max="{{ $seme->maxdate }}">
     </div></p>
     <p><div class="p-3">
         <label for="all_day" class="inline-flex relative items-center cursor-pointer">
@@ -75,25 +75,25 @@
         </label>
     </div></p>
     <p><div id="part_time" class="p-3{{ $event->all_day ? ' hidden' : '' }}">
-        <label class="inline">起迄時間：</label>
+        <label for="stime" class="inline">起迄時間：</label>
         <input class="w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="time" id="stime" name="start_time" value="{{ $event->startTime }}" min="07:00" max="18:00" step="300">到
+            type="time" id="stime" name="start_time" value="{{ $event->startTime->format('H:i:s') }}" min="07:00:00" max="18:00:00">到
         <input class="w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="time" id="etime" name="end_time" value="{{ $event->endTime }}" min="07:00" max="18:00" step="300">
+            type="time" id="etime" name="end_time" value="{{ $event->endTime->format('H:i:s') }}" min="07:00:00" max="18:00:00">
     </div></p>
     <p><div class="p-3">
         <label for="summary" class="inline">事件摘要：</label>
-        <input class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+        <input id="summary" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="text" name="summary" value="{{ $event->summary }}" required>
     </p>
     <p><div class="p-3">
         <label for="desc" class="inline">補充說明：</label>
-        <textarea class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+        <textarea id="desc" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             name="desc" rows="5" cols="120">{{ $event->description }}</textarea>
     </div></p>
     <p><div class="p-3">
         <label for="location" class="inline">地點：</label>
-        <input class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+        <input id="location" class="inline w-64 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             type="text" name="location" value="{{ $event->location }}">
     </div></p>
     <p class="p-6">

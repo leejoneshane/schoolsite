@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use App\Models\GameCharacter;
 use App\Models\GameAdventure;
 use App\Models\Student;
@@ -53,17 +54,25 @@ function is_lock($room_id) {
 
 function player($uuid = null) {
     if (!$uuid) {
-        $uuid = auth()->user()->uuid;
+        $user = auth()->user();
+        if ($user) {
+            $uuid = $user->uuid;
+        } else {
+            return null;
+        }
     }
     $character = GameCharacter::find($uuid);
     return $character;
 }
 
 function employee($uuid = null) {
-    $user = auth()->user();
-    if (!$uuid) {
-        $uuid = auth()->user()->uuid;
+    if ($uuid) {
+        $user = User::where('uuid', $uuid)->first();
+    } else {
+        $user = auth()->user();
+        if ($user) $uuid = $user->uuid;
     }
+    if (!$user) return null;
     if ($user->user_type == 'Student') {
         $obj = Student::find($uuid);
     } else {

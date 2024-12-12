@@ -70,6 +70,8 @@ class IcsEvent extends Model implements Subscribeable
         'training' => 'boolean',
         'startDate' => 'datetime:Y-m-d',
         'endDate' => 'datetime:Y-m-d',
+        'startTime' => 'datetime:H:i:s',
+        'endTime' => 'datetime:H:i:s',
     ];
 
     //建立、更新、刪除行事曆事件時，同步到 Gsuite 中
@@ -218,8 +220,8 @@ class IcsEvent extends Model implements Subscribeable
         if ($this->all_day) {
             $event->startsAt($this->startDate)->fullDay();
         } else {
-            $start_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->format('Y-m-d').' '.$this->startTime, env('TZ'));
-            $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->format('Y-m-d').' '.$this->endTime, env('TZ'));
+            $start_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->format('Y-m-d').' '.$this->startTime->format('H:i:s'), env('TZ'));
+            $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->format('Y-m-d').' '.$this->endTime->format('H:i:s'), env('TZ'));
             $event->period($start_time, $end_time);
         }
         if ($this->startDate->format('Y-m-d') != $this->endDate->format('Y-m-d')) {
@@ -231,7 +233,7 @@ class IcsEvent extends Model implements Subscribeable
                 if ($this->all_day) {
                     $days[] = Carbon::createFromFormat('Y-m-d', $date->format('Y-m-d'), env('TZ'));
                 } else {
-                    $days[] = Carbon::createFromFormat('Y-m-d H:i:s', $date->format('Y-m-d').' '.$this->startTime, env('TZ'));
+                    $days[] = Carbon::createFromFormat('Y-m-d H:i:s', $date->format('Y-m-d').' '.$this->startTime->format('H:i:s'), env('TZ'));
                 }
             }
             $event->repeatOn($days); 

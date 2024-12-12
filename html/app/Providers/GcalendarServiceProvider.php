@@ -244,10 +244,10 @@ class GcalendarServiceProvider extends ServiceProvider
             $event_start->setDate($ics->startDate->format('Y-m-d'));
             $event_end->setDate($ics->endDate->format('Y-m-d'));
             $event->setStart($event_start);
-            $event->setEnd($event_end);	
+            $event->setEnd($event_end);
         } else {
-            $event_start->setDateTime($ics->startDate->format('Y-m-d').'T'.$ics->startTime.'+08:00');
-            $event_end->setDateTime($ics->startDate->format('Y-m-d').'T'.$ics->endTime.'+08:00');
+            $event_start->setDateTime($ics->startDate->format('Y-m-d').'T'.$ics->startTime->format('H:i:s').'+08:00');
+            $event_end->setDateTime($ics->startDate->format('Y-m-d').'T'.$ics->endTime->format('H:i:s').'+08:00');
             $event->setStart($event_start);
             $event->setEnd($event_end);
             $days = $ics->endDate->diff($ics->startDate)->format('%a');

@@ -111,16 +111,15 @@ class CalendarController extends Controller
 
     public function eventInsert(Request $request)
     {
-        $event = IcsEvent::create([
-            'uuid' => $request->user()->uuid,
-            'unit_id' => $request->input('unit_id'),
-            'startDate' => $request->input('start_date'),
-            'endDate' => $request->input('end_date'),
-            'summary' => $request->input('summary'),
-            'description' => $request->input('desc'),
-            'location' => $request->input('location'),
-            'calendar_id' => $request->input('calendar_id'),
-        ]);
+        $event = new IcsEvent;
+        $event->uuid = $request->user()->uuid;
+        $event->unit_id = $request->input('unit_id');
+        $event->startDate = $request->input('start_date');
+        $event->endDate = $request->input('end_date');
+        $event->summary = $request->input('summary');
+        $event->description = $request->input('desc');
+        $event->location = $request->input('location');
+        $event->calendar_id = $request->input('calendar_id');
         if ($request->has('important')) {
             $event->important = true;
         }
@@ -131,10 +130,8 @@ class CalendarController extends Controller
             $event->all_day = true;
         } else {
             $start = $request->input('start_time');
-            if (strlen($start) == 5) $start .= ':00';
             $event->startTime = $start;
             $end = $request->input('end_time');
-            if (strlen($end) == 5) $end .= ':00';
             $event->endTime = $end;
         }
         $event->save();
@@ -165,15 +162,14 @@ class CalendarController extends Controller
     public function eventUpdate(Request $request, $event_id)
     {
         $event = IcsEvent::find($event_id);
-        $event->fill([
-            'unit_id' => $request->input('unit_id'),
-            'startDate' => $request->input('start_date'),
-            'endDate' => $request->input('end_date'),
-            'summary' => $request->input('summary'),
-            'description' => $request->input('desc'),
-            'location' => $request->input('location'),
-            'calendar_id' => $request->input('calendar_id'),
-        ]);
+        $event->uuid = $request->user()->uuid;
+        $event->unit_id = $request->input('unit_id');
+        $event->startDate = $request->input('start_date');
+        $event->endDate = $request->input('end_date');
+        $event->summary = $request->input('summary');
+        $event->description = $request->input('desc');
+        $event->location = $request->input('location');
+        $event->calendar_id = $request->input('calendar_id');
         if ($request->has('important')) {
             $event->important = true;
         }
@@ -185,10 +181,8 @@ class CalendarController extends Controller
         } else {
             $event->all_day = false;
             $start = $request->input('start_time');
-            if (strlen($start) == 5) $start .= ':00';
             $event->startTime = $start;
             $end = $request->input('end_time');
-            if (strlen($end) == 5) $end .= ':00';
             $event->endTime = $end;
         }
         $event->save();
@@ -371,16 +365,21 @@ class CalendarController extends Controller
         $today = $request->input('current');
         if (!$today) $today = date('Y-m-d');
         $section = $request->input('section');
-        if (!$section) {
+        if (empty($section)) {
             $year = current_year();
             $seme = current_seme();
             $section = $year . $seme;
         } else {
             $year = (integer) substr($section, 0, -1);
             $seme = (integer) substr($section, -1);
+            if ($year < 0 || $seme > 2) {
+                $year = current_year();
+                $seme = current_seme();
+                $section = $year . $seme;
+            }
         }
         if ($seme == 1) {
-            $y = $year+1911;
+            $y = $year + 1911;
             $month = [
                 (object) ['y' => $y, 'm' => 8],
                 (object) ['y' => $y, 'm' => 9],
@@ -392,7 +391,7 @@ class CalendarController extends Controller
             $prev = ($year - 1).'2';
             $next = $year.'2';
         } else {
-            $y = $year+1912;
+            $y = $year + 1912;
             $month = [
                 (object) ['y' => $y, 'm' => 2],
                 (object) ['y' => $y, 'm' => 3],

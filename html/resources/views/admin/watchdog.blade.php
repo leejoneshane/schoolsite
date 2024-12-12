@@ -28,7 +28,7 @@
         var mydate = this.value;
         window.location.replace('{{ route('watchdog') }}?date=' + mydate);
 ">
-<label for="idno" class="inline p-2">用戶IP：</label>
+<label for="ip" class="inline p-2">用戶IP：</label>
 <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
     type="text" id="ip" value="{{ $ip }}">
 <label for="user" class="inline p-2">教師帳號：</label>
@@ -121,13 +121,17 @@
         } elseif ($user->user_type == 'Teacher') {
             $role = employee($user->uuid)->role_name;
         } elseif ($user->user_type == 'Student') {
-            $role = employee($user->uuid)->classroom->name;
+            if (employee($user->uuid)) {
+                $role = employee($user->uuid)->classroom->name;
+            } else {
+                $role = '不在籍學生';
+            }
         } else {
             $role = '本地帳號';
         }
         @endphp
         <td class="p-2">{{ $role }}</td>
-        <td class="p-2">{{ ($user) ? employee(user->uuid)->realname : ''}}</td>
+        <td class="p-2">{{ ($user && employee($user->uuid)) ? employee($user->uuid)->realname : ''}}</td>
     </tr>
     <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
         <td colspan="8" class="border-b">{!! nl2br($log->action) !!}</td>
