@@ -264,6 +264,29 @@ class GameController extends Controller
         return response()->json([ 'character' => $character ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
     }
 
+    public function revive(Request $request)
+    {
+        $character = GameCharacter::find($request->input('uuid'));
+        if ($character->party_id != $request->input('party')) {
+            $character->party_id = $request->input('party');
+        }
+        if (!empty($request->input('title'))) {
+            $character->title = $request->input('title');
+        } else {
+            $character->title = null;
+        }
+        if ($character->class_id != $request->input('profession')) {
+            $pro = GameClass::find($request->input('profession'));
+            $character->change_class($pro->id);
+        }
+        if ($character->hp < 1) {
+            $character->hp = round($character->max_hp * 0.1);
+        }
+        $character->save();
+        $character->refresh();
+        return response()->json([ 'character' => $character ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+    }
+
     public function get_skills(Request $request)
     {
         $uuid = $request->input('uuid');

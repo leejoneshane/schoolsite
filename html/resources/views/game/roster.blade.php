@@ -459,7 +459,10 @@
                     </select>
                 </div></p>
             </div>
-            <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+            <div class="w-full inline-flex justify-center gap-2 p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button onclick="revive();" type="button" class="text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+                    復活
+                </button>
                 <button onclick="fastedit();" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                     修改
                 </button>
@@ -1399,6 +1402,26 @@
         var title = document.getElementById('title').value;
         var profession = document.getElementById('profession').value;
         window.axios.post('{{ route('game.character_edit') }}', {
+            uuid: character.uuid,
+            party: party,
+            title: title,
+            profession: profession,
+        }, {
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        }).then( response => {
+            location.reload();
+        });
+    }
+
+    function revive() {
+        editModal.hide();
+        var party = document.getElementById('party').value;
+        var title = document.getElementById('title').value;
+        var profession = document.getElementById('profession').value;
+        window.axios.post('{{ route('game.character_revive') }}', {
             uuid: character.uuid,
             party: party,
             title: title,

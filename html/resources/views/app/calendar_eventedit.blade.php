@@ -77,9 +77,9 @@
     <p><div id="part_time" class="p-3{{ $event->all_day ? ' hidden' : '' }}">
         <label for="stime" class="inline">起迄時間：</label>
         <input class="w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="time" id="stime" name="start_time" value="{{ $event->startTime->format('H:i:s') }}" min="07:00:00" max="18:00:00">到
+            type="time" id="stime" name="start_time" value="{{ $event->startTime ? $event->startTime->format('H:i:s') : '08:00:00' }}" min="07:00:00" max="18:00:00">到
         <input class="w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-            type="time" id="etime" name="end_time" value="{{ $event->endTime->format('H:i:s') }}" min="07:00:00" max="18:00:00">
+            type="time" id="etime" name="end_time" value="{{ $event->endTime ? $event->endTime->format('H:i:s') : '16:00:00' }}" min="07:00:00" max="18:00:00">
     </div></p>
     <p><div class="p-3">
         <label for="summary" class="inline">事件摘要：</label>
