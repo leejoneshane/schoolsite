@@ -78,10 +78,12 @@ class ClubEnrolledExport
             if ($club->section($this->section)->self_defined) {
                 $counter = [0,0,0,0,0,0];
                 foreach ($enrolls as $enroll) {
-                    for ($i=1; $i<6; $i++) {
-                        if (in_array($i, $enroll->weekdays)) {
-                            $counter[$i]++;
-                        }
+                    if (is_array($enroll->weekdays)) {
+                        for ($i=1; $i<6; $i++) {
+                            if (in_array($i, $enroll->weekdays)) {
+                                $counter[$i]++;
+                            }
+                        }    
                     }
                 }
                 $table->addRow(null, ['tblHeader' => true]);

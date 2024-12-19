@@ -257,7 +257,7 @@ class GameController extends Controller
         }
         if ($character->class_id != $request->input('profession')) {
             $pro = GameClass::find($request->input('profession'));
-            $character->change_class($pro->id);
+            if ($pro) $character->change_class($pro->id);
         }
         $character->save();
         $character->refresh();
@@ -277,7 +277,7 @@ class GameController extends Controller
         }
         if ($character->class_id != $request->input('profession')) {
             $pro = GameClass::find($request->input('profession'));
-            $character->change_class($pro->id);
+            if ($pro) $character->change_class($pro->id);
         }
         if ($character->hp < 1) {
             $character->hp = round($character->max_hp * 0.1);
