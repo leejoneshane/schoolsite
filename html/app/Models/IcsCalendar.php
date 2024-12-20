@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\IcalendarGenerator\Components\Calendar;
+use Carbon\Carbon;
 
 class IcsCalendar extends Model
 {
@@ -37,10 +38,10 @@ class IcsCalendar extends Model
         return IcsCalendar::where('summary', 'like', '%公開課%')->first();
     }
 
-    //取得此行事曆所有事件
+    //取得此行事曆今天以後的所有事件
     public function events()
     {
-        return $this->hasMany('App\Models\IcsEvent', 'calendar_id', 'id');
+        return $this->hasMany('App\Models\IcsEvent', 'calendar_id', 'id')->where('endDate', '>', Carbon::today());
     }
 
     //取得此行事曆對應的 Google 連結

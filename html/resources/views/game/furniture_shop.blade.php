@@ -78,7 +78,7 @@
     var cash;
     var step;
     var fur;
-    var treasury;
+    var treasury = {{ $party->treasury }};
     @foreach ($furnitures as $f)
     furnitures[{{ $f->id }}] = {!! $f->toJson(JSON_UNESCAPED_UNICODE); !!}
     @endforeach
