@@ -72,7 +72,7 @@
 </div>
 <script nonce="selfhost">
     var character = {!! $character->toJson(JSON_UNESCAPED_UNICODE) !!};
-    var shop_open = {{ $configure && $configure->item_shop }}; 
+    var shop_open = {!! $configure && $configure->item_shop ? 'true' : 'false' !!}; 
     var items = [];
     var step;
     var item;
