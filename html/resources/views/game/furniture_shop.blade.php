@@ -72,7 +72,7 @@
 </div>
 <script nonce="selfhost">
     var party = {!! $party->toJson(JSON_UNESCAPED_UNICODE) !!};
-    var shop_open = {{ $configure && $configure->furniture_shop }}; 
+    var shop_open = {!! $configure && $configure->furniture_shop ? 'true' : 'false' !!}; 
     var is_leader = {{ $character->is_leader() }};
     var furnitures = [];
     var cash;
