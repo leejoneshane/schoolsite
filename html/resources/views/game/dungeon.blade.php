@@ -6,7 +6,7 @@
         <div class="relative h-full flex flex-row">
             <div id="me" class="w-1/3 inline-flex content-end">
                 <div class="m-2 flex flex-col gap-1">
-                    <div class="w-24 h-8 text-white text-xl font-extrabold text-shadow">L{{ $character->level }} {{ $character->name }}</div>
+                    <div class="w-24 h-8 text-white text-xl font-extrabold text-shadow">L{{ $character->level }} {{ $character->title . $character->name }}</div>
                     <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
                         <div id="hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: {{ intval($character->hp / $character->max_hp * 100) }}%;">{{ $character->hp }}</div>
                     </div>

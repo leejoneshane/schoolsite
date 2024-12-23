@@ -23,8 +23,9 @@
         </div>
     </div>
     <div class="relative w-full h-40 left-0 inline-flex flex-row justify-start">
-        <div class="w-40 h-40">
+        <div class="w-40 inline-flex flex-col">
             <img src="{{ $character->image->thumb_url() }}" title="{{ $character->name }}" class="absolute bottom-0 w-40 h-40">
+            <div class="w-24 h-8 text-white text-xl font-extrabold text-shadow">L{{ $character->level }} {{ $character->title ?: '' }}{{ $character->name }}</div>
         </div>
         <span class="relative"></span>
         <div class="relative w-1/3 h-40 bottom-0 mx-10 bg-white rounded-lg drop-shadow-md z-20 before:content-[''] before:absolute before:rotate-45 before:w-12 before:h-12 before:top-12 before:-left-6 before:z-10 before:bg-white">

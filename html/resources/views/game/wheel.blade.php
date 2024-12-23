@@ -221,7 +221,7 @@
                 tr.appendChild(td);
                 td = document.createElement('td');
                 td.classList.add('text-left');
-                td.appendChild(document.createTextNode(character.name));
+                td.appendChild(document.createTextNode(character.title + character.name));
                 tr.appendChild(td);
                 body.appendChild(tr);
                 table.appendChild(body);
@@ -277,7 +277,7 @@
                     tr.appendChild(td);
                     td = document.createElement('td');
                     td.classList.add('text-left');
-                    td.appendChild(document.createTextNode(character.name));
+                    td.appendChild(document.createTextNode(character.title + character.name));
                     tr.appendChild(td);
                     body.appendChild(tr);
                 });
