@@ -524,6 +524,11 @@ class SchoolDataController extends Controller
         $google = new GsuiteServiceProvider();
         $s = Student::withTrashed()->find($uuid);
         $pwd = substr($s->idno, -6);
+        $user = $s->user;
+        if ($user) {
+            $user->reset_password($pwd);
+            Watchdog::watch($request, '重設學生本機帳號的密碼為 ' . $pwd);
+        }
         $gsuite = $s->gmails()->where('primary', true)->first();
         if ($gsuite) {
             $userKey = $gsuite->userKey;
@@ -541,7 +546,7 @@ class SchoolDataController extends Controller
         }
         if ($result) {
             Watchdog::watch($request, '重設學生「' . $s->stdno . $s->realname . '」密碼為 ' . $pwd);
-            return redirect(urldecode($referer))->with('success', '學生 Google 密碼已經重設為身分證字號後六碼！');
+            return redirect(urldecode($referer))->with('success', '學生本機密碼以及 Google 密碼已經重設為身分證字號後六碼！');
         } else {
             return redirect(urldecode($referer))->with('error', '還原學生 Google 密碼失敗！');
         }

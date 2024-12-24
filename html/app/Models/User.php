@@ -6,6 +6,8 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Auth\Events\PasswordReset;
+use Illuminate\Support\Facades\Hash;
 use Laravel\Passport\HasApiTokens;
 use App\Models\Permission;
 
@@ -24,7 +26,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'user_type',
         'name',
         'email',
-        'password',
         'is_admin',
     ];
 
@@ -51,6 +52,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function socialite_accounts()
     {
         return $this->hasMany('App\Models\SocialiteAccount', 'uuid', 'uuid');
+    }
+
+    public function reset_password($password)
+    {
+        $this->forceFill([
+            'password' => Hash::make($password)
+        ]);
+        $this->save();
+        event(new PasswordReset($this));
     }
 
     //取得使用者的所有權限
