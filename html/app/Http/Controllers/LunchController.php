@@ -57,7 +57,7 @@ class LunchController extends Controller
 
     public function setting($section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
         if (!$manager) {
             return redirect()->route('home')->with('error', '只有管理員才能設定午餐調查期程！');
@@ -69,13 +69,14 @@ class LunchController extends Controller
 
     public function save(Request $request, $section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
         if (!$manager) {
             return redirect()->route('home')->with('error', '只有管理員才能設定午餐調查期程！');
         }
         $settings = LunchSurvey::settings($section);
-        if ($request->input('qrcode') && $settings->qrcode != $request->input('qrcode')) {
+        $last = LunchSurvey::latest_settings();
+        if ($request->input('qrcode') && $last->qrcode != $request->input('qrcode')) {
             $image = public_path('images/lunch.png');
             QrCode::format('png')->size(300)
                 ->merge(public_path('images/logo.jpg'), 0.25, true)
@@ -118,7 +119,7 @@ class LunchController extends Controller
 
     public function downloadAll($section = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
         if (!$manager) {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -134,7 +135,7 @@ class LunchController extends Controller
 
     public function download($section, $class_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
         if (!$manager) {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
