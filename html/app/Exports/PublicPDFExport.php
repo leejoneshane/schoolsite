@@ -4,12 +4,8 @@ namespace App\Exports;
 
 use App\Models\PublicClass;
 use App\Models\Domain;
-use PhpOffice\PhpWord\Settings;
-use PhpOffice\PhpWord\IOFactory;
-use ZipArchive;
-
-require base_path('vendor') . '/convertapi/convertapi-php/lib/ConvertApi/autoload.php';
-use \ConvertApi\ConvertApi;
+use NcJoes\OfficeConverter\OfficeConverter;
+use DocxMerge\DocxMerge;
 
 class PublicPDFExport
 {
@@ -42,61 +38,16 @@ class PublicPDFExport
             }
         }
 
-        /* Set the PDF Engine Renderer Path */
-        $domPdfPath = base_path('vendor/dompdf/dompdf');
-        Settings::setPdfRendererPath($domPdfPath);
-        Settings::setPdfRendererName('DomPDF');
-
-        $zip = new ZipArchive();
-        $content = [] ;
-        $r = '';
-        for ($i = 1;$i <  count($filesName);$i++){
-        // Open the all document - 1
-            $result = $zip->open($filesName[$i], ZipArchive::RDONLY);
-            if ($result) {
-                $content[$i] = $zip->getFromName('word/document.xml');
-                $zip->close();
-                // Extract the content of  document
-                $p = strpos($content[$i], '<w:body');
-                $p = strpos($content[$i], '>', $p);
-                $content[$i] = substr($content[$i], $p+1);
-                $p = strpos($content[$i], '</w:body>');
-                $content[$i] = substr($content[$i], 0, $p);
-                $r .= $content[$i];
-            }
-        }
-        // Insert after first document
+        $dm = new DocxMerge();
         $merge_file = public_path('public_class/' . $this->section . $domain->name . 'merge.docx');
-        if (file_exists($merge_file)) unlink($merge_file);
-        copy($filesName[0], $merge_file);
+        $dm->merge($filesName, $merge_file);
 
-        $result = $zip->Open($merge_file);
-        if ($result) {
-            $content2 = $zip->getFromName('word/document.xml');
-            $p = strpos($content2, '</w:body>');
-            $content2 = substr_replace($content2, $r, $p, 0);
-            $zip->addFromString('word/document.xml', $content2, ZipArchive::FL_OVERWRITE);
-            $zip->close();
-        }
-
-        // Load temporarily create word file then Save it into PDF
         $pdfpath = public_path('public_class/' . $this->section . $domain->name . '.pdf');
-        /*
-        ConvertApi::setApiSecret('your-secert-code');
-        $result = ConvertApi::convert('pdf', [
-                'File' => $merge_file,
-        //        'PageRange' => '1-10',
-                'PageOrientation' => 'portrait',
-                'PageSize' => 'a4',
-            ], 'docx'
-        );
-        $result->saveFiles($pdfpath);
-        */
-        $Content = IOFactory::load($merge_file); 
         if (file_exists($pdfpath)) unlink($pdfpath);
-        $PDFWriter = IOFactory::createWriter($Content,'PDF');
-        $PDFWriter->save($pdfpath);
-        unlink($merge_file);
+        $pdf = $this->section . $domain->name . '.pdf';
+        $converter = new OfficeConverter($merge_file);
+        $converter->convertTo($pdf);
+        //unlink($merge_file);
 
         return $pdfpath;
     }

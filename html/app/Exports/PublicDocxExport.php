@@ -4,7 +4,7 @@ namespace App\Exports;
 
 use App\Models\PublicClass;
 use App\Models\Domain;
-use ZipArchive;
+use DocxMerge\DocxMerge;
 
 class PublicDocxExport
 {
@@ -37,38 +37,9 @@ class PublicDocxExport
             }
         }
 
-        $zip = new ZipArchive();
-        $content = [] ;
-        $r = '';
-        for ($i = 1;$i <  count($filesName);$i++){
-        // Open the all document - 1
-            $result = $zip->open($filesName[$i], ZipArchive::RDONLY);
-            if ($result) {
-                $content[$i] = $zip->getFromName('word/document.xml');
-                $zip->close();
-                // Extract the content of  document
-                $p = strpos($content[$i], '<w:body');
-                $p = strpos($content[$i], '>', $p);
-                $content[$i] = substr($content[$i], $p+1);
-                $p = strpos($content[$i], '</w:body>');
-                $content[$i] = substr($content[$i], 0, $p);
-                $r .= $content[$i];
-            }
-        }
-        // Insert after first document
+        $dm = new DocxMerge();
         $merge_file = public_path('public_class/' . $this->section . $domain->name . 'merge.docx');
-        if (file_exists($merge_file)) unlink($merge_file);
-        copy($filesName[0], $merge_file);
-
-        $result = $zip->Open($merge_file);
-        if ($result) {
-            $content2 = $zip->getFromName('word/document.xml');
-            $p = strpos($content2, '</w:body>');
-            $content2 = substr_replace($content2, $r, $p, 0);
-            $zip->addFromString('word/document.xml', $content2, ZipArchive::FL_OVERWRITE);
-            $zip->close();
-        }
-
+        $dm->merge($filesName, $merge_file);
         return $merge_file;
     }
 

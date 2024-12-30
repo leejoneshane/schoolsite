@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
 use App\Models\Unit;
 use App\Models\Role;
 use App\Models\Grade;
@@ -524,7 +525,7 @@ class SchoolDataController extends Controller
         $google = new GsuiteServiceProvider();
         $s = Student::withTrashed()->find($uuid);
         $pwd = substr($s->idno, -6);
-        $user = $s->user;
+        $user = User::where('uuid', $uuid)->first();
         if ($user) {
             $user->reset_password($pwd);
             Watchdog::watch($request, '重設學生本機帳號的密碼為 ' . $pwd);

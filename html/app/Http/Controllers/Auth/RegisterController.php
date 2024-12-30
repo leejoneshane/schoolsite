@@ -65,13 +65,14 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'uuid' => Str::orderedUuid(),
             'user_type' => 'Admin',
             'name' => $data['name'],
             'email' => $data['email'],
-            'password' => Hash::make($data['password']),
             'is_admin' => true,
         ]);
+        $user->reset_password($data['password']);
+        return $user;
     }
 }

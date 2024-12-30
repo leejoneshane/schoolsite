@@ -97,8 +97,8 @@ class TpeduController extends Controller
                             'user_type' => $user_type,
                             'name' => $tpuser->account,
                             'email' => $email,
-                            'password' => Hash::make(substr($tpuser->idno, -6)),
                         ]);
+                        $user->reset_password(substr($tpuser->idno, -6));
                         if ($tpuser->character) {
                             $characters = explode(',', $tpuser->character);
                             if (in_array('TPECadmin1', $characters)) {
