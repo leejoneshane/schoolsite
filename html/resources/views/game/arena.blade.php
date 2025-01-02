@@ -151,7 +151,7 @@
     </div>
 </div>
 <script nonce="selfhost">
-    var character = '{{ $character->uuid }}';
+    var character = {!! $character->toJson(JSON_UNESCAPED_UNICODE) !!};
     var ls_leader = {{ $character->is_leader() }};
     var enemy_party = '';
     var invite_from;
@@ -192,7 +192,7 @@
 
     function refresh() {
         window.axios.post('{{ route('game.refresh_arena') }}', {
-            uuid: character,
+            uuid: character.uuid,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
@@ -245,7 +245,7 @@
                     } else {
                         image.src = '{{ asset('images/game/blank.png') }}';
                     }
-                    if (member.uuid == character) {
+                    if (member.uuid == character.uuid) {
                         image.setAttribute('onclick', 'action_self()');
                     } else {
                         image.setAttribute('onclick', 'action_friend(' + member.uuid + ')');
@@ -361,7 +361,7 @@
 
     function ring_bell() {
         window.axios.post('{{ route('game.come_arena') }}', {
-            uuid: character,
+            uuid: character.uuid,
         }, {
             headers: {
                 'Content-Type': 'application/json;charset=utf-8',
@@ -375,7 +375,7 @@
     function invite() {
         var pid = party_node.value;
         window.axios.post('{{ route('game.invite_battle') }}', {
-            uuid: character,
+            uuid: character.uuid,
             party: pid,
         }, {
             headers: {
@@ -396,7 +396,7 @@
 
     function agree() {
         window.axios.post('{{ route('game.accept_battle') }}', {
-            uuid: character,
+            uuid: character.uuid,
             from: invite_from,
         }, {
             headers: {
@@ -414,7 +414,7 @@
 
     function dissgree() {
         window.axios.post('{{ route('game.reject_battle') }}', {
-            uuid: character,
+            uuid: character.uuid,
             from: invite_from,
         }, {
             headers: {
@@ -442,7 +442,7 @@
 
     function action_self() {
         if (done) return;
-        target = character;
+        target = character.uuid;
         target_type = 'self';
         var msg = document.getElementById('action_target');
         msg.innerHTML = '要對自己施展技能或使用道具？';
@@ -471,7 +471,7 @@
         var ul = document.getElementById('skillList');
         ul.innerHTML = '';
         window.axios.post('{{ route('game.get_myskills') }}', {
-            uuid: character,
+            uuid: character.uuid,
             kind: target_type,
         }, {
             headers: {
@@ -541,7 +541,7 @@
         var ul = document.getElementById('itemList');
         ul.innerHTML = '';
         window.axios.post('{{ route('game.get_myitems') }}', {
-            uuid: character,
+            uuid: character.uuid,
             kind: target_type,
         }, {
             headers: {
@@ -637,7 +637,7 @@
             return;
         } else {
             window.axios.post('{{ route('game.arena_skill') }}', {
-                self: character,
+                self: character.uuid,
                 target: target,
                 skill: data_skill,
             }, {
@@ -697,7 +697,7 @@
         data_item = item_obj.value;
         if (data_type == 'skill_then_item') {
             window.axios.post('{{ route('game.arena_skill') }}', {
-                self: character,
+                self: character.uuid,
                 target: target,
                 skill: data_skill,
                 item: data_item,
@@ -746,7 +746,7 @@
             data_type = '';
         } else {
             window.axios.post('{{ route('game.arena_item') }}', {
-                self: character,
+                self: character.uuid,
                 target: target,
                 item: data_item,
             }, {

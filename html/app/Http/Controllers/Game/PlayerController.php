@@ -574,7 +574,7 @@ class PlayerController extends Controller
             }
             return response()->json([ 'characters' => $characters, 'enemy' => $enemy_id, 'enemys' => $enemys, 'our_actions' => $our_actions, 'enemy_actions' => $enemy_actions ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         } else {
-            $parties = null;
+            $parties = [];
             $namespace = 'arena:'.$room.':ready';
             $pids = Redis::smembers($namespace);
             foreach($pids as $pid){
@@ -741,11 +741,13 @@ class PlayerController extends Controller
     public function monster_attack(Request $request)
     {
         $spawn = GameMonsterSpawn::find($request->input('spawn_id'));
-        $character = GameCharacter::find($spawn->uuid);
-        $response = $spawn->attack();
-        $spawn->refresh();
-        $character->refresh();
-        return response()->json([ 'skill' => $response['skill'], 'result' => $response['result'], 'character' => $character, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        if ($spawn) {
+            $character = GameCharacter::find($spawn->uuid);
+            $response = $spawn->attack();
+            $spawn->refresh();
+            $character->refresh();
+            return response()->json([ 'skill' => $response['skill'], 'result' => $response['result'], 'character' => $character, 'monster' => $spawn ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+        }
     }
 
     public function skill_monster(Request $request)

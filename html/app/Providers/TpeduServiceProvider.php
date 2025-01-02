@@ -258,7 +258,7 @@ class TpeduServiceProvider extends ServiceProvider
                              $oldemp->delete();
                         }
                         return false;
-                    }    
+                    }
                 }
                 $emp = Student::withTrashed()->firstOrNew(['uuid' => $uuid]);
                 $emp->class_id = $user->tpClass;
@@ -365,9 +365,10 @@ class TpeduServiceProvider extends ServiceProvider
                 }
                 if (!empty($user->tpTutorClass)) {
                     $emp->tutor_class = $user->tpTutorClass;
+                    DB::table('job_title')->where('year', current_year())->where('uuid', $uuid)->where('unit_id', 25)->delete();
                 }
                 DB::table('assignment')->where('year', current_year())->where('uuid', $uuid)->delete();
-                if (isset($user->teachClass) && is_array($user->teachClass->{$o})) {
+                if (isset($user->teachClass->{$o}) && is_array($user->teachClass->{$o})) {
                     foreach ($user->teachClass->{$o} as $assign) {
                         $a = explode(',', $assign->key);
                         $s = Subject::where('name', mb_substr($a[2], 4))->first();
