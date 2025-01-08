@@ -1,4 +1,4 @@
-<main class="w-full h-full min-h-screen bg-game-map50 bg-cover bg-center bg-no-repeat flex flex-col">
+<main class="w-full h-full min-h-screen bg-game-map50 bg-cover bg-center bg-repeat-y flex flex-col">
     <div class="block w-full h-28"></div>
     <div class="relative w-full h-screen flex">
         <div class="relative block w-16 min-h-full"></div>

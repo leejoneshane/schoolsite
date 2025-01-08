@@ -162,6 +162,7 @@
             </tr>
         </thead>
         <tbody>
+            @if ($publics)
             @foreach ($publics as $data)
             <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
                 <td class="p-2">{{ $data->timeperiod }}</td>
@@ -203,6 +204,7 @@
                 </td>
             </tr>
             @endforeach
+            @endif
         </tbody>
     </table>
 </div>

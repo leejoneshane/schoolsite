@@ -45,12 +45,12 @@
         </li>
     </ul>
 </div>
-<table class="w-full p-4 bg-white text-left font-normal mb-32">
+<table class="w-full p-4 bg-white text-left font-normal">
 <tbody id="qlist">
 @foreach ($evaluate->questions as $q)
     <tr id="q{{ $q->id }}" class="bg-teal-100 text-black font-semibold text-lg">
         <td class="w-12 p-2">{{ $q->sequence }}</td>
-        <td id="caption{{ $q->id }}" class="p-2">{{ $q->question }}</td>
+        <td id="caption{{ $q->id }}" class="p-2">{!! $q->question !!}</td>
         <td id="score{{ $q->id }}" class="p-2">配分：{{ $q->score }}</td>
         <td class="w-48 p-2">
             <button class="mx-3 text-blue-300 hover:text-blue-600" title="新增選項" onclick="open_option({{ $q->id }}, 0);">
@@ -66,14 +66,14 @@
         <td class="w-1/2"></td>
     </tr>
     <tr class="bg-white dark:bg-gray-700">
-        <td class="p-2" colspan="4">
+        <td class="p-2" colspan="4"></td>
         <td>
             <table class="w-full float-right text-left font-normal">
                 <tbody id="olist{{ $q->id }}">
                     @foreach ($q->options as $o)
                     <tr class="odd:bg-white even:bg-gray-100">
                         <td class="w-12 p-2">{{ $o->sequence }}</td>
-                        <td id="option{{ $o->id }}" class="p-2">{{ $o->option }}</td>
+                        <td id="option{{ $o->id }}" class="p-2">{!! $o->option !!}</td>
                         <td class="w-48 p-2">
                             <input type="radio" name="answer{{ $q->id }}" value="{{ $o->id }}"{{ $q->answer == $o->id ? ' checked' : '' }} onchange="set_answer({{ $q->id }});" class="mx-3" title="設為答案">
                             <button class="mx-3 text-blue-300 hover:text-blue-600" title="編輯" onclick="open_option({{ $q->id }}, {{ $o->id }});">
@@ -99,6 +99,7 @@
     </tr>
 </tbody>
 </table>
+<div class="py-8"> </div>
 <div id="questionModal" data-modal-backdrop="static" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-modal md:h-full">
     <div class="relative w-auto h-full max-w-2xl md:h-auto">
         <div class="relative bg-white rounded-lg shadow dark:bg-blue-700">
@@ -203,7 +204,7 @@
                 tr.setAttribute('id', 'q' + qid);
                 tr.classList.add('bg-teal-100','font-semibold','text-lg');
                 var td = document.createElement('td');
-                td.classList.add('p-2');
+                td.classList.add('w-12', 'p-2');
                 td.innerHTML = questions[qid].sequence;
                 tr.appendChild(td);
                 td = document.createElement('td');
@@ -237,14 +238,19 @@
                 btn.innerHTML = '<i class="fa-solid fa-trash"></i>';
                 td.appendChild(btn);
                 tr.appendChild(td);
+                td = document.createElement('td');
+                td.classList.add('w-1/2');
+                tr.appendChild(td);
                 qlist.insertBefore(tr, last);
                 var tr = document.createElement('tr');
                 tr.classList.add('bg-white');
                 var td = document.createElement('td');
                 td.classList.add('p-2');
                 td.setAttribute('colspan', 4);
+                tr.appendChild(td);
+                td = document.createElement('td');
                 var table = document.createElement('table');
-                table.classList.add('w-2/3','float-right','text-left','font-normal');
+                table.classList.add('w-full','float-right','text-left','font-normal');
                 var tbody = document.createElement('tbody');
                 tbody.setAttribute('id', 'olist' + qid);
                 table.appendChild(tbody);
@@ -255,7 +261,7 @@
         } else {
             window.axios.post('{{ route('game.question_edit') }}', {
                 qid: qid,
-                question: question.value,
+                question: question,
                 score: score.value,
             }, {
                 headers: {
@@ -369,7 +375,7 @@
         } else {
             window.axios.post('{{ route('game.option_edit') }}', {
                 oid: oid,
-                option: option.value,
+                option: option,
             }, {
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',

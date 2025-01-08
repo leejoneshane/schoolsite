@@ -17,10 +17,12 @@ class SeatsController extends Controller
     public function index()
     {
         $user = Auth::user();
-        if ($user->user_type != 'Teacher') {
-            return redirect()->route('home')->with('error', '只有教職員才能管理分組座位表！');
+        if ($user->user_type == 'Teacher') {
+            $seats = Seats::findByUUID($user->uuid);
+        } else {
+            $stu = Student::find($user->uuid);
+            $seats = Seats::findByClass($stu->class_id);
         }
-        $seats = Seats::findByUUID($user->uuid);
         return view('app.seats', ['seats' => $seats]);
     }
 
@@ -233,10 +235,6 @@ class SeatsController extends Controller
 
     public function show($id)
     {
-        $user = Auth::user();
-        if ($user->user_type != 'Teacher') {
-            return redirect()->route('home')->with('error', '只有教職員才能查閱分組座位表！');
-        }
         $seats = Seats::find($id);
         if ($seats) {
             $styles = SeatsTheme::$styles;
@@ -248,10 +246,6 @@ class SeatsController extends Controller
 
     public function group($id)
     {
-        $user = Auth::user();
-        if ($user->user_type != 'Teacher') {
-            return redirect()->route('home')->with('error', '只有教職員才能查閱分組一覽表！');
-        }
         $seats = Seats::find($id);
         $styles = SeatsTheme::$styles;
         $groups =[];

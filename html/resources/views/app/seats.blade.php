@@ -3,12 +3,14 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     分組座位表
+    @teacher
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seats.add') }}">
         <i class="fa-solid fa-circle-plus"></i>新增座位表
     </a>
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seats.theme') }}">
         <i class="fa-solid fa-chess-board"></i>管理版型
     </a>
+    @endteacher
 </div>
 <table class="w-full py-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
@@ -45,6 +47,7 @@
                 href="{{ route('seats.group', ['id' => $s->id]) }}">
                 <i class="fa-solid fa-people-group"></i>分組一覽表
             </a>
+            @teacher
             <button class="py-2 pr-6 text-amber-500 hover:text-amber-300"
                 onclick="
                     const myform = document.getElementById('remove');
@@ -69,11 +72,16 @@
             ">
                 <i class="fa-solid fa-trash"></i>刪除
             </button>
+            @endteacher
         </td>
     </tr>
     @empty
     <tr>
+        @teacher
         <td colspan="4" class="text-xl font-bold">您尚未新增任何座位表！</td>
+        @else
+        <td colspan="4" class="text-xl font-bold">找不到貴班的座位表！</td>
+        @endteacher
     </tr>
     @endforelse
     <form class="hidden" id="remove" action="" method="POST">
