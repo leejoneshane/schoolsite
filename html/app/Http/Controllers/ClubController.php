@@ -43,7 +43,11 @@ class ClubController extends Controller
             $manager = $teacher->manage_clubs->isNotEmpty();
             if (!empty($teacher->tutor_class)) $tutor = true;
         }
-        return view('app.club', ['tutor' => $tutor, 'admin' => ($user->is_admin || $admin), 'manager' => $manager, 'cash_reporter' => ($user->is_admin || $cash)]);
+        if ($user->is_admin) {
+            $admin = true;
+            $cash = true;
+        }
+        return view('app.club', ['teacher' => $teacher, 'tutor' => $tutor, 'admin' => $admin, 'manager' => $manager, 'cash_reporter' => $cash]);
     }
 
     public function kindList()
@@ -313,10 +317,13 @@ class ClubController extends Controller
             }
         }
         $teacher = Teacher::find($user->uuid);
-        if ($teacher && ($classroom = $teacher->tutor_classroom)) {
+        if ($teacher) {
             $class_id = $teacher->tutor_class;
-            $enrolls = ClubEnroll::acceptedByClass($class_id, $section)->groupBy('uuid');
-            return view('app.club_tutor', ['class_id' => $class_id, 'classroom' => $classroom, 'section' => $section, 'sections' => $sections, 'enrolls' => $enrolls]);
+            $classroom = Classroom::find($class_id);
+            if ($classroom) {
+                $enrolls = ClubEnroll::acceptedByClass($class_id, $section)->groupBy('uuid');
+                return view('app.club_tutor', ['class_id' => $class_id, 'classroom' => $classroom, 'section' => $section, 'sections' => $sections, 'enrolls' => $enrolls]);
+            }
         }
         return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
     }

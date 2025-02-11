@@ -169,7 +169,7 @@ class ClubEnrolledExport
                 }
                 if ($club->section($this->section)->self_defined) {
                     for ($i=1; $i<6; $i++) {
-                        if (in_array($i, $enroll->weekdays)) {
+                        if ($enroll->weekdays && in_array($i, $enroll->weekdays)) {
                             $table->addCell()->addText('1');
                         } else {
                             $table->addCell();

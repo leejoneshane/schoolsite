@@ -284,7 +284,9 @@ class AdventureController extends Controller
                 $classes = $request->input('classrooms');
             }
             foreach ($classes as $cls) {
-                $count = GameAdventure::findByClassroom($cls)->count();
+                $count = 0;
+                $adventures = GameAdventure::findByClassroom($cls);
+                if ($adventures) $count = $adventures->count();
                 if ($count > 0) {
                     $open = false;
                 } else {
