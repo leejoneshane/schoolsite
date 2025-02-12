@@ -214,7 +214,11 @@ class SeatsController extends Controller
             foreach ($cols as $j => $pos) {
                 if (is_object($pos->student)) {
                     $matrix[$i][$j][0] = $pos->student->seat;
-                    $matrix[$i][$j][1] = $students[$pos->student->seat]->html;
+                    if ($students[$pos->student->seat]) {
+                        $matrix[$i][$j][1] = $students[$pos->student->seat]->html;
+                    } else {
+                        $matrix[$i][$j][1] = '---';
+                    }
                     $matrix[$i][$j][2] = $pos->sequence;
                     $matrix[$i][$j][3] = $pos->group;
                 } else {
