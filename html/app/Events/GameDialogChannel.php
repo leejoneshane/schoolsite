@@ -23,14 +23,14 @@ class GameDialogChannel implements ShouldBroadcastNow
     public string $message;
     public string $code; //game service code
 
-    public function __construct($from, $to, $message =null, $code = '')
+    public function __construct($from, $to, $code = '', $message = '')
     {
         $this->from = GameCharacter::find($from);
         $this->to = GameCharacter::find($to);
         $this->from_party = $this->from->party;
         $this->to_party = $this->to->party;
-        $this->message = $message;
         $this->code = $code;
+        $this->message = $message;
     }
 
     /**

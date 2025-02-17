@@ -45,8 +45,8 @@
     </div>
 </div>
 <script nonce="selfhost">
-    document.addEventListener("DOMContentLoaded", function(event) { 
-        window.Echo.channel('classroom.{{ player()->class_id }}').listen('GameRoomChannel', (e) => {
+    document.addEventListener("DOMContentLoaded", function(event) {
+        window.Echo.channel('classroom.{{ player()->classroom_id }}').listen('GameRoomChannel', (e) => {
             let rnd = Math.floor(Math.random() * 100000);
             let popup = document.createElement('div');
             popup.id = 'messager_' + rnd;
@@ -72,7 +72,7 @@
             new window.Dismiss(popup, btn);
         });
 
-        @if (player() && player()->party)
+        @if (player()->party)
         window.Echo.channel('party.{{ player()->party_id }}').listen('GamePartyChannel', (e) => {
             let rnd = Math.floor(Math.random() * 100000);
             let popup = document.createElement('div');
@@ -100,7 +100,6 @@
         });
         @endif
 
-        @if (player())
         window.Echo.private('character.{{ player()->stdno }}').listen('GameCharacterChannel', (e) => {
             if (e.message.substring(0, 14) == 'task_comments:') {
                 task_comments(e.message.substring(14));
@@ -156,7 +155,6 @@
                 return;
             }
         });
-        @endif
     });
 </script>
 @endstudent
