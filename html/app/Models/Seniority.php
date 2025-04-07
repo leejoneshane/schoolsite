@@ -112,7 +112,7 @@ class Seniority extends Model
     //取得最後一筆紀錄的學年，靜態函式
     public static function latest_year()
     {
-        $last = Seniority::query()->latest()->get();
+        $last = Seniority::query()->latest()->first();
         return ($last) ? $last->syear : null;
     }
 

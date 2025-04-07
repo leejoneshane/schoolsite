@@ -7,17 +7,17 @@
             <div class="m-5 relative dark:bg-gray-700 text-black dark:text-gray-200">
                 <div>
                     @if (isset($error) || session()->has('error'))
-                    <div class="py-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-4 rounded relative" role="alert">
                         <i class="fa-regular fa-bell"></i> {{ isset($error) ? $error : session()->get('error') }}
                     </div>
                     @endif
                     @if (isset($success) || session()->has('success'))
-                    <div class="py-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-4 rounded relative" role="alert">
                         <i class="fa-regular fa-bell"></i> {{ isset($success) ? $success : session()->get('success') }}
                     </div>
                     @endif
                     @if (isset($message) || session()->has('message'))
-                    <div class="py-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
+                    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-4 rounded relative" role="alert">
                         <i class="fa-regular fa-bell"></i> {{ isset($message) ? $message : session()->get('message') }}
                     </div>
                     @endif
@@ -36,7 +36,7 @@
 </audio>
 @student
 <div id="messager" class="fixed z-10 right-0 bottom-0 flex flex-col-reverse place-items-end">
-    <div id="template" class="hidden flex items-center p-4 max-w-xs text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
+    <div id="template" class="flex items-center p-4 max-w-xs text-gray-500 bg-white rounded-lg shadow dark:text-gray-400 dark:bg-gray-800" role="alert">
         <div class="inline-flex flex-shrink-0 justify-center items-center w-8 h-8 text-blue-500 bg-blue-100 rounded-lg dark:bg-blue-800 dark:text-blue-200"></div>
         <div class="ml-3 text-sm font-normal"></div>
         <button type="button" class="ml-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex h-7 w-7 dark:text-gray-500 dark:hover:text-white dark:bg-gray-800 dark:hover:bg-gray-700" data-dismiss-target="#template" aria-label="Close">
