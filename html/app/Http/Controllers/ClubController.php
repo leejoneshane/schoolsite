@@ -376,7 +376,7 @@ class ClubController extends Controller
         if ($found) {
             return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('error', '該課外社團已經存在，無法再新增！');
         }
-        $grades = $request->input('grades');
+        $grades = $request->input('grades', []);
         foreach ($grades as $k => $g) {
             $grades[$k] = (integer) $g;
         }
@@ -1219,7 +1219,7 @@ class ClubController extends Controller
             $seat = (integer) substr($stdno, -2);
             $student = Student::findByStdno($class_id, $seat);
             if (!$student) {
-                $message .= $stdno.$student->realname.'此學生不存在，無法報名！';
+                $message .= $class_id.$seat.'此學生不存在，無法報名！';
                 continue;
             }
             $grade = $student->grade();
