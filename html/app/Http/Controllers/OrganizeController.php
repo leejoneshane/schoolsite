@@ -81,13 +81,12 @@ class OrganizeController extends Controller
     {
         $teacher = Teacher::find($uuid);
         $flow = OrganizeSettings::current();
-        $age = ($teacher->birthdate->format('md') > date("md")) ? date("Y") - $teacher->birthdate->format('Y') - 1 : date("Y") - $teacher->birthdate->format('Y');
         if ($flow->onSurvey() || $flow->onFirstStage() || $flow->onSecondStage()) {
             $survey = OrganizeSurvey::updateOrCreate([
                 'syear' => current_year(),
                 'uuid' => $teacher->uuid,
             ],[
-                'age' => $age,
+                'age' => $teacher->age,
                 'exprience' => $request->input('exp'),
                 'edu_level' => $request->input('edu_level'),
                 'edu_school' => $request->input('edu_school'),
@@ -395,6 +394,23 @@ class OrganizeController extends Controller
                 }
             }
         }
+        $all = Teacher::all();
+        foreach ($all as $t) {
+            $last = $t->last_survey();
+            if (!$t->survey()) {
+                OrganizeSurvey::insert([
+                    'syear' => current_year(),
+                    'uuid' => $t->uuid,
+                    'age' => $t->age,
+                    'exprience' => ($last) ? $last->exp : '',
+                    'edu_level' => ($last) ? $last->edu_level : 11,
+                    'edu_school' => ($last) ? $last->edu_school : '',
+                    'edu_division' => ($last) ? $last->edu_division : '',
+                    'score' => ($last) ? $last->score + 1 : 0,
+                    'high' => 0,
+                ]);    
+            }
+        }
     }
 
     public function stage(Request $request)
@@ -497,6 +513,14 @@ class OrganizeController extends Controller
             $stage1 = OrganizeVacancy::year_stage(1);
             $stage2 = OrganizeVacancy::year_stage(2);
             $rest_teachers = OrganizeSurvey::where('syear', current_year())->whereNull('assign')->get();
+            $rest_teachers->reject(function ($t) {
+                if (DB::table('organize_reserved')->where('syear', current_year())->where('uuid', $t->uuid)->exists()) {
+                    return true;
+                }
+                if (DB::table('organize_assign')->where('syear', current_year())->where('uuid', $t->uuid)->exists()) {
+                    return true;
+                }
+            });
             $teachers = [];
 //            if ($flow->onPause() || $search == 'seven') {
                 foreach ($stage1->general as $v) {

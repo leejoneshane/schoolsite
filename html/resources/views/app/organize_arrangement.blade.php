@@ -60,6 +60,7 @@
         </select>
     </div>
 </form>
+<span class="font-semibold">請確認所有開缺的教職員已經完成志願選填，未填寫的教師將無法指派職務！</span>
 <table class="w-full p-4 text-left font-normal">
     <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
         <th scope="col" class="w-32 p-2">
