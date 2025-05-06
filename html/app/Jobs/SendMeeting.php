@@ -39,9 +39,9 @@ class SendMeeting implements ShouldQueue
         $news = News::findByModel('App\Models\Meeting');
         $subscribers = $news->verified;
         if ($news->loop['loop'] == 'weekly') {
-            $search = Carbon::getDays()[$news->loop['day']];
-            $last = Carbon::createFromTimeStamp(strtotime("last $search", Carbon::now()->timestamp));
-            $meets = Meeting::inTimeOpen($last->format('Y-m-d'));
+            //$search = Carbon::getDays()[$news->loop['day']];
+            //$last = Carbon::createFromTimeStamp(strtotime("last $search", Carbon::now()->timestamp));
+            $meets = Meeting::inTimeOpen(Carbon::now()->format('Y-m-d'));
             if ($meets->count() > 0 && $subscribers->count() > 0) {
                 foreach ($subscribers as $sub) {
                     Notification::sendNow($sub, new NewsLetter($news->name, Meeting::template, [ 'meets' => $meets ]));
