@@ -488,7 +488,7 @@ class ClubController extends Controller
         $message = $request->input('message');
         if (!empty($enroll_ids)) {
             $enrolls = ClubEnroll::whereIn('id', $enroll_ids)->whereNotNull('email')->get();
-            Notification::sendNow($enrolls, new ClubNotification($message));
+            Notification::send($enrolls, new ClubNotification($message));
             Watchdog::watch($request, '寄送郵件給學生社團：' . $club->name . '的錄取學生，郵件內容：' . $message);
             return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '已安排於背景進行郵寄作業，郵件將會為您陸續寄出！');
         }
@@ -706,6 +706,9 @@ class ClubController extends Controller
         $user = Auth::user();
         if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法報名參加學生社團！');
         $club = Club::find($club_id);
+        if (!$club) {
+            return redirect()->route('clubs.enroll')->with('error', '找不到您要報名的社團！');
+        }
         $student = Student::find($user->uuid);
         $section = $club->section();
         if (!$section) {
@@ -761,7 +764,7 @@ class ClubController extends Controller
             'email' => $request->input('email'),
             'mobile' => $request->input('mobile'),
         ]);
-        Notification::sendNow($enroll, new ClubEnrollNotification($order));
+        Notification::send($enroll, new ClubEnrollNotification($order));
         if ($club->kind->manual_auditin) {
             Watchdog::watch($request, '報名學生社團：' . $club->name . '，報名資訊：' . $enroll->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . '報名順位：' . $order);
             return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.'因須進行資格審核，待錄取作業完成後，將另行公告通知！');
@@ -1169,7 +1172,7 @@ class ClubController extends Controller
             'email' => $request->input('email'),
             'mobile' => $request->input('mobile'),
         ]);
-        Notification::sendNow($enroll, new ClubEnrollNotification($order));
+        Notification::send($enroll, new ClubEnrollNotification($order));
         if ($club->kind->manual_auditin) {
             Watchdog::watch($request, '新增報名資訊，學生社團：' . $club->name . '，學生：' . $student->class_id . $student->realname);
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '已經完成報名手續，該生報名順位為'.$order.'！');
