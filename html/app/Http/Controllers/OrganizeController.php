@@ -396,20 +396,19 @@ class OrganizeController extends Controller
         }
         $all = Teacher::all();
         foreach ($all as $t) {
-            $last = $t->last_survey();
-            if (!$t->survey()) {
-                OrganizeSurvey::insert([
-                    'syear' => current_year(),
-                    'uuid' => $t->uuid,
-                    'age' => $t->age,
-                    'exprience' => ($last) ? $last->exp : '',
-                    'edu_level' => ($last) ? $last->edu_level : 11,
-                    'edu_school' => ($last) ? $last->edu_school : '',
-                    'edu_division' => ($last) ? $last->edu_division : '',
-                    'score' => ($last) ? $last->score + 1 : 0,
-                    'high' => 0,
-                ]);    
-            }
+            OrganizeSurvey::updateOrCreate([
+                'syear' => current_year(),
+                'uuid' => $t->uuid,
+            ],[
+                'age' => $t->age,
+                'exprience' => ($last) ? $last->exp : '',
+                'edu_level' => ($last) ? $last->edu_level : 11,
+                'edu_school' => ($last) ? $last->edu_school : '',
+                'edu_division' => ($last) ? $last->edu_division : '',
+                'score' => ($last) ? $last->score + 1 : 0,
+                'high' => 0,
+                'assign' => null,
+            ]);
         }
     }
 
