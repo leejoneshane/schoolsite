@@ -372,7 +372,7 @@ window.onload = function () {
     var elm = document.querySelectorAll("select");
     for (var i = 0; i < elm.length; i++) {
         elm[i].addEventListener("focus", saveValue);
-        elm[i].addEventListener("click", assign);
+        elm[i].addEventListener("change", assign);
     }
 };
 

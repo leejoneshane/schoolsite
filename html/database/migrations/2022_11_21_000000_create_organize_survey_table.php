@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->integer('syear');
             $table->uuid('uuid');
+            $table->string('realname');
             $table->integer('age');
             $table->text('exprience')->nullable();
             $table->integer('edu_level');

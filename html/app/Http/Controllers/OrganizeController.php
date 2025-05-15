@@ -251,6 +251,7 @@ class OrganizeController extends Controller
         OrganizeVacancy::where('syear', current_year())->delete();
         DB::table('organize_original')->where('syear', current_year())->delete();
         DB::table('organize_reserved')->where('syear', current_year())->delete();
+        DB::table('organize_survey')->where('syear', current_year())->delete();
         foreach ($managers as $a) {
             $teachers = Teacher::where('role_id', $a->id)->get();
             if ($teachers->count() > 0) {
@@ -266,12 +267,12 @@ class OrganizeController extends Controller
                 ]);
                 foreach ($teachers as $t) {
                     $already[] = $t->uuid;
-                    DB::table('organize_original')->create([
+                    DB::table('organize_original')->insert([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
                     ]);
-                    DB::table('organize_reserved')->create([
+                    DB::table('organize_reserved')->insert([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
@@ -295,12 +296,12 @@ class OrganizeController extends Controller
                 ]);
                 foreach ($teachers as $t) {
                     $already[] = $t->uuid;
-                    DB::table('organize_original')->create([
+                    DB::table('organize_original')->insert([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
                     ]);
-                    DB::table('organize_reserved')->create([
+                    DB::table('organize_reserved')->insert([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
@@ -334,12 +335,12 @@ class OrganizeController extends Controller
             foreach ($a->classrooms as $c) {
                 $t = $c->tutors->first();
                 $already[] = $t->uuid;
-                DB::table('organize_original')->create([
+                DB::table('organize_original')->insert([
                     'syear' => current_year(),
                     'uuid' => $t->uuid,
                     'vacancy_id' => $v2->id,
                 ]);
-                DB::table('organize_reserved')->create([
+                DB::table('organize_reserved')->insert([
                     'syear' => current_year(),
                     'uuid' => $t->uuid,
                     'vacancy_id' => $v2->id,
@@ -348,7 +349,7 @@ class OrganizeController extends Controller
             foreach ($b->classrooms as $c) {
                 $t = $c->tutors->first();
                 $already[] = $t->uuid;
-                DB::table('organize_original')->create([
+                DB::table('organize_original')->insert([
                     'syear' => current_year(),
                     'uuid' => $t->uuid,
                     'vacancy_id' => $v1->id,
@@ -370,12 +371,12 @@ class OrganizeController extends Controller
                     'assigned' => 0,
                 ]);
                 foreach ($teachers as $t) {
-                    DB::table('organize_original')->create([
+                    DB::table('organize_original')->insert([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
                     ]);
-                    DB::table('organize_reserved')->create([
+                    DB::table('organize_reserved')->insert([
                         'syear' => current_year(),
                         'uuid' => $t->uuid,
                         'vacancy_id' => $v->id,
@@ -386,12 +387,12 @@ class OrganizeController extends Controller
         $all = Teacher::all();
         foreach ($all as $t) {
             $last = $t->last_survey();
-            OrganizeSurvey::updateOrCreate([
+            OrganizeSurvey::create([
                 'syear' => current_year(),
                 'uuid' => $t->uuid,
-            ],[
+                'realname' => $t->realname,
                 'age' => $t->age,
-                'exprience' => ($last) ? $last->exp : '',
+                'exprience' => ($last) ? $last->exprience : '',
                 'edu_level' => ($last) ? $last->edu_level : 11,
                 'edu_school' => ($last) ? $last->edu_school : '',
                 'edu_division' => ($last) ? $last->edu_division : '',
@@ -501,7 +502,7 @@ class OrganizeController extends Controller
             $completeness = OrganizeVacancy::completeness();
             $stage1 = OrganizeVacancy::year_stage(1);
             $stage2 = OrganizeVacancy::year_stage(2);
-            $rest_teachers = OrganizeSurvey::where('syear', current_year())->whereNull('assign')->get();
+            $rest_teachers = OrganizeSurvey::where('syear', current_year())->whereNull('assign')->orderBy('realname')->get();
             $rest_teachers->reject(function ($t) {
                 if (DB::table('organize_reserved')->where('syear', current_year())->where('uuid', $t->uuid)->exists()) {
                     return true;
@@ -657,16 +658,21 @@ class OrganizeController extends Controller
         $survey = OrganizeSurvey::findByUUID($uuid);
         if ($survey) $survey->update(['assign' => $vacancy_id]);
         $vacancy = OrganizeVacancy::find($vacancy_id);
-        $vacancy->assigned += 1;
-        $vacancy->save();
-        DB::table('organize_assign')->Insert([
-            'syear' => current_year(),
-            'vacancy_id' => $vacancy_id,
-            'uuid' => $uuid,
-        ]);
-        $t = Teacher::find($uuid);
-        Watchdog::watch($request, '安排' . $t->realname . '擔任職缺：' . $vacancy->name);
-        return response()->json('success');
+        if ($vacancy) {
+            $vacancy->assigned += 1;
+            $vacancy->save();
+            DB::table('organize_assign')->Insert([
+                'syear' => current_year(),
+                'vacancy_id' => $vacancy_id,
+                'uuid' => $uuid,
+            ]);
+            $t = Teacher::find($uuid);
+            Watchdog::watch($request, '安排' . $t->realname . '擔任職缺：' . $vacancy->name);
+            return response()->json('success');
+        } else {
+            return response()->json('vacancy not exists!');
+        }
+
     }
 
     public function unassign(Request $request)
@@ -677,16 +683,20 @@ class OrganizeController extends Controller
         $survey = OrganizeSurvey::findByUUID($uuid);
         if ($survey) $survey->update(['assign' => null]);
         $vacancy = OrganizeVacancy::find($vacancy_id);
-        $vacancy->assigned -= 1;
-        $vacancy->save();
-        DB::table('organize_assign')
-            ->where('syear', current_year())
-            ->where('vacancy_id', $vacancy_id)
-            ->where('uuid', $uuid)
-            ->delete();
-        $t = Teacher::find($uuid);
-        Watchdog::watch($request, '取消' . $t->realname . '擔任職缺：' . $vacancy->name . '的安排');
-        return response()->json('success');
+        if ($vacancy) {
+            $vacancy->assigned -= 1;
+            $vacancy->save();
+            DB::table('organize_assign')
+                ->where('syear', current_year())
+                ->where('vacancy_id', $vacancy_id)
+                ->where('uuid', $uuid)
+                ->delete();
+            $t = Teacher::find($uuid);
+            Watchdog::watch($request, '取消' . $t->realname . '擔任職缺：' . $vacancy->name . '的安排');
+            return response()->json('success');    
+        } else {
+            return response()->json('vacancy not exists!');
+        }
     }
 
     public function listVacancy($year = null)

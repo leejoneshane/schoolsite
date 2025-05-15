@@ -14,6 +14,7 @@ class OrganizeSurvey extends Model
         'id',
         'syear',
         'uuid',
+        'realname',
         'age',
         'exprience',
         'edu_level',
