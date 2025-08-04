@@ -24,9 +24,9 @@ class ClubExport implements FromCollection, WithHeadings, WithColumnFormatting, 
     public function collection()
     {
         $rows = Club::where('kind_id', $this->kind)->get();
-        foreach ($rows as $row) {
+        foreach ($rows as $key => $row) {
             if ($row->section() == null) {
-                $rows->forget($row);
+                $rows->forget($key);
             }
         }
         return $rows;
