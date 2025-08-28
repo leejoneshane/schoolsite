@@ -49,8 +49,6 @@ class SyncCompletedNotification extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $start = Carbon::createFromTimestamp($this->start_time)->format('Y-m-d H:m:s l');
-        $end = Carbon::createFromTimestamp($this->end_time)->format('Y-m-d H:m:s l');
         switch ($this->job) {
             case 'SyncFromTpedu':
                 $title = '資料庫同步完成通知';
@@ -63,7 +61,7 @@ class SyncCompletedNotification extends Notification implements ShouldQueue
             }
         $mail = (new MailMessage)
             ->subject($title)
-            ->line("同步作業於 $start 開始進行，已經於 $end 順利完成！");
+            ->line("同步作業於 $this->start_time 開始進行，已經於 $this->end_time 順利完成！");
         if (!empty($this->logs)) {
             $mail->line('詳細記錄如下：');
             $mail->lines($this->logs);
