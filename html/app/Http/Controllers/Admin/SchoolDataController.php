@@ -248,18 +248,21 @@ class SchoolDataController extends Controller
                 $teachers = $query->leftJoin('roles', 'roles.id', 'teachers.role_id')->whereIn('teachers.unit_id', $keys)->orderBy('role_no')->orderBy('roles.name')->get();
             }
         } elseif (!empty($domain_id)) {
-            $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.year', $this->year - 1)->where('belongs.domain_id', $domain_id)->orderBy('realname')->get();
-            foreach ($teachers as $teacher) {
-                $domain = DB::table('belongs')->where('uuid', $teacher->uuid)->where('year', $this->year)->first();
-                if (!$domain) {
-                    DB::table('belongs')->insert([
-                        'year' => $this->year,
-                        'uuid' => $teacher->uuid,
-                        'domain_id' => $domain_id,
-                    ]);
-                }
-            }
             $teachers = Teacher::leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.year', $this->year)->where('belongs.domain_id', $domain_id)->orderBy('realname')->get();
+            if ($teachers->count() == 0) {
+                $belongs = Teacher::leftJoin('belongs', 'belongs.uuid', 'teachers.uuid')->where('belongs.year', $this->year - 1)->where('belongs.domain_id', $domain_id)->orderBy('realname')->get();
+                foreach ($belongs as $teacher) {
+                    $domain = DB::table('belongs')->where('uuid', $teacher->uuid)->where('year', $this->year)->first();
+                    if (!$domain) {
+                        DB::table('belongs')->insert([
+                            'year' => $this->year,
+                            'uuid' => $teacher->uuid,
+                            'domain_id' => $domain_id,
+                        ]);
+                    }
+                }
+                $teachers = $belongs;
+            }
         } else {
             if (!empty($idno) || !empty($realname) || !empty($email)) {
                 if (!empty($idno)) {
@@ -337,7 +340,6 @@ class SchoolDataController extends Controller
                 ]);
             }
         }
-        $new_classes = $request->input('classes');
         DB::table('belongs')->where('year', $this->year)->where('uuid', $uuid)->delete();
         $new_domain = $request->input('domain');
         if ($new_domain) {
@@ -347,6 +349,7 @@ class SchoolDataController extends Controller
                 'domain_id' => $new_domain,
             ]);
         }
+        $new_classes = $request->input('classes');
         $new_subjects = $request->input('subjects');
         $old_assign = $teacher->assignment();
         foreach ($old_assign as $old) {
