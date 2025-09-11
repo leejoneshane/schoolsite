@@ -440,6 +440,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('adventure/process/notice', 'App\Http\Controllers\Game\AdventureController@process_overrule')->name('game.process_notice');
     Route::post('adventure/process/pass', 'App\Http\Controllers\Game\AdventureController@process_pass')->name('game.process_pass');
     //系統管理介面
+    Route::get('upgrade', 'App\Http\Controllers\Game\GameController@upgrade')->name('game.upgrade');
     Route::get('classes', 'App\Http\Controllers\Game\ClassController@index')->name('game.classes');
     Route::get('classes/add', 'App\Http\Controllers\Game\ClassController@add');
     Route::post('classes/add', 'App\Http\Controllers\Game\ClassController@insert')->name('game.class_add');

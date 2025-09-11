@@ -332,6 +332,17 @@ class GameCharacter extends Model
         return $this->image ? $this->image->url() : null;
     }
 
+    //更新班級
+    public function upgrade()
+    {
+        $clsno = $this->student->class_id; 
+        if ($clsno != $this->classroom_id) {
+            $this->classroom_id = $clsno;
+            $this->save();
+            $this->refresh();
+        }
+    }
+
     //檢查此角色是否可升級，若可以則進行升級
     public function levelup()
     {

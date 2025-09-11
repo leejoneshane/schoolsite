@@ -577,4 +577,17 @@ class GameController extends Controller
         }
     }
 
+    public function upgrade()
+    {
+        $user = Auth::user();
+        if ($user->is_admin) {
+            $characters = GameCharacter::all();
+            foreach ($characters as $ch) {
+                $ch->upgrade();
+            }
+            return redirect()->route('game');
+        } else {
+            return redirect()->route('game.player');
+        }
+    }
 }
