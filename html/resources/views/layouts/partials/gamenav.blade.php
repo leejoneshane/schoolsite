@@ -125,7 +125,7 @@
                   <a href="{{ route('game.maps') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">地圖</a>
                 </li>
                 <li>
-                  <a href="{{ route('game.upgrade') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">學生資料更新</a>
+                  <a href="{{ route('game.upgrade') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">學期更新</a>
                 </li>
               </ul>
           </div>

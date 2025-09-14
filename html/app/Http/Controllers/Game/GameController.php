@@ -142,6 +142,7 @@ class GameController extends Controller
         $room = Classroom::find($room_id);
         $stu = $room->students->first();
         $char = GameCharacter::find($stu->uuid);
+        $upgrade = false;
         if ($char) $upgrade = ($char->classroom_id != $room->id);
         $parties = GameParty::findByClass($room_id);
         if ($parties->count() < 1 || $upgrade) {

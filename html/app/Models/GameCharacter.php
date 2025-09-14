@@ -335,11 +335,16 @@ class GameCharacter extends Model
     //更新班級
     public function upgrade()
     {
-        $clsno = $this->student->class_id; 
-        if ($clsno != $this->classroom_id) {
-            $this->classroom_id = $clsno;
-            $this->save();
-            $this->refresh();
+        $student = $this->student;
+        if ($student->trashed()) {
+            GameCharacter::destroy($this->uuid);
+        } else {
+            $clsno = $student->class_id;
+            if ($clsno && $clsno != $this->classroom_id) {
+                $this->classroom_id = $clsno;
+                $this->save();
+                $this->refresh();
+            }
         }
     }
 
