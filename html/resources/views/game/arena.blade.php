@@ -45,6 +45,10 @@
                 <div id="action" class="hidden p-2">
                     在每場戰鬥中，每人只能進行一項動作，請與隊友討論策略。決定好之後，請點選隊友或對手，然後挑選要進行的動作！
                 </div>
+                <div id="roundInfo" class="hidden p-2 text-white">
+                    <span id="roundNo">回合 1</span>
+                    <span id="roundCd" class="ml-2">(30s)</span>
+                </div>
             </div>
             <div id="enemy_side" class="w-1/3 inline-flex content-end">
             </div>    
@@ -217,7 +221,7 @@
                     var hp = document.createElement('div');
                     hp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
                     var hp_bar = document.createElement('div');
-                    hp_bar.setAttribute('id', 'hp_' + member.seat);
+                    hp_bar.setAttribute('id', 'hp_' + member.uuid);
                     hp_bar.classList.add('h-4','bg-green-600','text-xs','font-medium','text-green-100','text-center','p-0.5','leading-none','rounded-full');
                     hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
                     hp_bar.innerHTML = member.hp;
@@ -226,14 +230,14 @@
                     var mp = document.createElement('div');
                     mp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
                     var mp_bar = document.createElement('div');
-                    mp_bar.setAttribute('id', 'mp_' + member.seat);
+                    mp_bar.setAttribute('id', 'mp_' + member.uuid);
                     mp_bar.classList.add('h-4','bg-blue-600','text-xs','font-medium','text-blue-100','text-center','p-0.5','leading-none','rounded-full');
                     mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
                     mp_bar.innerHTML = member.mp;
                     mp.appendChild(mp_bar);
                     div.appendChild(mp);
                     var status = document.createElement('div');
-                    status.setAttribute('id', 'status_' + member.seat);
+                    status.setAttribute('id', 'status_' + member.uuid);
                     status.classList.add('w-24','h-8');
                     status.innerHTML = member.status_desc;
                     div.appendChild(status);
@@ -248,23 +252,26 @@
                     if (member.uuid == character.uuid) {
                         image.setAttribute('onclick', 'action_self()');
                     } else {
-                        image.setAttribute('onclick', 'action_friend(' + member.uuid + ')');
+                        image.setAttribute('onclick', 'action_friend(\'' + member.uuid + '\')');
                     }
                     div.appendChild(image);
                     our_side.appendChild(div);
                     z -= 10;
                 });
-                if (enemy_party == '' && members.length == member_count) {
+                var joinedCount = members.filter(m => m).length;
+                if (enemy_party == '' && joinedCount == member_count) {
                     var node = document.getElementById('connect');
                     node.innerHTML = '組隊完成! 請選擇要對戰的隊伍！';
                 }
             }
-            if (response.data.enemy) {
+                if (response.data.enemy) {
                 if (enemy_party == '') {
                     var node = document.getElementById('connect');
-                    node.innerHTML = '正在與'  + parties[enemy_party].name + '進行對戰！';
+                    var partyName = (parties[response.data.enemy] && parties[response.data.enemy].name) ? parties[response.data.enemy].name : '對手';
+                    node.innerHTML = '正在與'  + partyName + '進行對戰！';
                     var node = document.getElementById('action');
                     node.classList.remove('hidden');
+                        document.getElementById('roundInfo').classList.remove('hidden');
                 }
                 enemy_party = response.data.enemy;
                 enemys = [];
@@ -286,7 +293,7 @@
                             var hp = document.createElement('div');
                             hp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
                             var hp_bar = document.createElement('div');
-                            hp_bar.setAttribute('id', 'hp_' + member.seat);
+                            hp_bar.setAttribute('id', 'hp_' + member.uuid);
                             hp_bar.classList.add('h-4','bg-green-600','text-xs','font-medium','text-green-100','text-center','p-0.5','leading-none','rounded-full');
                             hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
                             hp_bar.innerHTML = member.hp;
@@ -295,14 +302,14 @@
                             var mp = document.createElement('div');
                             mp.classList.add('w-24','h-4','bg-gray-200','rounded-full','leading-none');
                             var mp_bar = document.createElement('div');
-                            mp_bar.setAttribute('id', 'mp_' + member.seat);
+                            mp_bar.setAttribute('id', 'mp_' + member.uuid);
                             mp_bar.classList.add('h-4','bg-blue-600','text-xs','font-medium','text-blue-100','text-center','p-0.5','leading-none','rounded-full');
                             mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
                             mp_bar.innerHTML = member.mp;
                             mp.appendChild(mp_bar);
                             div.appendChild(mp);
                             var status = document.createElement('div');
-                            status.setAttribute('id', 'status_' + member.seat);
+                            status.setAttribute('id', 'status_' + member.uuid);
                             status.classList.add('w-24','h-8');
                             status.innerHTML = member.status_desc;
                             div.appendChild(status);
@@ -314,7 +321,7 @@
                             } else {
                                 image.src = '{{ asset('images/game/blank.png') }}';
                             }
-                            image.setAttribute('onclick', 'action_enemy(' + member.uuid + ')');
+                            image.setAttribute('onclick', 'action_enemy(\'' + member.uuid + '\')');
                             div.appendChild(image);
                             enemy_side.appendChild(div);
                             z += 10;
@@ -339,20 +346,37 @@
                         enemy_action.appendChild(li);
                     }
                 }
+                // 新回合開啟 -> 允許再次行動
+                if (response.data.round_reset) {
+                    done = false;
+                }
+                // 顯示回合與倒數
+                if (typeof response.data.round_no !== 'undefined') {
+                    document.getElementById('roundNo').innerHTML = '回合 ' + response.data.round_no;
+                }
+                if (typeof response.data.countdown !== 'undefined') {
+                    var cd = response.data.countdown;
+                    if (cd >= 0) {
+                        document.getElementById('roundCd').innerHTML = '(' + cd + 's)';
+                    }
+                }
             } else {
                 parties = [];
                 for (var k in response.data.parties) {
                     var party = response.data.parties[k];
                     parties[party.id] = party;
                 }
-                party_node.innerHTML = '';
-                if (parties.length > 0) {
-                    parties.forEach( party => {
-                        var opt = document.createElement('option');
-                        opt.value = party.id;
-                        opt.innerHTML = party.name;
-                        party_node.appendChild(opt);
-                    });
+                if (party_node) {
+                    party_node.innerHTML = '';
+                    if (parties.length > 0) {
+                        parties.forEach( party => {
+                            if (!party) return;
+                            var opt = document.createElement('option');
+                            opt.value = party.id;
+                            opt.innerHTML = party.name;
+                            party_node.appendChild(opt);
+                        });
+                    }
                 }
             }
 
@@ -653,13 +677,13 @@
                 }
                 if (members.length > 0) {
                     members.forEach( member => {
-                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        var hp_bar = document.getElementById('hp_' + member.uuid);
                         hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
                         hp_bar.innerHTML = member.hp;
-                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        var mp_bar = document.getElementById('mp_' + member.uuid);
                         mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
                         mp_bar.innerHTML = member.mp;
-                        var status = document.getElementById('status_' + member.seat);
+                        var status = document.getElementById('status_' + member.uuid);
                         status.innerHTML = member.status_desc;
                     });
                 }
@@ -670,13 +694,13 @@
                 }
                 if (enemys.length > 0) {
                     enemys.forEach( member => {
-                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        var hp_bar = document.getElementById('hp_' + member.uuid);
                         hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
                         hp_bar.innerHTML = member.hp;
-                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        var mp_bar = document.getElementById('mp_' + member.uuid);
                         mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
                         mp_bar.innerHTML = member.mp;
-                        var status = document.getElementById('status_' + member.seat);
+                        var status = document.getElementById('status_' + member.uuid);
                         status.innerHTML = member.status_desc;
                     });
                 }
@@ -714,13 +738,13 @@
                 }
                 if (members.length > 0) {
                     members.forEach( member => {
-                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        var hp_bar = document.getElementById('hp_' + member.uuid);
                         hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
                         hp_bar.innerHTML = member.hp;
-                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        var mp_bar = document.getElementById('mp_' + member.uuid);
                         mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
                         mp_bar.innerHTML = member.mp;
-                        var status = document.getElementById('status_' + member.seat);
+                        var status = document.getElementById('status_' + member.uuid);
                         status.innerHTML = member.status_desc;
                     });
                 }
@@ -731,13 +755,13 @@
                 }
                 if (enemys.length > 0) {
                     enemys.forEach( member => {
-                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        var hp_bar = document.getElementById('hp_' + member.uuid);
                         hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
                         hp_bar.innerHTML = member.hp;
-                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        var mp_bar = document.getElementById('mp_' + member.uuid);
                         mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
                         mp_bar.innerHTML = member.mp;
-                        var status = document.getElementById('status_' + member.seat);
+                        var status = document.getElementById('status_' + member.uuid);
                         status.innerHTML = member.status_desc;
                     });
                 }

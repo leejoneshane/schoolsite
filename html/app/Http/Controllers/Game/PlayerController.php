@@ -437,10 +437,10 @@ class PlayerController extends Controller
         } else {
             $target = GameCharacter::find($request->input('target'));
             if ($item->object == 'all') {
-                $me->use_skill($item->id, null, $target->party_id);
+                $me->use_item($item->id, null, $target->party_id);
                 $message = $me->name.'對所有對手使用'.$item->name;
             } else {
-                $me->use_skill($item->id, $target->uuid);
+                $me->use_item($item->id, $target->uuid);
                 $message = $me->name.'對'.$target->name.'使用'.$item->name;
             }
         }
@@ -571,8 +571,32 @@ class PlayerController extends Controller
             $enemy_done = count($enemy_actions) == $enemy_party->members->count();
             if ($we_done && $enemy_done) {
                 BattleEnd::dispatch($party, $enemy_party);
+            } else {
+                // 若逾時則自動結束回合（避免有人未出手卡住）
+                $namespace = 'arena:'.$room.':deadline:'.$party->id;
+                $ttl = Redis::exists($namespace) ? Redis::ttl($namespace) : -2; // -2 表示不存在
+                if ($ttl <= 0) {
+                    // 防重入鎖：5 秒內僅觸發一次
+                    $lock = 'arena:'.$room.':roundproc:'.$party->id;
+                    if (Redis::setnx($lock, 1)) {
+                        Redis::expire($lock, 5);
+                        BattleEnd::dispatch($party, $enemy_party);
+                    }
+                }
             }
-            return response()->json([ 'characters' => $characters, 'enemy' => $enemy_id, 'enemys' => $enemys, 'our_actions' => $our_actions, 'enemy_actions' => $enemy_actions ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
+            // 檢查是否有新回合重置旗標
+            $namespace = 'arena:'.$room.':round:'.$party->id;
+            $round_reset = false;
+            if (Redis::exists($namespace)) {
+                $round_reset = true;
+                Redis::del($namespace);
+            }
+            // 回合編號與倒數剩餘秒數（由 TTL 推算）
+            $namespace = 'arena:'.$room.':roundnum:'.$party->id;
+            $round_no = Redis::exists($namespace) ? intval(Redis::get($namespace)) : 1;
+            $namespace = 'arena:'.$room.':deadline:'.$party->id;
+            $remain = Redis::exists($namespace) ? Redis::ttl($namespace) : -1;
+            return response()->json([ 'characters' => $characters, 'enemy' => $enemy_id, 'enemys' => $enemys, 'our_actions' => $our_actions, 'enemy_actions' => $enemy_actions, 'round_reset' => $round_reset, 'round_no' => $round_no, 'countdown' => $remain ])->setEncodingOptions(JSON_UNESCAPED_UNICODE);
         } else {
             $parties = [];
             $namespace = 'arena:'.$room.':ready';
