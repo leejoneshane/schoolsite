@@ -786,13 +786,13 @@
                 }
                 if (members.length > 0) {
                     members.forEach( member => {
-                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        var hp_bar = document.getElementById('hp_' + member.uuid);
                         hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
                         hp_bar.innerHTML = member.hp;
-                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        var mp_bar = document.getElementById('mp_' + member.uuid);
                         mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
                         mp_bar.innerHTML = member.mp;
-                        var status = document.getElementById('status_' + member.seat);
+                        var status = document.getElementById('status_' + member.uuid);
                         status.innerHTML = member.status_desc;
                     });
                 }
@@ -803,13 +803,13 @@
                 }
                 if (enemys.length > 0) {
                     enemys.forEach( member => {
-                        var hp_bar = document.getElementById('hp_' + member.seat);
+                        var hp_bar = document.getElementById('hp_' + member.uuid);
                         hp_bar.style.width = Math.round(member.hp / member.max_hp * 100) + '%';
                         hp_bar.innerHTML = member.hp;
-                        var mp_bar = document.getElementById('mp_' + member.seat);
+                        var mp_bar = document.getElementById('mp_' + member.uuid);
                         mp_bar.style.width = Math.round(member.mp / member.max_mp * 100) + '%';
                         mp_bar.innerHTML = member.mp;
-                        var status = document.getElementById('status_' + member.seat);
+                        var status = document.getElementById('status_' + member.uuid);
                         status.innerHTML = member.status_desc;
                     });
                 }
