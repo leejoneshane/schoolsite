@@ -116,7 +116,7 @@
             </table>
         </div>
     </div>
-    <div id="process" class="hidden w-fit h-[36rem] overflow-clip flex flex-col">
+    <div id="process" class="hidden w-fit h-[36rem] overflow-clip flex-col">
         <table class="w-[40rem] table-fixed">
             <thead class="sticky top-0">
                 <tr class="bg-gray-300">
@@ -200,7 +200,7 @@
         });
         if (tno == 0) {
             progress_view.classList.remove('hidden');
-            process_view.classList.add('hidden');
+            process_view.classList.remove('flex').add('hidden');
             document.getElementById('title').innerHTML = '探險地圖介紹';
             document.getElementById('story').innerHTML = worksheet.intro;
             document.getElementById('task').innerHTML = worksheet.description;
@@ -208,7 +208,7 @@
             return;
         }
         progress_view.classList.add('hidden');
-        process_view.classList.remove('hidden');
+        process_view.classList.remove('hidden').add('flex');
         tid = tno;
         document.getElementById('title').innerHTML = tasks[tno].title;
         document.getElementById('story').innerHTML = tasks[tno].story;

@@ -43,7 +43,7 @@
                 </div>
             </div>
             <div class="w-1/3 inline-flex content-end">
-                <div id="monster" class="hidden m-2 flex flex-col gap-1">
+                <div id="monster" class="hidden m-2 flex-col gap-1">
                     <div id="monster_name" class="w-24 h-8 text-white text-xl font-extrabold text-shadow"></div>
                     <div class="w-24 h-4 bg-gray-200 rounded-full leading-none">
                         <div id="monster_hp" class="h-4 bg-green-500 text-xs font-medium text-green-100 text-center p-0.5 leading-none rounded-full" style="width: 100%;"></div>
@@ -300,7 +300,7 @@
             var status = document.getElementById('monster_status');
             status.innerHTML = monster.status;
             var mon = document.getElementById('monster');
-            mon.classList.remove('hidden');
+            mon.classList.remove('hidden').add('flex');
             var fight = document.getElementById('continue');
             fight.classList.remove('hidden');
             var fight = document.getElementById('fight');
@@ -321,7 +321,7 @@
             div.innerHTML = '你已經完成' + dungeon.title + '的探險！';
             fight.appendChild(div);
             var mon = document.getElementById('monster');
-            mon.classList.add('hidden');
+            mon.classList.remove('flex').add('hidden');
             var fight = document.getElementById('continue');
             fight.classList.add('hidden');
             var fight = document.getElementById('dungeons');
