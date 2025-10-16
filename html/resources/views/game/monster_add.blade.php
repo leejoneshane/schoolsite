@@ -84,73 +84,73 @@
             <div class="p-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
                 <span>
                     <input type="radio" id="pink" name="color" value="text-pink-500" class="hidden peer" />
-                    <label for="pink" class="inline-block w-8 h-8 p-1 bg-pink-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="pink" class="inline-block w-8 h-8 p-1 bg-pink-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="rose" name="color" value="text-rose-500" class="hidden peer" />
-                    <label for="rose" class="inline-block w-8 h-8 p-1 bg-rose-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="rose" class="inline-block w-8 h-8 p-1 bg-rose-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="red" name="color" value="text-red-500" class="hidden peer" />
-                    <label for="red" class="inline-block w-8 h-8 p-1 bg-red-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="red" class="inline-block w-8 h-8 p-1 bg-red-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="orange" name="color" value="text-orange-500" class="hidden peer" />
-                    <label for="orange" class="inline-block w-8 h-8 p-1 bg-orange-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="orange" class="inline-block w-8 h-8 p-1 bg-orange-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="amber" name="color" value="text-amber-500" class="hidden peer" />
-                    <label for="amber" class="inline-block w-8 h-8 p-1 bg-amber-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="amber" class="inline-block w-8 h-8 p-1 bg-amber-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="yellow" name="color" value="text-yellow-500" class="hidden peer" />
-                    <label for="yellow" class="inline-block w-8 h-8 p-1 bg-yellow-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="yellow" class="inline-block w-8 h-8 p-1 bg-yellow-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <br>
                 <span>
                     <input type="radio" id="lime" name="color" value="text-lime-500" class="hidden peer" />
-                    <label for="lime" class="inline-block w-8 h-8 p-1 bg-lime-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="lime" class="inline-block w-8 h-8 p-1 bg-lime-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="green" name="color" value="text-green-500" class="hidden peer" />
-                    <label for="green" class="inline-block w-8 h-8 p-1 bg-green-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="green" class="inline-block w-8 h-8 p-1 bg-green-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="emerald" name="color" value="text-emerald-500" class="hidden peer" />
-                    <label for="emerald" class="inline-block w-8 h-8 p-1 bg-emerald-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="emerald" class="inline-block w-8 h-8 p-1 bg-emerald-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="teal" name="color" value="text-teal-500" class="hidden peer" />
-                    <label for="teal" class="inline-block w-8 h-8 p-1 bg-teal-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="teal" class="inline-block w-8 h-8 p-1 bg-teal-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="cyan" name="color" value="text-cyan-500" class="hidden peer" />
-                    <label for="cyan" class="inline-block w-8 h-8 p-1 bg-cyan-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="cyan" class="inline-block w-8 h-8 p-1 bg-cyan-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="sky" name="color" value="text-sky-500" class="hidden peer" />
-                    <label for="sky" class="inline-block w-8 h-8 p-1 bg-sky-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="sky" class="inline-block w-8 h-8 p-1 bg-sky-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <br>
                 <span>
                     <input type="radio" id="blue" name="color" value="text-blue-500" class="hidden peer" />
-                    <label for="blue" class="inline-block w-8 h-8 p-1 bg-blue-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="blue" class="inline-block w-8 h-8 p-1 bg-blue-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="indigo" name="color" value="text-indigo-500" class="hidden peer" />
-                    <label for="indigo" class="inline-block w-8 h-8 p-1 bg-indigo-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="indigo" class="inline-block w-8 h-8 p-1 bg-indigo-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="violet" name="color" value="text-violet-500" class="hidden peer" />
-                    <label for="violet" class="inline-block w-8 h-8 p-1 bg-violet-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="violet" class="inline-block w-8 h-8 p-1 bg-violet-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="purple" name="color" value="text-purple-500" class="hidden peer" />
-                    <label for="purple" class="inline-block w-8 h-8 p-1 bg-purple-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="purple" class="inline-block w-8 h-8 p-1 bg-purple-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
                 <span>
                     <input type="radio" id="fuchsia" name="color" value="text-fuchsia-500" class="hidden peer" />
-                    <label for="fuchsia" class="inline-block w-8 h-8 p-1 bg-fuchsia-500 border border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
+                    <label for="fuchsia" class="inline-block w-8 h-8 p-1 bg-fuchsia-500 border-2 cursor-pointer peer-checked:border-blue-600 hover:border-teal-600"></label>    
                 </span>
             </div>
             <div class="w-full inline-flex justify-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">

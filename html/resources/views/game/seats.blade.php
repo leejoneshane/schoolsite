@@ -1,12 +1,6 @@
-@extends('layouts.main')
+@extends('layouts.game')
 
 @section('content')
-<div class="text-2xl font-bold leading-normal pb-5">
-    分組座位表
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('seats') }}">
-        <i class="fa-solid fa-eject"></i>返回上一頁
-    </a>
-</div>
 <div class="flex flex-col">
     <div class="flex flex-row justify-center">
         <label class="p-3">{{ $seats->name }}</label>

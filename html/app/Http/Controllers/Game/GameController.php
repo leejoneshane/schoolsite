@@ -10,6 +10,7 @@ use App\Models\Teacher;
 use App\Models\Student;
 use App\Models\Classroom;
 use App\Models\Seats;
+use App\Models\SeatsTheme;
 use App\Models\GameSence;
 use App\Models\GameParty;
 use App\Models\GameCharacter;
@@ -125,6 +126,20 @@ class GameController extends Controller
     public function health()
     {
         return response()->json([ 'health' => GameSence::lockByMe(session('gameclass')) ]);
+    }
+
+    public function seats(Request $request, $room_id)
+    {
+        $user = Auth::user();
+        if ($user->user_type == 'Student') return redirect()->route('game')->with('error', '您沒有權限使用此功能！');
+        $seats = Seats::findBy($user->uuid, $room_id);
+        dd($seats);
+        if ($seats) {
+            $styles = SeatsTheme::$styles;
+            return view('game.seats', ['seats' => $seats, 'styles' => $styles]);
+        } else {
+            return redirect()->route('game.seats')->with('success', '找不到分組座位表，因此無法查閱！');
+        }
     }
 
     public function classroom(Request $request, $room_id)

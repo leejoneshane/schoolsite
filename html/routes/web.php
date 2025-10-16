@@ -416,6 +416,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::post('lock', 'App\Http\Controllers\Game\GameController@lock')->name('game.lock');
     Route::get('health', 'App\Http\Controllers\Game\GameController@health')->name('game.health');
     Route::get('roster/{room_id}', 'App\Http\Controllers\Game\GameController@classroom')->name('game.room');
+    Route::get('seats/{room_id}', 'App\Http\Controllers\Game\GameController@seats')->name('game.seats');
     Route::post('character/fastedit', 'App\Http\Controllers\Game\GameController@fast_update')->name('game.character_edit');
     Route::post('character/revive', 'App\Http\Controllers\Game\GameController@revive')->name('game.character_revive');
     Route::post('character/skills', 'App\Http\Controllers\Game\GameController@get_skills')->name('game.get_skills');

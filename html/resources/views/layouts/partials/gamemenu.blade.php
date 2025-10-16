@@ -6,7 +6,10 @@
         </div>
         @locked(session('gameclass'))
         <div class="py-2 text-center">
-            <a href="{{ session('gameclass') ? route('game.room', [ 'room_id' => session('gameclass') ]) : '#' }}"><i class="text-2xl fa-solid fa-clipboard-user" title="點名表"></i></a>
+            <a href="{{ route('game.room', [ 'room_id' => session('gameclass') ]) }}"><i class="text-2xl fa-solid fa-clipboard-user" title="點名表"></i></a>
+        </div>
+        <div class="py-2 text-center">
+            <a href="{{ route('game.seats', [ 'room_id' => session('gameclass') ]) }}"><i class="text-2xl fa-solid fa-chair" title="座位表"></i></a>
         </div>
         <div class="py-2 text-center">
             <a href="{{ route('game.pickup', [ 'room_id' => session('gameclass') ]) }}"><i class="text-2xl fa-solid fa-dice-d20" title="抽籤機"></i></a>

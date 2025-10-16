@@ -32,11 +32,11 @@
         </div>
         <div class="flex flex-row justify-center">
             <div class="p-3">
-                <table class="cursor-pointer border border-2 border-slate-300">
+                <table class="cursor-pointer border-2 border-slate-300">
                     @for ($i = 0; $i < 10; $i++)
                     <tr class="h-10">
                         @for ($j = 0; $j < 8; $j++)
-                        <td class="w-16 border border-2 border-slate-300 bg-white" onclick="set_group(this,{{ $i }}, {{ $j }})">&nbsp;</td>
+                        <td class="w-16 border-2 border-slate-300 bg-white" onclick="set_group(this,{{ $i }}, {{ $j }})">&nbsp;</td>
                         @endfor
                     </tr>
                     @endfor
@@ -44,7 +44,7 @@
                 <table>
                     <tr class="h-10">
                         <td class="w-48"></td>
-                        <td class="w-32 border border-black border-2 bg-teal-300 text-center">講　　　　桌</td>
+                        <td class="w-32 border-2 border-black bg-teal-300 text-center">講　　　　桌</td>
                         <td class="w-48"></td>
                     </tr>
                 </table>

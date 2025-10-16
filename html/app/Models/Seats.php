@@ -36,6 +36,12 @@ class Seats extends Model
         return $this->classroom->name . $this->theme->name . '座位表';
     }
 
+    //篩選指定使用者、指定班級建立的所有座位表，傳回集合物件
+    public static function findBy($uuid, $cls_id)
+    {
+        return Seats::where('uuid', $uuid)->where('class_id', $cls_id)->first();
+    }
+
     //篩選指定使用者建立的所有座位表，傳回集合物件
     public static function findByUUID($uuid)
     {

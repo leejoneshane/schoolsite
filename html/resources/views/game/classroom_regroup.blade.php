@@ -16,7 +16,7 @@
     </div>
     <div class="w-auto h-full grid grid-cols-3 gap-4">
         @foreach ($parties as $p)
-        <div id="p{{ $p->id }}" droppable="true" class="drop w-60 min-h-20 bg-white border border-2 border-teal-500 rounded-lg p-5 space-y-2">
+        <div id="p{{ $p->id }}" droppable="true" class="drop w-60 min-h-20 bg-white border-2 border-teal-500 rounded-lg p-5 space-y-2">
             <div class="w-full text-center text-lg">
                 {{ $p->group_no }} {{ $p->name }}
                 <a class="py-2 pl-6 text-blue-500 hover:text-blue-600"

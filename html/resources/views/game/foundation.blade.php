@@ -114,7 +114,7 @@
                     @foreach ($party->furnitures as $f)
                     <td class="w-1/5">
                         @if ($character->uuid == $party->uuid)
-                        <button type="button" title="拆除" onclick="furniture('{{ $f->id }}', '{{ $f->name }}');" class="hover:border hover:border-2 hover:border-blue-700 text-white font-bold py-2 px-4 rounded-full">
+                        <button type="button" title="拆除" onclick="furniture('{{ $f->id }}', '{{ $f->name }}');" class="hover:border-2 hover:border-blue-700 text-white font-bold py-2 px-4 rounded-full">
                             <img src="{{ $f->image_url(); }}" title="{{ $f->name . ' ' . $f->description }}" />
                         </button>
                         @else
@@ -136,7 +136,7 @@
         </div>
         <div class="w-auto">
             <div class="sr-only">金庫</div>
-            <button type="button" title="捐款" onclick="donateModal.show();" class="hover:border hover:border-2 hover:border-blue-700 text-white font-bold rounded-full">
+            <button type="button" title="捐款" onclick="donateModal.show();" class="hover:border-2 hover:border-blue-700 text-white font-bold rounded-full">
                 <div class="relative w-32 h-32 bg-game-chest bg-contain bg-no-repeat">
                     <span id="treasury" class="relative top-10 text-2xl text-amber-100 font-extrabold text-shadow">{{ $party->treasury }}</span>
                 </div>

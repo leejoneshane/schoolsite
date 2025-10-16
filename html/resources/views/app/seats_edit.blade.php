@@ -18,11 +18,11 @@
     </div>
     <div class="flex flex-row justify-center">
         <div class="p-3">
-            <table class="cursor-pointer border border-2 border-slate-300">
+            <table class="cursor-pointer border-2 border-slate-300">
                 @foreach ($matrix as $i => $cols)
                 <tr class="h-10">
                     @foreach ($cols as $j => $data)
-                    <td class="w-24 border border-2 border-slate-300 {{ $styles[$data[3]] }}" onclick="set_group(this,{{ $i }}, {{ $j }})">
+                    <td class="w-24 border-2 border-slate-300 {{ $styles[$data[3]] }}" onclick="set_group(this,{{ $i }}, {{ $j }})">
                         {!! $data[1] !!}
                     </td>
                     @endforeach
@@ -32,7 +32,7 @@
             <table>
                 <tr class="h-10">
                     <td class="w-72"></td>
-                    <td class="w-48 border border-black border-2 bg-teal-300 text-center">講　　　　桌</td>
+                    <td class="w-48 border-2 border-black bg-teal-300 text-center">講　　　　桌</td>
                     <td class="w-72"></td>
                 </tr>
             </table>

@@ -13,7 +13,7 @@
     </div>
     <div class="flex flex-row justify-center">
         <div class="p-3">
-            <table class="border border-2 border-slate-300">
+            <table class="border-2 border-slate-300">
                 <tr class="bg-gray-300 dark:bg-gray-500 font-semibold text-lg">
                     <th scope="col" class="p-2">
                         組別
@@ -24,14 +24,14 @@
                 </tr>
                 @foreach ($groups as $g => $students)
                 <tr class="odd:bg-white even:bg-gray-100 dark:odd:bg-gray-700 dark:even:bg-gray-600">
-                    <td class="border border-2 border-slate-300">
+                    <td class="border-2 border-slate-300">
                         @if ($g != 'none')
                         第 {{ $g }} 組
                         @else
                         未分組
                         @endif
                     </td>
-                    <td class="border border-2 border-slate-300">
+                    <td class="border-2 border-slate-300">
                     @foreach ($students as $stu)
                         @if ($stu->gender == 1)
                         <label class="text-blue-700">{{ ($stu->seat >= 10) ? $stu->seat : '0'.$stu->seat }}{{ $stu->realname }}</label>　
