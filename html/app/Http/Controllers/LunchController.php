@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Models\Student;
 use App\Models\Classroom;
 use App\Models\LunchSurvey;
+use App\Models\LunchCafeteria;
 use App\Models\Watchdog;
 use App\Exports\LunchExport;
 use App\Exports\LunchClassExport;
@@ -38,7 +39,7 @@ class LunchController extends Controller
         if ($user->user_type == 'Student') {
             $class_id = employee()->class_id;
             $classroom = Classroom::find($class_id);
-            $survey = LunchSurvey::findBy($user->uuid, $section);    
+            $survey = LunchSurvey::findBy($user->uuid, $section);
         } elseif ($manager) {
             $class_id = $request->input('class');
             if (!$class_id) $class_id = '101';
@@ -48,7 +49,7 @@ class LunchController extends Controller
             $class_id = employee()->tutor_class;
             if (!$class_id) {
                 return redirect()->route('home')->with('error', '只有導師和管理員才能瀏覽午餐調查！');
-            } 
+            }
             $classroom = Classroom::find($class_id);
             $surveys = LunchSurvey::class_survey($class_id, $section);
         }
@@ -89,7 +90,7 @@ class LunchController extends Controller
             'expired_at' => $request->input('expire'),
             'description' => $request->input('desc'),
             'qrcode' => $request->input('qrcode'),
-        ],[
+        ], [
             'section',
         ]);
         $settings = LunchSurvey::settings($section);
@@ -104,7 +105,7 @@ class LunchController extends Controller
         $survey = LunchSurvey::updateOrCreate([
             'section' => $request->input('section'),
             'uuid' => $student->uuid,
-        ],[
+        ], [
             'class_id' => $student->class_id,
             'seat' => $student->seat,
             'by_school' => ($request->input('meal') == 'by_school') ? 1 : 0,
@@ -129,7 +130,7 @@ class LunchController extends Controller
             return redirect()->route('lunch', ['section' => $section])->with('error', '沒有調查結果可以匯出！');
         } else {
             $filename = substr($section, 0, -1) . '學年度' . ((substr($section, -1) == '1') ? '上' : '下') . '學期午餐調查結果彙整';
-            return (new LunchExport($section))->download("$filename.xlsx");    
+            return (new LunchExport($section))->download("$filename.xlsx");
         }
     }
 
@@ -145,8 +146,66 @@ class LunchController extends Controller
             return redirect()->route('lunch', ['section' => $section])->with('error', '沒有調查結果可以匯出！');
         } else {
             $filename = substr($section, 0, -1) . '學年度' . ((substr($section, -1) == '1') ? '上' : '下') . '學期午餐調查結果彙整';
-            return (new LunchClassExport($section, $class_id))->download("$filename.xlsx");    
+            return (new LunchClassExport($section, $class_id))->download("$filename.xlsx");
         }
+    }
+
+    public function cafeterias()
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('lunch.manager');
+        if (!$manager) {
+            return redirect()->route('home')->with('error', '只有管理員才能管理供餐地點！');
+        }
+        $cafeterias = LunchCafeteria::all();
+        return view('app.lunch_cafeterias', ['cafeterias' => $cafeterias]);
+    }
+
+    public function storeCafeteria(Request $request)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('lunch.manager');
+        if (!$manager) {
+            return redirect()->route('home')->with('error', '只有管理員才能管理供餐地點！');
+        }
+        $validated = $request->validate([
+            'description' => 'required|string|max:255',
+        ]);
+        LunchCafeteria::create($validated);
+        return redirect()->route('lunch.cafeterias')->with('success', '已新增供餐地點！');
+    }
+
+    public function updateCafeteria(Request $request, $id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('lunch.manager');
+        if (!$manager) {
+            return redirect()->route('home')->with('error', '只有管理員才能管理供餐地點！');
+        }
+        $cafeteria = LunchCafeteria::find($id);
+        if ($cafeteria) {
+            $validated = $request->validate([
+                'description' => 'required|string|max:255',
+            ]);
+            $cafeteria->update($validated);
+            return redirect()->route('lunch.cafeterias')->with('success', '已更新供餐地點！');
+        }
+        return redirect()->route('lunch.cafeterias')->with('error', '找不到該供餐地點！');
+    }
+
+    public function deleteCafeteria($id)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('lunch.manager');
+        if (!$manager) {
+            return redirect()->route('home')->with('error', '只有管理員才能管理供餐地點！');
+        }
+        $cafeteria = LunchCafeteria::find($id);
+        if ($cafeteria) {
+            $cafeteria->delete();
+            return redirect()->route('lunch.cafeterias')->with('success', '已刪除供餐地點！');
+        }
+        return redirect()->route('lunch.cafeterias')->with('error', '找不到該供餐地點！');
     }
 
 }

@@ -72,14 +72,14 @@ Route::group(['prefix' => 'calendar'], function () {
 });
 
 // 即時推播
-Route::group(['prefix' => 'messager', 'middleware' => [ 'auth' ]], function () {
+Route::group(['prefix' => 'messager', 'middleware' => ['auth']], function () {
     Route::get('list/online', 'App\Http\Controllers\MessagerController@list')->middleware('auth')->name('messager.list');
     Route::post('send', 'App\Http\Controllers\MessagerController@send')->middleware('auth')->name('messager.send');
     Route::post('broadcast', 'App\Http\Controllers\MessagerController@broadcast')->middleware('auth')->name('messager.broadcast');
 });
 
 // 學生課外社團
-Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
+Route::group(['prefix' => 'club', 'middleware' => ['auth']], function () {
     Route::get('/', 'App\Http\Controllers\ClubController@index')->name('clubs');
     Route::get('enroll', 'App\Http\Controllers\ClubController@clubEnroll')->name('clubs.enroll');
     Route::get('list/enroll/{club_id}/{section?}', 'App\Http\Controllers\ClubController@enrollList')->name('clubs.enrolls');
@@ -139,17 +139,21 @@ Route::group(['prefix' => 'club', 'middleware' => [ 'auth' ] ], function () {
 });
 
 //午餐調查
-Route::group(['prefix' => 'lunch', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'lunch', 'middleware' => ['auth']], function () {
     Route::get('survey/{section?}', 'App\Http\Controllers\LunchController@index')->name('lunch');
     Route::get('config/{section}', 'App\Http\Controllers\LunchController@setting');
     Route::post('config/{section}', 'App\Http\Controllers\LunchController@save')->name('lunch.config');
     Route::post('save/survey', 'App\Http\Controllers\LunchController@survey')->name('lunch.survey');
     Route::get('download/{section?}', 'App\Http\Controllers\LunchController@downloadAll')->name('lunch.downloadAll');
     Route::get('class/download/{section}/{class_id}', 'App\Http\Controllers\LunchController@download')->name('lunch.download');
+    Route::get('cafeterias', 'App\Http\Controllers\LunchController@cafeterias')->name('lunch.cafeterias');
+    Route::post('cafeterias', 'App\Http\Controllers\LunchController@storeCafeteria')->name('lunch.cafeterias.store');
+    Route::post('cafeterias/edit/{id}', 'App\Http\Controllers\LunchController@updateCafeteria')->name('lunch.cafeterias.update');
+    Route::post('cafeterias/remove/{id}', 'App\Http\Controllers\LunchController@deleteCafeteria')->name('lunch.cafeterias.remove');
 });
 
 //明日小作家
-Route::group(['prefix' => 'writing', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'writing', 'middleware' => ['auth']], function () {
     Route::get('list', 'App\Http\Controllers\WritingController@index')->name('writing');
     Route::get('genres', 'App\Http\Controllers\WritingController@genres')->name('writing.genres');
     Route::get('genre/add', 'App\Http\Controllers\WritingController@addGenre');
@@ -166,7 +170,7 @@ Route::group(['prefix' => 'writing', 'middleware' => [ 'auth'] ], function () {
 });
 
 // 教師清單 JSON
-Route::group(['prefix' => 'teachers', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'teachers', 'middleware' => ['auth']], function () {
     Route::get('all', 'App\Http\Controllers\DataController@all')->name('teachers.all');
     Route::get('domain/{domain_id}', 'App\Http\Controllers\DataController@domain')->name('teachers.bydomain');
     Route::get('class/{class_id}', 'App\Http\Controllers\DataController@class')->name('teachers.byclass');
@@ -174,7 +178,7 @@ Route::group(['prefix' => 'teachers', 'middleware' => [ 'auth'] ], function () {
 });
 
 // 公開課
-Route::group(['prefix' => 'public', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'public', 'middleware' => ['auth']], function () {
     Route::get('list/{section?}', 'App\Http\Controllers\PublicController@index')->name('public');
     Route::post('add', 'App\Http\Controllers\PublicController@add')->name('public.reserve');
     Route::post('insert', 'App\Http\Controllers\PublicController@insert')->name('public.add');
@@ -193,7 +197,7 @@ Route::group(['prefix' => 'public', 'middleware' => [ 'auth'] ], function () {
 });
 
 // 網路朝會
-Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'meeting', 'middleware' => ['auth']], function () {
     Route::get('list/{date?}', 'App\Http\Controllers\MeetingController@index')->name('meeting');
     Route::post('send', 'App\Http\Controllers\MeetingController@send')->name('meeting.send');
     Route::get('add', 'App\Http\Controllers\MeetingController@add');
@@ -205,7 +209,7 @@ Route::group(['prefix' => 'meeting', 'middleware' => [ 'auth'] ], function () {
 });
 
 // 年資統計
-Route::group(['prefix' => 'seniority', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'seniority', 'middleware' => ['auth']], function () {
     Route::get('list/{search?}', 'App\Http\Controllers\SeniorityController@index')->name('seniority');
     Route::get('import', 'App\Http\Controllers\SeniorityController@upload');
     Route::post('import', 'App\Http\Controllers\SeniorityController@import')->name('seniority.import');
@@ -217,7 +221,7 @@ Route::group(['prefix' => 'seniority', 'middleware' => [ 'auth'] ], function () 
 });
 
 // 職務編排
-Route::group(['prefix' => 'organize', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'organize', 'middleware' => ['auth']], function () {
     Route::get('index/{year?}', 'App\Http\Controllers\OrganizeController@index')->name('organize');
     Route::post('survey/{uuid}', 'App\Http\Controllers\OrganizeController@survey')->name('organize.survey');
     Route::get('vacancy', 'App\Http\Controllers\OrganizeController@vacancy')->name('organize.vacancy');
@@ -239,7 +243,7 @@ Route::group(['prefix' => 'organize', 'middleware' => [ 'auth'] ], function () {
 });
 
 // 場地/設備預約
-Route::group(['prefix' => 'venue', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'venue', 'middleware' => ['auth']], function () {
     Route::get('index', 'App\Http\Controllers\VenueController@index')->name('venues');
     Route::get('add', 'App\Http\Controllers\VenueController@add');
     Route::post('add', 'App\Http\Controllers\VenueController@insert')->name('venue.add');
@@ -255,7 +259,7 @@ Route::group(['prefix' => 'venue', 'middleware' => [ 'auth'] ], function () {
 });
 
 // 修繕登記
-Route::group(['prefix' => 'repair', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'repair', 'middleware' => ['auth']], function () {
     Route::get('index', 'App\Http\Controllers\RepairController@index')->name('repair');
     Route::get('list/{kind?}', 'App\Http\Controllers\RepairController@list')->name('repair.list');
     Route::get('kinds/add', 'App\Http\Controllers\RepairController@addKind');
@@ -273,7 +277,7 @@ Route::group(['prefix' => 'repair', 'middleware' => [ 'auth'] ], function () {
 });
 
 // 學生名單填報
-Route::group(['prefix' => 'roster', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'roster', 'middleware' => ['auth']], function () {
     Route::get('list/{section?}', 'App\Http\Controllers\RosterController@list')->name('rosters');
     Route::get('summary/{id}/{section?}', 'App\Http\Controllers\RosterController@summary')->name('roster.summary');
     Route::get('add', 'App\Http\Controllers\RosterController@add');
@@ -289,7 +293,7 @@ Route::group(['prefix' => 'roster', 'middleware' => [ 'auth'] ], function () {
 });
 
 // 公假單套印
-Route::group(['prefix' => 'dayoff', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'dayoff', 'middleware' => ['auth']], function () {
     Route::get('/', 'App\Http\Controllers\DayoffController@index')->name('dayoff');
     Route::get('add', 'App\Http\Controllers\DayoffController@add');
     Route::post('add', 'App\Http\Controllers\DayoffController@insert')->name('dayoff.add');
@@ -314,7 +318,7 @@ Route::group(['prefix' => 'dayoff', 'middleware' => [ 'auth'] ], function () {
 });
 
 // 分組座位表
-Route::group(['prefix' => 'seats', 'middleware' => [ 'auth'] ], function () {
+Route::group(['prefix' => 'seats', 'middleware' => ['auth']], function () {
     Route::get('/', 'App\Http\Controllers\SeatsController@index')->name('seats');
     Route::get('theme', 'App\Http\Controllers\SeatsController@theme')->name('seats.theme');
     Route::get('theme/add', 'App\Http\Controllers\SeatsController@addTheme');
@@ -337,16 +341,16 @@ Route::group(['prefix' => 'seats', 'middleware' => [ 'auth'] ], function () {
 });
 
 // 管理後台
-Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], function () {
+Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
-// 快取資料庫同步作業
+    // 快取資料庫同步作業
     Route::get('database/sync', 'App\Http\Controllers\Admin\SyncController@syncFromLDAP');
     Route::post('database/sync', 'App\Http\Controllers\Admin\SyncController@startSyncFromLDAP')->name('sync');
     Route::get('database/sync/ad', 'App\Http\Controllers\Admin\SyncController@syncToMSAD');
     Route::post('database/sync/ad', 'App\Http\Controllers\Admin\SyncController@startSyncToMSAD')->name('syncAD');
     Route::get('database/sync/google', 'App\Http\Controllers\Admin\SyncController@syncToGsuite');
     Route::post('database/sync/google', 'App\Http\Controllers\Admin\SyncController@startSyncToGsuite')->name('syncGsuite');
-// 單一身份驗證資料管理
+    // 單一身份驗證資料管理
     Route::get('database/units', 'App\Http\Controllers\Admin\SchoolDataController@unitList');
     Route::post('database/units', 'App\Http\Controllers\Admin\SchoolDataController@unitUpdate')->name('units');
     Route::get('database/units/add', 'App\Http\Controllers\Admin\SchoolDataController@unitAdd');
@@ -376,13 +380,13 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('database/students/{uuid}/remove', 'App\Http\Controllers\Admin\SchoolDataController@studentRemove')->name('students.remove');
     Route::post('database/students/{uuid}/restore', 'App\Http\Controllers\Admin\SchoolDataController@studentRestore')->name('students.restore');
     Route::post('database/students/{uuid}/destroy', 'App\Http\Controllers\Admin\SchoolDataController@studentDestroy')->name('students.destroy');
-// 選單管理
+    // 選單管理
     Route::get('website/menus/{menu?}', 'App\Http\Controllers\Admin\MenuController@index');
     Route::post('website/menus/{menu?}', 'App\Http\Controllers\Admin\MenuController@update')->name('menus');
     Route::get('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\MenuController@add');
     Route::post('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\MenuController@insert')->name('menus.add');
     Route::post('website/menus/{menu}/remove', 'App\Http\Controllers\Admin\MenuController@remove')->name('menus.remove');
-// 權限管理
+    // 權限管理
     Route::get('website/permission', 'App\Http\Controllers\Admin\PermitController@index')->name('permission');
     Route::get('website/permission/admin', 'App\Http\Controllers\Admin\PermitController@admin');
     Route::post('website/permission/admin', 'App\Http\Controllers\Admin\PermitController@adminUpdate')->name('permission.admin');
@@ -393,7 +397,7 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('website/permission/{id}/remove', 'App\Http\Controllers\Admin\PermitController@remove')->name('permission.remove');
     Route::get('website/permission/{id}/grant', 'App\Http\Controllers\Admin\PermitController@grantList');
     Route::post('website/permission/{id}/grant', 'App\Http\Controllers\Admin\PermitController@grantUpdate')->name('permission.grant');
-// 電子報管理
+    // 電子報管理
     Route::get('website/news', 'App\Http\Controllers\Admin\NewsController@index')->name('news');
     Route::get('website/news/add', 'App\Http\Controllers\Admin\NewsController@add');
     Route::post('website/news/add', 'App\Http\Controllers\Admin\NewsController@insert')->name('news.add');
@@ -404,13 +408,13 @@ Route::group(['prefix' => 'admin', 'middleware' => [ 'auth', 'admin' ] ], functi
     Route::post('website/news/{news}/subscribers/add', 'App\Http\Controllers\Admin\NewsController@insertSub')->name('subscriber.add');
     Route::post('website/news/{news}/subscribers/{id}/edit', 'App\Http\Controllers\Admin\NewsController@updateSub')->name('subscriber.edit');
     Route::post('website/news/{news}/subscribers/{id}/remove', 'App\Http\Controllers\Admin\NewsController@removeSub')->name('subscriber.remove');
-//瀏覽歷程
+    //瀏覽歷程
     Route::get('website/watchdog', 'App\Http\Controllers\Admin\WatchdogController@index')->name('watchdog');
     Route::post('website/watchdog/export', 'App\Http\Controllers\Admin\WatchdogController@export')->name('watchdog.export');
 });
 
 // 遊戲平台
-Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
+Route::group(['prefix' => 'game', 'middleware' => ['auth']], function () {
     //教師遊戲介面
     Route::get('/', 'App\Http\Controllers\Game\GameController@index')->name('game');
     Route::post('lock', 'App\Http\Controllers\Game\GameController@lock')->name('game.lock');
@@ -575,7 +579,7 @@ Route::group(['prefix' => 'game', 'middleware' => [ 'auth' ] ], function () {
     Route::get('image', 'App\Http\Controllers\Game\PlayerController@image_edit');
     Route::post('image', 'App\Http\Controllers\Game\PlayerController@character_image')->name('game.player_image');
     //學生遊戲介面
-    Route::group(['prefix' => 'player', 'middleware' => [ 'student', 'noprofession', 'noimage' ] ], function () {
+    Route::group(['prefix' => 'player', 'middleware' => ['student', 'noprofession', 'noimage']], function () {
         Route::get('/', 'App\Http\Controllers\Game\PlayerController@index')->name('game.player');
         Route::get('party', 'App\Http\Controllers\Game\PlayerController@party')->name('game.party');
         Route::get('arena', 'App\Http\Controllers\Game\PlayerController@arena')->name('game.arena');

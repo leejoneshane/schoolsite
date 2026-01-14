@@ -81,13 +81,13 @@
     var fur;
     var treasury = {{ $party->treasury }};
     @foreach ($furnitures as $f)
-    furnitures[{{ $f->id }}] = {!! $f->toJson(JSON_UNESCAPED_UNICODE); !!}
+    furnitures[{{ $f->id }}] = {!! $f->toJson(JSON_UNESCAPED_UNICODE) !!}
     @endforeach
     var new_furnitures = [];
     var old_furnitures = [];
     @if ($party->furniture)
     @foreach ($party->furnitures as $f)
-    old_furnitures[{{ $f->id }}] = {!! $f->toJson(JSON_UNESCAPED_UNICODE); !!}
+    old_furnitures[{{ $f->id }}] = {!! $f->toJson(JSON_UNESCAPED_UNICODE) !!}
     @endforeach
     @endif
 

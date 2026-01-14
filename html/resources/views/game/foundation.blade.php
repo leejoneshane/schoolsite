@@ -115,10 +115,10 @@
                     <td class="w-1/5">
                         @if ($character->uuid == $party->uuid)
                         <button type="button" title="拆除" onclick="furniture('{{ $f->id }}', '{{ $f->name }}');" class="hover:border-2 hover:border-blue-700 text-white font-bold py-2 px-4 rounded-full">
-                            <img src="{{ $f->image_url(); }}" title="{{ $f->name . ' ' . $f->description }}" />
+                            <img src="{{ $f->image_url() }}" title="{{ $f->name . ' ' . $f->description }}" />
                         </button>
                         @else
-                        <img src="{{ $f->image_url(); }}" title="{{ $f->name . ' ' . $f->description }}" />
+                        <img src="{{ $f->image_url() }}" title="{{ $f->name . ' ' . $f->description }}" />
                         @endif
                     </td>
                     @endforeach

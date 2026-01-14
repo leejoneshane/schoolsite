@@ -157,9 +157,9 @@
     var questions = [];
     var options = [];
     @foreach ($evaluate->questions as $q)
-    questions[{{ $q->id }}] = {!! $q->toJson(JSON_UNESCAPED_UNICODE); !!};
+    questions[{{ $q->id }}] = {!! $q->toJson(JSON_UNESCAPED_UNICODE) !!};
     @foreach ($q->options as $o)
-    options[{{ $o->id }}] = {!! $o->toJson(JSON_UNESCAPED_UNICODE); !!};
+    options[{{ $o->id }}] = {!! $o->toJson(JSON_UNESCAPED_UNICODE) !!};
     @endforeach
     @endforeach
 

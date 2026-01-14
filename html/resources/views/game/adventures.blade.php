@@ -178,12 +178,12 @@
     @endforeach
     var tasks = new Array();
     @foreach ($adventure->worksheet->tasks as $t)
-    tasks[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE); !!};
+    tasks[{{ $t->id }}] = @json($t, JSON_UNESCAPED_UNICODE);
     @endforeach
     var processes = new Array();
     var items = new Array();
     @foreach ($items as $t)
-    items[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE); !!};
+    items[{{ $t->id }}] = @json($t, JSON_UNESCAPED_UNICODE);
     @endforeach
     var progress_view = document.getElementById('progress');
     var process_view = document.getElementById('process');

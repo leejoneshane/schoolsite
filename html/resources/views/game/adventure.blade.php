@@ -133,7 +133,7 @@
     var tid;
     var tasks = [];
     @foreach ($adventure->worksheet->tasks as $t)
-    tasks[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE); !!};
+    tasks[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE) !!};
     tasks[{{ $t->id }}].visited = false;
     @endforeach
     @foreach ($character->travel($adventure->id) as $t)
@@ -141,11 +141,11 @@
     @endforeach
     var process = [];
     @foreach ($character->travel($adventure->id) as $t)
-    process[{{ $t->task->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE); !!};
+    process[{{ $t->task->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE) !!};
     @endforeach
     var items = [];
     @foreach ($items as $t)
-    items[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE); !!};
+    items[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE) !!};
     @endforeach
 
     var $targetEl = document.getElementById('taskModal');

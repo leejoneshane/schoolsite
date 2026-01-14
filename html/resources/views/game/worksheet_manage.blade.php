@@ -133,7 +133,7 @@
     var pos;
     var tasks = [];
     @foreach ($worksheet->tasks as $t)
-    tasks[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE); !!};
+    tasks[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE) !!};
     @endforeach
 
     var $targetEl = document.getElementById('taskModal');

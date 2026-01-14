@@ -79,7 +79,7 @@
     var item;
     var money;
     @foreach ($items as $f)
-    items[{{ $f->id }}] = {!! $f->toJson(JSON_UNESCAPED_UNICODE); !!}
+    items[{{ $f->id }}] = {!! $f->toJson(JSON_UNESCAPED_UNICODE) !!}
     @endforeach
     var new_items = [];
     var old_items = [];

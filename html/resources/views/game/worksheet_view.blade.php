@@ -95,11 +95,11 @@
     var worksheet = {!! $worksheet->toJson(JSON_UNESCAPED_UNICODE) !!};
     var tasks = [];
     @foreach ($worksheet->tasks as $t)
-    tasks[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE); !!};
+    tasks[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE) !!};
     @endforeach
     var items = [];
     @foreach ($items as $t)
-    items[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE); !!};
+    items[{{ $t->id }}] = {!! $t->toJson(JSON_UNESCAPED_UNICODE) !!};
     @endforeach
 
     var $targetEl = document.getElementById('taskModal');
