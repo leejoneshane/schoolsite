@@ -14,6 +14,9 @@ use App\Models\LunchTeacher;
 use App\Models\Watchdog;
 use App\Exports\LunchExport;
 use App\Exports\LunchClassExport;
+use App\Exports\LunchGradeExport;
+use App\Exports\LunchLocationExport;
+use App\Exports\LunchPaymentExport;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class LunchController extends Controller
@@ -304,6 +307,48 @@ class LunchController extends Controller
             $filename = substr($section, 0, -1) . '學年度' . ((substr($section, -1) == '1') ? '上' : '下') . '學期午餐調查結果彙整';
             return (new LunchExport($section))->download("$filename.xlsx");
         }
+    }
+
+    public function downloadGrade($section = null)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('lunch.manager');
+        if (!$manager) {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+        if (!$section)
+            $section = next_section();
+
+        $filename = substr($section, 0, -1) . '學年度' . ((substr($section, -1) == '1') ? '上' : '下') . '學期年級用餐確認表';
+        return (new LunchGradeExport($section))->download("$filename.xlsx");
+    }
+
+    public function downloadLocation($section = null)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('lunch.manager');
+        if (!$manager) {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+        if (!$section)
+            $section = next_section();
+
+        $filename = substr($section, 0, -1) . '學年度' . ((substr($section, -1) == '1') ? '上' : '下') . '學期各地點用餐名錄';
+        return (new LunchLocationExport($section))->download("$filename.xlsx");
+    }
+
+    public function downloadPayment($section = null)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('lunch.manager');
+        if (!$manager) {
+            return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
+        }
+        if (!$section)
+            $section = next_section();
+
+        $filename = substr($section, 0, -1) . '學年度' . ((substr($section, -1) == '1') ? '上' : '下') . '學期收費明細對帳單';
+        return (new LunchPaymentExport($section))->download("$filename.xlsx");
     }
 
     public function download($section, $class_id)

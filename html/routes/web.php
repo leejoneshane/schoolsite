@@ -158,6 +158,9 @@ Route::group(['prefix' => 'lunch', 'middleware' => ['auth']], function () {
     Route::post('config/{section}', 'App\Http\Controllers\LunchController@save')->name('lunch.config');
     Route::get('download/{section?}', 'App\Http\Controllers\LunchController@downloadAll')->name('lunch.downloadAll');
     Route::get('class/download/{section}/{class_id}', 'App\Http\Controllers\LunchController@download')->name('lunch.download');
+    Route::get('grade/download/{section?}', 'App\Http\Controllers\LunchController@downloadGrade')->name('lunch.downloadGrade');
+    Route::get('location/download/{section?}', 'App\Http\Controllers\LunchController@downloadLocation')->name('lunch.downloadLocation');
+    Route::get('payment/download/{section?}', 'App\Http\Controllers\LunchController@downloadPayment')->name('lunch.downloadPayment');
     Route::get('cafeterias', 'App\Http\Controllers\LunchController@cafeterias')->name('lunch.cafeterias');
     Route::post('cafeterias', 'App\Http\Controllers\LunchController@storeCafeteria')->name('lunch.cafeterias.store');
     Route::post('cafeterias/edit/{id}', 'App\Http\Controllers\LunchController@updateCafeteria')->name('lunch.cafeterias.update');

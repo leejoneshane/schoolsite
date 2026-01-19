@@ -19,15 +19,27 @@
                 href="{{ route('lunch.download', ['section' => $section, 'class_id' => $classroom ? $classroom->id : '']) }}">
                 <i class="fa-solid fa-file-export"></i>匯出調查結果(班級)
             </a>
+            <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600"
+                href="{{ route('lunch.downloadGrade', ['section' => $section]) }}">
+                <i class="fa-solid fa-file-excel"></i>年級用餐確認表
+            </a>
+            <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600"
+                href="{{ route('lunch.downloadLocation', ['section' => $section]) }}">
+                <i class="fa-solid fa-file-excel"></i>各地點用餐名錄
+            </a>
+            <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600"
+                href="{{ route('lunch.downloadPayment', ['section' => $section]) }}">
+                <i class="fa-solid fa-file-invoice-dollar"></i>收費明細對帳單
+            </a>
         @endif
     </div>
     <label for="section">請選擇學期：</label>
     <select id="section"
         class="inline w-32 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
         onchange="
-        var section = this.value;
-        window.location.replace('{{ route('lunch.manage') }}' + '/' + section + '?class={{ ($classroom) ? $classroom->id : '' }}');
-        ">
+            var section = this.value;
+            window.location.replace('{{ route('lunch.manage') }}' + '/' + section + '?class={{ ($classroom) ? $classroom->id : '' }}');
+            ">
         @foreach ($sections as $s)
             <option value="{{ $s }}" {{ ($s == $section) ? ' selected' : '' }}>
                 {{ substr($s, 0, -1) . '學年第' . substr($s, -1) . '學期' }}
@@ -45,13 +57,14 @@
                 <select id="classes"
                     class="inline rounded w-32 py-2 mr-6 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                     onchange="
-                        var cls = this.value;
-                        window.location.replace('{{ route('lunch.manage', ['section' => $section]) }}' + '?class=' + cls);
-                        ">
+                                var cls = this.value;
+                                window.location.replace('{{ route('lunch.manage', ['section' => $section]) }}' + '?class=' + cls);
+                                ">
                     <option></option>
                     @foreach ($classes as $cls)
                         <option value="{{ $cls->id }}" {{ ($classroom && $classroom->id == $cls->id) ? ' selected' : '' }}>
-                            {{ $cls->name }}</option>
+                            {{ $cls->name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
