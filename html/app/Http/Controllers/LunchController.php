@@ -141,6 +141,7 @@ class LunchController extends Controller
         if (!$section)
             $section = $next;
 
+        $settings = DB::table('lunch')->where('section', $section)->first();
         $teacher = LunchTeacher::where('uuid', $user->uuid)->where('section', $section)->first();
         $cafeterias = LunchCafeteria::all();
 
@@ -181,6 +182,7 @@ class LunchController extends Controller
 
         return view('app.lunch_teacher_edit', [
             'section' => $section,
+            'settings' => $settings,
             'teacher' => $teacher,
             'cafeterias' => $cafeterias,
             'fixed_days' => $fixed_days,
