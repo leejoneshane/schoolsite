@@ -26,10 +26,11 @@ class LunchController extends Controller
         if ($user->user_type == 'Student') {
             return redirect()->route('lunch.survey');
         } elseif ($user->user_type == 'Teacher') {
-            if ($manager) {
-                return redirect()->route('lunch.manage');
-            } else {
+            $is_tutor = employee()->tutor_class;
+            if ($manager || $is_tutor) {
                 return redirect()->route('lunch.teacher');
+            } else {
+                return redirect()->route('lunch.teacher.edit');
             }
         }
     }
