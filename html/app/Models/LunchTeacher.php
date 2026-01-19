@@ -29,8 +29,8 @@ class LunchTeacher extends Model
         'milk' => 'boolean',
     ];
 
-    public function user()
+    public function teacher()
     {
-        return $this->belongsTo(User::class, 'uuid', 'uuid'); // Assuming User model matches uuid
+        return $this->belongsTo(Teacher::class, 'uuid', 'uuid'); // Assuming Teacher model matches uuid
     }
 }

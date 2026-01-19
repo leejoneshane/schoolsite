@@ -79,8 +79,9 @@ class LunchLocationSheet implements FromView, WithTitle
                 if ($is_soy)
                     $totals['soy_milk']++;
 
+                $name = $teacher->teacher->realname;
                 $rows[] = [
-                    'name' => $teacher->realname,
+                    'name' => $name,
                     'mon' => $days_marks[0],
                     'tue' => $days_marks[1],
                     'wed' => $days_marks[2],
