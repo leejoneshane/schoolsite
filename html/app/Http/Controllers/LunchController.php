@@ -10,6 +10,7 @@ use App\Models\Student;
 use App\Models\Classroom;
 use App\Models\LunchSurvey;
 use App\Models\LunchCafeteria;
+use App\Models\LunchTeacher;
 use App\Models\Watchdog;
 use App\Exports\LunchExport;
 use App\Exports\LunchClassExport;
@@ -18,14 +19,34 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 class LunchController extends Controller
 {
 
-    public function index(Request $request, $section = null)
+    public function index()
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
+        if ($user->user_type == 'Student') {
+            return redirect()->route('lunch.survey');
+        } elseif ($user->user_type == 'Teacher') {
+            if ($manager) {
+                return redirect()->route('lunch.manage');
+            } else {
+                return redirect()->route('lunch.teacher');
+            }
+        }
+    }
+
+    public function survey(Request $request, $section = null)
+    {
+        $user = Auth::user();
+        if ($user->user_type != 'Student') {
+            return redirect()->route('lunch');
+        }
+
         $sections = LunchSurvey::sections();
         $next = next_section();
-        if (!in_array($next, $sections)) $sections[] = $next;
-        if (!$section) $section = $next;
+        if (!in_array($next, $sections))
+            $sections[] = $next;
+        if (!$section)
+            $section = $next;
         $settings = LunchSurvey::settings($section);
         $image = public_path('images/lunch.png');
         if (!file_exists($image)) {
@@ -33,27 +54,129 @@ class LunchController extends Controller
                 ->merge(public_path('images/logo.jpg'), 0.25, true)
                 ->generate($settings->qrcode, $image);
         }
+
+        $class_id = employee()->class_id;
+        $classroom = Classroom::find($class_id);
+        $survey = LunchSurvey::findBy($user->uuid, $section);
+        $manager = false; // Students are not managers here
+
+        return view('app.lunch_survey', [
+            'user' => $user,
+            'manager' => $manager,
+            'section' => $section,
+            'sections' => $sections,
+            'settings' => $settings,
+            'image' => $image,
+            'survey' => $survey,
+            'classroom' => $classroom
+        ]);
+    }
+
+    public function manager(Request $request, $section = null)
+    {
+        $user = User::find(Auth::user()->id);
+        $manager = $user->is_admin || $user->hasPermission('lunch.manager');
+        $is_tutor = ($user->user_type == 'Teacher' && employee()->tutor_class);
+
+        if (!$manager && !$is_tutor) {
+            return redirect()->route('lunch.teacher');
+        }
+
+        $sections = LunchSurvey::sections();
+        $next = next_section();
+        if (!in_array($next, $sections))
+            $sections[] = $next;
+        if (!$section)
+            $section = $next;
+
         $count = (object) ['classes' => LunchSurvey::count_classes($section), 'students' => LunchSurvey::count($section)];
-        $survey = $surveys = $classes = null;
+        $surveys = $classes = $classroom = null;
         $classes = Classroom::all();
-        if ($user->user_type == 'Student') {
-            $class_id = employee()->class_id;
-            $classroom = Classroom::find($class_id);
-            $survey = LunchSurvey::findBy($user->uuid, $section);
-        } elseif ($manager) {
+
+        if ($manager) {
             $class_id = $request->input('class');
-            if (!$class_id) $class_id = '101';
+            if (!$class_id)
+                $class_id = '101';
             $classroom = Classroom::find($class_id);
             $surveys = LunchSurvey::class_survey($class_id, $section);
-        } elseif ($user->user_type == 'Teacher') {
+        } elseif ($is_tutor) {
             $class_id = employee()->tutor_class;
-            if (!$class_id) {
-                return redirect()->route('home')->with('error', '只有導師和管理員才能瀏覽午餐調查！');
-            }
             $classroom = Classroom::find($class_id);
             $surveys = LunchSurvey::class_survey($class_id, $section);
         }
-        return view('app.lunch_survey', ['user' => $user, 'manager' => $manager, 'section' => $section, 'sections' => $sections, 'settings' => $settings, 'image' => $image, 'count' => $count, 'survey' => $survey, 'classroom' => $classroom, 'classes' => $classes, 'surveys' => $surveys]);
+
+        return view('app.lunch_manager', [
+            'user' => $user,
+            'manager' => $manager,
+            'section' => $section,
+            'sections' => $sections,
+            'count' => $count,
+            'classroom' => $classroom,
+            'classes' => $classes,
+            'surveys' => $surveys
+        ]);
+    }
+
+    public function teacherDashboard()
+    {
+        $user = Auth::user();
+        if ($user->user_type != 'Teacher' && !$user->is_admin) {
+            return redirect()->route('lunch');
+        }
+        return view('app.lunch_teacher_dashboard');
+    }
+
+    public function teacherLunch($section = null)
+    {
+        $user = Auth::user();
+        if ($user->user_type != 'Teacher' && !$user->is_admin) {
+            return redirect()->route('lunch');
+        }
+
+        $next = next_section();
+        if (!$section)
+            $section = $next;
+
+        $teacher = LunchTeacher::where('uuid', $user->uuid)->where('section', $section)->first();
+        $cafeterias = LunchCafeteria::all();
+
+        return view('app.lunch_teacher_edit', [
+            'section' => $section,
+            'teacher' => $teacher,
+            'cafeterias' => $cafeterias
+        ]);
+    }
+
+    public function storeTeacherLunch(Request $request)
+    {
+        $user = Auth::user();
+        $section = $request->input('section');
+
+        $data = [
+            'section' => $section,
+            'uuid' => $user->uuid,
+            'tutor' => $request->has('tutor'),
+            'vegen' => $request->has('vegen'),
+            'milk' => $request->has('milk'),
+            'weekdays' => $request->input('weekdays', []), // array of booleans/checkboxes
+            'places' => $request->input('places', []),
+        ];
+
+        // Ensure weekdays and places are properly formatted as arrays if needed, though Eloquent cast should handle arrays.
+        // Checkboxes return "1" if checked, missing if not. Let's normalize weekdays.
+        $weekdays = [];
+        for ($i = 0; $i < 5; $i++) {
+            $weekdays[$i] = isset($data['weekdays'][$i]) ? true : false;
+        }
+        $data['weekdays'] = $weekdays;
+
+        // Update upsert logic or updateOrCreate
+        LunchTeacher::updateOrCreate(
+            ['section' => $section, 'uuid' => $user->uuid],
+            $data
+        );
+
+        return redirect()->route('lunch.teacher')->with('success', '已儲存您的午餐設定！');
     }
 
     public function setting($section)
@@ -64,7 +187,8 @@ class LunchController extends Controller
             return redirect()->route('home')->with('error', '只有管理員才能設定午餐調查期程！');
         }
         $settings = LunchSurvey::settings();
-        if (!$settings) $settings = LunchSurvey::latest_settings();
+        if (!$settings)
+            $settings = LunchSurvey::latest_settings();
         return view('app.lunch_config', ['settings' => $settings, 'section' => $section]);
     }
 
@@ -98,7 +222,7 @@ class LunchController extends Controller
         return redirect()->route('lunch')->with('success', '午餐調查期程設定完成！');
     }
 
-    public function survey(Request $request)
+    public function storeSurvey(Request $request)
     {
         $user = Auth::user();
         $student = Student::find($user->uuid);
@@ -115,7 +239,7 @@ class LunchController extends Controller
             'boxed_meal' => ($request->input('meal') == 'boxed_meal') ? 1 : 0,
         ]);
         Watchdog::watch($request, '提交午餐調查表：' . $survey->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return redirect()->route('lunch')->with('success', '已為您儲存午餐調查表！');
+        return redirect()->route('lunch.survey')->with('success', '已為您儲存午餐調查表！'); // Redirect to survey view
     }
 
     public function downloadAll($section = null)
@@ -125,7 +249,8 @@ class LunchController extends Controller
         if (!$manager) {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
-        if (!$section) $section = next_section();
+        if (!$section)
+            $section = next_section();
         if (LunchSurvey::count($section) == 0) {
             return redirect()->route('lunch', ['section' => $section])->with('error', '沒有調查結果可以匯出！');
         } else {
@@ -141,7 +266,8 @@ class LunchController extends Controller
         if (!$manager) {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
-        if (!$section) $section = next_section();
+        if (!$section)
+            $section = next_section();
         if (LunchSurvey::countByClass($section, $class_id) == 0) {
             return redirect()->route('lunch', ['section' => $section])->with('error', '沒有調查結果可以匯出！');
         } else {

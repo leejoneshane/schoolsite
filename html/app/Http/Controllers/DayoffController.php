@@ -27,7 +27,7 @@ class DayoffController extends Controller
         if ($user->is_admin || $manager || $clubm) {
             $dayoffs = Dayoff::query()->paginate(16);
             return view('app.dayoff', ['reports' => $dayoffs]);
-        } else {    
+        } else {
             return redirect()->route('home')->with('error', '只有管理員才能管理公假單！');
         }
     }
@@ -57,7 +57,7 @@ class DayoffController extends Controller
             if (!empty($dates)) {
                 foreach ($dates as $k => $d) {
                     $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
-                }    
+                }
             }
             if (empty($datetimes) && empty($request->input('rdate'))) {
                 return back()->withInput()->with('error', '「自訂時間字串」或「公假時間」至少要有一項有資料！');
@@ -73,7 +73,7 @@ class DayoffController extends Controller
             ]);
             Watchdog::watch($request, '新增公假單：' . $dayoff->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('dayoff')->with('success', '公假單新增完成！');
-        } else {    
+        } else {
             return redirect()->route('home')->with('error', '只有管理員才能修改公假單！');
         }
     }
@@ -86,7 +86,7 @@ class DayoffController extends Controller
         if ($user->is_admin || $manager || $clubm) {
             $dayoff = Dayoff::find($id);
             return view('app.dayoff_edit', ['report' => $dayoff]);
-        } else {    
+        } else {
             return redirect()->route('home')->with('error', '只有管理員才能修改公假單！');
         }
     }
@@ -108,7 +108,7 @@ class DayoffController extends Controller
                     } else {
                         return back()->withInput()->with('error', '「公假時間」欄位填寫不完整！');
                     }
-                }    
+                }
             }
             if (empty($datetimes) && empty($request->input('rdate'))) {
                 return back()->withInput()->with('error', '「自訂時間字串」或「公假時間」至少要有一項有資料！');
@@ -125,7 +125,7 @@ class DayoffController extends Controller
             ]);
             Watchdog::watch($request, '修改公假單：' . $dayoff->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return redirect()->route('dayoff')->with('success', '公假單修改完成！');
-        } else {    
+        } else {
             return redirect()->route('home')->with('error', '只有管理員才能移除公假單！');
         }
     }
@@ -138,13 +138,13 @@ class DayoffController extends Controller
         if ($user->is_admin || $manager || $clubm) {
             $dayoff = Dayoff::find($id);
             if ($dayoff->count_students() > 0) {
-                return redirect()->route('dayoff')->with('error', '公假單已經擁有學生名單，因此無法刪除！');  
+                return redirect()->route('dayoff')->with('error', '公假單已經擁有學生名單，因此無法刪除！');
             } else {
                 Watchdog::watch($request, '移除公假單：' . $dayoff->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
                 $dayoff->delete();
-                return redirect()->route('dayoff')->with('success', '公假單移除完成！');    
+                return redirect()->route('dayoff')->with('success', '公假單移除完成！');
             }
-        } else {    
+        } else {
             return redirect()->route('home')->with('error', '只有管理員才能移除公假單！');
         }
     }
@@ -158,7 +158,7 @@ class DayoffController extends Controller
             $dayoff = Dayoff::find($id);
             $classes = Classroom::all();
             return view('app.dayoff_students', ['report' => $dayoff, 'classes' => $classes]);
-        } else {    
+        } else {
             return redirect()->route('home')->with('error', '只有管理員才能修改公假名單！');
         }
     }
@@ -178,7 +178,7 @@ class DayoffController extends Controller
             $dayoff = Dayoff::find($id);
             $students = $dayoff->class_students($classroom->id);
             return view('app.dayoff_class', ['report' => $dayoff, 'classroom' => $classroom, 'students' => $students]);
-        } else {    
+        } else {
             return redirect()->route('home')->with('error', '只有管理員才能勾選公假名單！');
         }
     }
@@ -246,13 +246,14 @@ class DayoffController extends Controller
             $students = explode(' ', $list);
             foreach ($students as $stdno) {
                 $stdno = trim($stdno);
-                if (strlen($stdno) != 5) continue;
+                if (strlen($stdno) != 5)
+                    continue;
                 $class_id = substr($stdno, 0, 3);
                 $seat = (integer) substr($stdno, -2);
                 $student = Student::findByStdno($class_id, $seat);
                 if ($student) {
                     if ($dayoff->student_occupy($student->uuid)) {
-                        $message .= $stdno.$student->realname.'已經在公假名單中，不用再輸入！';
+                        $message .= $stdno . $student->realname . '已經在公假名單中，不用再輸入！';
                         continue;
                     }
                     $record = DB::table('dayoff_students')->insertOrIgnore([
@@ -260,10 +261,10 @@ class DayoffController extends Controller
                         'dayoff_id' => $id,
                     ]);
                     if ($record) {
-                        $message .= $stdno.$student->realname.'已經新增到公假單中！';
+                        $message .= $stdno . $student->realname . '已經新增到公假單中！';
                         continue;
                     }
-                    Watchdog::watch($request, '快速新增學生名單到公假單「' . $dayoff->reason . '」中，學生：' . $stdno.$student->realname);    
+                    Watchdog::watch($request, '快速新增學生名單到公假單「' . $dayoff->reason . '」中，學生：' . $stdno . $student->realname);
                 }
             }
             return redirect()->route('dayoff.students', ['id' => $id])->with('success', $message);
@@ -299,7 +300,7 @@ class DayoffController extends Controller
             $club = Club::find($request->input('club'));
             foreach ($club->accepted_students() as $stu) {
                 if ($dayoff->student_occupy($stu->uuid)) {
-                    $message .= $stu->stdno.$stu->realname.'已經在公假名單中，不用再輸入！';
+                    $message .= $stu->stdno . $stu->realname . '已經在公假名單中，不用再輸入！';
                     continue;
                 }
                 $record = DB::table('dayoff_students')->insertOrIgnore([
@@ -307,10 +308,10 @@ class DayoffController extends Controller
                     'dayoff_id' => $id,
                 ]);
                 if ($record) {
-                    $message .= $stu->stdno.$stu->realname.'已經新增到公假單中！';
+                    $message .= $stu->stdno . $stu->realname . '已經新增到公假單中！';
                     continue;
                 }
-                Watchdog::watch($request, '匯入學生課外社團錄取名單到公假單「' . $dayoff->reason . '」中，學生：' . $stu->stdno.$stu->realname);
+                Watchdog::watch($request, '匯入學生課外社團錄取名單到公假單「' . $dayoff->reason . '」中，學生：' . $stu->stdno . $stu->realname);
             }
             return redirect()->route('dayoff.students', ['id' => $id])->with('success', $message);
         } else {
@@ -346,7 +347,7 @@ class DayoffController extends Controller
             if ($roster) {
                 foreach ($roster->section_students() as $stu) {
                     if ($dayoff->student_occupy($stu->uuid)) {
-                        $message .= $stu->stdno.$stu->realname.'已經在公假名單中，不用再輸入！';
+                        $message .= $stu->stdno . $stu->realname . '已經在公假名單中，不用再輸入！';
                         continue;
                     }
                     $record = DB::table('dayoff_students')->insertOrIgnore([
@@ -354,11 +355,11 @@ class DayoffController extends Controller
                         'dayoff_id' => $id,
                     ]);
                     if ($record) {
-                        $message .= $stu->stdno.$stu->realname.'已經新增到公假單中！';
+                        $message .= $stu->stdno . $stu->realname . '已經新增到公假單中！';
                         continue;
                     }
-                    Watchdog::watch($request, '匯入已填報學生名單到公假單「' . $dayoff->reason . '」中，學生：' . $stu->stdno.$stu->realname);
-                }    
+                    Watchdog::watch($request, '匯入已填報學生名單到公假單「' . $dayoff->reason . '」中，學生：' . $stu->stdno . $stu->realname);
+                }
                 return redirect()->route('dayoff.students', ['id' => $id])->with('success', $message);
             } else {
                 return redirect()->route('dayoff.students', ['id' => $id])->with('error', '沒有名單可以匯入！');
@@ -379,7 +380,7 @@ class DayoffController extends Controller
             $student = Student::find($record->uuid);
             Watchdog::watch($request, '從公假單「' . $dayoff->reason . '」中移除學生「' . $student->stdno . $student->realname . '」');
             DB::table('dayoff_students')->where('id', $id)->delete();
-            return redirect()->route('dayoff.students', ['id' => $dayoff->id])->with('success', '已為您移除'.$student->stdno.$student->realname.'！');
+            return redirect()->route('dayoff.students', ['id' => $dayoff->id])->with('success', '已為您移除' . $student->stdno . $student->realname . '！');
         } else {
             return redirect()->route('home')->with('error', '只有管理員才能清除公假名單！');
         }
@@ -408,9 +409,9 @@ class DayoffController extends Controller
         if ($user->is_admin || $manager || $clubm) {
             $dayoff = Dayoff::find($id);
             if ($dayoff->count_students() > 0) {
-                $filename = config('app.name').'公假單';
+                $filename = config('app.name') . '公假單';
                 $exporter = new DayoffExport($id);
-                return $exporter->download($filename);    
+                return $exporter->download($filename);
             } else {
                 return redirect()->route('dayoff')->with('message', '此公假單還沒有輸入學生名單，因此無法下載！');
             }
@@ -427,9 +428,9 @@ class DayoffController extends Controller
         if ($user->is_admin || $manager || $clubm) {
             $dayoff = Dayoff::find($id);
             if ($dayoff->count_students() > 0) {
-                $filename = config('app.name').'公假單';
+                $filename = config('app.name') . '公假單';
                 $exporter = new DayoffExport($id);
-                return $exporter->view($filename);
+                return $exporter->view();
             } else {
                 return redirect()->route('dayoff')->with('message', '此公假單還沒有輸入學生名單，因此無法列印！');
             }
@@ -438,7 +439,8 @@ class DayoffController extends Controller
         }
     }
 
-    public function perm() {
+    public function perm()
+    {
         $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         if ($user->is_admin || $manager) {
@@ -456,7 +458,8 @@ class DayoffController extends Controller
         }
     }
 
-    public function updatePerm(Request $request) {
+    public function updatePerm(Request $request)
+    {
         $user = Auth::user();
         $manager = $user->hasPermission('dayoff.manager');
         if ($user->is_admin || $manager) {

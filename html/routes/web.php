@@ -140,10 +140,22 @@ Route::group(['prefix' => 'club', 'middleware' => ['auth']], function () {
 
 //午餐調查
 Route::group(['prefix' => 'lunch', 'middleware' => ['auth']], function () {
-    Route::get('survey/{section?}', 'App\Http\Controllers\LunchController@index')->name('lunch');
+    Route::get('/', 'App\Http\Controllers\LunchController@index')->name('lunch');
+
+    // Student
+    Route::get('survey/{section?}', 'App\Http\Controllers\LunchController@survey')->name('lunch.survey');
+    Route::post('survey', 'App\Http\Controllers\LunchController@storeSurvey')->name('lunch.survey.store');
+
+    // Manager
+    Route::get('manage/{section?}', 'App\Http\Controllers\LunchController@manager')->name('lunch.manage');
+
+    // Teacher
+    Route::get('teacher', 'App\Http\Controllers\LunchController@teacherDashboard')->name('lunch.teacher');
+    Route::get('teacher/edit/{section?}', 'App\Http\Controllers\LunchController@teacherLunch')->name('lunch.teacher.edit');
+    Route::post('teacher', 'App\Http\Controllers\LunchController@storeTeacherLunch')->name('lunch.teacher.store');
+
     Route::get('config/{section}', 'App\Http\Controllers\LunchController@setting');
     Route::post('config/{section}', 'App\Http\Controllers\LunchController@save')->name('lunch.config');
-    Route::post('save/survey', 'App\Http\Controllers\LunchController@survey')->name('lunch.survey');
     Route::get('download/{section?}', 'App\Http\Controllers\LunchController@downloadAll')->name('lunch.downloadAll');
     Route::get('class/download/{section}/{class_id}', 'App\Http\Controllers\LunchController@download')->name('lunch.download');
     Route::get('cafeterias', 'App\Http\Controllers\LunchController@cafeterias')->name('lunch.cafeterias');
