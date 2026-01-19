@@ -141,10 +141,47 @@ class LunchController extends Controller
         $teacher = LunchTeacher::where('uuid', $user->uuid)->where('section', $section)->first();
         $cafeterias = LunchCafeteria::all();
 
+        $in_class_opt = $cafeterias->first(function ($value) {
+            return strpos($value->description, '隨班用餐') !== false;
+        });
+        $in_class_id = $in_class_opt ? $in_class_opt->id : null;
+
+        $fixed_days = [];
+        $is_tutor = ($user->user_type == 'Teacher' && employee()->tutor_class);
+
+        if ($is_tutor) {
+            $class_id = employee()->tutor_class;
+            $grade = substr($class_id, 0, 1);
+
+            if ($grade == 1 || $grade == 2) {
+                // Low Grade: Thu(3)
+                $fixed_days[3] = $in_class_id;
+            } elseif ($grade == 3 || $grade == 4) {
+                // Middle Grade: Mon(0), Tue(1), Thu(3)
+                $fixed_days[0] = $in_class_id;
+                $fixed_days[1] = $in_class_id;
+                $fixed_days[3] = $in_class_id;
+            } elseif ($grade >= 5) {
+                // High Grade: Mon(0), Tue(1), Thu(3), Fri(4)
+                $fixed_days[0] = $in_class_id;
+                $fixed_days[1] = $in_class_id;
+                $fixed_days[3] = $in_class_id;
+                $fixed_days[4] = $in_class_id;
+            }
+        } else {
+            if ($in_class_id) {
+                $cafeterias = $cafeterias->reject(function ($value) use ($in_class_id) {
+                    return $value->id == $in_class_id;
+                });
+            }
+        }
+
         return view('app.lunch_teacher_edit', [
             'section' => $section,
             'teacher' => $teacher,
-            'cafeterias' => $cafeterias
+            'cafeterias' => $cafeterias,
+            'fixed_days' => $fixed_days,
+            'in_class_id' => $in_class_id
         ]);
     }
 
@@ -166,10 +203,19 @@ class LunchController extends Controller
         // Ensure weekdays and places are properly formatted as arrays if needed, though Eloquent cast should handle arrays.
         // Checkboxes return "1" if checked, missing if not. Let's normalize weekdays.
         $weekdays = [];
+        $places = [];
+        $inputPlaces = $data['places'];
+
         for ($i = 0; $i < 5; $i++) {
             $weekdays[$i] = isset($data['weekdays'][$i]) ? true : false;
+            if ($weekdays[$i]) {
+                $places[$i] = (isset($inputPlaces[$i]) && $inputPlaces[$i]) ? $inputPlaces[$i] : 0;
+            } else {
+                $places[$i] = 0;
+            }
         }
         $data['weekdays'] = $weekdays;
+        $data['places'] = $places;
 
         // Update upsert logic or updateOrCreate
         LunchTeacher::updateOrCreate(
