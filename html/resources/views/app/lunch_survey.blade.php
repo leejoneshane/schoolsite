@@ -29,7 +29,7 @@
                     <p>午餐調查尚未開始，請稍候再試或聯絡學務處處理！</p>
                 </div>
             </div>
-        @elseif (time() > strtotime($settings->expired_at))
+        @elseif (time() > strtotime(substr($settings->expired_at, 0, 10) . ' 23:59:59'))
             <div class="flex justify-center">
                 <div class="w-full border-green-500 bg-green-100 dark:bg-green-700 border-b-2 mb-5" role="alert">
                     @if ($survey)
@@ -148,7 +148,7 @@
                 </table>
             </div>
         @endif
-
+    @endif
     </div>
     <script nonce="selfhost">
         function show(elem) {

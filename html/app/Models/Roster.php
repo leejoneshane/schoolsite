@@ -11,15 +11,15 @@ use App\Models\Domain;
 class Roster extends Model
 {
 
-	protected $table = 'rosters';
+    protected $table = 'rosters';
 
     const FIELDS = [
-        [ 'id' => 'uuid', 'name' => 'UUID'],
-        [ 'id' => 'gender', 'name' => '性別'],
-        [ 'id' => 'id', 'name' => '學號'],
-        [ 'id' => 'idno', 'name' => '身分證字號'],
-        [ 'id' => 'birthdate', 'name' => '生日'],
-        [ 'id' => 'character', 'name' => '身份註記'],
+        ['id' => 'uuid', 'name' => 'UUID'],
+        ['id' => 'gender', 'name' => '性別'],
+        ['id' => 'id', 'name' => '學號'],
+        ['id' => 'idno', 'name' => '身分證字號'],
+        ['id' => 'birthdate', 'name' => '生日'],
+        ['id' => 'character', 'name' => '身份註記'],
     ];
 
     //以下屬性可以批次寫入
@@ -141,41 +141,45 @@ class Roster extends Model
     //取得指定學年或本學年之學生名單
     public function section_students($section = null)
     {
-        if (!$section) $section = current_section();
+        if (!$section)
+            $section = current_section();
         return $this->students()->wherePivot('section', $section)->get();
     }
 
     //取得指定學年或本學年之學生名單
     public function class_students($class, $section = null)
     {
-        if (!$section) $section = current_section();
+        if (!$section)
+            $section = current_section();
         return $this->students()->wherePivot('class_id', $class)->wherePivot('section', $section)->get();
     }
 
     //計算本學期已填報班級數
     public function count_classes($section = null)
     {
-        if (!$section) $section = current_section();
+        if (!$section)
+            $section = current_section();
         return DB::table('rosters_students')->distinct('class_id')->where('roster_id', $this->id)->where('section', $section)->count();
     }
 
     //檢查本學期已填報學生數
     public function count($section = null)
     {
-        if (!$section) $section = current_section();
+        if (!$section)
+            $section = current_section();
         return DB::table('rosters_students')->where('roster_id', $this->id)->where('section', $section)->count();
     }
 
     //檢查學生名單是否可以填報
     public function opened()
     {
-        return Carbon::today() >= $this->started_at && Carbon::today() <= $this->ended_at;
+        return Carbon::now() >= $this->started_at->startOfDay() && Carbon::now() <= $this->ended_at->endOfDay();
     }
 
     //檢查學生名單是否不能填報
     public function closed()
     {
-        return Carbon::now() < $this->started_at || Carbon::now() > $this->ended_at;
+        return Carbon::now() < $this->started_at->startOfDay() || Carbon::now() > $this->ended_at->endOfDay();
     }
 
 }
