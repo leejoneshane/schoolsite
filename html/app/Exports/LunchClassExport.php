@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Illuminate\Contracts\View\View;
 
-class LunchClassExport implements FromView,  WithColumnFormatting, WithTitle
+class LunchClassExport implements FromView, WithColumnFormatting, WithTitle
 {
     use Exportable;
 
@@ -26,7 +26,7 @@ class LunchClassExport implements FromView,  WithColumnFormatting, WithTitle
     public function view(): View
     {
         $surveys = LunchSurvey::class_survey($this->class_id, $this->section);
-        return view('components.lunch_survey_sheet', [ 'surveys' => $surveys ]);
+        return view('exports.lunch_survey_sheet', ['surveys' => $surveys]);
     }
 
     public function columnFormats(): array

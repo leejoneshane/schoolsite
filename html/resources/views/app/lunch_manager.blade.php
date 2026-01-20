@@ -13,11 +13,7 @@
             </a>
             <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600"
                 href="{{ route('lunch.downloadAll', ['section' => $section]) }}">
-                <i class="fa-solid fa-file-export"></i>匯出調查結果(學期)
-            </a>
-            <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600"
-                href="{{ route('lunch.download', ['section' => $section, 'class_id' => $classroom ? $classroom->id : '']) }}">
-                <i class="fa-solid fa-file-export"></i>匯出調查結果(班級)
+                <i class="fa-solid fa-file-export"></i>匯出調查結果
             </a>
             <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600"
                 href="{{ route('lunch.downloadGrade', ['section' => $section]) }}">
@@ -37,9 +33,9 @@
     <select id="section"
         class="inline w-32 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
         onchange="
-            var section = this.value;
-            window.location.replace('{{ route('lunch.manage') }}' + '/' + section + '?class={{ ($classroom) ? $classroom->id : '' }}');
-            ">
+                var section = this.value;
+                window.location.replace('{{ route('lunch.manage') }}' + '/' + section + '?class={{ ($classroom) ? $classroom->id : '' }}');
+                ">
         @foreach ($sections as $s)
             <option value="{{ $s }}" {{ ($s == $section) ? ' selected' : '' }}>
                 {{ substr($s, 0, -1) . '學年第' . substr($s, -1) . '學期' }}
@@ -57,9 +53,9 @@
                 <select id="classes"
                     class="inline rounded w-32 py-2 mr-6 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
                     onchange="
-                                var cls = this.value;
-                                window.location.replace('{{ route('lunch.manage', ['section' => $section]) }}' + '?class=' + cls);
-                                ">
+                                        var cls = this.value;
+                                        window.location.replace('{{ route('lunch.manage', ['section' => $section]) }}' + '?class=' + cls);
+                                        ">
                     <option></option>
                     @foreach ($classes as $cls)
                         <option value="{{ $cls->id }}" {{ ($classroom && $classroom->id == $cls->id) ? ' selected' : '' }}>
@@ -67,6 +63,10 @@
                         </option>
                     @endforeach
                 </select>
+                <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600"
+                    href="{{ route('lunch.download', ['section' => $section, 'class_id' => $classroom ? $classroom->id : '']) }}">
+                    <i class="fa-solid fa-file-export"></i>匯出此班級調查結果
+                </a>
             </div>
         @elseif ($classroom)
             <div>

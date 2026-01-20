@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class LunchSurvey extends Model
 {
 
-	protected $table = 'lunch_survey';
+    protected $table = 'lunch_survey';
 
     //以下屬性可以批次寫入
     protected $fillable = [
@@ -48,7 +48,7 @@ class LunchSurvey extends Model
     //建立午餐調查表物件模型時，若省略學期，則預設為目前學期
     protected static function booted()
     {
-        self::creating(function($model) {
+        self::creating(function ($model) {
             if (empty($model->section)) {
                 $model->section = next_section();
             }
@@ -58,14 +58,16 @@ class LunchSurvey extends Model
     //根據 uuid 和學期篩選午餐調查表，靜態函式
     public static function findBy($uuid, $section = null)
     {
-        if (!$section) $section = next_section();
+        if (!$section)
+            $section = next_section();
         return LunchSurvey::where('uuid', $uuid)->where('section', $section)->first();
     }
 
     //取得午餐調查設定，傳回物件，靜態函式
     public static function settings($section = null)
     {
-        if (!$section) $section = next_section();
+        if (!$section)
+            $section = next_section();
         return DB::table('lunch')->where('section', $section)->first();
     }
 
@@ -86,7 +88,8 @@ class LunchSurvey extends Model
     //篩選指定學期所有學生的午餐調查表，靜態函式
     public static function section_survey($section = null)
     {
-        if (!$section) $section = next_section();
+        if (!$section)
+            $section = next_section();
         return LunchSurvey::where('section', $section)
             ->orderBy('class_id')
             ->orderBy('seat')
@@ -96,24 +99,30 @@ class LunchSurvey extends Model
     //篩選指定班級所有學生的午餐調查表，靜態函式
     public static function class_survey($class, $section = null)
     {
-        if (!$section) $section = next_section();
+        if (!$section)
+            $section = next_section();
         $uuids = Classroom::find($class)->uuids();
-        return LunchSurvey::where('section', $section)
+        return LunchSurvey::with('student')->where('section', $section)
             ->whereIn('uuid', $uuids)
-            ->get();
+            ->get()
+            ->sortBy(function ($q) {
+                return $q->student->seat;
+            });
     }
 
     //計算本學期已調查班級數
     public static function count_classes($section = null)
     {
-        if (!$section) $section = next_section();
+        if (!$section)
+            $section = next_section();
         return LunchSurvey::distinct('class_id')->where('section', $section)->count();
     }
 
     //檢查本學期已調查學生數
     public static function count($section = null)
     {
-        if (!$section) $section = next_section();
+        if (!$section)
+            $section = next_section();
         return LunchSurvey::where('section', $section)->count();
     }
 
@@ -145,7 +154,7 @@ class LunchSurvey extends Model
     //取得填寫此午餐調查的學生物件
     public function student()
     {
-        return $this->belongsTo('App\Models\Student', 'uuid', 'uuid');
+        return $this->belongsTo(Student::class, 'uuid', 'uuid');
     }
 
     //取得填寫此午餐調查的班級物件
