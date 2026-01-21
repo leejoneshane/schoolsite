@@ -63,7 +63,7 @@ class GsuiteServiceProvider extends ServiceProvider
     public function list_orgunits()
     {
         try {
-            $result = $this->directory->orgunits->listOrgunits('my_customer');	
+            $result = $this->directory->orgunits->listOrgunits('my_customer');
             return $result->getOrganizationUnits();
         } catch (Google_Service_Exception $e) {
             Log::notice('google listOrgUnits:' . $e->getMessage());
@@ -90,7 +90,7 @@ class GsuiteServiceProvider extends ServiceProvider
         try {
             return $this->directory->orgunits->insert('my_customer', $org_unit);
         } catch (Google_Service_Exception $e) {
-            Log::notice("google createOrgUnit($orgPath,$orgName,$orgDescription):" . $e->getMessage());	
+            Log::notice("google createOrgUnit($orgPath,$orgName,$orgDescription):" . $e->getMessage());
             return false;
         }
     }
@@ -123,7 +123,7 @@ class GsuiteServiceProvider extends ServiceProvider
             $org_unit = config('services.gsuite.student_orgunit');
         } elseif ($user_type == 'teacher') {
             $org_unit = config('services.gsuite.teacher_orgunit');
-        } 
+        }
         $users = [];
         $opt = [
             'domain' => config('services.gsuite.domain'),
@@ -132,7 +132,8 @@ class GsuiteServiceProvider extends ServiceProvider
         $page_token = null;
         try {
             do {
-                if ($page_token) $opt['pageToken'] = $page_token;
+                if ($page_token)
+                    $opt['pageToken'] = $page_token;
                 $result = $this->directory->users->listUsers($opt);
                 $page_token = $result->getNextPageToken();
                 $users = array_merge($users, $result->getUsers());
@@ -154,7 +155,8 @@ class GsuiteServiceProvider extends ServiceProvider
         $page_token = null;
         try {
             do {
-                if ($page_token) $opt['pageToken'] = $page_token;
+                if ($page_token)
+                    $opt['pageToken'] = $page_token;
                 $result = $this->directory->users->listUsers($opt);
                 $page_token = $result->getNextPageToken();
                 if ($result->getUsers()) {
@@ -186,7 +188,7 @@ class GsuiteServiceProvider extends ServiceProvider
         try {
             return $this->directory->users->insert($userObj);
         } catch (Google_Service_Exception $e) {
-            Log::notice('google createUser('.var_export($userObj, true).'):' . $e->getMessage());
+            Log::notice('google createUser(' . var_export($userObj, true) . '):' . $e->getMessage());
             return false;
         }
     }
@@ -199,7 +201,7 @@ class GsuiteServiceProvider extends ServiceProvider
         try {
             return $this->directory->users->update($userKey, $userObj);
         } catch (Google_Service_Exception $e) {
-            Log::notice("google updateUser($userKey,".var_export($userObj, true).'):' . $e->getMessage());
+            Log::notice("google updateUser($userKey," . var_export($userObj, true) . '):' . $e->getMessage());
             return false;
         }
     }
@@ -281,7 +283,7 @@ class GsuiteServiceProvider extends ServiceProvider
         if (empty($gmails)) {
             Gsuite::create([
                 'owner_id' => $t->uuid,
-                'owner_type' => 'App\\Models\\'.$user_type,
+                'owner_type' => 'App\\Models\\' . $user_type,
                 'userKey' => $userKey,
                 'primary' => true,
             ]);
@@ -299,10 +301,10 @@ class GsuiteServiceProvider extends ServiceProvider
                     $gmail->save();
                 }
             }
-            if (! $found) {
+            if (!$found) {
                 Gsuite::create([
                     'owner_id' => $t->uuid,
-                    'owner_type' => 'App\\Models\\'.$user_type,
+                    'owner_type' => 'App\\Models\\' . $user_type,
                     'userKey' => $userKey,
                     'primary' => true,
                 ]);
@@ -314,7 +316,7 @@ class GsuiteServiceProvider extends ServiceProvider
         $user->setExternalIds([$sysid]);
         $names = new Google_Service_Directory_UserName();
         if ($user_type == 'Student') {
-            $seat = ($t->seat < 10) ? '0'.$t->seat : $t->seat;
+            $seat = ($t->seat < 10) ? '0' . $t->seat : $t->seat;
             $names->setFamilyName($seat . $t->sn);
             $names->setGivenName($t->gn);
             $names->setFullName($t->seat . $t->realname);
@@ -439,7 +441,8 @@ class GsuiteServiceProvider extends ServiceProvider
         }
         $found = false;
         $aliases = $this->list_aliases($userKey);
-        if (!$aliases) return false;
+        if (!$aliases)
+            return false;
         foreach ($aliases as $a) {
             if ($a['alias'] == $alias) {
                 $found = true;
@@ -539,8 +542,8 @@ class GsuiteServiceProvider extends ServiceProvider
         try {
             return $this->directory->members->listMembers($groupId)->getMembers();
         } catch (Google_Service_Exception $e) {
-            Log::debug("gs_listMembers($groupId):".$e->getMessage());
-    
+            Log::debug("gs_listMembers($groupId):" . $e->getMessage());
+
             return false;
         }
     }
@@ -553,7 +556,8 @@ class GsuiteServiceProvider extends ServiceProvider
         if (!strpos($userKey, '@')) {
             $userKey .= '@' . config('services.gsuite.domain');
         }
-        if (!$role) $role = 'MEMBER';
+        if (!$role)
+            $role = 'MEMBER';
         $memberObj = new Google_Service_Directory_Member();
         $memberObj->setEmail($userKey);
         $memberObj->setRole($role);
@@ -599,7 +603,8 @@ class GsuiteServiceProvider extends ServiceProvider
         $domain = config('services.gsuite.domain');
         $depts = Unit::main();
         $all_groups = $this->all_groups();
-        if (!$all_groups) $all_groups = [];
+        if (!$all_groups)
+            $all_groups = [];
         $teachers = Teacher::all();
         if (!empty($teachers)) {
             foreach ($teachers as $t) {
@@ -608,20 +613,20 @@ class GsuiteServiceProvider extends ServiceProvider
                     $user_key = $t->email;
                     list($account, $path) = explode('@', $user_key);
                     if ($domain != $path) {
-                        $user_key = $t->account.'@'.$domain;
-                    }	
+                        $user_key = $t->account . '@' . $domain;
+                    }
                 } else {
-                    $user_key = $t->account.'@'.$domain;
+                    $user_key = $t->account . '@' . $domain;
                 }
                 $detail_log[] = "正在處理 $t->role_name $t->realname ($user_key)......";
                 $user = $this->get_user($user_key);
                 if (!$user) {
-                    $result = $this->find_users('externalId='.$t->id);
+                    $result = $this->find_users('externalId=' . $t->id);
                     if ($result) {
                         $user = $result[0];
                         $user_key = $user->getPrimaryEmail();
                     } else {
-                        $result = $this->find_users('externalId='.$t->uuid);
+                        $result = $this->find_users('externalId=' . $t->uuid);
                         if ($result) {
                             $user = $result[0];
                             $user_key = $user->getPrimaryEmail();
@@ -635,7 +640,7 @@ class GsuiteServiceProvider extends ServiceProvider
                         foreach ($data as $g) {
                             $gn = $g->getEmail();
                             $desc = $g->getDescription();
-                            if (substr($gn, 0, 6) == 'group-' && !empty($desc)) {
+                            if ((substr($gn, 0, 6) == 'group-' || substr($gn, 0, 7) == 'domain-') && !empty($desc)) {
                                 $groups[] = $gn;
                             }
                         }
@@ -679,8 +684,8 @@ class GsuiteServiceProvider extends ServiceProvider
                             $detail_log[] = "$depgroup => 在 G Suite 中找到匹配的 Google 群組！";
                         } else {
                             $detail_log[] = '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
-                            $depgroup = 'group-'.$unit->unit_no;
-                            $group_key = $depgroup.'@'.$domain;
+                            $depgroup = 'group-' . $unit->unit_no;
+                            $group_key = $depgroup . '@' . $domain;
                             $group = $this->create_group($group_key, $unit->name);
                             if ($group) {
                                 $all_groups[] = $group;
@@ -701,9 +706,11 @@ class GsuiteServiceProvider extends ServiceProvider
                             }
                         }
                     }
+                } else {
+                    $detail_log[] = "找不到使用者 $t->role_name $t->realname 所屬部門！";
                 }
                 $roles = $t->roles;
-                if (!empty($roles)) {
+                if ($roles->isNotEmpty()) {
                     foreach ($roles as $role) {
                         $detail_log[] = "正在處理 $role->name ......";
                         $found = false;
@@ -721,8 +728,8 @@ class GsuiteServiceProvider extends ServiceProvider
                             $detail_log[] = "$jobgroup => 在 G Suite 中找到匹配的 Google 群組！";
                         } else {
                             $detail_log[] = '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
-                            $jobgroup = 'group-'.$role->role_no;
-                            $group_key = $jobgroup.'@'.$domain;
+                            $jobgroup = 'group-' . $role->role_no;
+                            $group_key = $jobgroup . '@' . $domain;
                             $group = $this->create_group($group_key, $role->name);
                             if ($group) {
                                 $all_groups[] = $group;
@@ -743,10 +750,56 @@ class GsuiteServiceProvider extends ServiceProvider
                             }
                         }
                     }
+                } else {
+                    $detail_log[] = "找不到使用者 $t->role_name $t->realname 行政職務！";
+                }
+                $domains = $t->domains;
+                if ($domains->isNotEmpty()) {
+                    foreach ($domains as $domain_obj) {
+                        $detail_log[] = "正在處理 $domain_obj->name ......";
+                        $found = false;
+                        if ($all_groups) {
+                            foreach ($all_groups as $group) {
+                                if ($group->getDescription() == $domain_obj->name) {
+                                    $found = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if ($found) {
+                            $group_key = $group->getEmail();
+                            $domgroup = explode('@', $group_key)[0];
+                            $detail_log[] = "$domgroup => 在 G Suite 中找到匹配的 Google 群組！";
+                        } else {
+                            $detail_log[] = '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
+                            $domgroup = 'domain-' . $domain_obj->id;
+                            $group_key = $domgroup . '@' . $domain;
+                            $group = $this->create_group($group_key, $domain_obj->name);
+                            if ($group) {
+                                $all_groups[] = $group;
+                                $detail_log[] = '建立成功！';
+                            } else {
+                                $detail_log[] = "$domain_obj->name 群組建立失敗！";
+                            }
+                        }
+                        if (($k = array_search($group_key, $groups)) !== false) {
+                            unset($groups[$k]);
+                        } else {
+                            $detail_log[] = "正在將使用者：$t->role_name $t->realname 加入到群組裡......";
+                            $members = $this->add_member($group_key, $user_key);
+                            if (!empty($members)) {
+                                $detail_log[] = '加入成功！';
+                            } else {
+                                $detail_log[] = "無法將使用者 $t->role_name $t->realname 加入 $domain_obj->name 群組！";
+                            }
+                        }
+                    }
+                } else {
+                    $detail_log[] = "找不到使用者 $t->role_name $t->realname 隸屬的領域！";
                 }
                 if (!empty($t->tutor_class)) {
-                    $stdgroup = 'class-'.$t->tutor_class;
-                    $group_key = $stdgroup.'@'.$domain;
+                    $stdgroup = 'class-' . $t->tutor_class;
+                    $group_key = $stdgroup . '@' . $domain;
                     $found = false;
                     if ($all_groups) {
                         foreach ($all_groups as $group) {
@@ -771,7 +824,7 @@ class GsuiteServiceProvider extends ServiceProvider
                         }
                     }
                     $grade = substr($t->tutor_class, 0, 1);
-                    $detail_log[] = '正在處理 '.$grade.'年級......';
+                    $detail_log[] = '正在處理 ' . $grade . '年級......';
                     switch ($grade) {
                         case 1:
                             $clsgroup = 'group-Ca';
@@ -792,9 +845,9 @@ class GsuiteServiceProvider extends ServiceProvider
                             $clsgroup = 'group-Cf';
                             break;
                         default:
-                            $clsgroup = 'group-C'.$grade;
+                            $clsgroup = 'group-C' . $grade;
                     }
-                    $group_key = $clsgroup.'@'.$domain;
+                    $group_key = $clsgroup . '@' . $domain;
                     $found = false;
                     if ($all_groups) {
                         foreach ($all_groups as $group) {
@@ -808,7 +861,7 @@ class GsuiteServiceProvider extends ServiceProvider
                         $detail_log[] = "$clsgroup => 在 G Suite 中找到匹配的 Google 群組！";
                     } else {
                         $detail_log[] = '無法在 G Suite 中找到匹配的群組，現在正在建立新的 Google 群組......';
-                        $group = $this->create_group($group_key, $grade.'年級');
+                        $group = $this->create_group($group_key, $grade . '年級');
                         if ($group) {
                             $detail_log[] = '建立成功！';
                         } else {
@@ -848,8 +901,8 @@ class GsuiteServiceProvider extends ServiceProvider
         $classes = Grade::find($grade)->classrooms;
         if (!empty($classes)) {
             foreach ($classes as $c) {
-                $stdgroup = 'class-'.$c->id;
-                $group_key = $stdgroup.'@'.$domain;
+                $stdgroup = 'class-' . $c->id;
+                $group_key = $stdgroup . '@' . $domain;
                 $detail_log[] = "正在處理 $c->name......";
                 $group = $this->get_group($group_key);
                 if ($group) {
@@ -875,10 +928,10 @@ class GsuiteServiceProvider extends ServiceProvider
                             $user_key = $t->email;
                             list($account, $path) = explode('@', $user_key);
                             if ($domain != $path) {
-                                $user_key = $t->account.'@'.$domain;
-                            }	
+                                $user_key = $t->account . '@' . $domain;
+                            }
                         } else {
-                            $user_key = $t->account.'@'.$domain;
+                            $user_key = $t->account . '@' . $domain;
                         }
                         $user = $this->get_user($user_key);
                         if ($user) {
@@ -895,17 +948,17 @@ class GsuiteServiceProvider extends ServiceProvider
                 $students = $c->students;
                 if (!empty($students)) {
                     foreach ($students as $s) {
-                        $user_alias = $s->id.'@'.$domain;
-                        $user_key = 'meps'.$s->id.'@'.$domain;
+                        $user_alias = $s->id . '@' . $domain;
+                        $user_key = 'meps' . $s->id . '@' . $domain;
                         $detail_log[] = "正在處理 $s->class $s->seat $s->realname ($user_key)......";
                         $user = $this->get_user($user_key);
                         if (!$user) {
-                            $result = $this->find_users('externalId='.$s->id);
+                            $result = $this->find_users('externalId=' . $s->id);
                             if ($result) {
                                 $user = $result[0];
                                 $user_key = $user->getPrimaryEmail();
                             } else {
-                                $result = $this->find_users('externalId='.$s->uuid);
+                                $result = $this->find_users('externalId=' . $s->uuid);
                                 if ($result) {
                                     $user = $result[0];
                                     $user_key = $user->getPrimaryEmail();
@@ -959,9 +1012,9 @@ class GsuiteServiceProvider extends ServiceProvider
         $detail_log = [];
         $domain = config('services.gsuite.domain');
         $myclass = Classroom::find($class_id);
-        $stdgroup = 'class-'.$myclass->id;
-        $group_key = $stdgroup.'@'.$domain;
-        $detail_log[] = '正在處理 '.$myclass->name.'.....';
+        $stdgroup = 'class-' . $myclass->id;
+        $group_key = $stdgroup . '@' . $domain;
+        $detail_log[] = '正在處理 ' . $myclass->name . '.....';
         $group = $this->get_group($group_key);
         if ($group) {
             $detail_log[] = "$stdgroup => 在 G Suite 中找到匹配的 Google 群組！......";
@@ -986,10 +1039,10 @@ class GsuiteServiceProvider extends ServiceProvider
                     $user_key = $t->email;
                     list($account, $path) = explode('@', $user_key);
                     if ($domain != $path) {
-                        $user_key = $t->account.'@'.$domain;
-                    }	
+                        $user_key = $t->account . '@' . $domain;
+                    }
                 } else {
-                    $user_key = $t->account.'@'.$domain;
+                    $user_key = $t->account . '@' . $domain;
                 }
                 $user = $this->get_user($user_key);
                 if ($user) {
@@ -1003,20 +1056,20 @@ class GsuiteServiceProvider extends ServiceProvider
                 }
             }
         }
-         $students = $myclass->students;
+        $students = $myclass->students;
         if (!empty($students)) {
             foreach ($students as $s) {
-                $user_alias = $s->id.'@'.$domain;
-                $user_key = 'meps'.$s->id.'@'.$domain;
+                $user_alias = $s->id . '@' . $domain;
+                $user_key = 'meps' . $s->id . '@' . $domain;
                 $detail_log[] = "正在處理 $s->class $s->seat $s->realname ($user_key)......";
                 $user = $this->get_user($user_key);
                 if (!$user) {
-                    $result = $this->find_users('externalId='.$s->id);
+                    $result = $this->find_users('externalId=' . $s->id);
                     if ($result) {
                         $user = $result[0];
                         $user_key = $user->getPrimaryEmail();
                     } else {
-                        $result = $this->find_users('externalId='.$s->uuid);
+                        $result = $this->find_users('externalId=' . $s->uuid);
                         if ($result) {
                             $user = $result[0];
                             $user_key = $user->getPrimaryEmail();
@@ -1075,7 +1128,8 @@ class GsuiteServiceProvider extends ServiceProvider
             $realname = $s->getName()->getFullName();
             $org = $s->getOrganizations();
             $org_title = '';
-            if ($org && $org[0]) $org_title = $org[0]['title'];
+            if ($org && $org[0])
+                $org_title = $org[0]['title'];
             $user_key = $s->getPrimaryEmail();
             $detail_log[] = "在 G Suite 中找到畢業生 $org_title $realname ($user_key)......";
             if ($leave == 'suspend') {
