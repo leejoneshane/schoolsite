@@ -601,10 +601,10 @@ class GsuiteServiceProvider extends ServiceProvider
     {
         $detail_log = [];
         $domain = config('services.gsuite.domain');
-        $depts = Unit::main();
         $all_groups = $this->all_groups();
-        if (!$all_groups)
+        if (!$all_groups) {
             $all_groups = [];
+        }
         $teachers = Teacher::all();
         if (!empty($teachers)) {
             foreach ($teachers as $t) {
@@ -638,7 +638,7 @@ class GsuiteServiceProvider extends ServiceProvider
                     $data = $this->list_groups($t->account);
                     if ($data) {
                         foreach ($data as $g) {
-                            $gn = $g->getEmail();
+                            $gn = strtolower($g->getEmail());
                             $desc = $g->getDescription();
                             if ((substr($gn, 0, 6) == 'group-' || substr($gn, 0, 7) == 'domain-') && !empty($desc)) {
                                 $groups[] = $gn;
@@ -668,7 +668,7 @@ class GsuiteServiceProvider extends ServiceProvider
                 $units = $t->union();
                 if (!empty($units)) {
                     foreach ($units as $unit) {
-                        $detail_log[] = "正在處理 $unit->name ......";
+                        $detail_log[] = "正在處理部門群組 $unit->name ......";
                         $found = false;
                         if ($all_groups) {
                             foreach ($all_groups as $group) {
@@ -709,10 +709,17 @@ class GsuiteServiceProvider extends ServiceProvider
                 } else {
                     $detail_log[] = "找不到使用者 $t->role_name $t->realname 所屬部門！";
                 }
-                $roles = $t->roles;
-                if ($roles->isNotEmpty()) {
+                $roles = [];
+                if ($t->roles->isNotEmpty()) {
+                    foreach ($t->roles as $role) {
+                        if (substr($role->unit_id, 0, 3) != 'Z01') {
+                            $roles[] = $role;
+                        }
+                    }
+                }
+                if (!empty($roles)) {
                     foreach ($roles as $role) {
-                        $detail_log[] = "正在處理 $role->name ......";
+                        $detail_log[] = "正在處理職務群組 $role->name ......";
                         $found = false;
                         if ($all_groups) {
                             foreach ($all_groups as $group) {
@@ -756,7 +763,7 @@ class GsuiteServiceProvider extends ServiceProvider
                 $domains = $t->domains;
                 if ($domains->isNotEmpty()) {
                     foreach ($domains as $domain_obj) {
-                        $detail_log[] = "正在處理 $domain_obj->name ......";
+                        $detail_log[] = "正在處理領域群組 $domain_obj->name ......";
                         $found = false;
                         if ($all_groups) {
                             foreach ($all_groups as $group) {
@@ -803,7 +810,7 @@ class GsuiteServiceProvider extends ServiceProvider
                     $found = false;
                     if ($all_groups) {
                         foreach ($all_groups as $group) {
-                            if ($group->getEmail() == $group_key) {
+                            if (strcasecmp($group->getEmail(), $group_key) === 0) {
                                 $found = true;
                                 break;
                             }
@@ -827,31 +834,31 @@ class GsuiteServiceProvider extends ServiceProvider
                     $detail_log[] = '正在處理 ' . $grade . '年級......';
                     switch ($grade) {
                         case 1:
-                            $clsgroup = 'group-Ca';
+                            $clsgroup = 'group-ca';
                             break;
                         case 2:
-                            $clsgroup = 'group-Cb';
+                            $clsgroup = 'group-cb';
                             break;
                         case 3:
-                            $clsgroup = 'group-Cc';
+                            $clsgroup = 'group-cc';
                             break;
                         case 4:
-                            $clsgroup = 'group-Cd';
+                            $clsgroup = 'group-cd';
                             break;
                         case 5:
-                            $clsgroup = 'group-Ce';
+                            $clsgroup = 'group-ce';
                             break;
                         case 6:
-                            $clsgroup = 'group-Cf';
+                            $clsgroup = 'group-cf';
                             break;
                         default:
-                            $clsgroup = 'group-C' . $grade;
+                            $clsgroup = 'group-c' . $grade;
                     }
                     $group_key = $clsgroup . '@' . $domain;
                     $found = false;
                     if ($all_groups) {
                         foreach ($all_groups as $group) {
-                            if ($group->getEmail() == $group_key) {
+                            if (strcasecmp($group->getEmail(), $group_key) === 0) {
                                 $found = true;
                                 break;
                             }

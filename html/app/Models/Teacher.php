@@ -223,7 +223,7 @@ class Teacher extends Model
     //取得教師的所有單位（不含上層單位）
     public function units()
     {
-        return $this->belongsToMany('App\Models\Unit', 'job_title', 'uuid', 'unit_id')->where('year', current_year());
+        return $this->belongsToMany(Unit::class, 'job_title', 'uuid', 'unit_id')->wherePivot('year', current_year());
     }
 
     //取得教師的所有單位（包含上層單位）
