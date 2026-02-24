@@ -77,18 +77,15 @@ class IcsEvent extends Model implements Subscribeable
     //建立、更新、刪除行事曆事件時，同步到 Gsuite 中
     protected static function booted()
     {
-        static::created(function($item)
-        {
+        static::created(function ($item) {
             $cal = new GCAL;
             $cal->sync_event($item);
         });
-        static::updated(function($item)
-        {
+        static::updated(function ($item) {
             $cal = new GCAL;
             $cal->sync_event($item);
         });
-        static::deleted(function($item)
-        {
+        static::deleted(function ($item) {
             $cal = new GCAL;
             if ($item->event_id) {
                 $cal->delete_event($item->calendar_id, $item->event_id);
@@ -106,21 +103,25 @@ class IcsEvent extends Model implements Subscribeable
         $min = 1;
         $max = (new Carbon('last day of this month'))->day;
         for ($day = $min; $day <= $max; $day++) {
-            $sd = new Carbon(date('Y').'-'.$month.'-'.$day);
+            $sd = new Carbon(date('Y') . '-' . $month . '-' . $day);
             if ($type == 'Teacher') {
                 $events = self::inTime($sd);
             } else {
                 $events = self::inTimeForStudent($sd);
             }
             $important = $events->where('important', true);
-            $events = $events->where('important', false); 
+            $events = $events->where('important', false);
             $content = '';
-            if ($important->count() > 0) $content .= '[學校重要活動]';
+            if ($important->count() > 0)
+                $content .= '[學校重要活動]';
             foreach ($important as $i) {
-                $content .= '　'.$i->summary;
-                if (!empty($i->location)) $content .= ' 地點：'.$i->location;
-                if (!($i->all_day)) $content .= ' 時間：'.$i->startTime.'到'.$i->endTime;
-                if ($i->startDate != $i->endDate) $content .= '(至'.$i->endDate.'止)';
+                $content .= '　' . $i->summary;
+                if (!empty($i->location))
+                    $content .= ' 地點：' . $i->location;
+                if (!($i->all_day))
+                    $content .= ' 時間：' . $i->startTime . '到' . $i->endTime;
+                if ($i->startDate != $i->endDate)
+                    $content .= '(至' . $i->endDate . '止)';
             }
             $last = '';
             foreach ($events as $e) {
@@ -129,10 +130,13 @@ class IcsEvent extends Model implements Subscribeable
                     $content .= "[$uname]";
                     $last = $e->unit_id;
                 }
-                $content .= '　'.$e->summary;
-                if (!empty($e->location)) $content .= ' 地點：'.$e->location;
-                if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
-                if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate.'止)';
+                $content .= '　' . $e->summary;
+                if (!empty($e->location))
+                    $content .= ' 地點：' . $e->location;
+                if (!($e->all_day))
+                    $content .= ' 時間：' . $e->startTime . '到' . $e->endTime;
+                if ($e->startDate != $e->endDate)
+                    $content .= '(至' . $e->endDate . '止)';
             }
             if ($content) {
                 $obj = new \stdClass;
@@ -166,7 +170,8 @@ class IcsEvent extends Model implements Subscribeable
             $dt = $date->toDateString();
         }
         $cal = IcsCalendar::forStudent();
-        if ($cal) $cal_id = $cal->id;
+        if ($cal)
+            $cal_id = $cal->id;
         return IcsEvent::with('unit')->where('calendar_id', $cal_id)->whereDate('startDate', '<=', $dt)->whereDate('endDate', '>=', $dt)->get();
     }
 
@@ -185,7 +190,8 @@ class IcsEvent extends Model implements Subscribeable
     public static function inMonthForStudent()
     {
         $cal = IcsCalendar::forStudent();
-        if ($cal) $cal_id = $cal->id;
+        if ($cal)
+            $cal_id = $cal->id;
         $min = (new Carbon('first day of this month'))->toDateString();
         $max = (new Carbon('last day of this month'))->toDateString();
         return IcsEvent::with('unit')
@@ -220,26 +226,37 @@ class IcsEvent extends Model implements Subscribeable
         if ($this->all_day) {
             $event->startsAt($this->startDate)->fullDay();
         } else {
-            $start_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->format('Y-m-d').' '.$this->startTime->format('H:i:s'), env('TZ'));
-            $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $this->startDate->format('Y-m-d').' '.$this->endTime->format('H:i:s'), env('TZ'));
+            $start_time_str = $this->startTime ? $this->startTime->format('H:i:s') : '00:00:00';
+            $end_time_str = $this->endTime ? $this->endTime->format('H:i:s') : '23:59:59';
+            $start_date_str = $this->startDate ? $this->startDate->format('Y-m-d') : date('Y-m-d');
+
+            $start_time = Carbon::createFromFormat('Y-m-d H:i:s', $start_date_str . ' ' . $start_time_str, env('TZ'));
+            $end_time = Carbon::createFromFormat('Y-m-d H:i:s', $start_date_str . ' ' . $end_time_str, env('TZ'));
             $event->period($start_time, $end_time);
         }
-        if ($this->startDate->format('Y-m-d') != $this->endDate->format('Y-m-d')) {
+
+        $start_date_fmt = $this->startDate ? $this->startDate->format('Y-m-d') : null;
+        $end_date_fmt = $this->endDate ? $this->endDate->format('Y-m-d') : null;
+
+        if ($start_date_fmt && $end_date_fmt && $start_date_fmt != $end_date_fmt) {
             $days = [];
-            $nextday = $this->startDate;
+            $nextday = $this->startDate->copy();
             $nextday = $nextday->addDay();
             $period = CarbonPeriod::create($nextday, $this->endDate);
             foreach ($period as $date) {
                 if ($this->all_day) {
                     $days[] = Carbon::createFromFormat('Y-m-d', $date->format('Y-m-d'), env('TZ'));
                 } else {
-                    $days[] = Carbon::createFromFormat('Y-m-d H:i:s', $date->format('Y-m-d').' '.$this->startTime->format('H:i:s'), env('TZ'));
+                    $start_time_str = $this->startTime ? $this->startTime->format('H:i:s') : '00:00:00';
+                    $days[] = Carbon::createFromFormat('Y-m-d H:i:s', $date->format('Y-m-d') . ' ' . $start_time_str, env('TZ'));
                 }
             }
-            $event->repeatOn($days); 
+            $event->repeatOn($days);
         }
-        if (!empty($this->description)) $event->description($this->description);
-        if (!empty($this->location)) $event->addressName($this->location);
+        if (!empty($this->description))
+            $event->description($this->description);
+        if (!empty($this->location))
+            $event->addressName($this->location);
 
         return $event;
     }

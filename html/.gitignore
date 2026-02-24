@@ -1,5 +1,4 @@
 /public/build
-/public/build
 /node_modules
 /storage/*.cer
 /storage/*.pem

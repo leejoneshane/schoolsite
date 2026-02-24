@@ -22,20 +22,20 @@ class LogEnterArena
         $uuid = $char->uuid;
         $pid = $char->party_id;
         if ($pid) {
-            $room = $char->party->classroom_id;
-            $namespace = 'arena:'.$room.':party:'.$pid;
+            $room = $char->classroom_id;
+            $namespace = 'arena:' . $room . ':party:' . $pid;
             Redis::sadd($namespace, $uuid);
-            $this->check_all($namespace, $char, $party);    
+            $this->check_all($namespace, $char, $party);
         }
     }
 
     public function check_all($namespace, $char, $party)
     {
         $uuids = Redis::smembers($namespace);
-        $not_in = $char->teammate()->reject( function ($m) use ($uuids) {
+        $not_in = $char->teammate()->reject(function ($m) use ($uuids) {
             return in_array($m->uuid, $uuids);
         });
-        if ($not_in->count() == 0) {
+        if ($not_in->count() == 0 && $party) {
             GroupArena::dispatch($party);
         }
     }

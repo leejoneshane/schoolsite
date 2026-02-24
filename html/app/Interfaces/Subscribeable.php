@@ -13,7 +13,7 @@ interface Subscribeable
      * collect the contents for blade template.
      *
      * @param  string|null  $connection
-     * @return Array
+     * @return array|null
      */
     public static function newsletter($type);
 }
