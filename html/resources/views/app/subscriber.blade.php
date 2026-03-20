@@ -63,20 +63,10 @@
         if (obj.checked) {
             window.axios.post('{{ route('subscriber.subscription') }}/' + id, {
                 email: '{{ $email }}',
-            }, {
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
             });
         } else {
             window.axios.post('{{ route('subscriber.cancel') }}/' + id, {
                 email: '{{ $email }}',
-            }, {
-                headers: {
-                    'Content-Type': 'application/json;charset=utf-8',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
             });
         }
     }

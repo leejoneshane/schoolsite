@@ -36,11 +36,6 @@
         window.axios.post('{{ route('game.lock') }}', {
             room_id: cls,
             lockdown: value,
-        }, {
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
         }).then( (response) => {
             if (response.data.success == 'locked') {
                 alert("已將此班級鎖定，預計 40 分鐘後自動解鎖！");
@@ -48,8 +43,8 @@
             if (response.data.success == 'unlocked') {
                 alert("已將此班級解鎖！");
             }
-        }).catch( (response) => {
-            console.log(response.data);
+        }).catch( (error) => {
+            console.log(error.response?.data);
         });
     }
 </script>
