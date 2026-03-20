@@ -49,14 +49,20 @@ class GsuiteServiceProvider extends ServiceProvider
         ];
 
         $client = new Google_Client();
-        $client->setAuthConfig($path);
-        $client->setApplicationName('School Web Site');
-        $client->setScopes($scopes);
-        $client->setSubject($user_to_impersonate);
         try {
+            if ($path && file_exists($path)) {
+                $client->setAuthConfig($path);
+            } else {
+                Log::error('google directory: auth_config file not found at ' . $path);
+                return false;
+            }
+            $client->setApplicationName('School Web Site');
+            $client->setScopes($scopes);
+            $client->setSubject($user_to_impersonate);
             $this->directory = new Google_Service_Directory($client);
-        } catch (Google_Service_Exception $e) {
-            Log::error('google directory:' . $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('google directory initialization error:' . $e->getMessage());
+            return false;
         }
     }
 
@@ -172,6 +178,7 @@ class GsuiteServiceProvider extends ServiceProvider
 
     public function get_user($userKey)
     {
+        if (is_null($this->directory)) return false;
         if (!strpos($userKey, '@')) {
             $userKey .= '@' . config('services.gsuite.domain');
         }
@@ -250,6 +257,7 @@ class GsuiteServiceProvider extends ServiceProvider
 
     public function sync_user(Model $t, $userKey, $user = null, $recover = false)
     {
+        if (is_null($this->directory)) return false;
         if ($t instanceof Student) {
             $user_type = 'Student';
         } elseif ($t instanceof Teacher) {

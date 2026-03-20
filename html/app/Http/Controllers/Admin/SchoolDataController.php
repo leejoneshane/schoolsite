@@ -538,14 +538,21 @@ class SchoolDataController extends Controller
             $userKey = $gsuite->userKey;
             $result = $google->reset_password($userKey, $pwd);
         } else {
+            if (empty($s->id)) {
+                return redirect(urldecode($referer))->with('error', '該學生缺少學號（ID），無法建立 Google 帳號！');
+            }
             $userKey = 'meps' . $s->id;
             $guser = $google->get_user($userKey);
             if ($guser) {
                 $result = $google->reset_password($userKey, $pwd);
             } else {
                 $result = $google->sync_user($s, $userKey);
-                Watchdog::watch($request, '建立 Google 帳號並重設學生「' . $s->stdno . $s->realname . '」密碼為 ' . $pwd);
-                return redirect(urldecode($referer))->with('success', '已爲該學生建立 Google 帳號，預設密碼為身分證字號後六碼！');
+                if ($result) {
+                    Watchdog::watch($request, '建立 Google 帳號並重設學生「' . $s->stdno . $s->realname . '」密碼為 ' . $pwd);
+                    return redirect(urldecode($referer))->with('success', '已爲該學生建立 Google 帳號，預設密碼為身分證字號後六碼！');
+                } else {
+                    return redirect(urldecode($referer))->with('error', '建立學生 Google 帳號失敗！請檢查 G Suite 設定是否正確。');
+                }
             }
         }
         if ($result) {
