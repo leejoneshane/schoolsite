@@ -31,7 +31,7 @@ class IcsEventPolicy
             return true;
         } else {
             if (strpos($event->calendar->summary, '學生')) {
-                return true;      
+                return true;
             }
         }
         return false;
@@ -42,8 +42,10 @@ class IcsEventPolicy
     {
         if ($user->user_type == 'Teacher') {
             $role = Role::find(employee($user->uuid)->role_id);
-            if ( $role->role_no == 'C02' ||
-                $role->role_no == 'C03') {
+            if (
+                $role->role_no == 'C02' ||
+                $role->role_no == 'C03'
+            ) {
                 return true;
             }
         }
@@ -54,12 +56,15 @@ class IcsEventPolicy
     public function update(User $user, IcsEvent $event)
     {
         if ($user->user_type == 'Teacher') {
-            if ($event->uuid == $user->uuid) return true;
+            if ($event->uuid == $user->uuid)
+                return true;
             $role = Role::find(employee($user->uuid)->role_id);
             $unit_no = Unit::find($event->unit_id)->unit_no;
-            if ($unit_no == substr($role->unit->unit_no, 0, 3) && (
-                $role->role_no == 'C02' ||
-                $role->role_no == 'C03')) {
+            if (
+                $unit_no == substr($role->unit->unit_no, 0, 3) && (
+                    $role->role_no == 'C02' ||
+                    $role->role_no == 'C03')
+            ) {
                 return true;
             }
         }
@@ -72,12 +77,16 @@ class IcsEventPolicy
         if ($user->user_type == 'Teacher') {
             $role = Role::find(employee($user->uuid)->role_id);
             $unit_no = Unit::find($event->unit_id)->unit_no;
-            if ($unit_no == substr($role->unit->unit_no, 0, 3) &&
-                $role->role_no == 'C02') {
+            if (
+                $unit_no == substr($role->unit->unit_no, 0, 3) &&
+                $role->role_no == 'C02'
+            ) {
                 return true;
             }
-            if ($unit_no == substr($role->unit->unit_no, 0, 3) &&
-                $user->uuid == $event->uuid) {
+            if (
+                $unit_no == substr($role->unit->unit_no, 0, 3) &&
+                $user->uuid == $event->uuid
+            ) {
                 return true;
             }
         }

@@ -170,9 +170,11 @@ class IcsEvent extends Model implements Subscribeable
             $dt = $date->toDateString();
         }
         $cal = IcsCalendar::forStudent();
-        if ($cal)
-            $cal_id = $cal->id;
-        return IcsEvent::with('unit')->where('calendar_id', $cal_id)->whereDate('startDate', '<=', $dt)->whereDate('endDate', '>=', $dt)->get();
+        $cal_id = $cal ? $cal->id : 'none';
+        return IcsEvent::with('unit')->where(function ($query) use ($cal_id) {
+            $query->where('calendar_id', $cal_id)
+                  ->orWhere('important', true);
+        })->whereDate('startDate', '<=', $dt)->whereDate('endDate', '>=', $dt)->get();
     }
 
     //篩選指定日期的所有研習行事曆事件，靜態函式
@@ -190,12 +192,15 @@ class IcsEvent extends Model implements Subscribeable
     public static function inMonthForStudent()
     {
         $cal = IcsCalendar::forStudent();
-        if ($cal)
-            $cal_id = $cal->id;
+        $cal_id = $cal ? $cal->id : 'none';
         $min = (new Carbon('first day of this month'))->toDateString();
         $max = (new Carbon('last day of this month'))->toDateString();
         return IcsEvent::with('unit')
-            ->whereRaw('calendar_id = ? and ((startDate >= ? and startDate <= ?) or (endDate >= ? and endDate <= ?))', [$cal_id, $min, $max, $min, $max])
+            ->where(function ($query) use ($cal_id) {
+                $query->where('calendar_id', $cal_id)
+                      ->orWhere('important', true);
+            })
+            ->whereRaw('((startDate >= ? and startDate <= ?) or (endDate >= ? and endDate <= ?))', [$min, $max, $min, $max])
             ->get();
     }
 

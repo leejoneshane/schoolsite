@@ -60,8 +60,8 @@ class CalendarController extends Controller
         if (!$today) $today = $request->old('current');
         if (!$today) $today = date('Y-m-d');
         $current = Carbon::parse($today, env('TZ'));
-        $notyet = false;
-        if ($current > Carbon::now()) $notyet = true;
+        $is_admin = $request->user() ? $request->user()->is_admin : false;
+        $notyet = ($current >= Carbon::today());
         $create = false;
         $edit = [];
         $delete = [];
@@ -75,8 +75,8 @@ class CalendarController extends Controller
                 $events = IcsEvent::inTime($today);
             }
             foreach ($events as $event) {
-                $edit[$event->id] = $notyet && $request->user()->can('update', $event);
-                $delete[$event->id] = $notyet && $request->user()->can('delete', $event);
+                $edit[$event->id] = ($is_admin || $notyet) && $request->user()->can('update', $event);
+                $delete[$event->id] = ($is_admin || $notyet) && $request->user()->can('delete', $event);
             }
         } else {
             $calendar = IcsCalendar::forStudent();
@@ -404,12 +404,19 @@ class CalendarController extends Controller
             $next = ($year + 1).'1';
         }
         $event_list = [];
+        $cal = IcsCalendar::forStudent();
+        $cal_id = $cal ? $cal->id : 'none';
+        $is_admin = ($request->user()) ? $request->user()->is_admin : false;
         foreach ($month as $t) {
             $min = Carbon::parse($t->y.'-'.$t->m)->startOfMonth();
             $max = Carbon::parse($t->y.'-'.$t->m)->endOfMonth();
             $period = CarbonPeriod::create($min, $max);
             foreach ($period as $sd) {
-                $events = IcsEvent::inTimeForStudent($sd);
+                $dt = $sd->toDateString();
+                $events = IcsEvent::with('unit')->where(function ($query) use ($cal_id) {
+                    $query->where('calendar_id', $cal_id)
+                          ->orWhere('important', true);
+                })->whereDate('startDate', '<=', $dt)->whereDate('endDate', '>=', $dt)->get();
                 $important = $events->where('important', true);
                 $events = $events->where('important', false);
                 $content = '';

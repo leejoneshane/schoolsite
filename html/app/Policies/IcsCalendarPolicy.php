@@ -1,7 +1,7 @@
 <?php
- 
+
 namespace App\Policies;
- 
+
 use App\Models\IcsCalendar;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -29,7 +29,7 @@ class IcsCalendarPolicy
             return true;
         } else {
             if (strpos($cal->summary, '學生')) {
-                return true;      
+                return true;
             }
         }
         return Response::deny('您只能閱覽學生行事曆.');
