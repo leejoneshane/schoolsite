@@ -1,5 +1,7 @@
 .vscode/
 .docker-compose.yml
+.editorconfig
+.env.example
 node_modules/
 build/
 dist/
@@ -7,4 +9,3 @@ vendor/
 .DS_Store
 Thumbs.db
 Icon?
-
