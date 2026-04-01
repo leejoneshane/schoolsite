@@ -86,7 +86,8 @@ class Teacher extends Model
     public function getMainunitAttribute()
     {
         $unit = Unit::find($this->unit_id);
-        if (!$unit) return null;
+        if (!$unit)
+            return null;
         if ($unit->is_main()) {
             return $unit;
         } else {
@@ -162,6 +163,19 @@ class Teacher extends Model
     {
         $roles = Role::general()->pluck('id');
         return Teacher::whereIn('role_id', $roles)
+            ->orderBy('tutor_class')
+            ->get();
+    }
+
+    //取得級任教師
+    public static function tutors($grade = null)
+    {
+        if ($grade) {
+            return Teacher::whereRaw('LEFT(tutor_class, 1) = ?', [$grade])
+                ->orderBy('tutor_class')
+                ->get();
+        }
+        return Teacher::whereNotNull('tutor_class')
             ->orderBy('tutor_class')
             ->get();
     }
@@ -295,14 +309,16 @@ class Teacher extends Model
     //取得教師的年資積分
     public function seniority($year = null)
     {
-        if (!$year) $year = current_year();
+        if (!$year)
+            $year = current_year();
         return Seniority::where('uuid', $this->uuid)->where('syear', $year)->first();
     }
 
     //取得教師的職編意願調查表
     public function survey($year = null)
     {
-        if (!$year) $year = current_year();
+        if (!$year)
+            $year = current_year();
         return $this->hasMany('App\Models\OrganizeSurvey', 'uuid', 'uuid')->where('syear', $year)->first();
     }
 

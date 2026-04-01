@@ -27,28 +27,34 @@ class OrganizeController extends Controller
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $current = current_year();
-        if (!$year) $year = $current;
+        if (!$year)
+            $year = $current;
         $teacher = employee();
         $survey = $teacher->survey($year);
         $seniority = $teacher->seniority();
         if ($seniority) {
             $school_year = $seniority->new_school_year;
-            if ($school_year < 1) $school_year = $seniority->school_year;
+            if ($school_year < 1)
+                $school_year = $seniority->school_year;
             $score['syear'] = $school_year;
             $school_month = $seniority->new_school_month;
-            if ($school_month < 1) $school_month = $seniority->school_month;
+            if ($school_month < 1)
+                $school_month = $seniority->school_month;
             $score['smonth'] = $school_month;
             $teach_year = $seniority->new_teach_year;
-            if ($teach_year < 1) $teach_year = $seniority->teach_year;
+            if ($teach_year < 1)
+                $teach_year = $seniority->teach_year;
             $score['tyear'] = $teach_year;
             $teach_month = $seniority->new_teach_month;
-            if ($teach_month < 1) $teach_month = $seniority->teach_month;
+            if ($teach_month < 1)
+                $teach_month = $seniority->teach_month;
             $score['tmonth'] = $teach_month;
             $score['org'] = $seniority->newscore;
-            if ($score['org'] < 1) $score['org'] = $seniority->score;
+            if ($score['org'] < 1)
+                $score['org'] = $seniority->score;
             $score['highgrade'] = false;
             $score['total'] = $score['org'];
-            $score['high'] = $score['org'] + 2.1;    
+            $score['high'] = $score['org'] + 2.1;
         } else {
             $score['syear'] = 0;
             $score['smonth'] = 0;
@@ -60,8 +66,9 @@ class OrganizeController extends Controller
             $score['high'] = 0;
         }
         if (!empty($teacher->tutor_class)) {
-            $grade = substr($teacher->tutor_class, 0, 1); 
-            if ($grade == '5' || $grade == '6') $score['highgrade'] = true;
+            $grade = substr($teacher->tutor_class, 0, 1);
+            if ($grade == '5' || $grade == '6')
+                $score['highgrade'] = true;
             if ($survey && $survey->high) {
                 $score['total'] = $score['high'];
             }
@@ -69,7 +76,8 @@ class OrganizeController extends Controller
         $reserve = DB::table('organize_reserved')->where('syear', current_year())->where('uuid', $user->uuid)->first();
         $reserved = ($reserve) ? true : false;
         $years = OrganizeSettings::years();
-        if (!in_array($current, $years)) $years[] = $current;
+        if (!in_array($current, $years))
+            $years[] = $current;
         rsort($years);
         $flow = OrganizeSettings::where('syear', $year)->first();
         $stage1 = OrganizeVacancy::year_stage(1);
@@ -81,11 +89,11 @@ class OrganizeController extends Controller
     {
         $teacher = Teacher::find($uuid);
         $flow = OrganizeSettings::current();
-        if ($flow->onSurvey() || $flow->onFirstStage() || $flow->onSecondStage()) {
+        if ($flow && ($flow->onSurvey() || $flow->onFirstStage() || $flow->onSecondStage())) {
             $survey = OrganizeSurvey::updateOrCreate([
                 'syear' => current_year(),
                 'uuid' => $teacher->uuid,
-            ],[
+            ], [
                 'age' => $teacher->age,
                 'exprience' => $request->input('exp'),
                 'edu_level' => $request->input('edu_level'),
@@ -97,7 +105,8 @@ class OrganizeController extends Controller
         }
         if ($flow->onFirstStage()) {
             $specials = null;
-            if ($request->has('specials')) $specials = array_map('intval', $request->input('specials'));
+            if ($request->has('specials'))
+                $specials = array_map('intval', $request->input('specials'));
             $survey = OrganizeSurvey::where('syear', current_year())->where('uuid', $teacher->uuid)->first();
             if (!$survey) {
                 $survey = OrganizeSurvey::create([
@@ -114,7 +123,7 @@ class OrganizeController extends Controller
                     'admin2' => $request->input('admin2'),
                     'admin3' => $request->input('admin3'),
                     'special' => $specials,
-                ]);    
+                ]);
             }
         }
         if ($flow->onSecondStage()) {
@@ -203,7 +212,7 @@ class OrganizeController extends Controller
         $close_at = $request->input('close_at');
         $setting = OrganizeSettings::updateOrCreate([
             'syear' => current_year(),
-        ],[
+        ], [
             'survey_at' => $survey_at,
             'first_stage' => $first_stage,
             'pause_at' => $pause_at,
@@ -245,7 +254,8 @@ class OrganizeController extends Controller
         }
     }
 
-    private function vacancy_init() {
+    private function vacancy_init()
+    {
         $already = [];
         $managers = Role::director();
         OrganizeVacancy::where('syear', current_year())->delete();
@@ -332,8 +342,8 @@ class OrganizeController extends Controller
                 'filled' => $a->classrooms->count(),
                 'assigned' => 0,
             ]);
-            foreach ($a->classrooms as $c) {
-                $t = $c->tutors->first();
+            $teachers = Teacher::tutors($a->id);
+            foreach ($teachers as $t) {
                 $already[] = $t->uuid;
                 DB::table('organize_original')->insert([
                     'syear' => current_year(),
@@ -346,8 +356,8 @@ class OrganizeController extends Controller
                     'vacancy_id' => $v2->id,
                 ]);
             }
-            foreach ($b->classrooms as $c) {
-                $t = $c->tutors->first();
+            $teachers = Teacher::tutors($b->id);
+            foreach ($teachers as $t) {
                 $already[] = $t->uuid;
                 DB::table('organize_original')->insert([
                     'syear' => current_year(),
@@ -467,7 +477,7 @@ class OrganizeController extends Controller
             DB::table('organize_reserved')
                 ->where('syear', current_year())
                 ->where('vacancy_id', $vacancy_id)
-                ->delete();    
+                ->delete();
         }
         Watchdog::watch($request, '將職務：' . $vacancy->name . '所有人員開缺');
         return response()->json('success');
@@ -496,8 +506,10 @@ class OrganizeController extends Controller
         $manager = $user->hasPermission('organize.manager');
         if ($user->is_admin || $manager) {
             $flow = OrganizeSettings::current();
-            if (($flow->onPause() || $flow->onFinish()) && !$search) $search = 'first';
-            if (!$search) $search = 'seven';
+            if ($flow && ($flow->onPause() || $flow->onFinish()) && !$search)
+                $search = 'first';
+            if (!$search)
+                $search = 'seven';
             $seniority = Seniority::current()->isEmpty() ? false : true;
             $completeness = OrganizeVacancy::completeness();
             $stage1 = OrganizeVacancy::year_stage(1);
@@ -512,138 +524,138 @@ class OrganizeController extends Controller
                 }
             });
             $teachers = [];
-//            if ($flow->onPause() || $search == 'seven') {
-                foreach ($stage1->general as $v) {
-                    $query = OrganizeSurvey::where('syear', current_year());
-                    switch ($search) {
-                        case 'first':
-                            $query->where(function ($query) use ($v) {
-                                $query->where('assign', $v->id)->orWhereNull('assign');
-                            })->Where('admin1', $v->id);
-                            break;
-                        case 'second':
-                            $query->where(function ($query) use ($v) {
-                                $query->where(function ($query) use ($v) {
-                                    $query->where('assign', $v->id)->where('admin1', $v->id);
-                                });
-                                $query->orWhere(function ($query) use ($v) {
-                                    $query->whereNull('assign')->where('admin2', $v->id);
-                                });
-                            });
-                            break;
-                        case 'third':
-                            $query->where(function ($query) use ($v) {
-                                $query->where(function ($query) use ($v) {
-                                    $query->where('assign', $v->id)->where(function ($query) use ($v) {
-                                        $query->where('admin1', $v->id)->orWhere('admin2', $v->id);
-                                    });
-                                });
-                                $query->orWhere(function ($query) use ($v) {
-                                    $query->whereNull('assign')->where('admin3', $v->id);
-                                });
-                            });
-                            break;
-                        default:
-                            $query->where('assign', $v->id);
-                    }
-                    $teachers[$v->id] = $query->orderBy('score', 'desc')->orderBy('age', 'desc')->get();
-                }
-                foreach ($stage1->special as $v) {
-                    $query = OrganizeSurvey::where('syear', current_year());
-                    if ($search == 'seven') {
-                        $query->where('assign', $v->id);
-                    } else {
+            //            if ($flow->onPause() || $search == 'seven') {
+            foreach ($stage1->general as $v) {
+                $query = OrganizeSurvey::where('syear', current_year());
+                switch ($search) {
+                    case 'first':
                         $query->where(function ($query) use ($v) {
                             $query->where('assign', $v->id)->orWhereNull('assign');
-                        })->WhereJsonContains('special', $v->id);    
-                    }
-                    $teachers[$v->id] = $query->orderBy('score', 'desc')->orderBy('age', 'desc')->get();
+                        })->Where('admin1', $v->id);
+                        break;
+                    case 'second':
+                        $query->where(function ($query) use ($v) {
+                            $query->where(function ($query) use ($v) {
+                                $query->where('assign', $v->id)->where('admin1', $v->id);
+                            });
+                            $query->orWhere(function ($query) use ($v) {
+                                $query->whereNull('assign')->where('admin2', $v->id);
+                            });
+                        });
+                        break;
+                    case 'third':
+                        $query->where(function ($query) use ($v) {
+                            $query->where(function ($query) use ($v) {
+                                $query->where('assign', $v->id)->where(function ($query) use ($v) {
+                                    $query->where('admin1', $v->id)->orWhere('admin2', $v->id);
+                                });
+                            });
+                            $query->orWhere(function ($query) use ($v) {
+                                $query->whereNull('assign')->where('admin3', $v->id);
+                            });
+                        });
+                        break;
+                    default:
+                        $query->where('assign', $v->id);
                 }
-//            }
+                $teachers[$v->id] = $query->orderBy('score', 'desc')->orderBy('age', 'desc')->get();
+            }
+            foreach ($stage1->special as $v) {
+                $query = OrganizeSurvey::where('syear', current_year());
+                if ($search == 'seven') {
+                    $query->where('assign', $v->id);
+                } else {
+                    $query->where(function ($query) use ($v) {
+                        $query->where('assign', $v->id)->orWhereNull('assign');
+                    })->WhereJsonContains('special', $v->id);
+                }
+                $teachers[$v->id] = $query->orderBy('score', 'desc')->orderBy('age', 'desc')->get();
+            }
+            //            }
 //            if ($flow->onFinish() || $search == 'seven') {
-                foreach ($stage2->special as $v) {
-                    $query = OrganizeSurvey::where('syear', current_year());
-                    if ($search == 'seven') {
-                        $query->where('assign', $v->id);
-                    } else {
+            foreach ($stage2->special as $v) {
+                $query = OrganizeSurvey::where('syear', current_year());
+                if ($search == 'seven') {
+                    $query->where('assign', $v->id);
+                } else {
+                    $query->where(function ($query) use ($v) {
+                        $query->where('assign', $v->id)->orWhereNull('assign');
+                    })->WhereJsonContains('special', $v->id);
+                }
+                $teachers[$v->id] = $query->orderBy('score', 'desc')->ordderBy('age', 'desc')->get();
+            }
+            foreach ($stage2->general as $v) {
+                $query = OrganizeSurvey::where('syear', current_year());
+                switch ($search) {
+                    case 'first':
                         $query->where(function ($query) use ($v) {
                             $query->where('assign', $v->id)->orWhereNull('assign');
-                        })->WhereJsonContains('special', $v->id);
-                    }
-                    $teachers[$v->id] = $query->orderBy('score', 'desc')->ordderBy('age', 'desc')->get();
+                        })->Where('teach1', $v->id);
+                        break;
+                    case 'second':
+                        $query->where(function ($query) use ($v) {
+                            $query->where(function ($query) use ($v) {
+                                $query->where('assign', $v->id)->where('teach1', $v->id);
+                            });
+                            $query->orWhere(function ($query) use ($v) {
+                                $query->whereNull('assign')->where('teach2', $v->id);
+                            });
+                        });
+                        break;
+                    case 'third':
+                        $query->where(function ($query) use ($v) {
+                            $query->where(function ($query) use ($v) {
+                                $query->where('assign', $v->id)->where(function ($query) use ($v) {
+                                    $query->where('teach1', $v->id)->orWhere('teach2', $v->id);
+                                });
+                            });
+                            $query->orWhere(function ($query) use ($v) {
+                                $query->whereNull('assign')->where('teach3', $v->id);
+                            });
+                        });
+                        break;
+                    case 'four':
+                        $query->where(function ($query) use ($v) {
+                            $query->where(function ($query) use ($v) {
+                                $query->where('assign', $v->id)->where(function ($query) use ($v) {
+                                    $query->where('teach1', $v->id)->orWhere('teach2', $v->id)->orWhere('teach3', $v->id);
+                                });
+                            });
+                            $query->orWhere(function ($query) use ($v) {
+                                $query->whereNull('assign')->where('teach4', $v->id);
+                            });
+                        });
+                        break;
+                    case 'five':
+                        $query->where(function ($query) use ($v) {
+                            $query->where(function ($query) use ($v) {
+                                $query->where('assign', $v->id)->where(function ($query) use ($v) {
+                                    $query->where('teach1', $v->id)->orWhere('teach2', $v->id)->orWhere('teach3', $v->id)->orWhere('teach4', $v->id);
+                                });
+                            });
+                            $query->orWhere(function ($query) use ($v) {
+                                $query->whereNull('assign')->where('teach5', $v->id);
+                            });
+                        });
+                        break;
+                    case 'six':
+                        $query->where(function ($query) use ($v) {
+                            $query->where(function ($query) use ($v) {
+                                $query->where('assign', $v->id)->where(function ($query) use ($v) {
+                                    $query->where('teach1', $v->id)->orWhere('teach2', $v->id)->orWhere('teach3', $v->id)->orWhere('teach4', $v->id)->orWhere('teach5', $v->id);
+                                });
+                            });
+                            $query->orWhere(function ($query) use ($v) {
+                                $query->whereNull('assign')->where('teach6', $v->id);
+                            });
+                        });
+                        break;
+                    default:
+                        $query->where('assign', $v->id);
                 }
-                foreach ($stage2->general as $v) {
-                    $query = OrganizeSurvey::where('syear', current_year());
-                    switch ($search) {
-                        case 'first':
-                            $query->where(function ($query) use ($v) {
-                                $query->where('assign', $v->id)->orWhereNull('assign');
-                            })->Where('teach1', $v->id);
-                            break;
-                        case 'second':
-                            $query->where(function ($query) use ($v) {
-                                $query->where(function ($query) use ($v) {
-                                    $query->where('assign', $v->id)->where('teach1', $v->id);
-                                });
-                                $query->orWhere(function ($query) use ($v) {
-                                    $query->whereNull('assign')->where('teach2', $v->id);
-                                });
-                            });
-                            break;
-                        case 'third':
-                            $query->where(function ($query) use ($v) {
-                                $query->where(function ($query) use ($v) {
-                                    $query->where('assign', $v->id)->where(function ($query) use ($v) {
-                                        $query->where('teach1', $v->id)->orWhere('teach2', $v->id);
-                                    });
-                                });
-                                $query->orWhere(function ($query) use ($v) {
-                                    $query->whereNull('assign')->where('teach3', $v->id);
-                                });
-                            });
-                            break;
-                        case 'four':
-                            $query->where(function ($query) use ($v) {
-                                $query->where(function ($query) use ($v) {
-                                    $query->where('assign', $v->id)->where(function ($query) use ($v) {
-                                        $query->where('teach1', $v->id)->orWhere('teach2', $v->id)->orWhere('teach3', $v->id);
-                                    });
-                                });
-                                $query->orWhere(function ($query) use ($v) {
-                                    $query->whereNull('assign')->where('teach4', $v->id);
-                                });
-                            });
-                            break;
-                        case 'five':
-                            $query->where(function ($query) use ($v) {
-                                $query->where(function ($query) use ($v) {
-                                    $query->where('assign', $v->id)->where(function ($query) use ($v) {
-                                        $query->where('teach1', $v->id)->orWhere('teach2', $v->id)->orWhere('teach3', $v->id)->orWhere('teach4', $v->id);
-                                    });
-                                });
-                                $query->orWhere(function ($query) use ($v) {
-                                    $query->whereNull('assign')->where('teach5', $v->id);
-                                });
-                            });
-                            break;
-                        case 'six':
-                            $query->where(function ($query) use ($v) {
-                                $query->where(function ($query) use ($v) {
-                                    $query->where('assign', $v->id)->where(function ($query) use ($v) {
-                                        $query->where('teach1', $v->id)->orWhere('teach2', $v->id)->orWhere('teach3', $v->id)->orWhere('teach4', $v->id)->orWhere('teach5', $v->id);
-                                    });
-                                });
-                                $query->orWhere(function ($query) use ($v) {
-                                    $query->whereNull('assign')->where('teach6', $v->id);
-                                });
-                            });
-                            break;
-                        default:
-                            $query->where('assign', $v->id);
-                    }
-                    $teachers[$v->id] = $query->orderBy('score', 'desc')->orderBy('age', 'desc')->get();
-                }
-//            }
+                $teachers[$v->id] = $query->orderBy('score', 'desc')->orderBy('age', 'desc')->get();
+            }
+            //            }
             return view('app.organize_arrangement', ['display' => $search, 'flow' => $flow, 'seniority' => $seniority, 'completeness' => $completeness, 'stage1' => $stage1, 'stage2' => $stage2, 'teachers' => $teachers, 'rest_teachers' => $rest_teachers]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
@@ -654,9 +666,11 @@ class OrganizeController extends Controller
     {
         $vacancy_id = $request->input('vid');
         $uuid = $request->input('uuid');
-        if (empty($uuid)) return response()->json('not found');
+        if (empty($uuid))
+            return response()->json('not found');
         $survey = OrganizeSurvey::findByUUID($uuid);
-        if ($survey) $survey->update(['assign' => $vacancy_id]);
+        if ($survey)
+            $survey->update(['assign' => $vacancy_id]);
         $vacancy = OrganizeVacancy::find($vacancy_id);
         if ($vacancy) {
             $vacancy->assigned += 1;
@@ -679,9 +693,11 @@ class OrganizeController extends Controller
     {
         $vacancy_id = $request->input('vid');
         $uuid = $request->input('uuid');
-        if (empty($uuid)) return response()->json('not found');
+        if (empty($uuid))
+            return response()->json('not found');
         $survey = OrganizeSurvey::findByUUID($uuid);
-        if ($survey) $survey->update(['assign' => null]);
+        if ($survey)
+            $survey->update(['assign' => null]);
         $vacancy = OrganizeVacancy::find($vacancy_id);
         if ($vacancy) {
             $vacancy->assigned -= 1;
@@ -693,7 +709,7 @@ class OrganizeController extends Controller
                 ->delete();
             $t = Teacher::find($uuid);
             Watchdog::watch($request, '取消' . $t->realname . '擔任職缺：' . $vacancy->name . '的安排');
-            return response()->json('success');    
+            return response()->json('success');
         } else {
             return response()->json('vacancy not exists!');
         }
@@ -706,9 +722,11 @@ class OrganizeController extends Controller
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $current = current_year();
-        if (!$year) $year = $current;
+        if (!$year)
+            $year = $current;
         $years = OrganizeSettings::years();
-        if (!in_array($current, $years)) $years[] = $current;
+        if (!in_array($current, $years))
+            $years[] = $current;
         rsort($years);
         $vacancys = OrganizeVacancy::year($year);
         return view('app.organize_listvacancy', ['current' => $current, 'year' => $year, 'years' => $years, 'vacancys' => $vacancys]);
@@ -723,18 +741,19 @@ class OrganizeController extends Controller
         $teacher = Teacher::find($request->uuid);
         $seniority = $teacher->seniority();
         $score = $seniority->newscore;
-        if ($score < 1) $score = $seniority->score;
+        if ($score < 1)
+            $score = $seniority->score;
         $year = current_year();
         $survey = $teacher->survey($year);
         $stage1 = OrganizeVacancy::year_stage(1, $year);
         $stage2 = OrganizeVacancy::year_stage(2, $year);
-        $header = $teacher->realname . $year .'學年度意願調查表';
+        $header = $teacher->realname . $year . '學年度意願調查表';
         if (!$survey) {
             $body = '找不到意願調查表！';
         } else {
             $body = view('app.organize_listsurvey', ['year' => $year, 'teacher' => $teacher, 'highscore' => $score, 'survey' => $survey, 'stage1' => $stage1, 'stage2' => $stage2])->render();
         }
-        return response()->json((object) [ 'header' => $header, 'body' => $body]);
+        return response()->json((object) ['header' => $header, 'body' => $body]);
     }
 
     public function listResult($year = null)
@@ -744,9 +763,11 @@ class OrganizeController extends Controller
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $current = current_year();
-        if (!$year) $year = $current;
+        if (!$year)
+            $year = $current;
         $years = OrganizeSettings::years();
-        if (!in_array($current, $years)) $years[] = $current;
+        if (!in_array($current, $years))
+            $years[] = $current;
         rsort($years);
         $flow = OrganizeSettings::where('syear', $year)->first();
         $vacancys = OrganizeVacancy::year($year);
