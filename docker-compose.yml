@@ -84,7 +84,7 @@ services:
       - backend
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin
     environment:
       PMA_HOST: mysql
     ports:

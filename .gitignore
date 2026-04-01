@@ -1,6 +1,10 @@
-.DS_Store
-/data.ms
+.vscode/
 .docker-compose.yml
-*.icloud
-/vendor
-Icon
+node_modules/
+build/
+dist/
+vendor/
+.DS_Store
+Thumbs.db
+Icon?
+
