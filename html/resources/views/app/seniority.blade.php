@@ -15,6 +15,24 @@
         <i class="fa-solid fa-file-export"></i>匯出本學期總表
     </a>
 </div>
+@if (session('import_logs'))
+<div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-lg my-4 max-h-60 overflow-y-auto border border-gray-300 dark:border-gray-600">
+    <h3 class="font-bold mb-2 text-gray-800 dark:text-gray-200">教職員帳號對應日誌：</h3>
+    <ul class="list-disc list-inside text-sm">
+        @foreach (session('import_logs') as $log)
+            @php
+                $colorClass = 'text-green-600 dark:text-green-400';
+                if (str_contains($log, '錯誤')) $colorClass = 'text-red-600 dark:text-red-400';
+                elseif (str_contains($log, '警告')) $colorClass = 'text-yellow-600 dark:text-yellow-400 font-semibold';
+                elseif (str_contains($log, '模糊')) $colorClass = 'text-blue-600 dark:text-blue-400';
+            @endphp
+            <li class="{{ $colorClass }}">
+                {{ $log }}
+            </li>
+        @endforeach
+    </ul>
+</div>
+@endif
 <label for="years">請選擇學年度：</label>
 <select id="years" class="inline w-16 p-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="query()">

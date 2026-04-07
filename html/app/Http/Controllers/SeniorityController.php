@@ -15,7 +15,6 @@ use App\Models\Watchdog;
 
 class SeniorityController extends Controller
 {
-
     public function index($search = '')
     {
         $user = Auth::user();
@@ -24,7 +23,8 @@ class SeniorityController extends Controller
         }
         $current = current_year();
         $years = Seniority::years();
-        if (!in_array($current, $years)) $years[] = $current;
+        if (!in_array($current, $years))
+            $years[] = $current;
         rsort($years);
         $year = $domain_id = $unit_id = $idno = $realname = $email = '';
         if (!empty($search)) {
@@ -53,17 +53,18 @@ class SeniorityController extends Controller
                 }
             }
         }
-        if (empty($year)) $year = $current;
+        if (empty($year))
+            $year = $current;
         $user = User::find($user->id);
         $manager = $user->is_admin || $user->hasPermission('organize.manager');
         $units = Unit::main();
         $domains = Domain::all();
         $query = Seniority::year_teachers($year)
-          ->select('teachers.*', 'belongs.domain_id')
-          ->leftJoin('belongs', function (JoinClause $join) use ($year) {
-            $join->on('belongs.uuid', '=', 'teachers.uuid')
-                 ->where('belongs.year', '=', $year);
-        });
+            ->select('teachers.*', 'belongs.domain_id')
+            ->leftJoin('belongs', function (JoinClause $join) use ($year) {
+                $join->on('belongs.uuid', '=', 'teachers.uuid')
+                    ->where('belongs.year', '=', $year);
+            });
         if (!empty($unit_id)) {
             $unit = Unit::find($unit_id);
             $keys = Unit::subkeys($unit->unit_no);
@@ -75,13 +76,13 @@ class SeniorityController extends Controller
             $unit_id = $idno = $realname = $email = '';
         }
         if (!empty($idno)) {
-            $query = $query->where('idno', 'like', '%'.$idno.'%');
+            $query = $query->where('idno', 'like', '%' . $idno . '%');
         }
         if (!empty($realname)) {
-            $query = $query->where('realname', 'like', '%'.$realname.'%');
+            $query = $query->where('realname', 'like', '%' . $realname . '%');
         }
         if (!empty($email)) {
-            $query = $query->where('email', 'like', '%'.$email.'%');
+            $query = $query->where('email', 'like', '%' . $email . '%');
         }
         $teachers = $query->orderByRaw('unit_id = 25')->orderBy('tutor_class')->orderBy('belongs.domain_id')->paginate(16)->withQueryString();
         return view('app.seniority', ['current' => $current, 'manager' => $manager, 'year' => $year, 'unit' => $unit_id, 'domain' => $domain_id, 'idno' => $idno, 'realname' => $realname, 'email' => $email, 'years' => $years, 'units' => $units, 'domains' => $domains, 'teachers' => $teachers]);
@@ -115,7 +116,8 @@ class SeniorityController extends Controller
             $importer = new SeniorityImport();
             $importer->import($request->file('excel'));
             Watchdog::watch($request, '匯入年資統計：' . $request->file('excel')->path());
-            return redirect()->route('seniority')->with('success', '教職員年資已經匯入完成！');
+            $logs = $importer->logs ?? [];
+            return redirect()->route('seniority')->with('success', '教職員年資已經匯入完成！')->with('import_logs', $logs);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -131,7 +133,8 @@ class SeniorityController extends Controller
         $manager = $user->hasPermission('organize.manager');
         if ($user->is_admin || $manager) {
             $current = current_year();
-            if (!$year) $year = $current;
+            if (!$year)
+                $year = $current;
             $filename = $year . '學年度教師教學年資統計';
             return (new SeniorityExport($year))->download("$filename.xlsx");
         } else {
@@ -157,7 +160,7 @@ class SeniorityController extends Controller
                 Seniority::updateOrCreate([
                     'uuid' => $teacher->uuid,
                     'syear' => current_year(),
-                ],[
+                ], [
                     'school_year' => $future_year,
                     'school_month' => $seniority->school_month,
                     'school_score' => round(($future_year * 12 + $seniority->school_month) / 12 * 0.7, 2),
@@ -201,10 +204,10 @@ class SeniorityController extends Controller
         $uuid = $request->input('uuid');
         $year = $request->input('year') ?: current_year();
         $score = Seniority::findBy($uuid, $year);
-    if ($main == 'default') {
+        if ($main == 'default') {
             $osy = $request->input('school_year');
             $osm = $request->input('school_month');
-            $oss = round(($osy * 12 + $osm) / 12 * 0.7, 2); 
+            $oss = round(($osy * 12 + $osm) / 12 * 0.7, 2);
             $oty = $request->input('teach_year');
             $otm = $request->input('teach_month');
             $ots = round(($oty * 12 + $otm) / 12 * 0.3, 2);
@@ -215,12 +218,12 @@ class SeniorityController extends Controller
             $score->teach_month = $otm;
             $score->teach_score = $ots;
             $score->save();
-            Watchdog::watch($request, '依人事室資料校正年資：' . $score->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));    
+            Watchdog::watch($request, '依人事室資料校正年資：' . $score->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
         if ($main == 'new') {
             $nsy = $request->input('new_school_year');
             $nsm = $request->input('new_school_month');
-            $nss = round(($nsy * 12 + $nsm) / 12 * 0.7, 2); 
+            $nss = round(($nsy * 12 + $nsm) / 12 * 0.7, 2);
             $nty = $request->input('new_teach_year');
             $ntm = $request->input('new_teach_month');
             $nts = round(($nty * 12 + $ntm) / 12 * 0.3, 2);
@@ -231,7 +234,7 @@ class SeniorityController extends Controller
             $score->new_teach_month = $ntm;
             $score->new_teach_score = $nts;
             $score->save();
-            Watchdog::watch($request, '修正年資：' . $score->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));                
+            Watchdog::watch($request, '修正年資：' . $score->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         }
         return response()->json($score);
     }
