@@ -200,7 +200,7 @@
 </table>
 <script nonce="selfhost">
     window.onload = function () {
-        var elm = document.querySelectorAll("select");
+        var elm = document.querySelectorAll("input[name^='stage']");
         for (var i = 0; i < elm.length; i++) {
             elm[i].addEventListener("change", stage);
         }
@@ -208,7 +208,7 @@
         for (var i = 0; i < elm.length; i++) {
             elm[i].addEventListener("change", special);
         }
-        var elm = document.querySelectorAll("input[type=text]");
+        var elm = document.querySelectorAll("input[name^='shortfall']");
         for (var i = 0; i < elm.length; i++) {
             elm[i].addEventListener("change", shortfall);
         }
