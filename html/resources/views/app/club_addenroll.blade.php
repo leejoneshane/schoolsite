@@ -50,7 +50,7 @@
 </table>
 <div class="flex flex-col gap-3 justify-center items-center">
     <div class="bg-white rounded p-10">
-        <form method="POST" action="{{ route('clubs.addenroll', ['club_id' => $club->id]) }}">
+        <form id="enrollForm" method="POST" action="{{ route('clubs.addenroll', ['club_id' => $club->id]) }}" onsubmit="return validateForm()">
             @csrf
             <div class="p-3">
                 <label for="parent" class="inline">聯絡人：</label>
@@ -78,8 +78,9 @@
             @if ($club->has_lunch)
             <div class="p-3">
                 <label for="lunch" class="inline">午餐選項：</label>
-                <select name="lunch" class="inline w-48 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-                    <option value="0">自理</option>
+                <select name="lunch" id="lunch" class="inline w-48 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+                    <option value="" disabled{{ ($old && $old->lunch !== null && $old->lunch !== '') ? '' : ' selected' }}>=請選擇=</option>
+                    <option value="0"{{ ($old && $old->lunch !== null && $old->lunch !== '' && $old->lunch == 0) ? ' selected' : '' }}>自理</option>
                     <option value="1"{{ ($old && $old->lunch == 1) ? ' selected' : '' }}>葷食</option>
                     <option value="2"{{ ($old && $old->lunch == 2) ? ' selected' : '' }}>素食</option>
                 </select>
@@ -129,4 +130,17 @@
         </form>
     </div>
 </div>
+<script nonce="selfhost">
+    function validateForm() {
+        @if ($club->has_lunch)
+        var lunch = document.getElementById('lunch');
+        if (lunch && lunch.value === "") {
+            alert("請選擇午餐選項！");
+            lunch.focus();
+            return false;
+        }
+        @endif
+        return true;
+    }
+</script>
 @endsection
