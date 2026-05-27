@@ -1,13 +1,6 @@
 @extends('layouts.main')
 
 @section('content')
-@if ($readonly)
-<div class="w-full text-red-700 border-red-500 bg-red-100 dark:bg-red-950 dark:text-red-200 border-b-2 mb-5 p-4 rounded" role="alert">
-    <p class="font-bold text-lg">
-        <i class="fa-solid fa-lock mr-2"></i>目前已進入「第一階段意願調查」階段，職缺設定已鎖定為唯讀狀態，無法修改。
-    </p>
-</div>
-@endif
 <div class="text-2xl font-bold leading-normal pb-5">
     職缺設定
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('organize') }}">
@@ -26,6 +19,13 @@
         <i class="fa-solid fa-user-check"></i>職編結果一覽表
     </a>
 </div>
+@if ($readonly)
+<div class="w-full text-red-700 border-red-500 bg-red-100 dark:bg-red-950 dark:text-red-200 border-b-2 mb-5 p-4 rounded" role="alert">
+    <p class="font-bold text-lg">
+        <i class="fa-solid fa-lock mr-2"></i>目前已進入「第一階段意願調查」階段，職缺設定已鎖定為唯讀狀態，無法修改。
+    </p>
+</div>
+@endif
 <div class="w-full text-red-500 border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
         職務缺額已經比照前一年度計算完畢，如有員額增加或裁減，@if ($readonly)<span class="text-gray-400 cursor-not-allowed opacity-60 font-semibold inline-block mx-1" title="目前已進入意願調查階段，無法重新計算"><i class="fa-solid fa-ban mr-1"></i>請按這裡重新計算 (唯讀已禁用)</span>@else<a class="text-sm rounded text-blue-300 hover:text-blue-600" href="{{ route('organize.reset') }}">請按這裡重新計算</a>@endif，所有已編排之職務將會完全清除，已經填交之意願調查表只保留學經歷和積分，所有意願將刪除。
