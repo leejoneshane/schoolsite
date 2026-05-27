@@ -223,6 +223,12 @@ class OrganizeController extends Controller
         return redirect()->route('organize.setting')->with('success', '職務編排流程設定完成！');
     }
 
+    private function isReadonly()
+    {
+        $settings = OrganizeSettings::current();
+        return $settings && \Carbon\Carbon::now() >= $settings->first_stage;
+    }
+
     public function vacancy()
     {
         $user = Auth::user();
@@ -234,7 +240,8 @@ class OrganizeController extends Controller
             $admins = OrganizeVacancy::year_type('admin');
             $tutors = OrganizeVacancy::year_type('tutor');
             $domains = OrganizeVacancy::year_type('domain');
-            return view('app.organize_vacancy', ['admins' => $admins, 'tutors' => $tutors, 'domains' => $domains]);
+            $readonly = $this->isReadonly();
+            return view('app.organize_vacancy', ['admins' => $admins, 'tutors' => $tutors, 'domains' => $domains, 'readonly' => $readonly]);
         } else {
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
@@ -245,6 +252,9 @@ class OrganizeController extends Controller
         $user = Auth::user();
         $manager = $user->hasPermission('organize.manager');
         if ($user->is_admin || $manager) {
+            if ($this->isReadonly()) {
+                return redirect()->route('organize.vacancy')->with('error', '目前已進入意願調查階段，無法重新計算職缺！');
+            }
             DB::table('organize_assign')->where('syear', current_year())->delete();
             $this->vacancy_init();
             Watchdog::watch($request, '重新計算職缺');
@@ -415,6 +425,9 @@ class OrganizeController extends Controller
 
     public function stage(Request $request)
     {
+        if ($this->isReadonly()) {
+            return response()->json(['error' => '目前已進入意願調查階段，無法修改！'], 403);
+        }
         $vacancy_id = $request->input('vid');
         $stage = $request->input('stage');
         $vacancy = OrganizeVacancy::find($vacancy_id);
@@ -426,6 +439,9 @@ class OrganizeController extends Controller
 
     public function special(Request $request)
     {
+        if ($this->isReadonly()) {
+            return response()->json(['error' => '目前已進入意願調查階段，無法修改！'], 403);
+        }
         $vacancy_id = $request->input('vid');
         $special = $request->boolean('special');
         $vacancy = OrganizeVacancy::find($vacancy_id);
@@ -437,6 +453,9 @@ class OrganizeController extends Controller
 
     public function shortfall(Request $request)
     {
+        if ($this->isReadonly()) {
+            return response()->json(['error' => '目前已進入意願調查階段，無法修改！'], 403);
+        }
         $vacancy_id = $request->input('vid');
         $shortfall = (integer) $request->input('shortfall');
         $vacancy = OrganizeVacancy::find($vacancy_id);
@@ -448,6 +467,9 @@ class OrganizeController extends Controller
 
     public function release(Request $request)
     {
+        if ($this->isReadonly()) {
+            return response()->json(['error' => '目前已進入意願調查階段，無法修改！'], 403);
+        }
         $vacancy_id = $request->input('vid');
         $uuid = $request->input('uuid');
         $vacancy = OrganizeVacancy::find($vacancy_id);
@@ -465,6 +487,9 @@ class OrganizeController extends Controller
 
     public function releaseAll(Request $request)
     {
+        if ($this->isReadonly()) {
+            return response()->json(['error' => '目前已進入意願調查階段，無法修改！'], 403);
+        }
         $vacancy_id = $request->input('vid');
         $records = DB::table('organize_reserved')
             ->where('syear', current_year())
@@ -485,6 +510,9 @@ class OrganizeController extends Controller
 
     public function reserve(Request $request)
     {
+        if ($this->isReadonly()) {
+            return response()->json(['error' => '目前已進入意願調查階段，無法修改！'], 403);
+        }
         $vacancy_id = $request->input('vid');
         $uuid = $request->input('uuid');
         $vacancy = OrganizeVacancy::find($vacancy_id);

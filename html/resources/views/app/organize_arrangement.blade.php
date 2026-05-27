@@ -153,10 +153,14 @@
         @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
-        @foreach ($teachers[$v->id] as $t)
-            <span class="pl-4 text-gray-500">
-                {{ $t->teacher->realname }}
-            </span>
+        @foreach ($teachers[$v->id] as $t1)
+            <select id="t{{ $v->id }}_{{ $t1->uuid }}">
+                <option value="">未指派</option>
+                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher->realname }}</option>
+                @foreach ($rest_teachers as $t2)
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                @endforeach
+            </select>
         @endforeach
         @if ($v->assigned < $v->shortfall - $v->filled)
         @for ($z=0;$z<($v->shortfall - $v->filled - $v->assigned);$z++)
@@ -184,10 +188,14 @@
         @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
-        @foreach ($teachers[$v->id] as $t)
-            <span class="pl-4 text-gray-500">
-                {{ $t->teacher->realname }}
-            </span>
+        @foreach ($teachers[$v->id] as $t1)
+            <select id="t{{ $v->id }}_{{ $t1->uuid }}">
+                <option value="">未指派</option>
+                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher->realname }}</option>
+                @foreach ($rest_teachers as $t2)
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                @endforeach
+            </select>
         @endforeach
         @if ($v->assigned < $v->shortfall - $v->filled)
         @for ($z=0;$z<($v->shortfall - $v->filled - $v->assigned);$z++)
@@ -287,10 +295,14 @@
         @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
-        @foreach ($teachers[$v->id] as $t)
-            <span class="pl-4 text-gray-500">
-                {{ $t->teacher->realname }}
-            </span>
+        @foreach ($teachers[$v->id] as $t1)
+            <select id="t{{ $v->id }}_{{ $t1->uuid }}">
+                <option value="">未指派</option>
+                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher->realname }}</option>
+                @foreach ($rest_teachers as $t2)
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                @endforeach
+            </select>
         @endforeach
         @if ($v->assigned < $v->shortfall - $v->filled)
         @for ($z=0;$z<($v->shortfall - $v->filled - $v->assigned);$z++)
@@ -318,10 +330,14 @@
         @foreach ($v->reserved as $t)
             <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
         @endforeach
-        @foreach ($teachers[$v->id] as $t)
-            <span class="pl-4 text-gray-500">
-                {{ $t->teacher->realname }}
-            </span>
+        @foreach ($teachers[$v->id] as $t1)
+            <select id="t{{ $v->id }}_{{ $t1->uuid }}">
+                <option value="">未指派</option>
+                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher->realname }}</option>
+                @foreach ($rest_teachers as $t2)
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                @endforeach
+            </select>
         @endforeach
         @if ($v->assigned < $v->shortfall - $v->filled)
         @for ($z=0;$z<($v->shortfall - $v->filled - $v->assigned);$z++)
@@ -373,6 +389,7 @@ window.onload = function () {
     for (var i = 0; i < elm.length; i++) {
         elm[i].addEventListener("focus", saveValue);
         elm[i].addEventListener("change", assign);
+        window.old[elm[i].id] = elm[i].value;
     }
 };
 
@@ -415,24 +432,29 @@ function assign(event) {
     var vid = myid.substring(1, myid.indexOf('_'));
     var uuid = event.target.value;
     if (prev != uuid) {
-        window.axios.post('{{ route('organize.assign') }}', {
-            vid: vid,
-            uuid: uuid,
-        }, {
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        });
-        window.axios.post('{{ route('organize.unassign') }}', {
-            vid: vid,
-            uuid: prev,
-        }, {
-            headers: {
-                'Content-Type': 'application/json;charset=utf-8',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        });
+        if (uuid) {
+            window.axios.post('{{ route('organize.assign') }}', {
+                vid: vid,
+                uuid: uuid,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+        }
+        if (prev) {
+            window.axios.post('{{ route('organize.unassign') }}', {
+                vid: vid,
+                uuid: prev,
+            }, {
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            });
+        }
+        window.old[myid] = uuid;
     }
 }
 

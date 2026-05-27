@@ -1,6 +1,13 @@
 @extends('layouts.main')
 
 @section('content')
+@if ($readonly)
+<div class="w-full text-red-700 border-red-500 bg-red-100 dark:bg-red-950 dark:text-red-200 border-b-2 mb-5 p-4 rounded" role="alert">
+    <p class="font-bold text-lg">
+        <i class="fa-solid fa-lock mr-2"></i>目前已進入「第一階段意願調查」階段，職缺設定已鎖定為唯讀狀態，無法修改。
+    </p>
+</div>
+@endif
 <div class="text-2xl font-bold leading-normal pb-5">
     職缺設定
     <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('organize') }}">
@@ -21,7 +28,7 @@
 </div>
 <div class="w-full text-red-500 border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
-        職務缺額已經比照前一年度計算完畢，如有員額增加或裁減，<a class="text-sm rounded text-blue-300 hover:text-blue-600" href="{{ route('organize.reset') }}">請按這裡重新計算</a>，所有已編排之職務將會完全清除，但不影響已經填交之意願調查表。
+        職務缺額已經比照前一年度計算完畢，如有員額增加或裁減，@if ($readonly)<span class="text-gray-400 cursor-not-allowed opacity-60 font-semibold inline-block mx-1" title="目前已進入意願調查階段，無法重新計算"><i class="fa-solid fa-ban mr-1"></i>請按這裡重新計算 (唯讀已禁用)</span>@else<a class="text-sm rounded text-blue-300 hover:text-blue-600" href="{{ route('organize.reset') }}">請按這裡重新計算</a>@endif，所有已編排之職務將會完全清除，已經填交之意願調查表只保留學經歷和積分，所有意願將刪除。
     </p>
 </div>
 <table class="w-full p-4 text-left font-normal">
@@ -49,34 +56,34 @@
             {{ $v->name }}
         </td>
         <td class="p-2">
-            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="text" name="stage{{ $v->id }}" value="{{ $v->stage }}" required>
+            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200{{ $readonly ? ' opacity-50 cursor-not-allowed' : '' }}"
+                type="text" name="stage{{ $v->id }}" value="{{ $v->stage }}" required{{ $readonly ? ' disabled' : '' }}>
         </td>
         <td class="p-2">
-            <label for="special{{ $v->id }}" class="inline-flex relative items-center cursor-pointer">
-            <input type="checkbox" id="special{{ $v->id }}" name="special{{ $v->id }}" value="yes" class="sr-only peer"{{ ($v->special) ? ' checked' : '' }}>
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <label for="special{{ $v->id }}" class="inline-flex relative items-center{{ $readonly ? ' cursor-not-allowed' : ' cursor-pointer' }}">
+            <input type="checkbox" id="special{{ $v->id }}" name="special{{ $v->id }}" value="yes" class="sr-only peer"{{ ($v->special) ? ' checked' : '' }}{{ $readonly ? ' disabled' : '' }}>
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600{{ $readonly ? ' opacity-50' : '' }}"></div>
             </label>
         </td>
         <td class="p-2">
-            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="text" name="shortfall{{ $v->id }}" value="{{ $v->shortfall }}" required>
+            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200{{ $readonly ? ' opacity-50 cursor-not-allowed' : '' }}"
+                type="text" name="shortfall{{ $v->id }}" value="{{ $v->shortfall }}" required{{ $readonly ? ' disabled' : '' }}>
         </td>
         <td class="p-2">
             @foreach ($v->original as $t)
             <span class="pl-4">{{ $t->realname }}</span>
             @if ($v->reserved->contains($t))
-            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="release" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="release" class="bg-transparent{{ $readonly ? ' text-gray-400 border-gray-300 cursor-not-allowed opacity-50' : ' hover:bg-blue-500 text-blue-700 hover:text-white border-blue-500 hover:border-transparent' }} font-semibold py-2 px-4 border rounded"{{ $readonly ? ' disabled' : '' }}>
                 開缺
             </button>
             @else
-            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="reserve" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="reserve" class="bg-transparent{{ $readonly ? ' text-gray-400 border-gray-300 cursor-not-allowed opacity-50' : ' hover:bg-blue-500 text-blue-700 hover:text-white border-blue-500 hover:border-transparent' }} font-semibold py-2 px-4 border rounded"{{ $readonly ? ' disabled' : '' }}>
                 保留
             </button>
             @endif
             @endforeach
             @if ($v->reserved->count() > 1)
-            <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+            <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent{{ $readonly ? ' text-gray-400 border-gray-300 cursor-not-allowed opacity-50' : ' hover:bg-red-500 text-red-700 hover:text-white border-red-500 hover:border-transparent' }} font-semibold py-2 px-4 border rounded"{{ $readonly ? ' disabled' : '' }}>
             @endif
         </td>
     </tr>
@@ -107,34 +114,34 @@
             {{ $v->name }}
         </td>
         <td class="p-2">
-            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="text" name="stage{{ $v->id }}" value="{{ $v->stage }}" required>
+            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200{{ $readonly ? ' opacity-50 cursor-not-allowed' : '' }}"
+                type="text" name="stage{{ $v->id }}" value="{{ $v->stage }}" required{{ $readonly ? ' disabled' : '' }}>
         </td>
         <td class="p-2">
-            <label for="special{{ $v->id }}" class="inline-flex relative items-center cursor-pointer">
-            <input type="checkbox" id="special{{ $v->id }}" name="special{{ $v->id }}" value="yes" class="sr-only peer"{{ ($v->special) ? ' checked' : '' }}>
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <label for="special{{ $v->id }}" class="inline-flex relative items-center{{ $readonly ? ' cursor-not-allowed' : ' cursor-pointer' }}">
+            <input type="checkbox" id="special{{ $v->id }}" name="special{{ $v->id }}" value="yes" class="sr-only peer"{{ ($v->special) ? ' checked' : '' }}{{ $readonly ? ' disabled' : '' }}>
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600{{ $readonly ? ' opacity-50' : '' }}"></div>
             </label>
         </td>
         <td class="p-2">
-            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="text" name="shortfall{{ $v->id }}" value="{{ $v->shortfall }}" required>
+            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200{{ $readonly ? ' opacity-50 cursor-not-allowed' : '' }}"
+                type="text" name="shortfall{{ $v->id }}" value="{{ $v->shortfall }}" required{{ $readonly ? ' disabled' : '' }}>
         </td>
         <td class="p-2">
             @foreach ($v->original as $t)
             <span class="pl-4">{{ $t->realname }}</span>
             @if ($v->reserved->contains($t))
-            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="release" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="release" class="bg-transparent{{ $readonly ? ' text-gray-400 border-gray-300 cursor-not-allowed opacity-50' : ' hover:bg-blue-500 text-blue-700 hover:text-white border-blue-500 hover:border-transparent' }} font-semibold py-2 px-4 border rounded"{{ $readonly ? ' disabled' : '' }}>
                 開缺
             </button>
             @else
-            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="reserve" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="reserve" class="bg-transparent{{ $readonly ? ' text-gray-400 border-gray-300 cursor-not-allowed opacity-50' : ' hover:bg-blue-500 text-blue-700 hover:text-white border-blue-500 hover:border-transparent' }} font-semibold py-2 px-4 border rounded"{{ $readonly ? ' disabled' : '' }}>
                 保留
             </button>
             @endif
             @endforeach
             @if ($v->reserved->count() > 1)
-            <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+            <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent{{ $readonly ? ' text-gray-400 border-gray-300 cursor-not-allowed opacity-50' : ' hover:bg-red-500 text-red-700 hover:text-white border-red-500 hover:border-transparent' }} font-semibold py-2 px-4 border rounded"{{ $readonly ? ' disabled' : '' }}>
             @endif
         </td>
     </tr>
@@ -165,34 +172,34 @@
             {{ $v->name }}
         </td>
         <td class="p-2">
-            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="text" name="stage{{ $v->id }}" value="{{ $v->stage }}" required>
+            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200{{ $readonly ? ' opacity-50 cursor-not-allowed' : '' }}"
+                type="text" name="stage{{ $v->id }}" value="{{ $v->stage }}" required{{ $readonly ? ' disabled' : '' }}>
         </td>
         <td class="p-2">
-            <label for="special{{ $v->id }}" class="inline-flex relative items-center cursor-pointer">
-            <input type="checkbox" id="special{{ $v->id }}" name="special{{ $v->id }}" value="yes" class="sr-only peer"{{ ($v->special) ? ' checked' : '' }}>
-                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+            <label for="special{{ $v->id }}" class="inline-flex relative items-center{{ $readonly ? ' cursor-not-allowed' : ' cursor-pointer' }}">
+            <input type="checkbox" id="special{{ $v->id }}" name="special{{ $v->id }}" value="yes" class="sr-only peer"{{ ($v->special) ? ' checked' : '' }}{{ $readonly ? ' disabled' : '' }}>
+                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600{{ $readonly ? ' opacity-50' : '' }}"></div>
             </label>
         </td>
         <td class="p-2">
-            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-                type="text" name="shortfall{{ $v->id }}" value="{{ $v->shortfall }}" required>
+            <input class="inline w-12 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200{{ $readonly ? ' opacity-50 cursor-not-allowed' : '' }}"
+                type="text" name="shortfall{{ $v->id }}" value="{{ $v->shortfall }}" required{{ $readonly ? ' disabled' : '' }}>
         </td>
         <td class="p-2">
             @foreach ($v->original as $t)
             <span class="pl-4">{{ $t->realname }}</span>
             @if ($v->reserved->contains($t))
-            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="release" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="release" class="bg-transparent{{ $readonly ? ' text-gray-400 border-gray-300 cursor-not-allowed opacity-50' : ' hover:bg-blue-500 text-blue-700 hover:text-white border-blue-500 hover:border-transparent' }} font-semibold py-2 px-4 border rounded"{{ $readonly ? ' disabled' : '' }}>
                 開缺
             </button>
             @else
-            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="reserve" class="bg-transparent hover:bg-blue-500 text-blue-700 font-semibold hover:text-white py-2 px-4 border border-blue-500 hover:border-transparent rounded">
+            <button id="{{ $t->uuid }}" name="swap{{ $v->id }}" value="reserve" class="bg-transparent{{ $readonly ? ' text-gray-400 border-gray-300 cursor-not-allowed opacity-50' : ' hover:bg-blue-500 text-blue-700 hover:text-white border-blue-500 hover:border-transparent' }} font-semibold py-2 px-4 border rounded"{{ $readonly ? ' disabled' : '' }}>
                 保留
             </button>
             @endif
             @endforeach
             @if ($v->reserved->count() > 1)
-            <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent hover:bg-red-500 text-red-700 font-semibold hover:text-white py-2 px-4 border border-red-500 hover:border-transparent rounded">
+            <input type="button" id="all{{ $v->id }}" value="全部開缺" class="bg-transparent{{ $readonly ? ' text-gray-400 border-gray-300 cursor-not-allowed opacity-50' : ' hover:bg-red-500 text-red-700 hover:text-white border-red-500 hover:border-transparent' }} font-semibold py-2 px-4 border rounded"{{ $readonly ? ' disabled' : '' }}>
             @endif
         </td>
     </tr>
