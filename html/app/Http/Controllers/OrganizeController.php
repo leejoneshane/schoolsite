@@ -728,13 +728,29 @@ class OrganizeController extends Controller
             $survey->update(['assign' => null]);
         $vacancy = OrganizeVacancy::find($vacancy_id);
         if ($vacancy) {
-            $vacancy->assigned -= 1;
-            $vacancy->save();
-            DB::table('organize_assign')
+            // Check if the user is in organize_reserved
+            $reserved = DB::table('organize_reserved')
                 ->where('syear', current_year())
                 ->where('vacancy_id', $vacancy_id)
                 ->where('uuid', $uuid)
-                ->delete();
+                ->first();
+            if ($reserved) {
+                $vacancy->filled -= 1;
+                $vacancy->save();
+                DB::table('organize_reserved')
+                    ->where('syear', current_year())
+                    ->where('vacancy_id', $vacancy_id)
+                    ->where('uuid', $uuid)
+                    ->delete();
+            } else {
+                $vacancy->assigned -= 1;
+                $vacancy->save();
+                DB::table('organize_assign')
+                    ->where('syear', current_year())
+                    ->where('vacancy_id', $vacancy_id)
+                    ->where('uuid', $uuid)
+                    ->delete();
+            }
             $t = Teacher::find($uuid);
             Watchdog::watch($request, '取消' . $t->realname . '擔任職缺：' . $vacancy->name . '的安排');
             return response()->json('success');

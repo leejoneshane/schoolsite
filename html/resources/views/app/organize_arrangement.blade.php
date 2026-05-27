@@ -151,7 +151,13 @@
         </td>
         <td class="p-2">
         @foreach ($v->reserved as $t)
-            <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
+            <select id="t{{ $v->id }}_{{ $t->uuid }}">
+                <option value="">未指派</option>
+                <option value="{{ $t->uuid }}" selected>{{ $t->realname }}</option>
+                @foreach ($rest_teachers as $t2)
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                @endforeach
+            </select>
         @endforeach
         @foreach ($teachers[$v->id] as $t1)
             <select id="t{{ $v->id }}_{{ $t1->uuid }}">
@@ -186,7 +192,13 @@
         </td>
         <td class="p-2">
         @foreach ($v->reserved as $t)
-            <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
+            <select id="t{{ $v->id }}_{{ $t->uuid }}">
+                <option value="">未指派</option>
+                <option value="{{ $t->uuid }}" selected>{{ $t->realname }}</option>
+                @foreach ($rest_teachers as $t2)
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                @endforeach
+            </select>
         @endforeach
         @foreach ($teachers[$v->id] as $t1)
             <select id="t{{ $v->id }}_{{ $t1->uuid }}">
@@ -293,7 +305,13 @@
         </td>
         <td class="p-2">
         @foreach ($v->reserved as $t)
-            <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
+            <select id="t{{ $v->id }}_{{ $t->uuid }}">
+                <option value="">未指派</option>
+                <option value="{{ $t->uuid }}" selected>{{ $t->realname }}</option>
+                @foreach ($rest_teachers as $t2)
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                @endforeach
+            </select>
         @endforeach
         @foreach ($teachers[$v->id] as $t1)
             <select id="t{{ $v->id }}_{{ $t1->uuid }}">
@@ -328,7 +346,13 @@
         </td>
         <td class="p-2">
         @foreach ($v->reserved as $t)
-            <span class="pl-4 text-gray-500">{{ $t->realname }}</span>
+            <select id="t{{ $v->id }}_{{ $t->uuid }}">
+                <option value="">未指派</option>
+                <option value="{{ $t->uuid }}" selected>{{ $t->realname }}</option>
+                @foreach ($rest_teachers as $t2)
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                @endforeach
+            </select>
         @endforeach
         @foreach ($teachers[$v->id] as $t1)
             <select id="t{{ $v->id }}_{{ $t1->uuid }}">
