@@ -9,7 +9,7 @@
 </div>
 <div class="p-3">
     <label class="inline pr-6">名稱：{{ $venue->name }}</label>
-    <label class="inline pr-6">管理員：{{ $venue->manager->realname }}</label>
+    <label class="inline pr-6">管理員：{{ $venue->manager && $venue->manager->realname ? $venue->manager->realname : '尚未指派' }}</label>
     <label class="inline pr-6">借用須知：{{ $venue->description }}</label>
 </div>
 <div class="p-3">

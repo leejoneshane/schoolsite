@@ -15,19 +15,20 @@
     </div></p>
     <p><div class="p-3">
         <label for="manager" class="inline">管理員：</label>
-        <select id="manager" name="manager" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-        @foreach ($teachers as $t)
-        @php
-            $gap = '';
-            $rname = '';
-            if ($t->role_name) $rname = $t->role_name;
-            for ($i=0;$i<6-mb_strlen($rname);$i++) {
-                $gap .= '　';
-            }
-            $display = $t->role_name . $gap . $t->realname;
-        @endphp
-        <option value="{{ $t->uuid }}"{{ ($t->uuid == employee()->uuid) ? ' selected' : '' }}>{{ $display }}</option>
-        @endforeach
+        <select id="manager" name="manager" class="form-select w-48 m-0 px-3 py-2 text-base font-normal transition ease-in-out rounded border border-gray-300 dark:border-gray-400 bg-white dark:bg-gray-700 text-black dark:text-gray-200" required>
+            <option value="">請選擇管理員...</option>
+            @foreach ($teachers as $t)
+            @php
+                $gap = '';
+                $rname = '';
+                if ($t->role_name) $rname = $t->role_name;
+                for ($i=0;$i<6-mb_strlen($rname);$i++) {
+                    $gap .= '　';
+                }
+                $display = $t->role_name . $gap . $t->realname;
+            @endphp
+            <option value="{{ $t->uuid }}"{{ ($t->uuid == employee()->uuid) ? ' selected' : '' }}>{{ $display }}</option>
+            @endforeach
         </select>
     </div></p>
     <p><div class="p-3">

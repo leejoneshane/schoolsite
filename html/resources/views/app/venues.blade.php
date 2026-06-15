@@ -50,7 +50,7 @@
         ">{{ $venue->name }}</td>
         <td class="p-2 cursor-pointer" onclick="
         window.location.replace('{{ route('venue.reserve', ['id' => $venue->id]) }}');
-        ">{{ $venue->manager->realname }}</td>
+        ">{{ $venue->manager && $venue->manager->realname ? $venue->manager->realname : '尚未指派' }}</td>
         <td class="p-2 cursor-pointer" onclick="
         window.location.replace('{{ route('venue.reserve', ['id' => $venue->id]) }}');
         ">{{ $venue->description }}</td>
