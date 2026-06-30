@@ -103,7 +103,8 @@ class MenuController extends Controller
         }
         Watchdog::watch($request, '移除選單項目：' . $item->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $item->delete();
-        return redirect()->route('menus')->with('success', '選單項目已經刪除！');
+        $redirect = empty($parent) ? redirect()->route('menus') : redirect()->route('menus', ['menu' => $parent]);
+        return $redirect->with('success', '選單項目已經刪除！');
     }
 
 }

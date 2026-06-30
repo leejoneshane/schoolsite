@@ -14,7 +14,9 @@
         所有路由名稱列表如右：{{ implode('、', $routes) }}。
     </p>
 </div>
-<select id="menus" class="block w-full py-2.5 px-0 font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
+<div class="text-gray-500 dark:text-gray-400 py-3">
+    <label for="menus" class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">請選擇要修改的選單：</label>
+    <select id="menus" class="block w-full font-semibold text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 bg-white dark:bg-gray-700"
     onchange="
         var url = this.value;
         window.location.replace(url);
@@ -23,7 +25,8 @@
     @foreach ($menus as $m)
     <option {{ ($current == $m->id) ? 'selected ' : ''}}value="{{ route('menus', ['menu' => $m->id]) }}">{{ $m->caption }}</option>
     @endforeach
-</select>
+    </select>
+</div>
 <form id="edit-menu" action="{{ empty($current) ? route('menus') : route('menus', ['menu' => $current]) }}" method="POST">
     @csrf
     <table class="w-full py-4 text-left font-normal">
@@ -99,7 +102,7 @@
             </td>
             <td class="p-2">
                 @if ($i->top != 'admin')
-                <button class="py-2 pr-6 text-red-300 hover:text-red-600"
+                <button type="button" class="py-2 pr-6 text-red-300 hover:text-red-600"
                     onclick="
                         const myform = document.getElementById('remove');
                         myform.action = '{{ route('menus.remove', ['menu' => $i->id]) }}';
