@@ -115,15 +115,24 @@ class RepairController extends Controller
             'summary' => $request->input('summary'),
             'description' => $request->input('description'),
         ]);
-        $managers = $job->kind->managers;
-        foreach ($managers as $teacher) {
-            $manager = $teacher->user;
-            if ($manager) {
-                Notification::sendNow($manager, new RepairNotification($job->id));
+        $mailSent = true;
+        try {
+            $managers = $job->kind->managers;
+            foreach ($managers as $teacher) {
+                $manager = $teacher->user;
+                if ($manager) {
+                    Notification::sendNow($manager, new RepairNotification($job->id));
+                }
             }
+        } catch (\Throwable $e) {
+            $mailSent = false;
         }
         Watchdog::watch($request, '報修登記：' . $job->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return redirect()->route('repair.list', ['kind' => $kind])->with('success', '已完成報修！');
+        if ($mailSent) {
+            return redirect()->route('repair.list', ['kind' => $kind])->with('success', '已完成報修！');
+        } else {
+            return redirect()->route('repair.list', ['kind' => $kind])->with('message', '報修紀錄已經登錄完成，通知信件暫時無法寄出！請勿重複申報！');
+        }
     }
 
     public function removeJob(Request $request, $job)
