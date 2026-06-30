@@ -89,7 +89,7 @@ class MenuController extends Controller
             ]);
         }
         Watchdog::watch($request, '新增選單項目：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        return redirect()->route('menus')->with('success', '選單項目新增完成！');
+        return redirect()->route('menus', ['menu' => $menu])->with('success', '選單項目新增完成！');
     }
 
     public function remove(Request $request, $menu)
@@ -103,8 +103,7 @@ class MenuController extends Controller
         }
         Watchdog::watch($request, '移除選單項目：' . $item->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $item->delete();
-        $redirect = empty($parent) ? redirect()->route('menus') : redirect()->route('menus', ['menu' => $parent]);
-        return $redirect->with('success', '選單項目已經刪除！');
+        return redirect()->route('menus', ['menu' => $parent])->with('success', '選單項目已經刪除！');
     }
 
 }
