@@ -29,6 +29,7 @@ class Teacher extends Model
     //以下屬性可以批次寫入
     protected $fillable = [
         'uuid',
+        '_uuid',
         'idno',
         'account',
         'id',
@@ -178,6 +179,37 @@ class Teacher extends Model
         return Teacher::whereNotNull('tutor_class')
             ->orderBy('tutor_class')
             ->get();
+    }
+
+    //覆疊 find 函式，當搜尋指定 primary key 失敗後，改為再次搜尋 _uuid 欄位
+    public static function find($id, $columns = ['*'])
+    {
+        $result = static::where('uuid', $id)->first($columns);
+        if (!$result) {
+            $result = static::where('_uuid', $id)->first($columns);
+        }
+        return $result;
+    }
+
+    public function newEloquentBuilder($query)
+    {
+        return new class($query) extends \Illuminate\Database\Eloquent\Builder {
+            public function find($id, $columns = ['*'])
+            {
+                if (is_array($id) || $id instanceof \Illuminate\Contracts\Support\Arrayable) {
+                    return $this->findMany($id, $columns);
+                }
+
+                $result = parent::find($id, $columns);
+                if (!$result) {
+                    $result = $this->getModel()->newQuery()
+                        ->withTrashed()
+                        ->where('_uuid', $id)
+                        ->first($columns);
+                }
+                return $result;
+            }
+        };
     }
 
     //取得指定全誼系統代號的教師

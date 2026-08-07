@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('teachers', function (Blueprint $table) {
             $table->uuid('uuid')->primary();
+            $table->uuid('_uuid')->nullable();
             $table->char('idno',10)->unique();
             $table->string('account')->unique();
             $table->string('id')->nullable();

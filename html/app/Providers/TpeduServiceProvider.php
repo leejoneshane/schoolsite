@@ -248,23 +248,77 @@ class TpeduServiceProvider extends ServiceProvider
             }
             $birth = date('Y-m-d', strtotime($user->birthDate));
             $stu = ($user->employeeType == '學生') ? true : false; 
+            $idno = $user->cn;
+
             if ($stu) {
-                if ($oldemp = Student::withTrashed()->find('uuid')) {
+                // 同步帳號時僅核對身分證字號而不核對 UUID
+                $emp = Student::withTrashed()->where('idno', $idno)->first();
+                if (!$emp) {
+                    $emp = Student::withTrashed()->find($uuid);
+                }
+                if ($emp) {
+                    if ($emp->uuid != $uuid) {
+                        $oldUuid = $emp->uuid;
+                        $emp->_uuid = $oldUuid;
+                        DB::table('students')->where('uuid', $oldUuid)->update([
+                            'uuid' => $uuid,
+                            '_uuid' => $oldUuid,
+                        ]);
+                        $emp->uuid = $uuid;
+
+                        if (!$sys_user) {
+                            $sys_user = User::where('uuid', $oldUuid)->first();
+                        }
+                        if ($sys_user && $sys_user->uuid != $uuid) {
+                            $sys_user->uuid = $uuid;
+                            $sys_user->save();
+                        }
+                    }
                     if ($year && substr($user->employeeNumber, 0, 3) != $year) {
                         if ($user->tpClass > '600') {
-                            $oldemp->class_id = 'z';
-                            $oldemp->save();
+                            $emp->class_id = 'z';
+                            $emp->save();
                         } else {
-                             $oldemp->delete();
+                            $emp->delete();
                         }
                         return false;
                     }
+                } else {
+                    $emp = new Student;
+                    $emp->uuid = $uuid;
+                    $emp->idno = $idno;
                 }
-                $emp = Student::withTrashed()->firstOrNew(['uuid' => $uuid]);
                 $emp->class_id = $user->tpClass;
                 $emp->seat = $user->tpSeat;
             } else {
-                $emp = Teacher::withTrashed()->firstOrNew(['uuid' => $uuid]);
+                // 同步帳號時僅核對身分證字號而不核對 UUID
+                $emp = Teacher::withTrashed()->where('idno', $idno)->first();
+                if (!$emp) {
+                    $emp = Teacher::withTrashed()->find($uuid);
+                }
+                if ($emp) {
+                    if ($emp->uuid != $uuid) {
+                        $oldUuid = $emp->uuid;
+                        $emp->_uuid = $oldUuid;
+                        DB::table('teachers')->where('uuid', $oldUuid)->update([
+                            'uuid' => $uuid,
+                            '_uuid' => $oldUuid,
+                        ]);
+                        $emp->uuid = $uuid;
+
+                        if (!$sys_user) {
+                            $sys_user = User::where('uuid', $oldUuid)->first();
+                        }
+                        if ($sys_user && $sys_user->uuid != $uuid) {
+                            $sys_user->uuid = $uuid;
+                            $sys_user->save();
+                        }
+                    }
+                } else {
+                    $emp = new Teacher;
+                    $emp->uuid = $uuid;
+                    $emp->idno = $idno;
+                }
                 $m_dept_id = '';
                 $m_dept_name = '';
                 $m_role_id = '';
