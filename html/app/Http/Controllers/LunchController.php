@@ -157,6 +157,12 @@ class LunchController extends Controller
             $class_id = employee()->tutor_class;
             $grade = substr($class_id, 0, 1);
 
+            $fixed_days[0] = $in_class_id;
+            $fixed_days[1] = $in_class_id;
+            $fixed_days[2] = $in_class_id;
+            $fixed_days[3] = $in_class_id;
+            $fixed_days[4] = $in_class_id;
+            /*
             if ($grade == 1 || $grade == 2) {
                 // Low Grade: Thu(3)
                 $fixed_days[3] = $in_class_id;
@@ -172,6 +178,7 @@ class LunchController extends Controller
                 $fixed_days[3] = $in_class_id;
                 $fixed_days[4] = $in_class_id;
             }
+            */
         } else {
             if ($in_class_id) {
                 $cafeterias = $cafeterias->reject(function ($value) use ($in_class_id) {
