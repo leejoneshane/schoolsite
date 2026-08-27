@@ -212,6 +212,16 @@ class GcalendarServiceProvider extends ServiceProvider
     {
         $calendar_id = $ics->calendar_id;
         $event_id = $ics->event_id;
+        $original_calendar_id = $ics->getOriginal('calendar_id');
+
+        // Handle calendar change if event was moved to another calendar
+        if (!empty($event_id) && !empty($original_calendar_id) && $original_calendar_id !== $calendar_id) {
+            $moved = $this->move_event($original_calendar_id, $event_id, $calendar_id);
+            if (!$moved) {
+                $event_id = '';
+            }
+        }
+
         if (!empty($event_id)) {
             $event = $this->get_event($calendar_id, $event_id);
             if (!$event) {
@@ -225,34 +235,48 @@ class GcalendarServiceProvider extends ServiceProvider
         } else {
             $event = new Google_Service_Calendar_Event();
         }
-        $event->setSummary($ics->summary);
-        if (!empty($ics->description)) {
-            $event->setDescription($ics->description);
-        }
-        if (!empty($ics->location)) {
-            $event->setLocation($ics->location);
-        }
+        $event->setSummary($ics->summary ?? '');
+        $event->setDescription($ics->description ?? '');
+        $event->setLocation($ics->location ?? '');
         $organizer = new Google_Service_Calendar_EventOrganizer();
         $organizer->setEmail(config('services.gsuite.calendar'));
-        $organizer->setDisplayName($ics->unit->name);
+        $organizer->setDisplayName($ics->unit ? $ics->unit->name : config('app.name', '學校'));
         $event->setOrganizer($organizer);
+
+        $tz = env('TZ', 'Asia/Taipei');
         $event_start = new Google_Service_Calendar_EventDateTime();
         $event_end = new Google_Service_Calendar_EventDateTime();
-        $event_start->setTimeZone(env('TZ'));
-        $event_end->setTimeZone(env('TZ'));
+        $event_start->setTimeZone($tz);
+        $event_end->setTimeZone($tz);
+
         if ($ics->all_day) {
-            $event_start->setDate($ics->startDate->format('Y-m-d'));
-            $event_end->setDate($ics->endDate->format('Y-m-d'));
+            // Google Calendar API: All-day event end date is EXCLUSIVE (day after the last day)
+            $start_date_str = $ics->startDate ? $ics->startDate->format('Y-m-d') : date('Y-m-d');
+            $end_date_str = $ics->endDate ? $ics->endDate->copy()->addDay()->format('Y-m-d') : Carbon::parse($start_date_str)->addDay()->format('Y-m-d');
+
+            $event_start->setDate($start_date_str);
+            $event_end->setDate($end_date_str);
             $event->setStart($event_start);
             $event->setEnd($event_end);
+            $event->setRecurrence([]);
         } else {
-            $event_start->setDateTime($ics->startDate->format('Y-m-d').'T'.$ics->startTime->format('H:i:s').'+08:00');
-            $event_end->setDateTime($ics->startDate->format('Y-m-d').'T'.$ics->endTime->format('H:i:s').'+08:00');
+            $start_date_str = $ics->startDate ? $ics->startDate->format('Y-m-d') : date('Y-m-d');
+            $start_time_str = $ics->startTime ? $ics->startTime->format('H:i:s') : '08:00:00';
+            $end_time_str = $ics->endTime ? $ics->endTime->format('H:i:s') : '17:00:00';
+
+            $start_dt = Carbon::parse($start_date_str . ' ' . $start_time_str, $tz);
+            $end_dt = Carbon::parse($start_date_str . ' ' . $end_time_str, $tz);
+
+            $event_start->setDateTime($start_dt->toRfc3339String());
+            $event_end->setDateTime($end_dt->toRfc3339String());
             $event->setStart($event_start);
             $event->setEnd($event_end);
-            $days = $ics->endDate->diff($ics->startDate)->format('%a');
+
+            $days = ($ics->startDate && $ics->endDate) ? $ics->startDate->diffInDays($ics->endDate) : 0;
             if ($days > 0) {
-                $event->setRecurrence([ 'RRULE:FREQ=DAILY;COUNT=' . $days+1 ]);
+                $event->setRecurrence(['RRULE:FREQ=DAILY;COUNT=' . ($days + 1)]);
+            } else {
+                $event->setRecurrence([]);
             }
         }
         if (!empty($event_id)) {
@@ -261,7 +285,7 @@ class GcalendarServiceProvider extends ServiceProvider
             $event = $this->create_event($calendar_id, $event);
             if ($event) {
                 $ics->event_id = $event->getId();
-                $ics->save();
+                $ics->saveQuietly();
             }
         }
 

@@ -26,7 +26,7 @@
         <select class="inline w-44 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
             id="calendar_id" name="calendar_id">
             @foreach ($calendars as $c)
-            <option value="{{ $c->id }}"{{ ($c->id == $event->id) ? ' selected' : ''}}>{{ $c->summary }}</option>
+            <option value="{{ $c->id }}"{{ ($c->id == $event->calendar_id) ? ' selected' : ''}}>{{ $c->summary }}</option>
             @endforeach
         </select>
     </div></p>

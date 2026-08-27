@@ -120,19 +120,16 @@ class CalendarController extends Controller
         $event->description = $request->input('desc');
         $event->location = $request->input('location');
         $event->calendar_id = $request->input('calendar_id');
-        if ($request->has('important')) {
-            $event->important = true;
-        }
-        if ($request->has('training')) {
-            $event->training = true;
-        }
+        $event->important = $request->has('important');
+        $event->training = $request->has('training');
         if ($request->has('all_day')) {
             $event->all_day = true;
+            $event->startTime = null;
+            $event->endTime = null;
         } else {
-            $start = $request->input('start_time');
-            $event->startTime = $start;
-            $end = $request->input('end_time');
-            $event->endTime = $end;
+            $event->all_day = false;
+            $event->startTime = $request->input('start_time');
+            $event->endTime = $request->input('end_time');
         }
         $event->save();
         Watchdog::watch($request, '新增行事曆事件：' . $event->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -170,20 +167,16 @@ class CalendarController extends Controller
         $event->description = $request->input('desc');
         $event->location = $request->input('location');
         $event->calendar_id = $request->input('calendar_id');
-        if ($request->has('important')) {
-            $event->important = true;
-        }
-        if ($request->has('training')) {
-            $event->training = true;
-        }
+        $event->important = $request->has('important');
+        $event->training = $request->has('training');
         if ($request->has('all_day')) {
             $event->all_day = true;
+            $event->startTime = null;
+            $event->endTime = null;
         } else {
             $event->all_day = false;
-            $start = $request->input('start_time');
-            $event->startTime = $start;
-            $end = $request->input('end_time');
-            $event->endTime = $end;
+            $event->startTime = $request->input('start_time');
+            $event->endTime = $request->input('end_time');
         }
         $event->save();
         Watchdog::watch($request, '更新行事曆事件：' . $event->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
