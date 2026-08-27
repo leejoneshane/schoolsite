@@ -54,8 +54,8 @@
     @foreach ($events as $event)
     <tr class="even:bg-white odd:bg-gray-100 hover:bg-blue-100 dark:hover:bg-blue-600 dark:even:bg-gray-700 dark:odd:bg-gray-600">
         <td class="p-2">{{ $event->unit->name }}</td>
-        <td class="p-2">{{ $event->startDate->format('Y-m-d') }} {{ ($event->all_day) ? '全天' : $event->startTime.'～'.$event->endTime }}</td>
-        <td class="p-2">{{ ($event->startDate == $event->endDate) ? '' : $event->endDate->format('Y-m-d') }}</td>
+        <td class="p-2">{{ $event->startDate ? $event->startDate->format('Y-m-d') : '' }} {{ $event->all_day ? '全天' : ($event->startTime ? $event->startTime->format('H:i') : '') . '～' . ($event->endTime ? $event->endTime->format('H:i') : '') }}</td>
+        <td class="p-2">{{ ($event->startDate && $event->endDate && $event->startDate->format('Y-m-d') == $event->endDate->format('Y-m-d')) ? '' : ($event->endDate ? $event->endDate->format('Y-m-d') : '') }}</td>
         <td class="p-2">{{ $event->summary }}</td>
         <td class="p-2">{{ $event->description }}</td>
         <td class="p-2">{{ $event->location }}

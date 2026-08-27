@@ -196,23 +196,31 @@ class Venue extends Model
             }
         }
         for ($i=0; $i<5; $i++) {
-            if ($sdate->between($this->unavailable_at, $this->unavailable_until)) {
+            if ($this->unavailable_at && $this->unavailable_until && $sdate->between($this->unavailable_at, $this->unavailable_until)) {
                 for ($j=0; $j<10; $j++) {
                     if ($whole->map[$i][$j] === true) {
                         $whole->map[$i][$j] = false; //位於不出借時段，則設為 false
                     }
                 }
             }
-            if ($sdate < Carbon::today()->addDays($this->schedule_start)) {
+            if ($sdate < Carbon::today()) {
                 for ($j=0; $j<10; $j++) {
                     if ($whole->map[$i][$j] === true) {
-                        $whole->map[$i][$j] = 'Z'; //如果未達預約時程，設為 'Z'
+                        $whole->map[$i][$j] = 'Z'; //已過期設為 'Z'
+                    }
+                }
+            } elseif ($this->schedule_start && $this->schedule_start > 0 && $sdate < Carbon::today()->addDays($this->schedule_start)) {
+                for ($j=0; $j<10; $j++) {
+                    if ($whole->map[$i][$j] === true) {
+                        $whole->map[$i][$j] = 'X'; //未達開放預約天數設為 'X'
                     }
                 }
             }
             if ($this->schedule_limit && $this->schedule_limit > 0 && $sdate > Carbon::today()->addDays($this->schedule_limit)) {
                 for ($j=0; $j<10; $j++) {
-                    $whole->map[$i][$j] = 'X'; //如果超過預約時程，設為 'X'
+                    if ($whole->map[$i][$j] === true) {
+                        $whole->map[$i][$j] = 'X'; //超過預約期限天數設為 'X'
+                    }
                 }
             }
             $sdate->addDay();

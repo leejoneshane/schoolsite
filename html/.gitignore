@@ -4,6 +4,8 @@
 /storage/*.pem
 /storage/*.key
 /storage/*.json
+/storage/framework/
+/storage/logs/
 /data.ms
 /vendor
 /.idea

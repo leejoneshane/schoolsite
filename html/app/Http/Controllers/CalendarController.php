@@ -148,8 +148,7 @@ class CalendarController extends Controller
         $units = [];
         if ($user->is_admin) {
             $units = Unit::main();
-        }
-        if ($user->user_type == 'Teacher') {
+        } elseif ($user->user_type == 'Teacher') {
             $t = Teacher::find($user->uuid);
             $units = $t->upper();
         }
@@ -203,8 +202,8 @@ class CalendarController extends Controller
             $seme = current_seme();
             $section = $year . $seme;
         } else {
-            $year = (integer) substr($section, 0, -1);
-            $seme = (integer) substr($section, -1);
+            $year = (int) substr($section, 0, -1);
+            $seme = (int) substr($section, -1);
         }
         if ($seme == 1) {
             $y = $year+1911;
@@ -245,8 +244,8 @@ class CalendarController extends Controller
                 foreach ($important as $i) {
                     $content .= '　'.$i->summary;
                     if (!empty($i->location)) $content .= ' 地點：'.$i->location;
-                    if (!($i->all_day)) $content .= ' 時間：'.$i->startTime.'到'.$i->endTime;
-                    if ($i->startDate != $i->endDate) $content .= '(至'.$i->endDate.'止)';
+                    if (!($i->all_day)) $content .= ' 時間：'.($i->startTime ? $i->startTime->format('H:i') : '').'到'.($i->endTime ? $i->endTime->format('H:i') : '');
+                    if ($i->startDate && $i->endDate && $i->startDate->format('Y-m-d') != $i->endDate->format('Y-m-d')) $content .= '(至'.$i->endDate->format('Y-m-d').'止)';
                 }
                 $last = '';
                 foreach ($events as $e) {
@@ -257,8 +256,8 @@ class CalendarController extends Controller
                     }
                     $content .= '　'.$e->summary;
                     if (!empty($e->location)) $content .= ' 地點：'.$e->location;
-                    if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
-                    if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate->format('Y-m-d').'止)';
+                    if (!($e->all_day)) $content .= ' 時間：'.($e->startTime ? $e->startTime->format('H:i') : '').'到'.($e->endTime ? $e->endTime->format('H:i') : '');
+                    if ($e->startDate && $e->endDate && $e->startDate->format('Y-m-d') != $e->endDate->format('Y-m-d')) $content .= '(至'.$e->endDate->format('Y-m-d').'止)';
                 }
                 if ($content) {
                     $obj = new \stdClass;
@@ -283,8 +282,8 @@ class CalendarController extends Controller
             $seme = current_seme();
             $section = $year . $seme;
         } else {
-            $year = (integer) substr($section, 0, -1);
-            $seme = (integer) substr($section, -1);
+            $year = (int) substr($section, 0, -1);
+            $seme = (int) substr($section, -1);
         }
         if ($seme == 1) {
             $y = $year+1911;
@@ -325,8 +324,8 @@ class CalendarController extends Controller
                 foreach ($important as $i) {
                     $content .= '　'.$i->summary;
                     if (!empty($i->location)) $content .= ' 地點：'.$i->location;
-                    if (!($i->all_day)) $content .= ' 時間：'.$i->startTime.'到'.$i->endTime;
-                    if ($i->startDate != $i->endDate) $content .= '(至'.$i->endDate.'止)';
+                    if (!($i->all_day)) $content .= ' 時間：'.($i->startTime ? $i->startTime->format('H:i') : '').'到'.($i->endTime ? $i->endTime->format('H:i') : '');
+                    if ($i->startDate && $i->endDate && $i->startDate->format('Y-m-d') != $i->endDate->format('Y-m-d')) $content .= '(至'.$i->endDate.'止)';
                 }
                 $last = '';
                 foreach ($events as $e) {
@@ -337,8 +336,8 @@ class CalendarController extends Controller
                     }
                     $content .= '　'.$e->summary;
                     if (!empty($e->location)) $content .= ' 地點：'.$e->location;
-                    if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
-                    if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate->format('Y-m-d').'止)';
+                    if (!($e->all_day)) $content .= ' 時間：'.($e->startTime ? $e->startTime->format('H:i') : '').'到'.($e->endTime ? $e->endTime->format('H:i') : '');
+                    if ($e->startDate && $e->endDate && $e->startDate->format('Y-m-d') != $e->endDate->format('Y-m-d')) $content .= '(至'.$e->endDate->format('Y-m-d').'止)';
                 }
                 if ($content) {
                     $obj = new \stdClass;
@@ -363,8 +362,8 @@ class CalendarController extends Controller
             $seme = current_seme();
             $section = $year . $seme;
         } else {
-            $year = (integer) substr($section, 0, -1);
-            $seme = (integer) substr($section, -1);
+            $year = (int) substr($section, 0, -1);
+            $seme = (int) substr($section, -1);
             if ($year < 0 || $seme > 2) {
                 $year = current_year();
                 $seme = current_seme();
@@ -417,8 +416,8 @@ class CalendarController extends Controller
                 foreach ($important as $i) {
                     $content .= '　'.$i->summary;
                     if (!empty($i->location)) $content .= ' 地點：'.$i->location;
-                    if (!($i->all_day)) $content .= ' 時間：'.$i->startTime.'到'.$i->endTime;
-                    if ($i->startDate != $i->endDate) $content .= '(至'.$i->endDate.'止)';
+                    if (!($i->all_day)) $content .= ' 時間：'.($i->startTime ? $i->startTime->format('H:i') : '').'到'.($i->endTime ? $i->endTime->format('H:i') : '');
+                    if ($i->startDate && $i->endDate && $i->startDate->format('Y-m-d') != $i->endDate->format('Y-m-d')) $content .= '(至'.$i->endDate.'止)';
                 }
                 $last = '';
                 foreach ($events as $e) {
@@ -429,8 +428,8 @@ class CalendarController extends Controller
                     }
                     $content .= '　'.$e->summary;
                     if (!empty($e->location)) $content .= ' 地點：'.$e->location;
-                    if (!($e->all_day)) $content .= ' 時間：'.$e->startTime.'到'.$e->endTime;
-                    if ($e->startDate != $e->endDate) $content .= '(至'.$e->endDate->format('Y-m-d').'止)';
+                    if (!($e->all_day)) $content .= ' 時間：'.($e->startTime ? $e->startTime->format('H:i') : '').'到'.($e->endTime ? $e->endTime->format('H:i') : '');
+                    if ($e->startDate && $e->endDate && $e->startDate->format('Y-m-d') != $e->endDate->format('Y-m-d')) $content .= '(至'.$e->endDate->format('Y-m-d').'止)';
                 }
                 if ($content) {
                     $obj = new \stdClass;

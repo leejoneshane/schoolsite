@@ -2,10 +2,12 @@
 .docker-compose.yml
 .editorconfig
 .env.example
-node_modules/
+html/vendor/
+html/node_modules/
+html/storage/framework/
+html/storage/logs/
 build/
 dist/
-vendor/
 .DS_Store
 Thumbs.db
 Icon?

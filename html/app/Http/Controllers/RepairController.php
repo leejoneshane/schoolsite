@@ -121,7 +121,7 @@ class RepairController extends Controller
             foreach ($managers as $teacher) {
                 $manager = $teacher->user;
                 if ($manager) {
-                    Notification::sendNow($manager, new RepairNotification($job->id));
+                    Notification::send($manager, new RepairNotification($job->id));
                 }
             }
         } catch (\Throwable $e) {
@@ -165,7 +165,7 @@ class RepairController extends Controller
             'comment' => $request->input('comment'),
         ]);
         if ($reporter = $reply->job->reporter->user) {
-            Notification::sendNow($reporter, new RepairReplyNotification($reply->id));
+            Notification::send($reporter, new RepairReplyNotification($reply->id));
         }
         Watchdog::watch($request, '修繕回應：' . $reply->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $kind = RepairJob::find($job)->kind_id;
