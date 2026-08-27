@@ -20,8 +20,8 @@ Route::get('login', 'App\Http\Controllers\Auth\LoginController@showLoginForm')->
 Route::post('login', 'App\Http\Controllers\Auth\LoginController@login');
 Route::get('login/tpedu', 'App\Http\Controllers\Auth\TpeduController@redirect');
 Route::get('login/tpedu/callback', 'App\Http\Controllers\Auth\TpeduController@handleCallback');
-Route::get('login/{provider}', 'App\Http\Controllers\Auth\SocialiteController@redirect');
-Route::get('login/{provider}/callback', 'App\Http\Controllers\Auth\SocialiteController@handleCallback');
+Route::get('login/{provider}', 'App\Http\Controllers\Auth\SocialiteController@redirect')->where('provider', 'google|facebook|yahoo|line');
+Route::get('login/{provider}/callback', 'App\Http\Controllers\Auth\SocialiteController@handleCallback')->where('provider', 'google|facebook|yahoo|line');
 Route::get('socialite', 'App\Http\Controllers\Auth\SocialiteController@socialite')->middleware('auth')->name('social');
 Route::post('socialite/remove', 'App\Http\Controllers\Auth\SocialiteController@removeSocialite')->middleware('auth')->name('social.remove');
 

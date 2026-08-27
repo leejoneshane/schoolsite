@@ -192,10 +192,10 @@
         @auth
         <li class="inline-block mt-2 lg:mt-0 px-4 lg:px-2 py-1 leading-none text-sm">  
           @student
-          {{ employee()->classname }} 
+          {{ employee()?->classname }} 
           @endstudent
           @auth
-          {{ employee()->realname }}
+          {{ employee()?->realname ?? Auth::user()?->name }}
           @endauth
         </li>
         <li>

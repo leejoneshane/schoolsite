@@ -99,17 +99,25 @@ class SeatsController extends Controller
         if ($user->user_type != 'Teacher') {
             return redirect()->route('home')->with('error', '只有教職員才能新增分組座位表！');
         }
+        $teacher = employee();
+        $classes = $teacher ? $teacher->classrooms : collect();
+        if (!$classes || $classes->isEmpty()) {
+            return redirect()->route('seats')->with('error', '找不到您在本學期的任教班級資料，因此無法新增座位表！');
+        }
         $themes = SeatsTheme::all();
-        $classes = employee()->classrooms;
         return view('app.seats_add', ['classes' => $classes, 'themes' => $themes]);
-
     }
 
     public function insert(Request $request)
     {
+        $class_id = $request->input('classroom');
+        $theme_id = $request->input('theme');
+        if (!$class_id || !$theme_id) {
+            return redirect()->route('seats')->with('error', '無效的班級或版型資料，無法新增座位表！');
+        }
         $seats = Seats::create([
-            'class_id' => $request->input('classroom'),
-            'theme_id' => $request->input('theme'),
+            'class_id' => $class_id,
+            'theme_id' => $theme_id,
             'uuid' => $request->user()->uuid,
         ]);
         Watchdog::watch($request, '新增座位表：' . $seats->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));

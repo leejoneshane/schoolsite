@@ -32,7 +32,7 @@
     <tr class="text-white bg-blue-700 font-semibold text-lg">
         <th class="p-2 w-full">
             {{ $meet->unit->name }}業務報告：{{ $meet->reporter . $meet->created_at}}
-            @if ($create && $unit->id == $meet->unit_id)
+            @if ($create && $unit?->id == $meet->unit_id)
             <a class="text-sm py-2 pl-6 rounded text-gray-300 hover:text-gray-100" href="{{ route('meeting.edit', ['id' => $meet->id]) }}">
                 <i class="fa-solid fa-pen"></i>編輯
             </a>

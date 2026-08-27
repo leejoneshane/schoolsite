@@ -13,11 +13,13 @@
         <table class="p-3">
             <tr>
                 <td>
-                    <label for="classroome" class="inline">班級：</label>
+                    <label for="classroom" class="inline">班級：</label>
                     <select id="classroom" name="classroom" class="inline rounded py-2 mr-6 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">
-                    @foreach ($classes as $cls)
+                    @forelse ($classes as $cls)
                         <option value="{{ $cls->id }}">{{ $cls->name }}</option>
-                    @endforeach
+                    @empty
+                        <option value="">（無任教班級）</option>
+                    @endforelse
                     </select>
                     <label for="theme" class="inline">版型：</label>
                     <select id="theme" name="theme" class="inline rounded py-2 mr-6 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200">

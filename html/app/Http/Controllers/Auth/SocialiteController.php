@@ -13,7 +13,11 @@ class SocialiteController extends Controller
 
     public function redirect($provider)
     {
-        return Socialite::with($provider)->redirect();
+        try {
+            return Socialite::with($provider)->redirect();
+        } catch (\Exception $e) {
+            return redirect()->route('login')->with('error', '不支援的社群登入方式！');
+        }
     }
 
     public function handleCallback(Request $request, $provider)

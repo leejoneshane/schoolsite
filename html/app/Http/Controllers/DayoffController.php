@@ -54,9 +54,11 @@ class DayoffController extends Controller
             $dates = $request->input('dates');
             $from = $request->input('from');
             $to = $request->input('to');
-            if (!empty($dates)) {
+            if (!empty($dates) && is_array($dates)) {
                 foreach ($dates as $k => $d) {
-                    $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
+                    if (isset($from[$k], $to[$k]) && $from[$k] !== '' && $to[$k] !== '') {
+                        $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
+                    }
                 }
             }
             if (empty($datetimes) && empty($request->input('rdate'))) {
@@ -101,9 +103,9 @@ class DayoffController extends Controller
             $dates = $request->input('dates');
             $from = $request->input('from');
             $to = $request->input('to');
-            if (!empty($dates)) {
+            if (!empty($dates) && is_array($dates)) {
                 foreach ($dates as $k => $d) {
-                    if ($from && $to && $from[$k] && $to[$k]) {
+                    if (isset($from[$k], $to[$k]) && $from[$k] !== '' && $to[$k] !== '') {
                         $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
                     } else {
                         return back()->withInput()->with('error', '「公假時間」欄位填寫不完整！');
