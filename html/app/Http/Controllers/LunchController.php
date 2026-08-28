@@ -29,7 +29,8 @@ class LunchController extends Controller
         if ($user->user_type == 'Student') {
             return redirect()->route('lunch.survey');
         } elseif ($user->user_type == 'Teacher') {
-            $is_tutor = employee()->tutor_class;
+            $emp = employee();
+            $is_tutor = $emp ? $emp->tutor_class : null;
             if ($manager || $is_tutor) {
                 return redirect()->route('lunch.teacher');
             } else {
@@ -59,7 +60,12 @@ class LunchController extends Controller
                 ->generate($settings->qrcode, $image);
         }
 
-        $class_id = employee()->class_id;
+        $emp = employee();
+        if (!$emp) {
+            return redirect()->route('home')->with('error', '找不到您的學生學籍資料，請聯繫管理員！');
+        }
+
+        $class_id = $emp->class_id;
         $classroom = Classroom::find($class_id);
         $survey = LunchSurvey::findBy($user->uuid, $section);
         $manager = false; // Students are not managers here
@@ -80,7 +86,8 @@ class LunchController extends Controller
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->is_admin || $user->hasPermission('lunch.manager');
-        $is_tutor = ($user->user_type == 'Teacher' && employee()->tutor_class);
+        $emp = employee();
+        $is_tutor = ($user->user_type == 'Teacher' && $emp && $emp->tutor_class);
 
         if (!$manager && !$is_tutor) {
             return redirect()->route('lunch.teacher');
@@ -104,7 +111,7 @@ class LunchController extends Controller
             $classroom = Classroom::find($class_id);
             $surveys = LunchSurvey::class_survey($class_id, $section);
         } elseif ($is_tutor) {
-            $class_id = employee()->tutor_class;
+            $class_id = $emp ? $emp->tutor_class : null;
             $classroom = Classroom::find($class_id);
             $surveys = LunchSurvey::class_survey($class_id, $section);
         }
@@ -151,10 +158,11 @@ class LunchController extends Controller
         $in_class_id = $in_class_opt ? $in_class_opt->id : null;
 
         $fixed_days = [];
-        $is_tutor = ($user->user_type == 'Teacher' && employee()->tutor_class);
+        $emp = employee();
+        $is_tutor = ($user->user_type == 'Teacher' && $emp && $emp->tutor_class);
 
         if ($is_tutor) {
-            $class_id = employee()->tutor_class;
+            $class_id = $emp ? $emp->tutor_class : null;
             $grade = substr($class_id, 0, 1);
 
             $fixed_days[0] = $in_class_id;
@@ -285,6 +293,9 @@ class LunchController extends Controller
     {
         $user = Auth::user();
         $student = Student::find($user->uuid);
+        if (!$student) {
+            return redirect()->route('home')->with('error', '找不到您的學生學籍資料，請聯繫管理員！');
+        }
         $survey = LunchSurvey::updateOrCreate([
             'section' => $request->input('section'),
             'uuid' => $student->uuid,

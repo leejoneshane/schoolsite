@@ -30,8 +30,8 @@ class OrganizeController extends Controller
         if (!$year)
             $year = $current;
         $teacher = employee();
-        $survey = $teacher->survey($year);
-        $seniority = $teacher->seniority();
+        $survey = $teacher ? $teacher->survey($year) : null;
+        $seniority = $teacher ? $teacher->seniority() : null;
         if ($seniority) {
             $school_year = $seniority->new_school_year;
             if ($school_year < 1)
@@ -65,7 +65,7 @@ class OrganizeController extends Controller
             $score['total'] = 0;
             $score['high'] = 0;
         }
-        if (!empty($teacher->tutor_class)) {
+        if ($teacher && !empty($teacher->tutor_class)) {
             $grade = substr($teacher->tutor_class, 0, 1);
             if ($grade == '5' || $grade == '6')
                 $score['highgrade'] = true;
@@ -481,7 +481,7 @@ class OrganizeController extends Controller
             ->where('uuid', $uuid)
             ->delete();
         $t = Teacher::find($uuid);
-        Watchdog::watch($request, '將' . $t->realname . '的職務：' . $vacancy->name . '開缺');
+        Watchdog::watch($request, '將' . ($t ? $t->realname : '') . '的職務：' . ($vacancy ? $vacancy->name : '') . '開缺');
         return response()->json('success');
     }
 
@@ -524,7 +524,7 @@ class OrganizeController extends Controller
             'uuid' => $uuid,
         ]);
         $t = Teacher::find($uuid);
-        Watchdog::watch($request, '保留' . $t->realname . '的職缺：' . $vacancy->name);
+        Watchdog::watch($request, '保留' . ($t ? $t->realname : '') . '的職缺：' . ($vacancy ? $vacancy->name : ''));
         return response()->json('success');
     }
 
@@ -709,7 +709,7 @@ class OrganizeController extends Controller
                 'uuid' => $uuid,
             ]);
             $t = Teacher::find($uuid);
-            Watchdog::watch($request, '安排' . $t->realname . '擔任職缺：' . $vacancy->name);
+            Watchdog::watch($request, '安排' . ($t ? $t->realname : '') . '擔任職缺：' . ($vacancy ? $vacancy->name : ''));
             return response()->json('success');
         } else {
             return response()->json('vacancy not exists!');
@@ -752,7 +752,7 @@ class OrganizeController extends Controller
                     ->delete();
             }
             $t = Teacher::find($uuid);
-            Watchdog::watch($request, '取消' . $t->realname . '擔任職缺：' . $vacancy->name . '的安排');
+            Watchdog::watch($request, '取消' . ($t ? $t->realname : '') . '擔任職缺：' . ($vacancy ? $vacancy->name : '') . '的安排');
             return response()->json('success');
         } else {
             return response()->json('vacancy not exists!');
@@ -783,10 +783,9 @@ class OrganizeController extends Controller
             return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
         }
         $teacher = Teacher::find($request->uuid);
+        if (!$teacher) return response()->json((object) ['header' => '錯誤', 'body' => '找不到該教師！']);
         $seniority = $teacher->seniority();
-        $score = $seniority->newscore;
-        if ($score < 1)
-            $score = $seniority->score;
+        $score = $seniority ? ($seniority->newscore < 1 ? $seniority->score : $seniority->newscore) : 0;
         $year = current_year();
         $survey = $teacher->survey($year);
         $stage1 = OrganizeVacancy::year_stage(1, $year);

@@ -102,7 +102,7 @@
             @endif
                 <input id='s{{ $v->id }}_{{ $t->uuid }}' type='checkbox'{{ ($t->assign == $v->id) ? ' checked' : '' }}>
                 <button id='{{ $t->uuid }}' data-modal-toggle="defaultModal">
-                    {{ $t->teacher->realname }}
+                    {{ $t->teacher ? $t->teacher->realname : '---' }}
                 </button>
             </span>
         @endforeach
@@ -128,7 +128,7 @@
             <span class="pl-4 bg-red-200">
                 <input id='s{{ $v->id }}_{{ $t->uuid }}' type='checkbox'{{ ($t->assign == $v->id) ? ' checked' : '' }}>
                 <button id='{{ $t->uuid }}' data-modal-toggle="defaultModal">
-                    {{ $t->teacher->realname }}
+                    {{ $t->teacher ? $t->teacher->realname : '---' }}
                 </button>
             </span>
         @endforeach
@@ -155,16 +155,16 @@
                 <option value="">未指派</option>
                 <option value="{{ $t->uuid }}" selected>{{ $t->realname }}</option>
                 @foreach ($rest_teachers as $t2)
-                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher ? $t2->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endforeach
         @foreach ($teachers[$v->id] as $t1)
             <select id="t{{ $v->id }}_{{ $t1->uuid }}">
                 <option value="">未指派</option>
-                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher->realname }}</option>
+                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher ? $t1->teacher->realname : '---' }}</option>
                 @foreach ($rest_teachers as $t2)
-                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher ? $t2->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endforeach
@@ -173,7 +173,7 @@
             <select id="t{{ $v->id }}_{{ $z }}">
                 <option value="">未指派</option>
                 @foreach ($rest_teachers as $t)
-                <option value="{{ $t->uuid }}">{{ $t->teacher->realname }}</option>
+                <option value="{{ $t->uuid }}">{{ $t->teacher ? $t->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endfor
@@ -196,16 +196,16 @@
                 <option value="">未指派</option>
                 <option value="{{ $t->uuid }}" selected>{{ $t->realname }}</option>
                 @foreach ($rest_teachers as $t2)
-                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher ? $t2->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endforeach
         @foreach ($teachers[$v->id] as $t1)
             <select id="t{{ $v->id }}_{{ $t1->uuid }}">
                 <option value="">未指派</option>
-                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher->realname }}</option>
+                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher ? $t1->teacher->realname : '---' }}</option>
                 @foreach ($rest_teachers as $t2)
-                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher ? $t2->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endforeach
@@ -214,7 +214,7 @@
             <select id="t{{ $v->id }}_{{ $z }}">
                 <option value="">未指派</option>
                 @foreach ($rest_teachers as $t)
-                <option value="{{ $t->uuid }}">{{ $t->teacher->realname }}</option>
+                <option value="{{ $t->uuid }}">{{ $t->teacher ? $t->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endfor
@@ -244,7 +244,7 @@
             <span class="pl-4 bg-red-200">
                 <input id='s{{ $v->id }}_{{ $t->uuid }}' type='checkbox'{{ ($t->assign == $v->id) ? ' checked' : '' }}>
                 <button id='{{ $t->uuid }}' data-modal-toggle="defaultModal">
-                    {{ $t->teacher->realname }}
+                    {{ $t->teacher ? $t->teacher->realname : '---' }}
                 </button>
             </span>
         @endforeach
@@ -282,7 +282,7 @@
             @endif
                 <input id='s{{ $v->id }}_{{ $t->uuid }}' type='checkbox'{{ ($t->assign == $v->id) ? ' checked' : '' }}>
                 <button id='{{ $t->uuid }}' data-modal-toggle="defaultModal">
-                    {{ $t->teacher->realname }}
+                    {{ $t->teacher ? $t->teacher->realname : '---' }}
                 </button>
             </span>
         @endforeach
@@ -309,16 +309,16 @@
                 <option value="">未指派</option>
                 <option value="{{ $t->uuid }}" selected>{{ $t->realname }}</option>
                 @foreach ($rest_teachers as $t2)
-                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher ? $t2->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endforeach
         @foreach ($teachers[$v->id] as $t1)
             <select id="t{{ $v->id }}_{{ $t1->uuid }}">
                 <option value="">未指派</option>
-                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher->realname }}</option>
+                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher ? $t1->teacher->realname : '---' }}</option>
                 @foreach ($rest_teachers as $t2)
-                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher ? $t2->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endforeach
@@ -327,7 +327,7 @@
             <select id="t{{ $v->id }}_{{ $z }}">
                 <option value="">未指派</option>
                 @foreach ($rest_teachers as $t)
-                <option value="{{ $t->uuid }}">{{ $t->teacher->realname }}</option>
+                <option value="{{ $t->uuid }}">{{ $t->teacher ? $t->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endfor
@@ -350,16 +350,16 @@
                 <option value="">未指派</option>
                 <option value="{{ $t->uuid }}" selected>{{ $t->realname }}</option>
                 @foreach ($rest_teachers as $t2)
-                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher ? $t2->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endforeach
         @foreach ($teachers[$v->id] as $t1)
             <select id="t{{ $v->id }}_{{ $t1->uuid }}">
                 <option value="">未指派</option>
-                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher->realname }}</option>
+                <option value="{{ $t1->uuid }}" selected>{{ $t1->teacher ? $t1->teacher->realname : '---' }}</option>
                 @foreach ($rest_teachers as $t2)
-                <option value="{{ $t2->uuid }}">{{ $t2->teacher->realname }}</option>
+                <option value="{{ $t2->uuid }}">{{ $t2->teacher ? $t2->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endforeach
@@ -368,7 +368,7 @@
             <select id="t{{ $v->id }}_{{ $z }}">
                 <option value="">未指派</option>
                 @foreach ($rest_teachers as $t)
-                <option value="{{ $t->uuid }}">{{ $t->teacher->realname }}</option>
+                <option value="{{ $t->uuid }}">{{ $t->teacher ? $t->teacher->realname : '---' }}</option>
                 @endforeach
             </select>
         @endfor

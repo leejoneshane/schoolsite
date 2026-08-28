@@ -107,9 +107,10 @@ class RepairController extends Controller
     public function insertJob(Request $request, $kind)
     {
         $user = Auth::user();
+        $emp = employee();
         $job = RepairJob::create([
             'uuid' => $user->uuid,
-            'reporter_name' => employee()->realname,
+            'reporter_name' => $emp ? $emp->realname : '',
             'kind_id' => $kind,
             'place' => $request->input('place'),
             'summary' => $request->input('summary'),
@@ -138,6 +139,9 @@ class RepairController extends Controller
     public function removeJob(Request $request, $job)
     {
         $job = RepairJob::find($job);
+        if (!$job) {
+            return redirect()->route('repair')->with('error', '找不到要刪除的報修紀錄！');
+        }
         $kind = $job->kind_id;
         Watchdog::watch($request, '移除報修紀錄：' . $job->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $job->delete();
@@ -151,31 +155,39 @@ class RepairController extends Controller
             return redirect()->route('home')->with('error', '只有教職員才能登記修繕紀錄！');
         }
         $job = RepairJob::find($job);
+        if (!$job) {
+            return redirect()->route('repair')->with('error', '找不到該報修紀錄！');
+        }
         return view('app.repair_addreply', ['job' => $job]);
     }
 
     public function insertReply(Request $request, $job)
     {
         $user = Auth::user();
+        $emp = employee();
         $reply = RepairReply::create([
             'uuid' => $user->uuid,
-            'namager_name' => employee()->realname,
+            'namager_name' => $emp ? $emp->realname : '',
             'job_id' => $job,
             'status' => $request->input('status'),
             'comment' => $request->input('comment'),
         ]);
-        if ($reporter = $reply->job->reporter->user) {
+        if ($reply->job && $reply->job->reporter && ($reporter = $reply->job->reporter->user)) {
             Notification::send($reporter, new RepairReplyNotification($reply->id));
         }
         Watchdog::watch($request, '修繕回應：' . $reply->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-        $kind = RepairJob::find($job)->kind_id;
+        $job_obj = RepairJob::find($job);
+        $kind = $job_obj ? $job_obj->kind_id : null;
         return redirect()->route('repair.list', ['kind' => $kind])->with('success', '已回覆修繕結果！');
     }
 
     public function removeReply(Request $request, $reply)
     {
         $reply = RepairReply::find($reply);
-        $job = $reply->job->id;
+        if (!$reply) {
+            return redirect()->route('repair')->with('error', '找不到該修繕回應紀錄！');
+        }
+        $job = $reply->job ? $reply->job->id : null;
         Watchdog::watch($request, '移除修繕回應：' . $reply->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         $reply->delete();
         return redirect()->route('repair.reply', ['job' => $job])->with('success', '修繕回應已經刪除！');

@@ -45,8 +45,13 @@ class Dayoff extends Model
             return $this->rdate;
         } else {
             $datestrs = [];
-            foreach ($this->datetimes as $d) {
-                $datestrs[] = $d['date'] . ' ' . $d['from'] . '-' . $d['to']; 
+            if (!empty($this->datetimes) && (is_array($this->datetimes) || is_object($this->datetimes))) {
+                foreach ($this->datetimes as $d) {
+                    $date = is_array($d) ? ($d['date'] ?? '') : ($d->date ?? '');
+                    $from = is_array($d) ? ($d['from'] ?? '') : ($d->from ?? '');
+                    $to = is_array($d) ? ($d['to'] ?? '') : ($d->to ?? '');
+                    $datestrs[] = $date . ' ' . $from . '-' . $to; 
+                }
             }
             return implode('、', $datestrs);
         }

@@ -118,7 +118,7 @@ class VenueController extends Controller
         }
         $venue = Venue::find($id);
         if (!$venue) return redirect()->route('venues')->with('error', '找不到此場地/設備，因此無法編輯！');
-        $manager = ($user->is_admin || $user->hasPermission('venue.manager') || $venue->manager->uuid == $user->uuid);
+        $manager = ($user->is_admin || $user->hasPermission('venue.manager') || ($venue->manager && $venue->manager->uuid == $user->uuid));
         if ($manager) {
             $teachers = Teacher::admins();
             return view('app.venue_edit', ['venue' => $venue, 'teachers' => $teachers]);
@@ -135,7 +135,7 @@ class VenueController extends Controller
         }
         $venue = Venue::find($id);
         if (!$venue) return redirect()->route('venues')->with('error', '找不到此場地/設備，因此無法編輯！');
-        $manager = ($user->is_admin || $user->hasPermission('venue.manager') || $venue->manager->uuid == $user->uuid);
+        $manager = ($user->is_admin || $user->hasPermission('venue.manager') || ($venue->manager && $venue->manager->uuid == $user->uuid));
         if ($manager) {
             $venue = Venue::find($id);
             $venue->update([
@@ -272,10 +272,11 @@ class VenueController extends Controller
         }
         $venue_id = $request->input('venue_id');
         $date = $request->input('date');
+        $emp = employee();
         $r = VenueReserve::create([
             'venue_id' => $venue_id,
             'uuid' => $user->uuid,
-            'teacher_name' => employee()->realname,
+            'teacher_name' => $emp ? $emp->realname : '',
             'reserved_at' => $date,
             'weekday' => $request->input('weekday'),
             'session' => $request->input('session'),
@@ -294,7 +295,7 @@ class VenueController extends Controller
         }
         $reserve = VenueReserve::find($request->input('id'));
         if (!$reserve) return redirect()->route('venues')->with('error', '找不到此預約紀錄，因此無法編輯！');
-        $manager = ($user->is_admin || $user->hasPermission('venue.manager') || $user->uuid == $reserve->subscriber->uuid);
+        $manager = ($user->is_admin || $user->hasPermission('venue.manager') || ($reserve->subscriber && $user->uuid == $reserve->subscriber->uuid));
         if ($manager) {
             $session_name = self::$sessionMap[$reserve->session];
             $result = $reserve->venue->weekly(substr($reserve->reserved_at, 0, 10));
@@ -320,7 +321,7 @@ class VenueController extends Controller
         }
         $reserve = VenueReserve::find($request->input('id'));
         if (!$reserve) return redirect()->route('venues')->with('error', '找不到此預約紀錄，因此無法編輯！');
-        $manager = ($user->is_admin || $user->hasPermission('venue.manager') || $user->uuid == $reserve->subscriber->uuid);
+        $manager = ($user->is_admin || $user->hasPermission('venue.manager') || ($reserve->subscriber && $user->uuid == $reserve->subscriber->uuid));
         if ($manager) {
             if ($request->input('act') == 'edit') {
                 $reserve->update([

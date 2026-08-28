@@ -11,13 +11,13 @@
     @csrf
     <input type="hidden" name="id" value="{{ $reserve->id }}">
     <p><div class="p-3">
-        <label class="inline">名稱：{{ $reserve->venue->name }}</label>
+        <label class="inline">名稱：{{ $reserve->venue ? $reserve->venue->name : '---' }}</label>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">借用須知：{{ $reserve->venue->description }}</label>
+        <label class="inline">借用須知：{{ $reserve->venue ? $reserve->venue->description : '' }}</label>
     </div></p>
     <p><div class="p-3">
-        <label class="inline">預約者：{{ $reserve->subscriber->realname }}</label>
+        <label class="inline">預約者：{{ $reserve->teacher_name ?: ($reserve->subscriber ? $reserve->subscriber->realname : '---') }}</label>
     </div></p>
     <p><div class="p-3">
         <label class="inline">預約日期：{{ substr($reserve->reserved_at, 0, 10) }}</label>

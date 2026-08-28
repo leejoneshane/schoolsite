@@ -51,9 +51,13 @@ class PlayerController extends Controller
         $user = Auth::user();
         if ($user->user_type == 'Student') {
             $stu = Student::find($user->uuid);
+            if (!$stu) {
+                return redirect()->route('home')->with('error', '找不到您的學生學籍資料，請聯繫管理員！');
+            }
             $character = GameCharacter::find($user->uuid);
-            ExitArena::dispatch($character);
-            if (!$character) {
+            if ($character) {
+                ExitArena::dispatch($character);
+            } else {
                 $character = GameCharacter::create([
                     'uuid' => $stu->uuid,
                     'classroom_id' => $stu->class_id,
@@ -72,9 +76,12 @@ class PlayerController extends Controller
     {
         $user = Auth::user();
         $stu = Student::find($user->uuid);
+        if (!$stu) {
+            return redirect()->route('home')->with('error', '找不到您的學生學籍資料，請聯繫管理員！');
+        }
         $character = GameCharacter::find($user->uuid);
         if (!$character) {
-            GameCharacter::create([
+            $character = GameCharacter::create([
                 'uuid' => $stu->uuid,
                 'classroom_id' => $stu->class_id,
                 'seat' => $stu->seat,
@@ -97,9 +104,12 @@ class PlayerController extends Controller
     {
         $user = Auth::user();
         $stu = Student::find($user->uuid);
+        if (!$stu) {
+            return redirect()->route('home')->with('error', '找不到您的學生學籍資料，請聯繫管理員！');
+        }
         $character = GameCharacter::find($user->uuid);
         if (!$character) {
-            GameCharacter::create([
+            $character = GameCharacter::create([
                 'uuid' => $stu->uuid,
                 'classroom_id' => $stu->class_id,
                 'seat' => $stu->seat,

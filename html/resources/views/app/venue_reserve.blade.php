@@ -9,7 +9,7 @@
 </div>
 <div class="p-3">
     <label class="inline pr-6">名稱：{{ $venue->name }}</label>
-    <label class="inline pr-6">管理員：{{ $venue->manager && $venue->manager->realname ? $venue->manager->realname : '尚未指派' }}</label>
+    <label class="inline pr-6">管理員：{{ $venue->manager ? $venue->manager->realname : '尚未指派' }}</label>
     <label class="inline pr-6">借用須知：{{ $venue->description }}</label>
 </div>
 <div class="p-3">
@@ -89,13 +89,13 @@
                         $reserve = $result->map[$i][$key];
                     @endphp
                 <td class="w-32 border-t border-l border-slate-300 bg-blue-200 text-center"{{ ($reserve['length'] > 1) ? ' rowspan='.$reserve['length'] : ''}}>
-                    @if ($reserve->subscriber->uuid == Auth::user()->uuid)
+                    @if ($reserve->subscriber && $reserve->subscriber->uuid == Auth::user()->uuid)
                     <button id="{{ $reserve->id }}" class="viewit w-full py-2 bg-blue-200 text-sm text-center test-blue-700" onclick="editReserve(this)">
-                        {{ $reserve->teacher_name ?: $reserve->subscriber->realname }}
+                        {{ $reserve->teacher_name ?: ($reserve->subscriber ? $reserve->subscriber->realname : '') }}
                     </button>
                     @else
                     <button id="{{ $reserve->id }}" class="viewit w-full py-2 bg-blue-200 text-sm text-center" data-modal-toggle="defaultModal" onclick="showReserve(this)">
-                        {{ $reserve->teacher_name ?: $reserve->subscriber->realname }}
+                        {{ $reserve->teacher_name ?: ($reserve->subscriber ? $reserve->subscriber->realname : '') }}
                     </button>
                     @endif
                 </td>

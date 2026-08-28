@@ -56,11 +56,11 @@ class PublicController extends Controller
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
         $domainmanager = $user->hasPermission('public.domain');
         $teacher = Teacher::find($user->uuid);
-        $domain = $teacher->domains->first();
+        $domain = $teacher ? $teacher->domains->first() : null;
         $publics = null;
         if ($manager) {
             $publics = PublicClass::bySection($section);
-        } elseif ($domainmanager || $domain) {
+        } elseif (($domainmanager || $domain) && $domain) {
             $publics = PublicClass::byDomain($domain->id, $section);
         }
         $calendar = IcsCalendar::forPublic();

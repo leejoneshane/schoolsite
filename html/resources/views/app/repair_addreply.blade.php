@@ -3,7 +3,7 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     管理修繕進度
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('repair.list', ['kind' => $job->kind->id]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('repair.list', ['kind' => $job->kind ? $job->kind->id : $job->kind_id]) }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
@@ -30,7 +30,7 @@
         <th scope="row" class="px-2">
             報修者
         </th>
-        <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ $job->reporter_name ?: $job->reporter->realname }}</td>
+        <td class="border-b px-2 cursor-pointer" onclick="show('{{ $job->id }}');">{{ $job->reporter_name ?: ($job->reporter ? $job->reporter->realname : '') }}</td>
     </tr>
 </table>
 @if ($job->reply)
@@ -63,10 +63,10 @@
             {{ $reply->comment }}
         </td>
         <td class="px-2">
-            {{ $reply->manager_name ?: $reply->maintener->realname }}
+            {{ $reply->manager_name ?: ($reply->maintener ? $reply->maintener->realname : '') }}
         </td>
         <td class="border-b px-2">
-            @if (Auth::user()->is_admin ||  $job->kind->is_manager(Auth::user()->uuid))
+            @if (Auth::user()->is_admin || ($job->kind && $job->kind->is_manager(Auth::user()->uuid)))
             <button class="py-2 pr-6 text-red-300 hover:text-red-600" title="刪除"
                 onclick="
                     const myform = document.getElementById('remove');
@@ -84,7 +84,7 @@
 <form id="add-reply" action="{{ route('repair.reply', ['job' => $job->id]) }}" method="POST">
     @csrf
     <p class="p-3">
-        <label class="inline">管理者：{{ employee()->realname }}</label>
+        <label class="inline">管理者：{{ employee() ? employee()->realname : '' }}</label>
     </p>
     <p class="p-3">
         <label for="status" class="inline">修繕進度：</label>

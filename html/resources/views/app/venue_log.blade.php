@@ -1,10 +1,10 @@
 <div class="p-2">
     <span class="text-indigo-700 dark:text-indigo-200">預約者：</span>
-    {{ $reserve->teacher_name ?: $reserve->subscriber->realname }}
+    {{ $reserve->teacher_name ?: ($reserve->subscriber ? $reserve->subscriber->realname : '') }}
 </div>
 <div class="p-2">
     <span class="text-indigo-700 dark:text-indigo-200">預約場地（設備）：</span>
-    {{ $reserve->venue->name }}
+    {{ $reserve->venue ? $reserve->venue->name : '' }}
 </div>
 <div class="p-2">
     <span class="text-indigo-700 dark:text-indigo-200">預約日期：</span>

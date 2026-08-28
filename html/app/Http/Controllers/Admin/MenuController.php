@@ -36,23 +36,37 @@ class MenuController extends Controller
         $parents = $request->input('parents');
         $urls = $request->input('urls');
         $weights = $request->input('weights');
-        foreach ($captions as $id => $title) {
-            $m = Menu::find($id);
-            $m->parent_id = $parents[$id];
-            $m->caption = $title;
-            $m->url = $urls[$id];
-            $m->weight = $weights[$id];
-            $m->save();
-            Watchdog::watch($request, '更新選單項目：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+        if (!empty($captions) && is_array($captions)) {
+            foreach ($captions as $id => $title) {
+                $m = Menu::find($id);
+                if ($m) {
+                    if (is_array($parents) && isset($parents[$id])) {
+                        $m->parent_id = $parents[$id];
+                    }
+                    $m->caption = $title;
+                    if (is_array($urls) && isset($urls[$id])) {
+                        $m->url = $urls[$id];
+                    }
+                    if (is_array($weights) && isset($weights[$id])) {
+                        $m->weight = $weights[$id];
+                    }
+                    $m->save();
+                    Watchdog::watch($request, '更新選單項目：' . $m->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+                }
+            }
         }
-        foreach ($ids as $old => $new) {
-            if ($old == $new) continue;
-            $m = Menu::find($old);
-            $m->id = $new;
-            $m->save();
-            Watchdog::watch($request, '變更選單項目代號：' . $old . '->' . $new);
+        if (!empty($ids) && is_array($ids)) {
+            foreach ($ids as $old => $new) {
+                if ($old == $new) continue;
+                $m = Menu::find($old);
+                if ($m) {
+                    $m->id = $new;
+                    $m->save();
+                    Watchdog::watch($request, '變更選單項目代號：' . $old . '->' . $new);
+                }
+            }
         }
-        return redirect()->route('menus')->with('success', '選單項目已經更新！');
+        return redirect()->route('menus', ['menu' => $menu])->with('success', '選單項目已經更新！');
     }
 
     public function add($menu = '')
@@ -95,6 +109,9 @@ class MenuController extends Controller
     public function remove(Request $request, $menu)
     {
         $item = Menu::find($menu);
+        if (!$item) {
+            return redirect()->route('menus')->with('error', '找不到您要刪除的選單項目！');
+        }
         $parent = $item->parent_id;
         if ($item->url == '#') {
             Menu::where('parent_id', $menu)->update([

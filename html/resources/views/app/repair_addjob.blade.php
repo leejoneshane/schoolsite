@@ -3,19 +3,19 @@
 @section('content')
 <div class="text-2xl font-bold leading-normal pb-5">
     新增報修紀錄
-    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('repair.list', ['kind' => $kind->id]) }}">
+    <a class="text-sm py-2 pl-6 rounded text-blue-300 hover:text-blue-600" href="{{ route('repair.list', ['kind' => $kind ? $kind->id : 1]) }}">
         <i class="fa-solid fa-eject"></i>返回上一頁
     </a>
 </div>
 <div class="w-full border-blue-500 bg-blue-100 dark:bg-blue-700 border-b-2 mb-5" role="alert">
     <p>
-        {!! $kind->selftest !!}
+        {!! $kind ? $kind->selftest : '未分類' !!}
     </p>
 </div>
-<form id="add-job" action="{{ route('repair.report', ['kind' => $kind->id]) }}" method="POST">
+<form id="add-job" action="{{ route('repair.report', ['kind' => $kind ? $kind->id : 1]) }}" method="POST">
     @csrf
     <p class="p-3">
-        <label class="inline">報修者：{{ employee()->realname }}</label>
+        <label class="inline">報修者：{{ employee() ? employee()->realname : '' }}</label>
     </p>
     <p class="p-3">
         <label for="place" class="inline">維修地點：</label>

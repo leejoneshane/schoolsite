@@ -139,8 +139,12 @@ class PublicClass extends Model
     //提供公開課摘要
     public function getSummaryAttribute()
     {
-        $summary = $this->teacher->realname . '老師公開課（';
-        $summary .= (is_null($this->teach_class) ? $this->grade->name : $this->classroom->name) . $this->domain->name . $this->teach_unit . $this->week_session . $this->location . '）';
+        $teacher_name = $this->teacher_name ?: ($this->teacher ? $this->teacher->realname : '');
+        $grade_name = $this->grade ? $this->grade->name : '';
+        $class_name = $this->classroom ? $this->classroom->name : '';
+        $domain_name = $this->domain ? $this->domain->name : '';
+        $summary = $teacher_name . '老師公開課（';
+        $summary .= (is_null($this->teach_class) ? $grade_name : $class_name) . $domain_name . $this->teach_unit . $this->week_session . $this->location . '）';
         return $summary;
     }
 

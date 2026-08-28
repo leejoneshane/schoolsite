@@ -692,7 +692,8 @@ class ClubController extends Controller
         $user = Auth::user();
         if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法報名參加學生社團！');
         $student = Student::find($user->uuid);
-        $grade = substr($student->class_id, 0, 1);
+        if (!$student) return redirect()->route('home')->with('error', '找不到您的學生學籍資料，請聯繫管理員！');
+        $grade = substr($student->class_id ?? '', 0, 1);
         $clubs = Club::can_enroll($grade);
         $enrolls0 = $student->section_enrolls(next_section());
         $enrolls1 = $student->section_enrolls(current_section());
@@ -710,6 +711,7 @@ class ClubController extends Controller
             return redirect()->route('clubs.enroll')->with('error', '找不到您要報名的社團！');
         }
         $student = Student::find($user->uuid);
+        if (!$student) return redirect()->route('home')->with('error', '找不到您的學生學籍資料，請聯繫管理員！');
         $section = $club->section();
         if (!$section) {
             return redirect()->route('clubs.enroll')->with('error', '找不到該社團的開課紀錄，因此無法報名！');
@@ -725,8 +727,11 @@ class ClubController extends Controller
     {
         $user = Auth::user();
         $club = Club::find($club_id);
+        if (!$club) return redirect()->route('clubs.enroll')->with('error', '找不到您要報名的社團！');
         $section = $club->section();
+        if (!$section) return redirect()->route('clubs.enroll')->with('error', '找不到該社團的開課紀錄！');
         $student = Student::find($user->uuid);
+        if (!$student) return redirect()->route('home')->with('error', '找不到您的學生學籍資料，請聯繫管理員！');
         $grade = $student->grade();
         if ($student->has_enroll($club_id, $section->section)) {
             return redirect()->route('clubs.enroll')->with('error', '您已經報名該社團，無法再次報名！');
@@ -1131,6 +1136,7 @@ class ClubController extends Controller
     {
         $uuid = $request->input('student');
         $student = Student::find($uuid);
+        if (!$student) return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '找不到該學生的學籍資料！');
         $grade = $student->grade();
         if ($student->has_enroll($club_id, $section)) {
             return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('error', '該生已經報名此社團，無法再次報名！');

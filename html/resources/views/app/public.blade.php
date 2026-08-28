@@ -102,7 +102,7 @@
                     @if (count($schedule->map[$i][$key]) > 0)
                         @foreach ($schedule->map[$i][$key] as $data)
                     <button id="{{ $data->id }}" class="viewit w-full py-2 bg-blue-200 text-sm text-center" data-modal-toggle="defaultModal" onclick="showReserve(this)">
-                        {{ $data->teacher->realname . $data->teach_class . $data->domain->name }}
+                        {{ ($data->teacher_name ?: ($data->teacher ? $data->teacher->realname : '')) . $data->teach_class . ($data->domain ? $data->domain->name : '') }}
                     </button>
                         @endforeach
                     @endif
@@ -168,26 +168,26 @@
                 <td class="p-2">{{ $data->timeperiod }}</td>
                 <td class="p-2">{{ $data->week_session }}</td>
                 @if ($manager)
-                <td class="p-2">{{ $data->domain->name }}</td>
+                <td class="p-2">{{ $data->domain ? $data->domain->name : '' }}</td>
                 @endif
                 @if ($manager || $domain_manager)
-                <td class="p-2">{{ $data->teacher_name ?: $data->teacher->realname}}</td>
+                <td class="p-2">{{ $data->teacher_name ?: ($data->teacher ? $data->teacher->realname : '') }}</td>
                 @endif
                 <td class="p-2">{{ $data->teach_unit }}</td>
-                <td class="p-2">{{ is_null($data->teach_class) ? '特殊需求' : $data->classroom->name }}</td>
+                <td class="p-2">{{ is_null($data->teach_class) ? '特殊需求' : ($data->classroom ? $data->classroom->name : '') }}</td>
                 <td class="p-2">{{ $data->location }}</td>
                 <td class="p-2">
-                    @if (!empty($data->eduplan) && ($manager || $domain_manager || $data->uuid == $teacher->uuid))
+                    @if (!empty($data->eduplan) && ($manager || $domain_manager || ($teacher && $data->uuid == $teacher->uuid)))
                     <a href="{{ asset('public_class/' . $data->eduplan) }}">教案</a>
                     @endif
                 </td>
                 <td class="p-2">
-                    @if (!empty($data->discuss) && ($manager || $domain_manager || $data->uuid == $teacher->uuid))
+                    @if (!empty($data->discuss) && ($manager || $domain_manager || ($teacher && $data->uuid == $teacher->uuid)))
                     <a href="{{ asset('public_class/' . $data->discuss) }}">觀課後會談</a>
                     @endif
                 </td>
                 <td class="p-2">
-                    @if ($manager || $domain_manager || $data->uuid == $teacher->uuid)
+                    @if ($manager || $domain_manager || ($teacher && $data->uuid == $teacher->uuid))
                     <a class="py-2 pr-6 text-blue-300 hover:text-blue-600"
                         href="{{ route('public.edit', ['id' => $data->id]) }}" title="編輯">
                         <i class="fa-solid fa-pen"></i>

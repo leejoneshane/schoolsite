@@ -21,10 +21,17 @@
     </p>
     <p class="p-3">
         <label>公假時間：</label>
+        @if (!empty($report->datetimes) && (is_array($report->datetimes) || is_object($report->datetimes)))
         @foreach ($report->datetimes as $dd)
-        <br>日期：<input class="w-36 rounded px-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" type="date" name="dates[]" min="{{ current_between_date()->mindate }}" max="{{ current_between_date()->maxdate }}" value="{{ $dd['date'] }}"> 時間：<input class="w-36 rounded px-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" type="time" name="from[]" min="08:00" max="16:00" value="{{ $dd['from'] }}"> ～ <input class="w-36 rounded px-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" type="time" name="to[]" min="08:00" max="16:00" value="{{ $dd['to'] }}">
+        @php
+            $d_date = is_array($dd) ? ($dd['date'] ?? '') : ($dd->date ?? '');
+            $d_from = is_array($dd) ? ($dd['from'] ?? '') : ($dd->from ?? '');
+            $d_to = is_array($dd) ? ($dd['to'] ?? '') : ($dd->to ?? '');
+        @endphp
+        <label><br>日期：<input class="w-36 rounded px-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" type="date" name="dates[]" min="{{ current_between_date()->mindate }}" max="{{ current_between_date()->maxdate }}" value="{{ $d_date }}"> 時間：<input class="w-36 rounded px-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" type="time" name="from[]" min="08:00" max="16:00" value="{{ $d_from }}"> ～ <input class="w-36 rounded px-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200" type="time" name="to[]" min="08:00" max="16:00" value="{{ $d_to }}"></label>
         <button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_datetime(this);"><i class="fa-solid fa-circle-minus"></i></button>
         @endforeach
+        @endif
         <button id="new" type="button" class="py-2 px-6 rounded text-blue-300 hover:text-blue-600"
             onclick="add_datetime()"><i class="fa-solid fa-circle-plus"></i>
         </button>

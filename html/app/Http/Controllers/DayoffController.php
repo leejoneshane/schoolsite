@@ -56,7 +56,7 @@ class DayoffController extends Controller
             $to = $request->input('to');
             if (!empty($dates) && is_array($dates)) {
                 foreach ($dates as $k => $d) {
-                    if (isset($from[$k], $to[$k]) && $from[$k] !== '' && $to[$k] !== '') {
+                    if (is_array($from) && is_array($to) && isset($from[$k], $to[$k]) && $from[$k] !== '' && $to[$k] !== '') {
                         $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
                     }
                 }
@@ -105,7 +105,7 @@ class DayoffController extends Controller
             $to = $request->input('to');
             if (!empty($dates) && is_array($dates)) {
                 foreach ($dates as $k => $d) {
-                    if (isset($from[$k], $to[$k]) && $from[$k] !== '' && $to[$k] !== '') {
+                    if (is_array($from) && is_array($to) && isset($from[$k], $to[$k]) && $from[$k] !== '' && $to[$k] !== '') {
                         $datetimes[] = (object) array('date' => $d, 'from' => $from[$k], 'to' => $to[$k]);
                     } else {
                         return back()->withInput()->with('error', '「公假時間」欄位填寫不完整！');
@@ -251,7 +251,7 @@ class DayoffController extends Controller
                 if (strlen($stdno) != 5)
                     continue;
                 $class_id = substr($stdno, 0, 3);
-                $seat = (integer) substr($stdno, -2);
+                $seat = (int) substr($stdno, -2);
                 $student = Student::findByStdno($class_id, $seat);
                 if ($student) {
                     if ($dayoff->student_occupy($student->uuid)) {
