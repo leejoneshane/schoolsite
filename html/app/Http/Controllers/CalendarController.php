@@ -59,7 +59,14 @@ class CalendarController extends Controller
         $today = $request->input('current');
         if (!$today) $today = $request->old('current');
         if (!$today) $today = date('Y-m-d');
-        $current = Carbon::parse($today, env('TZ'));
+        try {
+            $current = Carbon::parse($today, env('TZ'));
+        } catch (\Throwable $e) {
+            $invalid_date = $today;
+            $today = date('Y-m-d');
+            $current = Carbon::parse($today, env('TZ'));
+            session()->now('message', '日期格式無效（' . e($invalid_date) . '），已自動重設為今日日期！');
+        }
         $is_admin = $request->user() ? $request->user()->is_admin : false;
         $notyet = ($current >= Carbon::today());
         $create = false;
