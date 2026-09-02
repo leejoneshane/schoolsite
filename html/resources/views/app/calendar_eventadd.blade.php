@@ -74,6 +74,7 @@
             <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">全天</span>
         </label>
     </div></p>
+    <div class="inline font-semibold text-red-500">起迄時間若超過 4 個小時，請改勾選全天！</div>
     <p><div id="part_time" class="p-3">
         <label for="stime" class="inline">起迄時間：</label>
         <input class="w-36 rounded border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
