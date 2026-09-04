@@ -72,9 +72,7 @@
         @if ($current == 24)
         <td class="p-2">{{ ($t->tutor) ?: '' }}</td>
         @endif
-        @if ($current == 25)
         <td class="p-2">{{ ($t->domain) ? $t->domain->name : '' }}</td>
-        @endif
         <td class="p-2">{{ $t->realname }}</td>
         <td class="p-2">{{ $t->account }}</td>
         <td class="p-2">{{ $t->email }}</td>
