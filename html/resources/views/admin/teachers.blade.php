@@ -46,11 +46,9 @@
             導師班級
         </th>
         @endif
-        @if ($current == 25)
         <th scope="col" class="p-2">
             隸屬領域
         </th>
-        @endif
         <th scope="col" class="p-2">
             姓名
         </th>
