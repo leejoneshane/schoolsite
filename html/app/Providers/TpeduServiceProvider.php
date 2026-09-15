@@ -425,6 +425,9 @@ class TpeduServiceProvider extends ServiceProvider
                     $emp->tutor_class = $user->tpTutorClass;
                     DB::table('job_title')->where('year', current_year())->where('uuid', $uuid)->where('unit_id', 25)->delete();
                 }
+                // Tpedu 主機不再提供配課資料，配課已改由教師自行輸入
+                // 標註為註解防止執行並避免清空教師自行設定之配課，保留程式碼以適應後續系統變更
+                /*
                 DB::table('assignment')->where('year', current_year())->where('uuid', $uuid)->delete();
                 if (isset($user->teachClass->{$o}) && is_array($user->teachClass->{$o})) {
                     foreach ($user->teachClass->{$o} as $assign) {
@@ -440,6 +443,7 @@ class TpeduServiceProvider extends ServiceProvider
                         }
                     }
                 }
+                */
             }
             $emp->idno = $user->cn;
             $emp->id = $user->employeeNumber;

@@ -25,6 +25,12 @@ Route::get('login/{provider}/callback', 'App\Http\Controllers\Auth\SocialiteCont
 Route::get('socialite', 'App\Http\Controllers\Auth\SocialiteController@socialite')->middleware('auth')->name('social');
 Route::post('socialite/remove', 'App\Http\Controllers\Auth\SocialiteController@removeSocialite')->middleware('auth')->name('social.remove');
 
+// 個人資料
+Route::group(['prefix' => 'profile', 'middleware' => ['auth']], function () {
+    Route::get('/', 'App\Http\Controllers\ProfileController@edit')->name('profile.edit');
+    Route::post('/', 'App\Http\Controllers\ProfileController@update')->name('profile.update');
+});
+
 // 登出
 Route::post('logout', 'App\Http\Controllers\Auth\LoginController@logout')->name('logout');
 

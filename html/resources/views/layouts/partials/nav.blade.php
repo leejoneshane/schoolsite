@@ -33,10 +33,10 @@
     <span class="inline-block mt-2 lg:mt-0 px-4 lg:px-2 py-1 leading-none text-white text-sm">  
       @student
       {{ employee()?->classname }} 
-      @endstudent
-      @auth
       {{ employee()?->realname ?? Auth::user()?->name }}
-      @endauth
+      @else
+      <a href="{{ route('profile.edit') }}" class="text-white hover:text-teal-200 hover:underline cursor-pointer" title="點擊編輯個人資料">{{ employee()?->realname ?? Auth::user()?->name }}<i class="fa-solid fa-pen-to-square"></i></a>
+      @endstudent
     </span>
     <span class="block lg:inline-block mt-2 lg:mt-0 px-4 lg:px-2">
       <i class="fa-solid fa-share-nodes"></i>
