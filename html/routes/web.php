@@ -389,6 +389,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function 
     Route::get('database/teachers/{search?}', 'App\Http\Controllers\Admin\SchoolDataController@teacherList')->name('teachers');
     Route::get('database/teachers/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@teacherEdit');
     Route::post('database/teachers/{uuid}/edit', 'App\Http\Controllers\Admin\SchoolDataController@teacherUpdate')->name('teachers.edit');
+    Route::post('database/teachers/{uuid}/pwd', 'App\Http\Controllers\Admin\SchoolDataController@teacherPwd')->name('teachers.password');
     Route::post('database/teachers/{uuid}/sync', 'App\Http\Controllers\Admin\SchoolDataController@teacherSync')->name('teachers.sync');
     Route::post('database/teachers/{uuid}/remove', 'App\Http\Controllers\Admin\SchoolDataController@teacherRemove')->name('teachers.remove');
     Route::post('database/teachers/{uuid}/restore', 'App\Http\Controllers\Admin\SchoolDataController@teacherRestore')->name('teachers.restore');

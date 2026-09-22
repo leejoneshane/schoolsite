@@ -401,6 +401,22 @@ class SchoolDataController extends Controller
         return redirect(urldecode($request->input('referer')))->with('success', '教師資訊已經更新完成！');
     }
 
+    public function teacherPwd(Request $request, $uuid)
+    {
+        $referer = $request->headers->get('referer');
+        $google = new GsuiteServiceProvider();
+        $t = Teacher::withTrashed()->find($uuid);
+        $pwd = substr($t->idno, -6);
+        $user = User::where('uuid', $uuid)->first();
+        if ($user) {
+            $user->reset_password($pwd);
+            Watchdog::watch($request, '重設教師「' . $t->realname . '」密碼為 ' . $pwd);
+            return redirect(urldecode($referer))->with('success', '教師本機密碼已經重設為身分證字號後六碼！');
+        } else {
+            return redirect(urldecode($referer))->with('error', '找不到教師本機帳號，無法重設密碼！');
+        }
+    }
+
     public function teacherSync(Request $request, $uuid)
     {
         $referer = $request->headers->get('referer');

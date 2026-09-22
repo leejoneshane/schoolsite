@@ -81,6 +81,14 @@
                 href="{{ route('teachers.edit', ['uuid' => $t->uuid]) }}">
                 <i class="fa-solid fa-user-pen"></i>
             </a>
+            <button class="py-2 pr-6 text-green-300 hover:text-green-600" title="回復密碼"
+                onclick="
+                    const myform = document.getElementById('remove');
+                    myform.action = '{{ route('teachers.password', ['uuid' => $t->uuid]) }}';
+                    myform.submit();
+            ">
+                <i class="fa-solid fa-key"></i>
+            </button>
             <button class="py-2 pr-6 text-green-300 hover:text-green-600" title="同步"
                 onclick="
                     const myform = document.getElementById('remove');
