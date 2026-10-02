@@ -406,6 +406,9 @@ class SchoolDataController extends Controller
         $referer = $request->headers->get('referer');
         $google = new GsuiteServiceProvider();
         $t = Teacher::withTrashed()->find($uuid);
+        if (!$t) {
+            return redirect(urldecode($referer))->with('error', '找不到該教師資料！');
+        }
         $pwd = substr($t->idno, -6);
         $user = User::where('uuid', $uuid)->first();
         if ($user) {
@@ -413,7 +416,27 @@ class SchoolDataController extends Controller
             Watchdog::watch($request, '重設教師「' . $t->realname . '」密碼為 ' . $pwd);
             return redirect(urldecode($referer))->with('success', '教師本機密碼已經重設為身分證字號後六碼！');
         } else {
-            return redirect(urldecode($referer))->with('error', '找不到教師本機帳號，無法重設密碼！');
+            $email = $t->email;
+            if (!$email) {
+                $email = $t->id ? ('meps' . $t->id . '@tc.meps.tp.edu.tw') : ($t->account . '@tc.meps.tp.edu.tw');
+            }
+            $is_admin = false;
+            if ($t->character) {
+                $characters = explode(',', $t->character);
+                if (in_array('TPECadmin1', $characters)) {
+                    $is_admin = true;
+                }
+            }
+            $user = User::create([
+                'uuid' => $t->uuid,
+                'user_type' => 'Teacher',
+                'name' => $t->account ?: $t->realname,
+                'email' => $email,
+                'is_admin' => $is_admin,
+            ]);
+            $user->reset_password($pwd);
+            Watchdog::watch($request, '建立教師「' . $t->realname . '」本機帳號並設定密碼為 ' . $pwd);
+            return redirect(urldecode($referer))->with('success', '已為教師「' . $t->realname . '」建立本機帳號，密碼預設為身分證字號後六碼！');
         }
     }
 
