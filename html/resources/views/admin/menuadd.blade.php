@@ -14,13 +14,13 @@
         所有路由名稱列表如右：{{ implode('、', $routes) }}。
     </p>
 </div>
-<form id="edit-unit" action="{{ route('menus.add', ['menu' => $current]) }}" method="POST">
+<form id="edit-unit" action="{{ empty($current) ? route('menus.add') : route('menus.add', ['menu' => $current]) }}" method="POST">
     @csrf
     <input type="hidden" name="parent_id" value="{{ $current }}">
     <div class="block">
     <label for="mid" class="inline p-2">識別碼：</label>
     <input class="inline w-40 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-        type="text" name="mid" autofocus required pattern="[a-z0-9]+" placeholder="請輸入英數半形">　　
+        type="text" name="mid" autofocus required pattern="[a-zA-Z0-9_-]+" placeholder="請輸入英數半形">　　
     <label for="caption" class="inline p-2">選單名稱：</label>
     <input class="inline w-48 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
         type="text" name="caption" required placeholder="請輸入中文">
@@ -33,8 +33,11 @@
             var myc = document.getElementById('url');
             if (kind == 'sub') {
                 myc.value = '#';
+                myc.required = false;
                 myp.classList.add('hidden');
             } else {
+                if (myc.value == '#') myc.value = '';
+                myc.required = true;
                 myp.classList.remove('hidden');
             }
         ">
@@ -50,13 +53,29 @@
     <p class="mt-2">
     <label for="weight" class="inline p-2">權　重：</label>
     <input class="inline w-16 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600  bg-white dark:bg-gray-700 text-black dark:text-gray-200"
-        type="text" name="weight" pattern="[0-9]+">
+        type="text" name="weight" value="0" pattern="[0-9]+">
     </p>
-    <div` class="block py-4 px-6">
+    <div class="block py-4 px-6">
         <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 mb-6 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             新增
         </button>
     </div>
     </div>
 </form>
+<script nonce="selfhost">
+    document.getElementById('kind').addEventListener('change', function() {
+        var kind = this.value;
+        var myp = document.getElementById('desc');
+        var myc = document.getElementById('url');
+        if (kind == 'sub') {
+            myc.value = '#';
+            myc.required = false;
+            myp.classList.add('hidden');
+        } else {
+            if (myc.value == '#') myc.value = '';
+            myc.required = true;
+            myp.classList.remove('hidden');
+        }
+    });
+</script>
 @endsection

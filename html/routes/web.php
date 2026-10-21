@@ -403,11 +403,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function 
     Route::post('database/students/{uuid}/restore', 'App\Http\Controllers\Admin\SchoolDataController@studentRestore')->name('students.restore');
     Route::post('database/students/{uuid}/destroy', 'App\Http\Controllers\Admin\SchoolDataController@studentDestroy')->name('students.destroy');
     // 選單管理
-    Route::get('website/menus/{menu?}', 'App\Http\Controllers\Admin\MenuController@index');
-    Route::post('website/menus/{menu?}', 'App\Http\Controllers\Admin\MenuController@update')->name('menus');
     Route::get('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\MenuController@add');
     Route::post('website/menus/add/{menu?}', 'App\Http\Controllers\Admin\MenuController@insert')->name('menus.add');
-    Route::post('website/menus/{menu}/remove', 'App\Http\Controllers\Admin\MenuController@remove')->name('menus.remove');
+    Route::post('website/menus/remove/{menu}', 'App\Http\Controllers\Admin\MenuController@remove')->name('menus.remove');
+    Route::get('website/menus/{menu?}', 'App\Http\Controllers\Admin\MenuController@index');
+    Route::post('website/menus/{menu?}', 'App\Http\Controllers\Admin\MenuController@update')->name('menus');
     // 權限管理
     Route::get('website/permission', 'App\Http\Controllers\Admin\PermitController@index')->name('permission');
     Route::get('website/permission/admin', 'App\Http\Controllers\Admin\PermitController@admin');

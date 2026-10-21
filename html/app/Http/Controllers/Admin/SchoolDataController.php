@@ -430,7 +430,7 @@ class SchoolDataController extends Controller
             $user = User::create([
                 'uuid' => $t->uuid,
                 'user_type' => 'Teacher',
-                'name' => $t->account ?: $t->realname,
+                'name' => $t->account,
                 'email' => $email,
                 'is_admin' => $is_admin,
             ]);

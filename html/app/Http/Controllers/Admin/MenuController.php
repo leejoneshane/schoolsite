@@ -84,9 +84,25 @@ class MenuController extends Controller
     {
         $mid = $request->input('mid');
         $caption = $request->input('caption');
-        $url = $request->input('url');
-        $weight = $request->input('weight');
-        if (!empty($menu)) {
+        $kind = $request->input('kind');
+        $url = ($kind == 'sub') ? '#' : ($request->input('url') ?: '#');
+        $weight = intval($request->input('weight'));
+        if ($menu == 'add' || (!empty($menu) && !Menu::find($menu))) {
+            $menu = '';
+        }
+        $existing = Menu::find($mid);
+        if ($existing) {
+            if ($existing->parent_id == 'add') {
+                $existing->parent_id = !empty($menu) ? $menu : null;
+                $existing->caption = $caption;
+                $existing->url = $url;
+                $existing->weight = $weight;
+                $existing->save();
+                $m = $existing;
+            } else {
+                return redirect()->route('menus', ['menu' => $menu])->with('error', '選單識別碼「' . $mid . '」已經存在！');
+            }
+        } elseif (!empty($menu)) {
             $m = Menu::create([
                 'id' => $mid,
                 'parent_id' => $menu,
