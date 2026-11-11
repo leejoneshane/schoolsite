@@ -33,7 +33,7 @@ class ClubController extends Controller
 
     public function index()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $admin = $user->hasPermission('club.manager');
         $cash = $user->hasPermission('club.cash');
         $teacher = Teacher::find($user->uuid);
@@ -52,7 +52,7 @@ class ClubController extends Controller
 
     public function kindList()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $kinds = ClubKind::orderBy('weight')->get();
@@ -64,7 +64,7 @@ class ClubController extends Controller
 
     public function kindAdd()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             return view('app.club_addkind');
@@ -93,9 +93,9 @@ class ClubController extends Controller
         return view('app.club_kinds', ['kinds' => $kinds])->with('success', '社團類別已經新增完成！');
     }
 
-    public function kindEdit($kid)
+    public function kindEdit(int $kid)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             return view('app.club_editkind', ['kind' => ClubKind::find($kid)]);
@@ -104,7 +104,7 @@ class ClubController extends Controller
         }
     }
 
-    public function kindUpdate(Request $request, $kid)
+    public function kindUpdate(Request $request, int $kid)
     {
         $k = ClubKind::find($kid);
         $k->update([
@@ -123,9 +123,9 @@ class ClubController extends Controller
         return view('app.club_kinds', ['kinds' => $kinds])->with('success', '社團類別已經修改完成！');
     }
 
-    public function kindRemove(Request $request, $kid)
+    public function kindRemove(Request $request, int $kid)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $k = ClubKind::find($kid);
@@ -138,9 +138,9 @@ class ClubController extends Controller
         }
     }
 
-    public function kindUp(Request $request, $kid)
+    public function kindUp(Request $request, int $kid)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $kind = ClubKind::find($kid);
@@ -157,9 +157,9 @@ class ClubController extends Controller
         }
     }
 
-    public function kindDown(Request $request, $kid)
+    public function kindDown(Request $request, int $kid)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $max = ClubKind::max('weight');
@@ -179,7 +179,7 @@ class ClubController extends Controller
 
     public function clubList($kid = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             if ($kid) {
@@ -198,7 +198,7 @@ class ClubController extends Controller
 
     public function clubUpload($kid = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             if ($kid) {
@@ -215,7 +215,7 @@ class ClubController extends Controller
 
     public function clubImport(Request $request, $kid = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $kid = $request->input('kind');
@@ -228,9 +228,9 @@ class ClubController extends Controller
         }
     }
 
-    public function clubExport($kid)
+    public function clubExport(int $kid)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $filename = ClubKind::find($kid)->name;
@@ -241,9 +241,9 @@ class ClubController extends Controller
         }
     }
 
-    public function clubRepetition($kid, $section = null)
+    public function clubRepetition(int $kid, $section = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $uuids = ClubEnroll::repetition($section);
@@ -259,7 +259,7 @@ class ClubController extends Controller
 
     public function clubExportCash($section = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             if (!$section) {
@@ -280,9 +280,9 @@ class ClubController extends Controller
         }
     }
 
-    public function clubClassroom($kid, $section = null, $class_id = null)
+    public function clubClassroom(int $kid, $section = null, $class_id = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $sections = ClubEnroll::sections(); 
@@ -328,9 +328,9 @@ class ClubController extends Controller
         return redirect()->route('home')->with('error', '您沒有權限使用此功能！');
     }
 
-    public function clubExportClass($kid, $section, $class_id)
+    public function clubExportClass(int $kid, string $section, int $class_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $filename = Classroom::find($class_id)->name.'學生社團錄取名冊';
@@ -343,7 +343,7 @@ class ClubController extends Controller
 
     public function clubAdd($kid = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             if ($user->user_type == 'Teacher') {
@@ -396,9 +396,9 @@ class ClubController extends Controller
         return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經新增完成！');
     }
 
-    public function clubEdit($club_id)
+    public function clubEdit(int $club_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -418,13 +418,13 @@ class ClubController extends Controller
         }
     }
 
-    public function clubUpdate(Request $request, $club_id)
+    public function clubUpdate(Request $request, int $club_id)
     {
         $club = Club::find($club_id);
         $kind_id =$club->kind_id;
         $grades = $request->input('grades');
         foreach ($grades as $k => $g) {
-            $grades[$k] = (integer) $g;
+            $grades[$k] = (int) $g;
         }
         $club->update([
             'uuid' => $request->input('manager') ?: null,
@@ -443,9 +443,9 @@ class ClubController extends Controller
         return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('success', '課外社團已經修改完成！');
     }
 
-    public function clubRemove(Request $request, $club_id)
+    public function clubRemove(Request $request, int $club_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -462,9 +462,9 @@ class ClubController extends Controller
         }
     }
 
-    public function clubMail($club_id, $section = null)
+    public function clubMail(int $club_id, ?string $section = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -480,7 +480,7 @@ class ClubController extends Controller
         }
     }
 
-    public function clubNotify(Request $request, $club_id, $section = null)
+    public function clubNotify(Request $request, int $club_id, ?string $section = null)
     {
         $club = Club::find($club_id);
         $kind_id = $club->kind_id;
@@ -495,9 +495,9 @@ class ClubController extends Controller
         return redirect()->route('clubs.admin', ['kid' => $kind_id])->with('message', '因為沒有寄送對象，已經取消郵寄作業！');
     }
 
-    public function clubPrune(Request $request, $club_id, $section = null)
+    public function clubPrune(Request $request, int $club_id, ?string $section = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -517,7 +517,7 @@ class ClubController extends Controller
 
     public function clubManage()
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $teacher = Teacher::find($user->uuid);
         $manager = $teacher->manage_clubs->isNotEmpty();
         if ($manager) {
@@ -530,9 +530,9 @@ class ClubController extends Controller
         }
     }
 
-    public function sectionList($club_id)
+    public function sectionList(int $club_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -545,9 +545,9 @@ class ClubController extends Controller
         }
     }
 
-    public function sectionAdd($club_id, $section = null)
+    public function sectionAdd(int $club_id, ?string $section = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -564,7 +564,7 @@ class ClubController extends Controller
         }
     }
 
-    public function sectionInsert(Request $request, $club_id, $section = null)
+    public function sectionInsert(Request $request, int $club_id, ?string $section = null)
     {
         if (!$section) $section = current_section();
         $found = ClubSection::where('club_id', $club_id)->where('section', $section)->first();
@@ -605,9 +605,9 @@ class ClubController extends Controller
         return redirect()->route('clubs.sections', ['club_id' => $club_id])->with('success', '開班資訊已經新增完成！');
     }
 
-    public function sectionEdit($section_id)
+    public function sectionEdit(int $section_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $section = ClubSection::find($section_id);
@@ -634,7 +634,7 @@ class ClubController extends Controller
         }
     }
 
-    public function sectionUpdate(Request $request, $section_id)
+    public function sectionUpdate(Request $request, int $section_id)
     {
         $section = ClubSection::find($section_id);
         $weekdays = [];
@@ -669,9 +669,9 @@ class ClubController extends Controller
         return redirect()->route('clubs.sections', ['club_id' => $section->club_id])->with('success', '開班資訊已經修改完成！');
     }
 
-    public function sectionRemove(Request $request, $section_id)
+    public function sectionRemove(Request $request, int $section_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $section = ClubSection::find($section_id);
@@ -702,7 +702,7 @@ class ClubController extends Controller
         return view('app.club_enroll', ['clubs' => $clubs, 'student' => $student, 'enrolls' => $enrolls]);
     }
 
-    public function enrollAdd($club_id)
+    public function enrollAdd(int $club_id)
     {
         $user = Auth::user();
         if ($user->user_type != 'Student') return redirect()->route('home')->with('error', '您不是學生，因此無法報名參加學生社團！');
@@ -723,7 +723,7 @@ class ClubController extends Controller
         return view('app.club_addenroll', ['club' => $club, 'student' => $student, 'old' => $old]);
     }
 
-    public function enrollInsert(Request $request, $club_id)
+    public function enrollInsert(Request $request, int $club_id)
     {
         $user = Auth::user();
         $club = Club::find($club_id);
@@ -793,7 +793,7 @@ class ClubController extends Controller
         return redirect()->route('clubs.enroll')->with('success', '您已經完成報名手續，報名順位為'.$order.$message);
     }
 
-    public function enrollEdit($enroll_id)
+    public function enrollEdit(int $enroll_id)
     {
         $user = Auth::user();
         if ($user->user_type != 'Student') {
@@ -809,7 +809,7 @@ class ClubController extends Controller
         return view('app.club_editenroll', ['club' => $club, 'section' => $section, 'enroll' => $enroll]);
     }
 
-    public function enrollUpdate(Request $request, $enroll_id)
+    public function enrollUpdate(Request $request, int $enroll_id)
     {
         $user = Auth::user();
         $enroll = ClubEnroll::find($enroll_id);
@@ -838,7 +838,7 @@ class ClubController extends Controller
         return redirect()->route('clubs.enroll')->with('success', '報名資訊已更新！');
     }
 
-    public function enrollRemove(Request $request, $enroll_id)
+    public function enrollRemove(Request $request, int $enroll_id)
     {
         $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
@@ -864,9 +864,9 @@ class ClubController extends Controller
         return back();
     }
 
-    public function enrollList(Request $request, $club_id, $section = null)
+    public function enrollList(Request $request, int $club_id, $section = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -947,9 +947,9 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollValid(Request $request, $enroll_id)
+    public function enrollValid(Request $request, int $enroll_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
@@ -961,9 +961,9 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollDeny(Request $request, $enroll_id)
+    public function enrollDeny(Request $request, int $enroll_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
@@ -975,9 +975,9 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollGroupSelect($enroll_id)
+    public function enrollGroupSelect(int $enroll_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
@@ -988,9 +988,9 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollGroupUpdate(Request $request, $enroll_id)
+    public function enrollGroupUpdate(Request $request, int $enroll_id)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $enroll = ClubEnroll::find($enroll_id);
@@ -1003,9 +1003,9 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollDevide(Request $request, $club_id, $section)
+    public function enrollDevide(Request $request, int $club_id, string $section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -1089,9 +1089,9 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollConquer(Request $request, $club_id, $section)
+    public function enrollConquer(Request $request, int $club_id, string $section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -1114,9 +1114,9 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollAppend($club_id, $section, $class = null)
+    public function enrollAppend(int $club_id, string $section, int $class = null)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -1132,7 +1132,7 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollInsertAppend(Request $request, $club_id, $section, $class = null)
+    public function enrollInsertAppend(Request $request, int $club_id, string $section, int $class = null)
     {
         $uuid = $request->input('student');
         $student = Student::find($uuid);
@@ -1202,9 +1202,9 @@ class ClubController extends Controller
         return redirect()->route('clubs.enrolls', ['club_id' => $club_id, 'section' => $section])->with('success', '已經完成報名手續，該生報名順位為'.$order.$message);
     }
 
-    public function enrollFastAppend($club_id, $section)
+    public function enrollFastAppend(int $club_id, string $section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -1214,7 +1214,7 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollInsertFast(Request $request, $club_id, $section)
+    public function enrollInsertFast(Request $request, int $club_id, string $section)
     {
         $club = Club::find($club_id);
         $message = '';
@@ -1296,9 +1296,9 @@ class ClubController extends Controller
         return redirect()->route('clubs.enrolls', ['club_id' => $club_id, 'section' => $section])->with('success', $message);
     }
 
-    public function enrollImport($club_id, $section)
+    public function enrollImport(int $club_id, string $section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -1312,7 +1312,7 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollImportOld(Request $request, $club_id, $section)
+    public function enrollImportOld(Request $request, int $club_id, string $section)
     {
         $club = Club::find($club_id);
         $old_section = $request->input('section');
@@ -1338,9 +1338,9 @@ class ClubController extends Controller
         return redirect()->route('clubs.enrolls', ['club_id' => $club_id])->with('success', '匯入完成！');
     }
 
-    public function enrollNotify(Request $request, $club_id, $section)
+    public function enrollNotify(Request $request, int $club_id, string $section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $club = Club::find($club_id);
@@ -1355,9 +1355,9 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollExport($club_id, $section)
+    public function enrollExport(int $club_id, string $section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $filename = Club::find($club_id)->name.'錄取名冊';
@@ -1368,9 +1368,9 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollExportRoll($club_id, $section)
+    public function enrollExportRoll(int $club_id, string $section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $filename = Club::find($club_id)->name.'點名表';
@@ -1381,9 +1381,9 @@ class ClubController extends Controller
         }
     }
 
-    public function enrollExportTime($club_id, $section)
+    public function enrollExportTime(int $club_id, string $section)
     {
-        $user = Auth::user();
+        $user = User::find(Auth::user()->id);
         $manager = $user->hasPermission('club.manager');
         if ($user->is_admin || $manager) {
             $filename = Club::find($club_id)->name.'時序表';
