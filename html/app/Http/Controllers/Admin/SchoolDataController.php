@@ -45,6 +45,7 @@ class SchoolDataController extends Controller
 
     public function unitUpdate(Request $request)
     {
+        $message = '';
         if ($request->has('units')) {
             $units = $request->input('units');
             $unit_ids = $request->input('uid');
@@ -72,6 +73,9 @@ class SchoolDataController extends Controller
             $message = '職稱已更新並儲存！';
         }
         $units = Unit::with('roles')->orderBy('unit_no')->get();
+        if (empty($message)) {
+            $message = '沒有任何資料需要更新！';
+        }
         return view('admin.units', ['units' => $units])->with('success', $message);
     }
 

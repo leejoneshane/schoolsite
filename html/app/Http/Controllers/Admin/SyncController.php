@@ -68,11 +68,13 @@ class SyncController extends Controller
         $tempDecryptedPath = null;
 
         try {
-            $tempDecryptedPath = ExcelDecryptor::decryptXlsxIfNeeded(
-                $file->getRealPath(),
-                $excelPassword,
-                (string) $file->getClientOriginalExtension()
-            );
+            if ($excelPassword !== null && $excelPassword !== '') {
+                $tempDecryptedPath = ExcelDecryptor::decryptXlsxIfNeeded(
+                    $file->getRealPath(),
+                    $excelPassword,
+                    (string) $file->getClientOriginalExtension()
+                );
+            }
 
             $importSource = $tempDecryptedPath ?? $file;
             $readerType = $tempDecryptedPath ? ExcelFormat::XLSX : null;

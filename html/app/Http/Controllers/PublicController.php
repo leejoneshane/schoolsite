@@ -411,6 +411,9 @@ class PublicController extends Controller
         }
         $manager = $user->is_admin || $user->hasPermission('public.manager') || $user->hasPermission('public.domain');
         $public = PublicClass::find($id);
+        if (!$public) {
+            return redirect()->route('public')->with('error', '找不到要移除的公開課資訊！');
+        }
         if ($manager || $public->uuid == $user->uuid) {
             if ($public) {
                 Watchdog::watch($request, '移除公開課資訊：' . $public->toJson(JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
@@ -469,6 +472,7 @@ class PublicController extends Controller
         $perm = Permission::findByName('public.domain')->removeAll();
         if (!empty($users)) {
             $perm->assign($users);
+            $user_list = [];
             foreach ($users as $u) {
                 $user_list[] = Teacher::find($u)->realname;
             }
@@ -481,7 +485,7 @@ class PublicController extends Controller
         return back()->with('success', $log);
     }
 
-    public function export($section) {
+    public function export(string $section) {
         $domains = Domain::all();
         foreach ($domains as $dom) {
             $dom->count = PublicClass::where('section', $section)->where('domain_id', $dom->id)->count();
@@ -491,7 +495,7 @@ class PublicController extends Controller
         return view('app.public_export', ['section' => $section, 'domains' => $domains]);
     }
 
-    public function pdf($section, $domain_id) {
+    public function pdf(string $section, int $domain_id) {
         $user = User::find(Auth::user()->id);
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
         if ($manager) {
@@ -504,7 +508,7 @@ class PublicController extends Controller
         }
     }
 
-    public function docx($section, $domain_id) {
+    public function docx(string $section, int $domain_id) {
         $user = User::find(Auth::user()->id);
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
         if ($manager) {
@@ -517,7 +521,7 @@ class PublicController extends Controller
         }
     }
 
-    public function excel($section) {
+    public function excel(string $section) {
         $user = User::find(Auth::user()->id);
         $manager = ($user->is_admin || $user->hasPermission('public.manager'));
         if ($manager) {

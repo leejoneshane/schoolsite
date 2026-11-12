@@ -2,17 +2,23 @@
 
 namespace App\Imports;
 
-use PhpOffice\PhpSpreadsheet\Shared\OLE;
 use RuntimeException;
 
 class ExcelDecryptor
 {
+    private const ENDOFCHAIN = -2;
+    private const FREESECT = -1;
+
     /**
      * 若為受密碼保護的 .xlsx (OLE2 加密容器)，解密後寫入暫存 .xlsx 並回傳暫存檔路徑；
      * 若未加密或非 .xlsx 加密格式則回傳 null。
      */
     public static function decryptXlsxIfNeeded(string $filePath, ?string $password, string $extension = ''): ?string
     {
+        if ($password === null || $password === '') {
+            return null;
+        }
+
         if (!is_file($filePath) || !is_readable($filePath)) {
             throw new RuntimeException('無法讀取上傳的檔案。');
         }
@@ -28,27 +34,9 @@ class ExcelDecryptor
             return null;
         }
 
-        $ole = new OLE();
-        $encryptionInfo = null;
-        $encryptedPackage = null;
-        try {
-            $ole->read($filePath);
-
-            foreach ($ole->_list as $index => $pps) {
-                if ($pps->Type !== OLE::OLE_PPS_TYPE_FILE) {
-                    continue;
-                }
-                if ($pps->Name === 'EncryptionInfo') {
-                    $encryptionInfo = $ole->getData($index, 0, $pps->Size);
-                } elseif ($pps->Name === 'EncryptedPackage') {
-                    $encryptedPackage = $ole->getData($index, 0, $pps->Size);
-                }
-            }
-        } finally {
-            if (is_resource($ole->_file_handle)) {
-                fclose($ole->_file_handle);
-            }
-        }
+        $streams = self::readOleStreams($filePath, ['EncryptionInfo', 'EncryptedPackage']);
+        $encryptionInfo = $streams['EncryptionInfo'] ?? null;
+        $encryptedPackage = $streams['EncryptedPackage'] ?? null;
 
         // 一般未加密 .xls 亦為 OLE2 容器，但不含 EncryptionInfo / EncryptedPackage
         if ($encryptionInfo === null || $encryptedPackage === null) {
@@ -56,10 +44,6 @@ class ExcelDecryptor
                 throw new RuntimeException('此 .xlsx 檔案格式異常，無法識別為有效的 Excel 檔案。');
             }
             return null;
-        }
-
-        if ($password === null || $password === '') {
-            throw new RuntimeException('此 Excel 檔案已設定開啟密碼，請填寫「Excel 檔案密碼」後再試一次。');
         }
 
         $decryptedBytes = self::decryptPackage($encryptionInfo, $encryptedPackage, $password);
@@ -73,6 +57,172 @@ class ExcelDecryptor
         }
 
         return $tempPath;
+    }
+
+    /**
+     * 直接依 MS-CFB (OLE2) 規格讀取指定串流（修正 PhpSpreadsheet OLE\ChainedBlockStream
+     * 讀取小於 4096 bytes 之 Mini-Stream 時誤用 bigBlockSize 導致讀出空資料的問題）。
+     *
+     * @param string[] $targetNames
+     * @return array<string, string>
+     */
+    public static function readOleStreams(string $filePath, array $targetNames): array
+    {
+        $data = file_get_contents($filePath);
+        if ($data === false || strlen($data) < 512) {
+            throw new RuntimeException('無法讀取 OLE2 檔案標頭。');
+        }
+
+        $sectorShift = unpack('v', substr($data, 0x1E, 2))[1];
+        $miniSectorShift = unpack('v', substr($data, 0x20, 2))[1];
+        $sectorSize = 1 << $sectorShift;
+        $miniSectorSize = 1 << $miniSectorShift;
+
+        $numFatSectors = unpack('V', substr($data, 0x2C, 4))[1];
+        $firstDirSector = self::readInt32($data, 0x30);
+        $miniStreamCutoff = unpack('V', substr($data, 0x38, 4))[1] ?: 4096;
+        $firstMiniFatSector = self::readInt32($data, 0x3C);
+        $firstDifatSector = self::readInt32($data, 0x44);
+        $numDifatSectors = unpack('V', substr($data, 0x48, 4))[1];
+
+        // 蒐集 FAT 磁區位置（前 109 個位於檔頭 0x4C，其餘於 DIFAT 鏈）
+        $fatSectors = [];
+        for ($i = 0; $i < min(109, $numFatSectors); $i++) {
+            $secId = self::readInt32($data, 0x4C + $i * 4);
+            if ($secId >= 0) {
+                $fatSectors[] = $secId;
+            }
+        }
+
+        $difatSec = $firstDifatSector;
+        $entriesPerDifat = intdiv($sectorSize, 4) - 1;
+        for ($d = 0; $d < $numDifatSectors && $difatSec >= 0; $d++) {
+            $offset = ($difatSec + 1) * $sectorSize;
+            for ($i = 0; $i < $entriesPerDifat && count($fatSectors) < $numFatSectors; $i++) {
+                $secId = self::readInt32($data, $offset + $i * 4);
+                if ($secId >= 0) {
+                    $fatSectors[] = $secId;
+                }
+            }
+            $difatSec = self::readInt32($data, $offset + $entriesPerDifat * 4);
+        }
+
+        // 建立 FAT（Big Block Chain）
+        $fat = '';
+        foreach ($fatSectors as $secId) {
+            $fat .= substr($data, ($secId + 1) * $sectorSize, $sectorSize);
+        }
+
+        // 建立 MiniFAT（Small Block Chain）
+        $miniFat = '';
+        $miniSec = $firstMiniFatSector;
+        $visited = [];
+        while ($miniSec >= 0 && $miniSec !== self::ENDOFCHAIN && $miniSec !== self::FREESECT) {
+            if (isset($visited[$miniSec])) {
+                break;
+            }
+            $visited[$miniSec] = true;
+            $miniFat .= substr($data, ($miniSec + 1) * $sectorSize, $sectorSize);
+            $miniSec = self::readInt32($fat, $miniSec * 4);
+        }
+
+        // 讀取目錄串流（Directory Stream）
+        $dirBytes = self::readFatStream($data, $fat, $firstDirSector, $sectorSize);
+
+        $rootStartSector = self::ENDOFCHAIN;
+        $entries = [];
+        $dirLen = strlen($dirBytes);
+        for ($off = 0; $off + 128 <= $dirLen; $off += 128) {
+            $entry = substr($dirBytes, $off, 128);
+            $type = ord($entry[0x42]);
+            if ($type === 0) {
+                continue;
+            }
+            $nameSize = unpack('v', substr($entry, 0x40, 2))[1];
+            $rawName = substr($entry, 0, min(64, max(0, $nameSize - 2)));
+            $name = mb_convert_encoding($rawName, 'UTF-8', 'UTF-16LE');
+            $startSec = self::readInt32($entry, 0x74);
+            $size = unpack('V', substr($entry, 0x78, 4))[1];
+
+            if ($type === 5) {
+                $rootStartSector = $startSec;
+            } elseif ($type === 2 && in_array($name, $targetNames, true)) {
+                $entries[$name] = ['start' => $startSec, 'size' => $size];
+            }
+        }
+
+        if (empty($entries)) {
+            return [];
+        }
+
+        // 僅在有串流小於 miniStreamCutoff 時讀取 Root MiniStream 容器
+        $miniStream = null;
+        foreach ($entries as $info) {
+            if ($info['size'] > 0 && $info['size'] < $miniStreamCutoff) {
+                $miniStream = self::readFatStream($data, $fat, $rootStartSector, $sectorSize);
+                break;
+            }
+        }
+
+        $result = [];
+        foreach ($entries as $name => $info) {
+            if ($info['size'] === 0) {
+                $result[$name] = '';
+                continue;
+            }
+            if ($info['size'] < $miniStreamCutoff) {
+                $raw = self::readMiniStream($miniStream ?? '', $miniFat, $info['start'], $miniSectorSize);
+            } else {
+                $raw = self::readFatStream($data, $fat, $info['start'], $sectorSize);
+            }
+            $result[$name] = substr($raw, 0, $info['size']);
+        }
+
+        return $result;
+    }
+
+    private static function readFatStream(string $fileData, string $fat, int $startSector, int $sectorSize): string
+    {
+        $out = '';
+        $sec = $startSector;
+        $visited = [];
+        while ($sec >= 0 && $sec !== self::ENDOFCHAIN && $sec !== self::FREESECT) {
+            if (isset($visited[$sec])) {
+                break;
+            }
+            $visited[$sec] = true;
+            $out .= substr($fileData, ($sec + 1) * $sectorSize, $sectorSize);
+            $sec = self::readInt32($fat, $sec * 4);
+        }
+        return $out;
+    }
+
+    private static function readMiniStream(string $miniStream, string $miniFat, int $startSector, int $miniSectorSize): string
+    {
+        $out = '';
+        $sec = $startSector;
+        $visited = [];
+        while ($sec >= 0 && $sec !== self::ENDOFCHAIN && $sec !== self::FREESECT) {
+            if (isset($visited[$sec])) {
+                break;
+            }
+            $visited[$sec] = true;
+            $out .= substr($miniStream, $sec * $miniSectorSize, $miniSectorSize);
+            $sec = self::readInt32($miniFat, $sec * 4);
+        }
+        return $out;
+    }
+
+    private static function readInt32(string $bytes, int $offset): int
+    {
+        if ($offset < 0 || $offset + 4 > strlen($bytes)) {
+            return self::ENDOFCHAIN;
+        }
+        $val = unpack('V', substr($bytes, $offset, 4))[1];
+        if ($val >= 0x80000000) {
+            $val -= 0x100000000;
+        }
+        return $val;
     }
 
     /**
