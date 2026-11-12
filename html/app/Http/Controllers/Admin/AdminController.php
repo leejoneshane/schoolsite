@@ -42,6 +42,15 @@ class AdminController extends Controller
                 'weight' => 10,
             ]);
         }
+        if (!Menu::find('import')) {
+            Menu::create([
+                'id' => 'import',
+                'parent_id' => 'database',
+                'caption' => '匯入校務行政',
+                'url' => 'route.import',
+                'weight' => 20,
+            ]);
+        }
         if (!Menu::find('ADsync')) {
             Menu::create([
                 'id' => 'ADsync',

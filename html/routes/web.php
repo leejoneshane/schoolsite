@@ -364,9 +364,11 @@ Route::group(['prefix' => 'seats', 'middleware' => ['auth']], function () {
 // 管理後台
 Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'admin']], function () {
     Route::get('/', 'App\Http\Controllers\Admin\AdminController@index')->name('admin');
-    // 快取資料庫同步作業
+    // 快取資料庫同步作業、匯入校務行政
     Route::get('database/sync', 'App\Http\Controllers\Admin\SyncController@syncFromLDAP');
     Route::post('database/sync', 'App\Http\Controllers\Admin\SyncController@startSyncFromLDAP')->name('sync');
+    Route::get('database/import', 'App\Http\Controllers\Admin\SyncController@importFromSMS');
+    Route::post('database/import', 'App\Http\Controllers\Admin\SyncController@startImportFromSMS')->name('import');
     Route::get('database/sync/ad', 'App\Http\Controllers\Admin\SyncController@syncToMSAD');
     Route::post('database/sync/ad', 'App\Http\Controllers\Admin\SyncController@startSyncToMSAD')->name('syncAD');
     Route::get('database/sync/google', 'App\Http\Controllers\Admin\SyncController@syncToGsuite');

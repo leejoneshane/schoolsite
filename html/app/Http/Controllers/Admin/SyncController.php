@@ -7,8 +7,12 @@ use Illuminate\Http\Request;
 use App\Jobs\SyncFromTpedu;
 use App\Jobs\SyncToAD;
 use App\Jobs\SyncToGoogle;
+use App\Imports\ExcelDecryptor;
+use App\Imports\StudentImport;
+use App\Imports\TeacherImport;
 use App\Models\Classroom;
 use App\Models\Watchdog;
+use Maatwebsite\Excel\Excel as ExcelFormat;
 
 class SyncController extends Controller
 {
@@ -43,6 +47,62 @@ class SyncController extends Controller
             'remove' => $remove,
         ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
         return view('admin')->with('success', '同步作業已經在背景執行，當同步作業完成時，您將接獲電子郵件通知！與此同時，您可以先進行其他工作或直接關閉網頁！');
+    }
+
+    public function importFromSMS()
+    {
+        return view('admin.importer');
+    }
+
+    public function startImportFromSMS(Request $request)
+    {
+        if (!$request->hasFile('file')) {
+            return redirect()->route('import')->with('error', '請選擇要上傳的 Excel 檔案！');
+        }
+
+        $type = $request->input('type', 'teachers');
+        $password = ($request->input('password') == 'sync');
+        $remove = ($request->input('leave') == 'remove');
+        $excelPassword = $request->input('excel_password');
+        $file = $request->file('file');
+        $tempDecryptedPath = null;
+
+        try {
+            $tempDecryptedPath = ExcelDecryptor::decryptXlsxIfNeeded(
+                $file->getRealPath(),
+                $excelPassword,
+                (string) $file->getClientOriginalExtension()
+            );
+
+            $importSource = $tempDecryptedPath ?? $file;
+            $readerType = $tempDecryptedPath ? ExcelFormat::XLSX : null;
+
+            if ($type === 'teachers') {
+                $importer = new TeacherImport($password, $remove);
+                $importer->import($importSource, null, $readerType);
+                Watchdog::watch($request, '匯入校務行政全校教師資料表：' . $file->getClientOriginalName());
+                return redirect()->route('import')
+                    ->with('success', '全校教師資料表已經匯入完成！')
+                    ->with('import_logs', $importer->logs);
+            }
+
+            if ($type === 'students') {
+                $importer = new StudentImport($password, $remove);
+                $importer->import($importSource, null, $readerType);
+                Watchdog::watch($request, '匯入校務行政班級學生資料表：' . $file->getClientOriginalName());
+                return redirect()->route('import')
+                    ->with('success', '班級學生資料表已經匯入完成！')
+                    ->with('import_logs', $importer->logs);
+            }
+
+            return redirect()->route('import')->with('error', '不支援的資料表匯入類型！');
+        } catch (\RuntimeException $e) {
+            return redirect()->route('import')->with('error', $e->getMessage());
+        } finally {
+            if ($tempDecryptedPath && is_file($tempDecryptedPath)) {
+                @unlink($tempDecryptedPath);
+            }
+        }
     }
 
     public function syncToMSAD()
