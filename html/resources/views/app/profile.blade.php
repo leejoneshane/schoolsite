@@ -29,7 +29,30 @@
     <label class="inline p-2">出生日期</label>
     <input class="inline w-32 rounded px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
         type="text" name="birth" value="{{ $teacher->birthdate ? (is_string($teacher->birthdate) ? $teacher->birthdate : $teacher->birthdate->format('Y-m-d')) : '' }}">
-    
+    <p class="p-2"><label for="roles" class="inline">擔任職務：</label>
+    @foreach ($teacher->roles as $oldrole)
+    <select class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200"
+        name="roles[]">
+        @foreach ($roles as $role)
+        <option value="{{ $role->id }}"{{ $oldrole->id == $role->id  ? ' selected' : '' }}>{{ $role->role_no }} {{ $role->name }}</option>
+        @endforeach
+    </select>
+    @if (!$loop->first)
+    <button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_role(this);"><i class="fa-solid fa-circle-minus"></i></button>
+    @endif
+    @endforeach
+    <button id="nrole" type="button" class="py-2 px-6 rounded text-blue-300 hover:text-blue-600"
+        onclick="add_role()"><i class="fa-solid fa-circle-plus"></i>
+    </button>
+    </p>
+    <p class="p-2"><label for="tutor_class" class="inline">導師班級：</label>
+        <select id="tutor_class" name="tutor_class" class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
+        <option value="">無</option>
+        @foreach ($classes as $cls)
+            <option value="{{ $cls->id }}"{{ $teacher->tutor_class == $cls->id ? ' selected' : '' }}>{{ $cls->name }}</option>
+        @endforeach
+        </select>
+    </p>
     <p class="p-2"><label for="domain" class="inline">隸屬領域：</label>
         <select id="domain" name="domain" class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200">
         <option value="">無</option>
@@ -84,6 +107,29 @@
     </p>
 </form>
 <script nonce="selfhost">
+function remove_role(elem) {
+    const parent = elem.parentNode;
+    const child = elem.previousElementSibling;
+    parent.removeChild(child);
+    parent.removeChild(elem);
+}
+
+function add_role() {
+    var target = document.getElementById('nrole');
+    var my_role = '<select class="inline rounded w-40 px-3 py-2 border border-gray-300 focus:border-blue-700 focus:ring-1 focus:ring-blue-700 focus:outline-none active:outline-none dark:border-gray-400 dark:focus:border-blue-600 dark:focus:ring-blue-600 bg-white dark:bg-gray-700 text-black dark:text-gray-200" name="roles[]">';
+	@foreach ($roles as $role)
+	my_role += '<option value="{{ $role->id }}">{{ $role->role_no }} {{ $role->name }}</option>';
+	@endforeach
+	my_role += '</select>';
+    const elem = document.createElement('select');
+    target.parentNode.insertBefore(elem, target);
+    elem.outerHTML = my_role;
+	my_btn = '<button type="button" class="py-2 pl-0 pr-6 rounded text-red-300 hover:text-red-600" onclick="remove_role(this);"><i class="fa-solid fa-circle-minus"></i></button>';
+    const elemb = document.createElement('button');
+    target.parentNode.insertBefore(elemb, target);
+    elemb.outerHTML = my_btn;
+}
+
 function remove_assign(elem) {
     const parent = elem.parentNode;
     const brother = elem.previousElementSibling;

@@ -9,6 +9,7 @@ use App\Models\Teacher;
 use App\Models\User;
 use App\Models\Classroom;
 use App\Models\Domain;
+use App\Models\Role;
 use App\Models\Subject;
 use App\Models\Watchdog;
 
@@ -40,12 +41,13 @@ class ProfileController extends Controller
             return redirect()->route('home')->with('error', '學生身份不提供此功能！');
         }
 
-        $teacher = Teacher::find($user->uuid);
+        $teacher = Teacher::with('roles')->find($user->uuid);
         if (!$teacher) {
             return redirect()->route('home')->with('error', '找不到對應的教師資料！');
         }
 
         $referer = $request->headers->get('referer') ?: route('home');
+        $roles = Role::orderBy('role_no')->get();
         $classes = Classroom::all();
         $domains = Domain::all();
         $subjects = Subject::all();
@@ -54,6 +56,7 @@ class ProfileController extends Controller
         return view('app.profile', [
             'referer' => $referer,
             'teacher' => $teacher,
+            'roles' => $roles,
             'assignment' => $assignment,
             'classes' => $classes,
             'domains' => $domains,
@@ -80,7 +83,79 @@ class ProfileController extends Controller
             return redirect()->route('home')->with('error', '找不到對應的教師資料！');
         }
 
-        // 依需求，「擔任職務」和「特殊身份註記」欄位隱藏不允許修改，故此處完全不更動 roles 與 character
+        // 「特殊身份註記」欄位仍維持隱藏不允許修改，故此處不更動 character
+
+        // 更新擔任職務（作為 DATA API 暫時無法使用之替代方案）
+        $new_roles = $request->input('roles');
+        $old_roles = $teacher->roles;
+        if (!empty($new_roles)) {
+            $keywords = explode(',', config('services.tpedu.base_unit'));
+            foreach ($new_roles as $new_id) {
+                $new = Role::find($new_id);
+                if (!$new) {
+                    continue;
+                }
+                $ckf = false;
+                foreach ($keywords as $k) {
+                    if ($k !== '' && mb_strpos($new->name, $k) !== false) {
+                        $ckf = true;
+                    }
+                }
+                if (!$ckf) {
+                    $teacher->unit_id = $new->unit_id;
+                    $teacher->unit_name = $new->unit->name;
+                    $teacher->role_id = $new->id;
+                    $teacher->role_name = $new->name;
+                }
+            }
+            foreach ($old_roles as $old) {
+                $pos = array_search($old->id, $new_roles);
+                if ($pos !== false) {
+                    unset($new_roles[$pos]);
+                } else {
+                    DB::table('job_title')->where('year', $this->year)->where('uuid', $uuid)->where('role_id', $old->id)->delete();
+                }
+            }
+        }
+        if (!empty($new_roles)) {
+            foreach ($new_roles as $role) {
+                $new = Role::find($role);
+                if ($new) {
+                    DB::table('job_title')->insertOrIgnore([
+                        'year' => $this->year,
+                        'uuid' => $uuid,
+                        'unit_id' => $new->unit_id,
+                        'role_id' => $new->id,
+                    ]);
+                }
+            }
+        }
+
+        // 更新導師班級，同步變更 teachers.tutor_class 與 classrooms.tutor (JSON uuid 陣列，允許複數導師)
+        $old_tutor_class = $teacher->tutor_class;
+        $new_tutor_class = $request->input('tutor_class') ?: null;
+        if ($old_tutor_class != $new_tutor_class && !empty($old_tutor_class)) {
+            $old_cls = Classroom::find($old_tutor_class);
+            if ($old_cls) {
+                $tutors = is_array($old_cls->tutor) ? $old_cls->tutor : [];
+                $old_cls->tutor = array_values(array_filter($tutors, function ($t_uuid) use ($uuid) {
+                    return $t_uuid !== $uuid;
+                }));
+                $old_cls->save();
+            }
+        }
+        if (!empty($new_tutor_class)) {
+            $new_cls = Classroom::find($new_tutor_class);
+            if ($new_cls) {
+                $tutors = is_array($new_cls->tutor) ? $new_cls->tutor : [];
+                if (!in_array($uuid, $tutors, true)) {
+                    $tutors[] = $uuid;
+                    $new_cls->tutor = array_values($tutors);
+                    $new_cls->save();
+                }
+            }
+        }
+        $teacher->tutor_class = $new_tutor_class;
 
         // 更新隸屬領域
         DB::table('belongs')->where('year', $this->year)->where('uuid', $uuid)->delete();
