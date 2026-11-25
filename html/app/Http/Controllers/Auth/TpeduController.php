@@ -74,6 +74,7 @@ class TpeduController extends Controller
                     Watchdog::watch($request, '登入網站');
                     return redirect()->route('home');
                 } else { //new user
+                    $user_type = null;
                     $tpuser = false;
                     $result = $this->sso->fetch_user($uuid);
                     $temp = Student::find($uuid);
