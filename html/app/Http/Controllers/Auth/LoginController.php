@@ -7,7 +7,6 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 
@@ -94,7 +93,6 @@ class LoginController extends Controller
                         'is_admin' => $isAdmin,
                     ]);
                     $user->reset_password(substr($record->idno, -6));
-                    event(new Registered($user));
                 }
             }
         }
